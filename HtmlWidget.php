@@ -11,6 +11,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
+    const VERSION = "0.1";
     public static $enqueuer = null;
     public static $widgets = array( );
     

@@ -36,6 +36,8 @@ var isNode = 'undefined' !== typeof global && '[object global]' === Object.proto
     
 var HtmlWidget = self = {
     
+    VERSION: "0.1",
+    
     enqueueAssets: function(_enqueuer) {
         if ( enqueuer && 'function' === typeof enqueuer ) enqueuer = _enqueuer;
         else enqueuer = null;
