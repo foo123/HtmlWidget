@@ -91,10 +91,10 @@ class HtmlWidget
                 case 'link':        $out = self::widget_link($attr, $data); break;
                 case 'button':      $out = self::widget_button($attr, $data); break;
                 case 'label':       $out = self::widget_label($attr, $data); break;
-                case 'suggestbox':
-                case 'suggest':     $out = self::widget_suggest($attr, $data); break;
-                case 'textbox':
-                case 'text':        $out = self::widget_text($attr, $data); break;
+                case 'suggest':
+                case 'suggestbox':  $out = self::widget_suggest($attr, $data); break;
+                case 'text':
+                case 'textbox':     $out = self::widget_text($attr, $data); break;
                 case 'numeric':     $out = self::widget_numeric($attr, $data); break;
                 case 'textarea':    $out = self::widget_textarea($attr, $data); break;
                 case 'editor':      $out = self::widget_editor($attr, $data); break;
@@ -103,8 +103,8 @@ class HtmlWidget
                 case 'checkbox':    $out = self::widget_checkbox($attr, $data); break;
                 case 'radio':       $out = self::widget_radio($attr, $data); break;
                 case 'switch':      $out = self::widget_switch($attr, $data); break;
-                case 'selectbox':
                 case 'select':
+                case 'selectbox':
                 case 'dropdown':    $out = self::widget_select($attr, $data); break;
                 case 'menu':        $out = self::widget_menu($attr, $data); break;
                 case 'table':       $out = self::widget_table($attr, $data); break;
@@ -212,25 +212,29 @@ OUT;
         $class = 'widget widget-button'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $icon = '';
         if ( isset($attr['icon']) )
         {
-            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
             $class .= ' widget-icon';
+            $text = "<i class=\"fa fa-{$attr['icon']}\"></i>" . $text;
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $class .= ' widget-icon-right';
+            $text = $text . "<i class=\"fa fa-{$attr['iconr']}\"></i>";
         }
         $data_attr = self::attr_data($attr);
         if ( isset($attr['href']) )
         {
             $href = $attr['href'];
             return <<<OUT
-<a id="$id" href="$href" class="$class" $style $extra title="$title" $data_attr>$icon$text</a>
+<a id="$id" href="$href" class="$class" $style $extra title="$title" $data_attr>$text</a>
 OUT;
         }
         else
         {
             $type = isset($attr['type']) ? 'type="'.$attr['type'].'"' : '';
             return <<<OUT
-<button id="$id" $type class="$class" $style $extra title="$title" $data_attr>$icon$text</button>
+<button id="$id" $type class="$class" $style $extra title="$title" $data_attr>$text</button>
 OUT;
         }
     }
@@ -243,14 +247,19 @@ OUT;
         $class = 'widget widget-label'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $icon = '';
         if ( isset($attr['icon']) )
         {
-            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $class .= ' widget-icon';
+            $text = "<i class=\"fa fa-{$attr['icon']}\"></i>" . $text;
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $class .= ' widget-icon-right';
+            $text = $text . "<i class=\"fa fa-{$attr['iconr']}\"></i>";
         }
         $data_attr = self::attr_data($attr);
         return <<<OUT
-<label id="$id" for="$for" class="$class" $style $extra $data_attr>$icon$text</label>
+<label id="$id" for="$for" class="$class" $style $extra $data_attr>$text</label>
 OUT;
     }
     
@@ -293,8 +302,28 @@ OUT;
         $class = 'widget widget-text'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $icon = '';
+        $wrapper_class = 'widget-wrapper';
+        if ( isset($attr['icon']) )
+        {
+            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $wrapper_class .= ' widget-icon';
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $icon = "<i class=\"fa fa-{$attr['iconr']}\"></i>";
+            $wrapper_class .= ' widget-icon-right';
+        }
         $data_attr = self::attr_data($attr);
-        return <<<OUT
+        if ( !empty($icon) )
+            return <<<OUT
+<span class="$wrapper_class">
+<input type="text" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
+$icon
+</span>
+OUT;
+        else
+            return <<<OUT
 <input type="text" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
 OUT;
     }
@@ -308,8 +337,28 @@ OUT;
         $class = 'widget widget-text'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $icon = '';
+        $wrapper_class = 'widget-wrapper';
+        if ( isset($attr['icon']) )
+        {
+            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $wrapper_class .= ' widget-icon';
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $icon = "<i class=\"fa fa-{$attr['iconr']}\"></i>";
+            $wrapper_class .= ' widget-icon-right';
+        }
         $data_attr = self::attr_data($attr);
-        return <<<OUT
+        if ( !empty($icon) )
+            return <<<OUT
+<span class="$wrapper_class">
+<input type="number" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
+$icon
+</span>
+OUT;
+        else
+            return <<<OUT
 <input type="number" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
 OUT;
     }
