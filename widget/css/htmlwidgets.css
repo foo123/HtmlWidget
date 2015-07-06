@@ -497,6 +497,16 @@ input.widget-radio.widget-led-button:checked + label:before
     border-radius: 5px;
     z-index: 1;
 }
+.widget-switch.widget-large {
+    line-height: 30px;
+    height: 30px;
+    width: 90px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    -ms-border-radius: 6px;
+    -o-border-radius: 6px;
+    border-radius: 6px;
+}
 .widget-switch  label {
     position: relative;
     display: block;
@@ -1198,11 +1208,11 @@ table.widget-table
 {
     max-height: 0;
     overflow: hidden;
-    -webkit-transition: max-height 0.5s ease-in;
-    -moz-transition: max-height 0.5s ease-in;
-    -ms-transition: max-height 0.5s ease-in;
-    -o-transition: max-height 0.5s ease-in;
-    transition: max-height 0.5s ease-in;
+    -webkit-transition: max-height 0.5s ease-out;
+    -moz-transition: max-height 0.5s ease-out;
+    -ms-transition: max-height 0.5s ease-out;
+    -o-transition: max-height 0.5s ease-out;
+    transition: max-height 0.5s ease-out;
 }
 .widget-controllable.widget-controller-checked
 {

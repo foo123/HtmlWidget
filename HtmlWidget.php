@@ -104,8 +104,8 @@ class HtmlWidget
                 case 'radio':       $out = self::widget_radio($attr, $data); break;
                 case 'switch':      $out = self::widget_switch($attr, $data); break;
                 case 'selectbox':
-                case 'select':      $out = self::widget_select($attr, $data); break;
-                case 'dropdown':    $out = self::widget_dropdown($attr, $data); break;
+                case 'select':
+                case 'dropdown':    $out = self::widget_select($attr, $data); break;
                 case 'menu':        $out = self::widget_menu($attr, $data); break;
                 case 'table':       $out = self::widget_table($attr, $data); break;
                 default: $out = ''; break;
@@ -499,7 +499,12 @@ OUT;
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); $name = $attr["name"];
-        $class = "widget widget-select"; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
+        $dropdown = isset($attr['dropdown']) && $attr['dropdown'];
+        if ( $dropdown )
+            $class = "widget widget-dropdown widget-state-default";
+        else
+            $class = "widget widget-select"; 
+        if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
         $selected_option = isset($data['selected']) ? (array)$data['selected'] : array();
@@ -520,43 +525,19 @@ OUT;
             $options .= "<option value=\"$key\" $selected>$val</option>";
         }
         $data_attr = self::attr_data($attr);
-        return <<<OUT
-<select id="$id" name="$name" class="$class" $style $extra $data_attr>
-$options
-</select>
-OUT;
-    }
-    
-    public static function widget_dropdown($attr, $data)
-    {
-        self::enqueue('styles', 'htmlwidgets.css');
-        $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); $name = $attr["name"];
-        $class = "widget widget-dropdown widget-state-default"; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
-        $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $selected_option = isset($data['selected']) ? (array)$data['selected'] : array();        $options = '';
-        foreach($data['options'] as $opt)
-        {
-            if (is_array($opt))
-            {
-                $key = array_shift(array_keys($opt));
-                $val = $opt[$key];
-            }
-            else
-            {
-                $key = $opt;
-                $val = $opt;
-            }
-            $selected = in_array($key, $selected_option) ? 'selected="selected"' : '';
-            $options .= "<option value=\"$key\" $selected>$val</option>";
-        }
-        $data_attr = self::attr_data($attr);
-        return <<<OUT
+        if ( $dropdown )
+            return <<<OUT
 <span class="$class" $style>
 <select id="$id" name="$name" class="widget-dropdown-select widget-state-default" $extra $data_attr>
 $options
 </select>
 </span>
+OUT;
+        else
+            return <<<OUT
+<select id="$id" name="$name" class="$class" $style $extra $data_attr>
+$options
+</select>
 OUT;
     }
     

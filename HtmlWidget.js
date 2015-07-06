@@ -126,8 +126,8 @@ var HtmlWidget = self = {
                 case 'radio':       out = self.widget_radio(attr, data); break;
                 case 'switch':      out = self.widget_switch(attr, data); break;
                 case 'selectbox':
-                case 'select':      out = self.widget_select(attr, data); break;
-                case 'dropdown':    out = self.widget_dropdown(attr, data); break;
+                case 'select':
+                case 'dropdown':    out = self.widget_select(attr, data); break;
                 case 'menu':        out = self.widget_menu(attr, data); break;
                 case 'table':       out = self.widget_table(attr, data); break;
                 default: out = ''; break;
@@ -537,7 +537,11 @@ $("#'+id+'").pikaday();\
         self.enqueue('styles', 'htmlwidgets.css');
         var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
         var name = attr['name'];
-        var class_ = 'widget widget-select'; 
+        var dropdown = attr[HAS]('dropdown') && attr['dropdown'];
+        if ( dropdown )
+            var class_ = 'widget widget-select'; 
+        else
+           var class_ = 'widget widget-dropdown widget-state-default';  
         if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
         var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
         var extra = attr[HAS]("extra") ? attr["extra"] : '';
@@ -562,48 +566,19 @@ $("#'+id+'").pikaday();\
             options += "<option value=\""+key+"\" "+selected+">"+val+"</option>";
         }
         var data_attr = self.attr_data(attr);
-        return '\
-<select id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
-'+options+'\
-</select>\
-';
-    }
-    
-    ,widget_dropdown: function(attr, data) {
-        self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var class_ = 'widget widget-dropdown widget-state-default'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var selected_option = data[HAS]('selected') ? data['selected'] : [];
-        if ( !(selected_option instanceof Array) ) selected_option = [selected_option];
-        var options = '', data_opts = data['options'], 
-            o, opt, l = data_opts.length, key, val, selected;
-        for(o=0; o<l; o++)
-        {
-            opt = data_opts[o];
-            if ( Object === opt.constructor )
-            {
-                key = KEYS(opt).shift();
-                val = opt[key];
-            }
-            else
-            {
-                key = opt;
-                val = opt;
-            }
-            selected = -1 < selected_option.indexOf(key) ? 'selected="selected"' : '';
-            options += "<option value=\""+key+"\" "+selected+">"+val+"</option>";
-        }
-        var data_attr = self.attr_data(attr);
-        return '\
+        if ( dropdown )
+            return '\
 <span class="'+class_+'" '+style+'>\
 <select id="'+id+'" name="'+name+'" class="widget-dropdown-select widget-state-default" '+extra+' '+data_attr+'>\
 '+options+'\
 </select>\
 </span>\
+';
+        else
+            return '\
+<select id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
+'+options+'\
+</select>\
 ';
     }
     
