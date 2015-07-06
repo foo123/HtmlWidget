@@ -95,7 +95,6 @@ class HtmlWidget
                 case 'suggestbox':  $out = self::widget_suggest($attr, $data); break;
                 case 'text':
                 case 'textbox':     $out = self::widget_text($attr, $data); break;
-                case 'numeric':     $out = self::widget_numeric($attr, $data); break;
                 case 'textarea':    $out = self::widget_textarea($attr, $data); break;
                 case 'editor':      $out = self::widget_editor($attr, $data); break;
                 case 'date':        $out = self::widget_date($attr, $data); break;
@@ -203,42 +202,6 @@ OUT;
 OUT;
     }
     
-    public static function widget_button($attr, $data)
-    {
-        self::enqueue('styles', 'htmlwidgets.css');
-        $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $text = isset($data['text']) ? $data['text'] : '';
-        $title = isset($data['title']) ? $data['title'] : $text;
-        $class = 'widget widget-button'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
-        $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']) )
-        {
-            $class .= ' widget-icon';
-            $text = "<i class=\"fa fa-{$attr['icon']}\"></i>" . $text;
-        }
-        elseif ( isset($attr['iconr']) )
-        {
-            $class .= ' widget-icon-right';
-            $text = $text . "<i class=\"fa fa-{$attr['iconr']}\"></i>";
-        }
-        $data_attr = self::attr_data($attr);
-        if ( isset($attr['href']) )
-        {
-            $href = $attr['href'];
-            return <<<OUT
-<a id="$id" href="$href" class="$class" $style $extra title="$title" $data_attr>$text</a>
-OUT;
-        }
-        else
-        {
-            $type = isset($attr['type']) ? 'type="'.$attr['type'].'"' : '';
-            return <<<OUT
-<button id="$id" $type class="$class" $style $extra title="$title" $data_attr>$text</button>
-OUT;
-        }
-    }
-    
     public static function widget_label($attr, $data)
     {
         self::enqueue('styles', 'htmlwidgets.css');
@@ -261,6 +224,42 @@ OUT;
         return <<<OUT
 <label id="$id" for="$for" class="$class" $style $extra $data_attr>$text</label>
 OUT;
+    }
+    
+    public static function widget_button($attr, $data)
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $text = isset($data['text']) ? $data['text'] : '';
+        $title = isset($data['title']) ? $data['title'] : $text;
+        $class = 'widget widget-button'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
+        $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $extra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( isset($attr['icon']) )
+        {
+            $class .= ' widget-icon';
+            $text = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>" . $text;
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $class .= ' widget-icon-right';
+            $text = $text . "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+        }
+        $data_attr = self::attr_data($attr);
+        if ( isset($attr['href']) )
+        {
+            $href = $attr['href'];
+            return <<<OUT
+<a id="$id" href="$href" class="$class" $style $extra title="$title" $data_attr>$text</a>
+OUT;
+        }
+        else
+        {
+            $type = isset($attr['type']) ? 'type="'.$attr['type'].'"' : '';
+            return <<<OUT
+<button id="$id" $type class="$class" $style $extra title="$title" $data_attr>$text</button>
+OUT;
+        }
     }
     
     public static function widget_checkbox($attr, $data)
@@ -302,64 +301,31 @@ OUT;
         $class = 'widget widget-text'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
+        // text, number, email, url, tel etc..
+        $type = isset($attr["type"]) ? $attr["type"] : 'text';
         $icon = '';
         $wrapper_class = 'widget-wrapper';
         if ( isset($attr['icon']) )
         {
-            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
         elseif ( isset($attr['iconr']) )
         {
-            $icon = "<i class=\"fa fa-{$attr['iconr']}\"></i>";
+            $icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
         $data_attr = self::attr_data($attr);
         if ( !empty($icon) )
             return <<<OUT
-<span class="$wrapper_class">
-<input type="text" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
+<span class="$wrapper_class" $style>
+<input type="$type" id="$id" name="$name" class="$class" $extra placeholder="$placeholder" value="$value" $data_attr />
 $icon
 </span>
 OUT;
         else
             return <<<OUT
-<input type="text" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
-OUT;
-    }
-    
-    public static function widget_numeric($attr, $data)
-    {
-        self::enqueue('styles', 'htmlwidgets.css');
-        $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); $name = $attr["name"];
-        $value = isset($data['value']) ? $data['value'] : "";
-        $placeholder = isset($attr['placeholder']) ? $attr['placeholder'] : "";
-        $class = 'widget widget-text'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
-        $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $icon = '';
-        $wrapper_class = 'widget-wrapper';
-        if ( isset($attr['icon']) )
-        {
-            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
-            $wrapper_class .= ' widget-icon';
-        }
-        elseif ( isset($attr['iconr']) )
-        {
-            $icon = "<i class=\"fa fa-{$attr['iconr']}\"></i>";
-            $wrapper_class .= ' widget-icon-right';
-        }
-        $data_attr = self::attr_data($attr);
-        if ( !empty($icon) )
-            return <<<OUT
-<span class="$wrapper_class">
-<input type="number" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
-$icon
-</span>
-OUT;
-        else
-            return <<<OUT
-<input type="number" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
+<input type="$type" id="$id" name="$name" class="$class" $style $extra placeholder="$placeholder" value="$value" $data_attr />
 OUT;
     }
     
@@ -369,10 +335,27 @@ OUT;
         $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); $name = $attr["name"];
         $value = isset($data['value']) ? $data['value'] : "";
         $placeholder = isset($attr['placeholder']) ? $attr['placeholder'] : "";
-        $class = 'widget widget-suggest'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
+        $class = 'widget widget-text widget-suggest'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
         $ajax = $attr["ajax"];
+        $icon = '';
+        $wrapper_class = 'widget-wrapper';
+        if ( isset($attr['icon']) )
+        {
+            $icon = "<span class=\"fa-wrapper\"><i id=\"$id-spinner\" class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wrapper_class .= ' widget-icon';
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $icon = "<span class=\"fa-wrapper\"><i id=\"$id-spinner\" class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
+        }
+        else
+        {
+            $icon = "<span class=\"fa-wrapper\"><i id=\"$id-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
+        }
         $script = <<<SCRIPT
 jQuery(function(\$){
 var \$el = \$('#$id'), suggest = \$el.parent();
@@ -401,9 +384,9 @@ SCRIPT;
         self::enqueue('scripts', "widget-suggest-$id", array($script), array('jquery.remote-list'));
         $data_attr = self::attr_data($attr);
         return <<<OUT
-<span class="$class">
-<input type="text" data-list-highlight="true" data-list-value-completion="true" id="$id" name="$name" class="widget-text widget-suggest-input" $style $extra placeholder="$placeholder" value="$value" $data_attr />
-<i id="$id-spinner" class="fa fa-spinner fa-pulse"></i>
+<span class="$wrapper_class" $style>
+<input type="text" data-list-highlight="true" data-list-value-completion="true" id="$id" name="$name" class="$class" $extra placeholder="$placeholder" value="$value" $data_attr />
+$icon
 </span>
 OUT;
     }
@@ -453,16 +436,25 @@ OUT;
         $id = isset($attr["id"]) ? $attr["id"] : self::uuid(); $name = $attr["name"];
         $value = isset($data['value']) ? $data['value'] : "";
         $placeholder = isset($attr['placeholder']) ? $attr['placeholder'] : "";
-        $class = 'widget widget-date'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
+        $class = 'widget widget-text widget-date'; if ( isset($attr["class"]) ) $class .= ' '.$attr["class"];
         $style = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $extra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']))
+        $icon = '';
+        $wrapper_class = 'widget-wrapper';
+        if ( isset($attr['icon']) )
         {
-            $icon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wrapper_class .= ' widget-icon';
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
         }
         else
         {
-            $icon = "<i class=\"fa fa-calendar\"></i>";
+            $icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-calendar\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
         }
         $script = <<<SCRIPT
 jQuery(function(\$){
@@ -472,8 +464,8 @@ SCRIPT;
         self::enqueue('scripts', "widget-pikaday-$id", array($script), array('jquery.pikaday'));
         $data_attr = self::attr_data($attr);
         return <<<OUT
-<span class="$class" $style>
-<input type="text" id="$id" name="$name" class="widget-text widget-date-input" placeholder="$placeholder" value="$value" $extra $data_attr />
+<span class="$wrapper_class" $style>
+<input type="text" id="$id" name="$name" class="$class" placeholder="$placeholder" value="$value" $extra $data_attr />
 $icon
 </span>
 OUT;
