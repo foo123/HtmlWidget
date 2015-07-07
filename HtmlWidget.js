@@ -88,7 +88,7 @@ var HtmlWidget = self = {
     ,addWidget: function(widget, renderer) {
         if ( widget && "function"===typeof renderer )
             widgets['wi_'+widget] = renderer;
-        else if ( widget && widgets[HAS]('wi_'+widget) )
+        else if ( widget && false === renderer && widgets[HAS]('wi_'+widget) )
             delete widgets['wi_'+widget];
     }
     
@@ -103,6 +103,12 @@ var HtmlWidget = self = {
             }
             else
             {
+            
+            if ( "checkbox" === widget ) attr["type"] = "checkbox";
+            else if ( "radio" === widget ) attr["type"] = "radio";
+            else if ( "dropdown" === widget ) attr["dropdown"] = true;
+            else if ( "editor" === widget ) attr["editor"] = true;
+            
             switch( widget )
             {
                 case 'empty':       out = self.widget_empty(attr, data); break;
@@ -113,20 +119,21 @@ var HtmlWidget = self = {
                 case 'link':        out = self.widget_link(attr, data); break;
                 case 'button':      out = self.widget_button(attr, data); break;
                 case 'label':       out = self.widget_label(attr, data); break;
-                case 'suggest':
-                case 'suggestbox':  out = self.widget_suggest(attr, data); break;
-                case 'text':
-                case 'textbox':     out = self.widget_text(attr, data); break;
+                case 'suggestbox':
+                case 'suggest':     out = self.widget_suggest(attr, data); break;
+                case 'textbox':
+                case 'text':        out = self.widget_text(attr, data); break;
+                case 'editor':
                 case 'textarea':    out = self.widget_textarea(attr, data); break;
-                case 'editor':      out = self.widget_editor(attr, data); break;
                 case 'date':        out = self.widget_date(attr, data); break;
                 case 'time':        out = self.widget_time(attr, data); break;
-                case 'checkbox':    out = self.widget_checkbox(attr, data); break;
-                case 'radio':       out = self.widget_radio(attr, data); break;
+                case 'checkbox':
+                case 'radio':
+                case 'control':     out = self.widget_control(attr, data); break;
                 case 'switch':      out = self.widget_switch(attr, data); break;
-                case 'select':
+                case 'dropdown':
                 case 'selectbox':
-                case 'dropdown':    out = self.widget_select(attr, data); break;
+                case 'select':      out = self.widget_select(attr, data); break;
                 case 'menu':        out = self.widget_menu(attr, data); break;
                 case 'table':       out = self.widget_table(attr, data); break;
                 default: out = ''; break;
@@ -147,248 +154,284 @@ var HtmlWidget = self = {
     }
     
     ,widget_icon: function(attr, data) {
+        var wclass, wstyle;
         self.enqueue('styles', 'htmlwidgets.css');
-        var class_ = 'fa'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        if (attr[HAS]('icon')) class_ += ' fa-'+attr['icon'];
-        return "<i class=\""+class_+"\" "+style+"></i>";
+        wclass = 'fa'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        if (attr[HAS]('icon')) wclass += ' fa-'+attr['icon'];
+        return "<i class=\""+wclass+"\" "+wstyle+"></i>";
     }
     
     ,widget_delayable: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wspinner;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var class_ = 'widget-delayable-overlay'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var widget_spinner = 'widget-spinner';
-        widget_spinner += attr[HAS]('spinner') ? " "+attr['spinner'] : " widget-spinner-dots";
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid();
+        wclass = 'widget-delayable-overlay'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wspinner = 'widget-spinner';
+        wspinner += attr[HAS]('spinner') ? " "+attr['spinner'] : " widget-spinner-dots";
         return '\
-<div id="'+id+'" class="'+class_+'" '+style+' '+extra+'>\
-<div class="'+widget_spinner+'"></div>\
+<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>\
+<div class="'+wspinner+'"></div>\
 </div>\
 ';
     }
     
     ,widget_dialog: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wbuttons, wcontent;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var title = data[HAS]('title') ? data['title'] : ''; 
-        var buttons = attr[HAS]('buttons') ? attr['buttons'] : ''; 
-        var content = data[HAS]('content') ? data['content'] : '';
-        var class_ = 'widget-dialog'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var icon = '';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wtitle = data[HAS]('title') ? data['title'] : ''; 
+        wbuttons = attr[HAS]('buttons') ? attr['buttons'] : ''; 
+        wcontent = data[HAS]('content') ? data['content'] : '';
+        wclass = 'widget-dialog'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wicon = '';
         if ( attr[HAS]('icon') )
         {
-            icon = "<i class=\"fa fa-" + attr['icon'] + "\"></i>";
+            wicon = "<i class=\"fa fa-" + attr['icon'] + "\"></i>";
         }
         if ( attr[HAS]("form") && attr.form )
         {
-            content = '<form id="'+id+'_form">'+content+'</form>';
+            wcontent = '<form id="'+wid+'_form">'+wcontent+'</form>';
         }
-        var data_attr = self.attr_data(attr);
+        wdata = self.attr_data(attr);
         return '\
-<div id="'+id+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
-<div class="widget-dialog-title">'+icon+''+title+'</div>\
-<div class="widget-dialog-content">'+content+'</div>\
-<div class="widget-dialog-buttons">'+buttons+'</div>\
+<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>\
+<div class="widget-dialog-title">'+wicon+wtitle+'</div>\
+<div class="widget-dialog-content">'+wcontent+'</div>\
+<div class="widget-dialog-buttons">'+wbuttons+'</div>\
 </div>\
 ';
     }
     
     ,widget_link: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, whref, wtext;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var href = attr['href']; 
-        var text = data[HAS]('text') ? data['text'] : '';
-        var title = data[HAS]('title') ? data['title'] : text;
-        var class_ = 'widget-link'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var icon = '';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        whref = attr['href']; 
+        wtext = data[HAS]('text') ? data['text'] : '';
+        wtitle = data[HAS]('title') ? data['title'] : wtext;
+        wclass = 'widget-link'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wicon = '';
         if ( attr[HAS]('icon') )
         {
-            icon = "<i class=\"fa fa-" + attr['icon'] + "\"></i>";
+            wicon = "<i class=\"fa fa-" + attr['icon'] + "\"></i>";
         }
-        var data_attr = self.attr_data(attr);
+        wdata = self.attr_data(attr);
         return '\
-<a id="'+id+'" class="'+class_+'" '+style+' '+extra+' title="'+title+'" href="'+href+'" '+data_attr+'>'+icon+text+'</a>\
+<a id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" href="'+whref+'" '+wdata+'>'+wicon+wtext+'</a>\
 ';
     }
     
     ,widget_label: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wfor, wtext;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var for_ = attr["for"];
-        var text = data[HAS]('text') ? data['text'] : '';
-        var class_ = 'widget widget-label'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wfor = attr["for"];
+        wtext = data[HAS]('text') ? data['text'] : '';
+        wclass = 'widget widget-label'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
         if ( attr[HAS]('icon') )
         {
-            class_ += ' widget-icon';
-            text = "<i class=\"fa fa-" + attr['icon'] + "\"></i>" + text;
+            wclass += ' widget-icon';
+            wtext = "<i class=\"fa fa-" + attr['icon'] + "\"></i>" + wtext;
         }
         else if ( attr[HAS]('iconr') )
         {
-            class_ += ' widget-icon-right';
-            text = text + "<i class=\"fa fa-" + attr['iconr'] + "\"></i>";
+            wclass += ' widget-icon-right';
+            wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + "\"></i>";
         }
-        var data_attr = self.attr_data(attr);
+        wdata = self.attr_data(attr);
         return '\
-<label id="'+id+'" for="'+for_+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>'+text+'</label>\
+<label id="'+wid+'" for="'+wfor+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtext+'</label>\
 ';
     }
     
     ,widget_button: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wtype, wtitle, wtext, whref;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var text = data[HAS]('text') ? data['text'] : '';
-        var title = data[HAS]('title') ? data['title'] : text;
-        var class_ = 'widget widget-button'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wtext = data[HAS]('text') ? data['text'] : '';
+        wtitle = data[HAS]('title') ? data['title'] : wtext;
+        wclass = 'widget widget-button'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
         if ( attr[HAS]('icon') )
         {
-            class_ += ' widget-icon';
-            text = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>" + text;
+            wclass += ' widget-icon';
+            wtext = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>" + wtext;
         }
         else if ( attr[HAS]('iconr') )
         {
-            class_ += ' widget-icon-right';
-            text = text + "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wclass += ' widget-icon-right';
+            wtext = wtext + "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
         }
-        var data_attr = self.attr_data(attr);
+        wdata = self.attr_data(attr);
         if ( attr[HAS]('href') )
         {
-            var href = attr['href'];
+            whref = attr['href'];
             return '\
-<a id="'+id+'" href="'+href+'" class="'+class_+'" '+style+' '+extra+' title="'+title+'" '+data_attr+'>'+text+'</a>\
+<a id="'+wid+'" href="'+whref+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</a>\
 ';
         }
         else
         {
-            var type = attr[HAS]('type') ? 'type="'+attr['type']+'"' : '';
+            wtype = attr[HAS]('type') ? 'type="'+attr['type']+'"' : '';
             return '\
-<button id="'+id+'" '+type+' class="'+class_+'" '+style+' '+extra+' title="'+title+'" '+data_attr+'>'+text+'</button>\
+<button id="'+wid+'" '+wtype+' class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</button>\
 ';
         }
     }
     
-    ,widget_checkbox: function(attr, data) {
+    ,widget_control: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wchecked, wvalue, wname, wtype;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : "1"; 
-        var checked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
-        var class_ = 'widget widget-checkbox'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wtype = attr[HAS]('type') ? attr['type'] : 'checkbox';
+        wvalue = data[HAS]("value") ? data["value"] : "1"; 
+        wchecked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
+        wclass = 'widget widget-checkbox'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
         return '\
-<input type="checkbox" id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' value="'+value+'" '+data_attr+' '+checked+' /><label for="'+id+'">&nbsp;</label>\
+<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'">&nbsp;</label>\
 ';
     }
     
-    ,widget_radio: function(attr, data) {
+    ,widget_switch: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wchecked, wiconon, wiconoff, wvalue, wname, wtype, wreverse, wstates;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : "1"; 
-        var checked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
-        var class_ = 'widget widget-radio'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wtype = attr[HAS]('type') ? attr['type'] : 'checkbox';
+        wvalue = data[HAS]("value") ? data["value"] : "1"; 
+        wchecked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
+        wclass = 'widget widget-switch'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wreverse = attr[HAS]("reverse")&&attr["reverse"];
+        wiconon='&nbsp;'; wiconoff='&nbsp;';
+        if ( attr[HAS]("iconon") )
+        {
+            wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
+        }
+        if ( attr[HAS]("iconoff") )
+        {
+            wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';
+        }
+        if ( wreverse ) 
+        {
+            wclass += ' reverse';
+            wstates = '<label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label><label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label>';
+        }
+        else
+        {
+            wstates = '<label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label><label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label>';
+        }
+        wdata = self.attr_data(attr);
         return '\
-<input type="radio" id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' value="'+value+'" '+data_attr+' '+checked+' /><label for="'+id+'">&nbsp;</label>\
+<span class="'+wclass+'" '+wstyle+'>\
+<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="widget-switch-button" value="'+wvalue+'" '+wextra+' '+wdata+' '+wchecked+' />\
+'+wstates+'\
+<span class="widget-switch-handle widget-state-default"></span>\
+</span>\
 ';
     }
     
     ,widget_text: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wtype, wicon, wplaceholder, wvalue, wname, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : ""; 
-        var placeholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
-        var class_ = 'widget widget-text'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var type = attr[HAS]("type") ? attr["type"] : 'text';
-        var icon = '';
-        var wrapper_class = 'widget-wrapper';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wvalue = data[HAS]("value") ? data["value"] : ""; 
+        wplaceholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
+        wclass = 'widget widget-text'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wtype = attr[HAS]("type") ? attr["type"] : 'text';
+        wicon = '';
+        wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
         else if ( attr[HAS]('iconr') )
         {
-            icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
-        var data_attr = self.attr_data(attr);
-        if ( icon.length )
+        wdata = self.attr_data(attr);
+        if ( wicon.length )
             return '\
-<span class="'+wrapper_class+'" '+style+'>\
-<input type="'+type+'" id="'+id+'" name="'+name+'" class="'+class_+'" '+extra+' placeholder="'+placeholder+'" value="'+value+'" '+data_attr+' />\
-'+icon+'\
+<span class="'+wrapper_class+'" '+wstyle+'>\
+<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
+'+wicon+'\
 </span>\
 ';
         else
             return '\
-<input type="'+type+'" id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' placeholder="'+placeholder+'" value="'+value+'" '+data_attr+' />\
+<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
 ';
     }
     
     ,widget_suggest: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder, wvalue, wname, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : ""; 
-        var placeholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
-        var class_ = 'widget widget-text widget-suggest'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var ajax = attr["ajax"];
-        var icon = '';
-        var wrapper_class = 'widget-wrapper';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wvalue = data[HAS]("value") ? data["value"] : ""; 
+        wplaceholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
+        wclass = 'widget widget-text widget-suggest'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wajax = attr["ajax"];
+        wicon = '';
+        wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            icon = "<span class=\"fa-wrapper\"><i id=\""+id+"-spinner\" class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
         else if ( attr[HAS]('iconr') )
         {
-            icon = "<span class=\"fa-wrapper\"><i id=\""+id+"-spinner\" class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
         else
         {
-            icon = "<span class=\"fa-wrapper\"><i id=\""+id+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
+        wdata = self.attr_data(attr);
         var _script = '', script = '\
 jQuery(function($){\
-var $el = $("#'+id+'"), suggest = $el.parent();\
+var $el = $("#'+wid+'"), suggest = $el.parent();\
 $el.remoteList({\
     minLength: 2,\
     maxLength: -1,\
     source: function(value, response) {\
         suggest.addClass("ajax");\
         $.ajax({\
-            url: "'+ajax+'",\
+            url: "'+wajax+'",\
             type: "POST",\
             data: {suggest: value},\
             dataType: "json",\
@@ -404,192 +447,171 @@ $el.remoteList({\
 });\
 });\
 ';
-        if (isNode) self.enqueue('scripts', "widget-suggest-"+id, [script], ['jquery.remote-list']);
+        if ( isNode ) self.enqueue('scripts', "widget-suggest-"+wid, [script], ['jquery.remote-list']);
         else _script = script;
-        var data_attr = self.attr_data(attr);
         return '\
-<span class="'+wrapper_class+'" '+style+'>\
-<input type="text" data-list-highlight="true" data-list-value-completion="true" id="'+id+'" name="'+name+'" class="'+class_+'" '+extra+' placeholder="'+placeholder+'" value="'+value+'" '+data_attr+' />\
-'+icon+'\
+<span class="'+wrapper_class+'" '+wstyle+'>\
+<input type="text" data-list-highlight="true" data-list-value-completion="true" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
+'+wicon+'\
 </span>\
 ' + _script;
     }
     
     ,widget_textarea: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wvalue, wname, weditor;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : ""; 
-        var placeholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
-        var class_ = 'widget widget-textarea'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
-        return '\
-<textarea id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' placeholder="'+placeholder+'" '+data_attr+'>'+value+'</textarea>\
-';
-    }
-    
-    ,widget_editor: function(attr, data) {
-        self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : ""; 
-        var placeholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
-        var class_ = 'widget widget-editor'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? '"'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var editor_cfg = '';
-        if ( attr[HAS]('editor') ) editor_cfg = toJSON(attr['editor']);
-        var _script = '', script = '<script>\
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wvalue = data[HAS]("value") ? data["value"] : ""; 
+        wplaceholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
+        var _script = '', script = '';
+        if ( attr[HAS]('editor') && attr.editor ) 
+        {
+            wclass = 'widget widget-editor'; 
+            if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+            wstyle = attr[HAS]("style") ? attr["style"] : ''; 
+            weditor = attr[HAS]('editor_cfg') ? toJSON(attr['editor_cfg']) : '';
+            script = '<script>\
 jQuery(function($){\
-$("#'+id+'").trumbowyg('+editor_cfg+');\
-$("#'+id+'").closest(".trumbowyg-box").addClass("widget widget-editor-box").attr("style",'+style+');\
+$("#'+wid+'").trumbowyg('+weditor+');\
+$("#'+wid+'").closest(".trumbowyg-box").addClass("widget widget-editor-box").attr("style","'+wstyle+'");\
 });\
 </script>';
-        if (isNode) self.enqueue('scripts', "widget-editor-"+id, [script], ['trumbowyg']);
-        else _script = script;
-        var data_attr = self.attr_data(attr);
+            if ( isNode ) self.enqueue('scripts', "widget-editor-"+wid, [script], ['trumbowyg']);
+            else _script = script;
+            wstyle = '';
+        }
+        else
+        {
+            wclass = 'widget widget-textarea'; 
+            if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+            wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        }
         return '\
-<textarea id="'+id+'" name="'+name+'" class="'+class_+'" '+extra+' placeholder="'+placeholder+'" '+data_attr+'>'+value+'</textarea>\
+<textarea id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" '+wdata+'>'+wvalue+'</textarea>\
 ' + _script;
     }
     
     ,widget_date: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wformat, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : ""; 
-        var placeholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
-        var class_ = 'widget widget-text widget-date'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var icon = '';
-        var wrapper_class = 'widget-wrapper';
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wvalue = data[HAS]("value") ? data["value"] : ""; 
+        wplaceholder = attr[HAS]('placeholder') ? attr['placeholder'] : "";
+        wclass = 'widget widget-text widget-date'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wformat = attr[HAS]("format") ? attr["format"] : 'Y-m-d';
+        wicon = '';
+        wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
         else if ( attr[HAS]('iconr') )
         {
-            icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
         else
         {
-            icon = "<span class=\"fa-wrapper\"><i class=\"fa fa-calendar\"></i></span>";
+            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-calendar\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
+        wdata = self.attr_data(attr);
         var _script = '', script = '\
 jQuery(function($){\
-$("#'+id+'").pikaday();\
+$("#'+wid+'").pikaday({format:"'+wformat+'",encoder:Pikaday.date_encoder,decoder:Pikaday.date_decoder});\
 });\
 ';
-        if (isNode) self.enqueue('scripts', "widget-pikaday-"+id, [script], ['jquery.pikaday']);
+        if ( isNode ) self.enqueue('scripts', "widget-pikaday-"+wid, [script], ['jquery.pikaday']);
         else _script = script;
-        var data_attr = self.attr_data(attr);
         return '\
-<span class="'+wrapper_class+'" '+style+'>\
-<input type="text" id="'+id+'" name="'+name+'" class="'+class_+'" placeholder="'+placeholder+'" value="'+value+'" '+extra+' '+data_attr+' />\
-'+icon+'\
+<span class="'+wrapper_class+'" '+wstyle+'>\
+<input type="text" id="'+wid+'" name="'+wname+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' '+wdata+' />\
+'+wicon+'\
 </span>\
 ' + _script;
     }
     
     ,widget_time: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wformat, wtimes,
+            time_options, i, tt, t, p, f, selected;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var format = attr[HAS]('format') ? attr['format'].split(':') : ["h","m","s"];
-        var value;
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wformat = attr[HAS]('format') ? attr['format'].split(':') : ["h","m","s"];
         if (data[HAS]('value')) 
         {
-            value = data['value'] instanceof Array ? data['value'] : data['value'].split(':');
-            while ( value.length < 3 ) value.push("00");
+            wvalue = data['value'] instanceof Array ? data['value'] : data['value'].split(':');
+            while ( wvalue.length < 3 ) wvalue.push("00");
         }
         else
         {
-            value = ["00", "00", "00"];
+            wvalue = ["00", "00", "00"];
         }
-        var class_ = 'widget widget-time'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
-        var time_options = {
+        wclass = 'widget widget-time'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
+        time_options = {
             'h':[],
             'm':[],
             's':[]
         };
-        var i, tt, t, p, f, selected;
         for(i=0; i<60; i++)
         {
             tt = i<10 ? '0'+i : ''+i;
-            for(p=0; p<format.length; p++)
+            for(p=0; p<wformat.length; p++)
             {
-                f = format[p];
+                f = wformat[p];
                 if ( 'h' === f && i>=24 ) continue;
-                selected = tt === value[p] ? 'selected="selected"' : '';
+                selected = tt === wvalue[p] ? 'selected="selected"' : '';
                 time_options[f].push('<option value="'+tt+'" '+selected+'>'+tt+'</option>');
             }
         }
-        var times = [];
-        for(p=0; p<format.length; p++)
+        wtimes = [];
+        for(p=0; p<wformat.length; p++)
         {
-            t = format[p];
-            times.push('<select class="widget-time-component" id="'+id+'_'+t+'" name="'+name+'['+t+']">'+time_options[t].join('')+'</select>');
+            t = wformat[p];
+            wtimes.push('<select class="widget-time-component" id="'+wid+'_'+t+'" name="'+wname+'['+t+']">'+time_options[t].join('')+'</select>');
         }
-        times = times.join('<span class="widget-time-sep">:</span>');
+        wtimes = wtimes.join('<span class="widget-time-sep">:</span>');
         return '\
-<span class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
-'+times+'\
-</span>\
-';
-    }
-    
-    ,widget_switch: function(attr, data) {
-        self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var value = data[HAS]("value") ? data["value"] : "1"; 
-        var checked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
-        var class_ = 'widget widget-switch'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
-        return '\
-<span class="'+class_+'" '+style+'>\
-<input type="checkbox" id="'+id+'" name="'+name+'" class="widget-switch-button" value="'+value+'" '+extra+' '+data_attr+' '+checked+' />\
-<label for="'+id+'" class="widget-switch-off">&nbsp;</label><label for="'+id+'" class="widget-switch-on">&nbsp;</label>\
-<span class="widget-switch-handle widget-state-default"></span>\
+<span class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>\
+'+wtimes+'\
 </span>\
 ';
     }
     
     ,widget_select: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, woptions, wselected, 
+            opts, o, opt, l, key, val, selected;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var name = attr['name'];
-        var dropdown = attr[HAS]('dropdown') && attr['dropdown'];
-        if ( dropdown )
-            var class_ = 'widget widget-dropdown widget-state-default';  
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wname = attr['name'];
+        wdropdown = attr[HAS]('dropdown') && attr['dropdown'];
+        if ( wdropdown )
+            wclass = 'widget widget-dropdown widget-state-default';  
         else
-            var class_ = 'widget widget-select'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var selected_option = data[HAS]('selected') ? data['selected'] : [];
-        if ( !(selected_option instanceof Array) ) selected_option = [selected_option];
-        var options = '', data_opts = data['options'], 
-            o, opt, l = data_opts.length, key, val, selected;
+            wclass = 'widget widget-select'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wselected = data[HAS]('selected') ? data['selected'] : [];
+        if ( !(wselected instanceof Array) ) wselected = [wselected];
+        woptions = ''; 
+        opts = data['options'];
+        l = opts.length;
         for(o=0; o<l; o++)
         {
-            opt = data_opts[o];
+            opt = opts[o];
             if ( Object === opt.constructor )
             {
                 key = KEYS(opt).shift();
@@ -600,105 +622,109 @@ $("#'+id+'").pikaday();\
                 key = opt;
                 val = opt;
             }
-            selected = -1 < selected_option.indexOf(key) ? 'selected="selected"' : '';
-            options += "<option value=\""+key+"\" "+selected+">"+val+"</option>";
+            selected = -1 < wselected.indexOf(key) ? 'selected="selected"' : '';
+            woptions += "<option value=\""+key+"\" "+selected+">"+val+"</option>";
         }
-        var data_attr = self.attr_data(attr);
-        if ( dropdown )
+        wdata = self.attr_data(attr);
+        if ( wdropdown )
             return '\
-<span class="'+class_+'" '+style+'>\
-<select id="'+id+'" name="'+name+'" class="widget-dropdown-select widget-state-default" '+extra+' '+data_attr+'>\
-'+options+'\
+<span class="'+wclass+'" '+wstyle+'>\
+<select id="'+wid+'" name="'+wname+'" class="widget-dropdown-select widget-state-default" '+wextra+' '+wdata+'>\
+'+woptions+'\
 </select>\
 </span>\
 ';
         else
             return '\
-<select id="'+id+'" name="'+name+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
-'+options+'\
+<select id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>\
+'+woptions+'\
 </select>\
 ';
     }
     
     ,widget_menu: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wmenu;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var menu = data['menu'];
-        var class_ = 'widget widget-dropdown-menu'; 
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var data_attr = self.attr_data(attr);
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wmenu = data['menu'];
+        wclass = 'widget widget-dropdown-menu'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
         return '\
-<div id="'+id+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>'+menu+'</div>\
+<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wmenu+'</div>\
 ';
     }
     
     ,widget_table: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wdataTable, wcolumns, wrows, woptions, wcontrols,
+            column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls;
         self.enqueue('styles', 'htmlwidgets.css');
-        var id = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        var class_ = 'widget widget-table'; 
-        if ( !attr[HAS]('stripped') || attr['stripped'] ) class_ += ' stripped';
-        if ( !attr[HAS]('responsive') || attr['responsive'] ) class_ += ' responsive';
-        if ( attr[HAS]("class") ) class_ += ' '+attr["class"];
-        var style = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        var extra = attr[HAS]("extra") ? attr["extra"] : '';
-        var columns = '';
-        var column_values = data['columns'];
-        var column_keys = KEYS(data_cols);
-        var r, c, rl, cl = column_keys.length
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wclass = 'widget widget-table'; 
+        if ( !attr[HAS]('stripped') || attr['stripped'] ) wclass += ' stripped';
+        if ( !attr[HAS]('responsive') || attr['responsive'] ) wclass += ' responsive';
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wcolumns = '';
+        column_values = data['columns'];
+        column_keys = KEYS(data_cols);
+        cl = column_keys.length
         for(c=0; c<cl; c++)
         {
-            columns += "<th data-key=\""+column_keys[c]+"\">"+column_values[column_keys[c]]+"</th>";
+            wcolumns += "<th data-key=\""+column_keys[c]+"\">"+column_values[column_keys[c]]+"</th>";
         }
-        columns = "<tr>"+columns+"</tr>";
-        var rows = ''; rl = data['rows'].length;
+        wcolumns = "<tr>"+wcolumns+"</tr>";
+        wrows = ''; rl = data['rows'].length;
         for(r=0; r<rl; r++)
         {
-            var row = data['rows'][r], rowk = KEYS(row);
-            rows += "\n" + "<tr>";
+            row = data['rows'][r]; 
+            rowk = KEYS(row);
+            wrows += "\n" + "<tr>";
             for(c=0; c<cl; c++)
             {
-                rows += "<td data-column=\""+column_values[column_keys[c]]+"\">"+row[rowk[c]]+"</td>";
+                wrows += "<td data-column=\""+column_values[column_keys[c]]+"\">"+row[rowk[c]]+"</td>";
             }
-            rows += "</tr>";
+            wrows += "</tr>";
         }
-        var dataTable = attr[HAS]('dataTable');
+        wdata = self.attr_data(attr);
+        wdataTable = attr[HAS]('dataTable');
         var _script = '', script = '';
-        if ( dataTable )
+        if ( wdataTable )
         {
-            var dtOptions = Object===attr['dataTable'].constructor ? toJSON(attr['dataTable']) : '';
-            var table_controls = [
-             "$('#"+id+"_filter').find('input').addClass('widget-text');"
-            ,"$('#"+id+"_length').find('select').addClass('widget-select');"
+            woptions = Object===attr['dataTable'].constructor ? toJSON(attr['dataTable']) : '';
+            wcontrols = [
+             "$('#"+wid+"_filter').find('input').addClass('widget-text');"
+            ,"$('#"+wid+"_length').find('select').addClass('widget-select');"
             ];
             if ( attr[HAS]('controls') ) 
             {
-                var ctrl, ctrls = attr['controls'] instanceof Array ? attr['controls'] : [attr['controls']];
+                ctrls = attr['controls'] instanceof Array ? attr['controls'] : [attr['controls']];
                 for(ctrl=0; ctrl<ctrls.length; ctrl++)
                 {
-                    table_controls.push('$(".widget-table-controls", "#'+id+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
+                    wcontrols.push('$(".widget-table-controls", "#'+wid+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
                 }
             }
-            table_controls = table_controls.join("\n");
+            wcontrols = wcontrols.join("\n");
             script = '\
 jQuery(function($){\
-$("#'+id+'").dataTable($dtOptions).on("change", "input.select_row", function( ){\
+$("#'+wid+'").dataTable('+woptions+').on("change", "input.select_row", function( ){\
     if ( this.checked ) $(this).closest("tr").addClass("selected");\
     else $(this).closest("tr").removeClass("selected");\
 });\
-$("#'+id+'").closest(".dataTables_wrapper").addClass("widget-table-wrapper");\
-'+table_controls+'\
+$("#'+wid+'").closest(".dataTables_wrapper").addClass("widget-table-wrapper");\
+'+wcontrols+'\
 });\
 ';
-            if (isNode) self.enqueue('scripts', "widget-datatable-"+id, [script], ['jquery.dataTables']);
+            if ( isNode ) self.enqueue('scripts', "widget-datatable-"+wid, [script], ['jquery.dataTables']);
             else _script = script;
         }
-        var data_attr = self.attr_data(attr);
         return '\
-<table id="'+id+'" class="'+class_+'" '+style+' '+extra+' '+data_attr+'>\
-<thead>'+columns+'</thead>\
-<tbody>'+rows+'</tbody>\
+<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>\
+<thead>'+wcolumns+'</thead>\
+<tbody>'+wrows+'</tbody>\
 </table>\
 ' + _script;
     }
