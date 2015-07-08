@@ -215,6 +215,18 @@
     display: inline-block;
     margin-left: 8px;
 }
+.widget-label.widget-icon-only > .fa-wrapper,
+.widget-button.widget-icon-only > .fa-wrapper
+{
+    position: relative;
+    display: inline-block;
+    font-size: 1.2em;
+}
+.widget-label.widget-large.widget-icon-only > .fa-wrapper,
+.widget-button.widget-large.widget-icon-only > .fa-wrapper
+{
+    font-size: 1.6em;
+}
 .widget-button:hover,
 .widget-button:focus
 {
@@ -602,7 +614,7 @@ input.widget-radio.widget-led-button:checked + label:before
     overflow: hidden;
     padding: 0;
     margin: 0px 5px;
-    vertical-align: text-bottom;
+    vertical-align: middle/*text-bottom*/;
     line-height: 15px;
     height: 15px;
     width: 60px;
