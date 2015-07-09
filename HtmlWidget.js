@@ -48,17 +48,18 @@ var HtmlWidget = self = {
             enqueuer(type, id, asset||null, deps||[]);
     },
     
-    assets: function( ) {
+    assets: function(base) {
+        base = (base||'') + '/assets/';
         return [
-         ['scripts', 'htmlwidgets.js', '/widget/js/htmlwidgets.js', ["jquery"]]
-        ,['styles', 'htmlwidgets.css', '/widget/css/htmlwidgets.css', ["responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/]]
-        ,['styles', 'trumbowyg.css', '/widget/css/trumbowyg.min.css']
-        ,['scripts', 'trumbowyg', '/widget/js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
-        ,['styles', 'jquery.dataTables.css', '/widget/css/jquery.dataTables.css']
-        ,['scripts', 'jquery.dataTables', '/widget/js/jquery.dataTables.js', ['jquery.dataTables.css', 'jquery']]
-        ,['styles', 'jquery.pikaday.css', '/widget/css/jquery.pikaday.css']
-        ,['scripts', 'jquery.pikaday', '/widget/js/jquery.pikaday.js', ['jquery.pikaday.css', 'jquery']]
-        ,['scripts', 'jquery.remote-list', '/widget/js/jquery.remote-list.js', ['jquery']]
+         ['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.js', ["jquery"]]
+        ,['styles', 'htmlwidgets.css', base+'css/htmlwidgets.css', ["responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/]]
+        ,['styles', 'trumbowyg.css', base+'css/trumbowyg.min.css']
+        ,['scripts', 'trumbowyg', base+'js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
+        ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.css']
+        ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.js', ['jquery.dataTables.css', 'jquery']]
+        ,['styles', 'jquery.pikaday.css', base+'css/jquery.pikaday.css']
+        ,['scripts', 'jquery.pikaday', base+'js/jquery.pikaday.js', ['jquery.pikaday.css', 'jquery']]
+        ,['scripts', 'jquery.remote-list', base+'js/jquery.remote-list.js', ['jquery']]
         ];
     },
     

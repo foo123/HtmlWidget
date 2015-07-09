@@ -1423,5 +1423,6 @@ table.widget-table
 [class|="widget"]:disabled,
 .widget:disabled
 {
+    cursor: not-allowed !important;
     opacity: 0.6 !important;
 }

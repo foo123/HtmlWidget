@@ -27,18 +27,19 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets()
+    public static function assets( $base='')
     {
+        $base = $base . '/assets/';
         return array(
-         array('scripts', 'htmlwidgets.js', '/widget/js/htmlwidgets.js', array("jquery"))
-        ,array('styles', 'htmlwidgets.css', '/widget/css/htmlwidgets.css', array("responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/))
-        ,array('styles', 'trumbowyg.css', '/widget/css/trumbowyg.min.css')
-        ,array('scripts', 'trumbowyg', '/widget/js/trumbowyg.min.js', array('trumbowyg.css','jquery'))
-        ,array('styles', 'jquery.dataTables.css', '/widget/css/jquery.dataTables.css')
-        ,array('scripts', 'jquery.dataTables', '/widget/js/jquery.dataTables.js', array('jquery.dataTables.css', 'jquery'))
-        ,array('styles', 'jquery.pikaday.css', '/widget/css/jquery.pikaday.css')
-        ,array('scripts', 'jquery.pikaday', '/widget/js/jquery.pikaday.js', array('jquery.pikaday.css', 'jquery'))
-        ,array('scripts', 'jquery.remote-list', '/widget/js/jquery.remote-list.js', array('jquery'))
+         array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.js', array("jquery"))
+        ,array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.css', array("responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/))
+        ,array('styles', 'trumbowyg.css', $base.'css/trumbowyg.min.css')
+        ,array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'))
+        ,array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.css')
+        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.js', array('jquery.dataTables.css', 'jquery'))
+        ,array('styles', 'jquery.pikaday.css', $base.'css/jquery.pikaday.css')
+        ,array('scripts', 'jquery.pikaday', $base.'js/jquery.pikaday.js', array('jquery.pikaday.css', 'jquery'))
+        ,array('scripts', 'jquery.remote-list', $base.'js/jquery.remote-list.js', array('jquery'))
         );
     }
     
