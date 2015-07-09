@@ -130,14 +130,12 @@
     font-weight: bold;
     margin: 0px 2px;
 }
-.widget-wrapper.widget-icon > .widget.widget-suggest ~ .fa-wrapper,
-.widget-wrapper.widget-icon-right > .widget.widget-suggest ~ .fa-wrapper
+.widget-wrapper.widget-icon-right > .widget.widget-suggest ~ .fa-wrapper.right-fa
 {
     display: none;
     z-index: -1;
 }
-.widget-wrapper.widget-icon.ajax > .widget.widget-suggest ~ .fa-wrapper,
-.widget-wrapper.widget-icon-right.ajax > .widget.widget-suggest ~ .fa-wrapper
+.widget-wrapper.widget-icon-right.ajax > .widget.widget-suggest ~ .fa-wrapper.right-fa
 {
     display: inline-block; 
     z-index: 2;
@@ -201,15 +199,15 @@
     line-height: 1.33;
     padding: 10px 16px;
 }
-.widget-label.widget-icon > .fa-wrapper,
-.widget-button.widget-icon > .fa-wrapper
+.widget-label.widget-icon > .fa-wrapper.left-fa,
+.widget-button.widget-icon > .fa-wrapper.left-fa
 {
     position: relative;
     display: inline-block;
     margin-right: 8px;
 }
-.widget-label.widget-icon-right > .fa-wrapper,
-.widget-button.widget-icon-right > .fa-wrapper
+.widget-label.widget-icon-right > .fa-wrapper.right-fa,
+.widget-button.widget-icon-right > .fa-wrapper.right-fa
 {
     position: relative;
     display: inline-block;
@@ -329,7 +327,7 @@
     pointer-events: none;
     cursor: pointer;
 }
-.widget-wrapper.widget-icon > .widget ~ .fa-wrapper
+.widget-wrapper.widget-icon > .widget ~ .fa-wrapper.left-fa
 {
     left: 1em;
     -webkit-transform: translate(-50%,-50%);
@@ -338,7 +336,7 @@
     -o-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
 }
-.widget-wrapper.widget-icon-right > .widget ~ .fa-wrapper
+.widget-wrapper.widget-icon-right > .widget ~ .fa-wrapper.right-fa
 {
     right: 1em;
     -webkit-transform: translate(50%,-50%);
@@ -745,8 +743,12 @@ input.widget-radio.widget-led-button:checked + label:before
 .widget-switch label > .fa.positive::before,
 .widget-switch label > .fa.negative::before
 {
-    opacity: 0.8;
     font-size: 0.8em;
+}
+.widget-switch label > .fa.not-positive::before,
+.widget-switch label > .fa.negative::before
+{
+    opacity: 0.6;
 }
 .widget-switch label > .fa.positive::after,
 .widget-switch label > .fa.negative::after
@@ -1490,6 +1492,12 @@ table.widget-table
     margin: 10px 0;
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.widget-wrapper > .widget:read-only ~ .fa-wrapper,
+[class|="widget"]:read-only,
+.widget:read-only
+{
+    cursor: not-allowed !important;
 }
 .widget-wrapper > .widget:disabled ~ .fa-wrapper,
 [class|="widget"]:disabled,

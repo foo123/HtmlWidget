@@ -202,7 +202,7 @@ OUT;
         $wicon = '';
         if ( isset($attr['icon']) )
         {
-            $wicon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
+            $wicon = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>";
         }
         $wdata = self::attr_data($attr);
         return <<<OUT
@@ -223,12 +223,12 @@ OUT;
         if ( isset($attr['icon']) )
         {
             $wclass .= ' widget-icon';
-            $wtext = "<i class=\"fa fa-{$attr['icon']}\"></i>" . $wtext;
+            $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
         }
-        elseif ( isset($attr['iconr']) )
+        if ( isset($attr['iconr']) )
         {
             $wclass .= ' widget-icon-right';
-            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']}\"></i>";
+            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
         }
         $wdata = self::attr_data($attr);
         return <<<OUT
@@ -249,13 +249,13 @@ OUT;
         {
             if ( empty($wtext) )  $wclass .= ' widget-icon-only';
             else $wclass .= ' widget-icon';
-            $wtext = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>" . $wtext;
+            $wtext = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>" . $wtext;
         }
-        elseif ( isset($attr['iconr']) )
+        if ( isset($attr['iconr']) )
         {
             if ( empty($wtext) )  $wclass .= ' widget-icon-only';
             else $wclass .= ' widget-icon-right';
-            $wtext = $wtext . "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wtext = $wtext . "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
         }
         $wdata = self::attr_data($attr);
         if ( isset($attr['href']) )
@@ -308,21 +308,20 @@ OUT;
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
         $wreverse = isset($attr["reverse"])&&$attr["reverse"];
         $wiconon = '&nbsp;'; $wiconoff = '&nbsp;';
-        if ( isset($attr["iconon"]) )
+        if ( isset($attr["iconon"]) && !isset($attr["iconoff"]) )
         {
-            $wiconon = "<i class=\"fa fa-{$attr["iconon"]}\"></i>";
+            $wiconon = "<i class=\"fa fa-{$attr["iconon"]} not-negative\"></i>";
+            $wiconoff = "<i class=\"fa fa-{$attr["iconon"]} negative\"></i>";
         }
-        elseif ( isset($attr["iconoff"]) )
+        elseif ( isset($attr["iconoff"]) && !isset($attr["iconon"]) )
         {
             $wiconon = "<i class=\"fa fa-{$attr["iconoff"]} positive\"></i>";
+            $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]} not-positive\"></i>";
         }
-        if ( isset($attr["iconoff"]) )
+        elseif ( isset($attr["iconon"]) && isset($attr["iconoff"]) )
         {
+            $wiconon = "<i class=\"fa fa-{$attr["iconon"]}\"></i>";
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]}\"></i>";
-        }
-        elseif ( isset($attr["iconon"]) )
-        {
-            $wiconoff = "<i class=\"fa fa-{$attr["iconon"]} negative\"></i>";
         }
         if ( $wreverse ) 
         {
@@ -359,12 +358,12 @@ OUT;
         $wrapper_class = 'widget-wrapper';
         if ( isset($attr['icon']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
-        elseif ( isset($attr['iconr']) )
+        if ( isset($attr['iconr']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
         $wdata = self::attr_data($attr);
@@ -396,19 +395,11 @@ OUT;
         $wrapper_class = 'widget-wrapper';
         if ( isset($attr['icon']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i id=\"$wid-spinner\" class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wicon = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
-        elseif ( isset($attr['iconr']) )
-        {
-            $wicon = "<span class=\"fa-wrapper\"><i id=\"$wid-spinner\" class=\"fa fa-{$attr['iconr']}\"></i></span>";
-            $wrapper_class .= ' widget-icon-right';
-        }
-        else
-        {
-            $wicon = "<span class=\"fa-wrapper\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-            $wrapper_class .= ' widget-icon-right';
-        }
+        $wicon .= "<span class=\"fa-wrapper right-fa\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+        $wrapper_class .= ' widget-icon-right';
         $wdata = self::attr_data($attr);
         $script = <<<SCRIPT
 jQuery(function(\$){
@@ -492,17 +483,17 @@ OUT;
         $wrapper_class = 'widget-wrapper';
         if ( isset($attr['icon']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
-        elseif ( isset($attr['iconr']) )
+        if ( isset($attr['iconr']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
-        else
+        if ( !isset($attr['icon']) && !isset($attr['iconr']) )
         {
-            $wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-calendar\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-calendar\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
         $wdata = self::attr_data($attr);

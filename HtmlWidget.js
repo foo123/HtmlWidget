@@ -225,7 +225,7 @@ var HtmlWidget = self = {
         wicon = '';
         if ( attr[HAS]('icon') )
         {
-            wicon = "<i class=\"fa fa-" + attr['icon'] + "\"></i>";
+            wicon = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>";
         }
         wdata = self.attr_data(attr);
         return '\
@@ -247,12 +247,12 @@ var HtmlWidget = self = {
         if ( attr[HAS]('icon') )
         {
             wclass += ' widget-icon';
-            wtext = "<i class=\"fa fa-" + attr['icon'] + "\"></i>" + wtext;
+            wtext = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>" + wtext;
         }
-        else if ( attr[HAS]('iconr') )
+        if ( attr[HAS]('iconr') )
         {
             wclass += ' widget-icon-right';
-            wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + "\"></i>";
+            wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
         wdata = self.attr_data(attr);
         return '\
@@ -274,13 +274,13 @@ var HtmlWidget = self = {
         {
             if ( !wtext.length ) wclass += ' widget-icon-only';
             else wclass += ' widget-icon';
-            wtext = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>" + wtext;
+            wtext = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>" + wtext;
         }
-        else if ( attr[HAS]('iconr') )
+        if ( attr[HAS]('iconr') )
         {
             if ( !wtext.length ) wclass += ' widget-icon-only';
             else wclass += ' widget-icon-right';
-            wtext = wtext + "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wtext = wtext + "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
         }
         wdata = self.attr_data(attr);
         if ( attr[HAS]('href') )
@@ -335,21 +335,20 @@ var HtmlWidget = self = {
         wextra = attr[HAS]("extra") ? attr["extra"] : '';
         wreverse = attr[HAS]("reverse")&&attr["reverse"];
         wiconon='&nbsp;'; wiconoff='&nbsp;';
-        if ( attr[HAS]("iconon") )
+        if ( attr[HAS]("iconon") && !attr[HAS]("iconoff") )
         {
-            wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
+            wiconon = '<i class="fa fa-'+attr.iconon+' not-negative"></i>';
+            wiconoff = '<i class="fa fa-'+attr.iconon+' negative"></i>';
         }
-        else if ( attr[HAS]("iconoff") )
+        else if ( attr[HAS]("iconoff") && !attr[HAS]("iconon") )
         {
             wiconon = '<i class="fa fa-'+attr.iconoff+' positive"></i>';
+            wiconoff = '<i class="fa fa-'+attr.iconoff+' not-positive"></i>';
         }
-        if ( attr[HAS]("iconoff") )
+        else if ( attr[HAS]("iconon") && attr[HAS]("iconoff") )
         {
+            wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
             wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';
-        }
-        else if ( attr[HAS]("iconon") )
-        {
-            wiconoff = '<i class="fa fa-'+attr.iconon+' negative"></i>';
         }
         if ( wreverse ) 
         {
@@ -387,12 +386,12 @@ var HtmlWidget = self = {
         wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
-        else if ( attr[HAS]('iconr') )
+        if ( attr[HAS]('iconr') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
         wdata = self.attr_data(attr);
@@ -426,19 +425,11 @@ var HtmlWidget = self = {
         wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
-        else if ( attr[HAS]('iconr') )
-        {
-            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
-            wrapper_class += ' widget-icon-right';
-        }
-        else
-        {
-            wicon = "<span class=\"fa-wrapper\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-            wrapper_class += ' widget-icon-right';
-        }
+        wicon += "<span class=\"fa-wrapper right-fa\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+        wrapper_class += ' widget-icon-right';
         wdata = self.attr_data(attr);
         var _script = '', script = '\
 jQuery(function($){\
@@ -530,17 +521,17 @@ $("#'+wid+'").closest(".trumbowyg-box").addClass("widget widget-editor-box").att
         wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
         }
-        else if ( attr[HAS]('iconr') )
+        if ( attr[HAS]('iconr') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
-        else
+        if ( !attr[HAS]('icon') && !attr[HAS]('iconr') )
         {
-            wicon = "<span class=\"fa-wrapper\"><i class=\"fa fa-calendar\"></i></span>";
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-calendar\"></i></span>";
             wrapper_class += ' widget-icon-right';
         }
         wdata = self.attr_data(attr);
