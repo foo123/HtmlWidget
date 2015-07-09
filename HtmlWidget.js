@@ -343,6 +343,10 @@ var HtmlWidget = self = {
         {
             wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';
         }
+        else if ( attr[HAS]("iconon") )
+        {
+            wiconoff = '<i class="fa fa-'+attr.iconon+' negative"></i>';
+        }
         if ( wreverse ) 
         {
             wclass += ' reverse';

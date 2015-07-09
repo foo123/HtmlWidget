@@ -714,6 +714,31 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
 }
+.widget-switch label > .fa.negative::before
+{
+    opacity: 0.8;
+    font-size: 0.8em;
+}
+.widget-switch label > .fa.negative::after
+{
+    position:absolute; display: block; z-index: 2;
+    padding: 0; margin: 0; border: none;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: FontAwesome, sans-serif;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: inherit;
+    top: -50%; left: 50%;
+    -webkit-transform:translate(75%,25%);
+    -moz-transform:translate(75%,25%);
+    -ms-transform:translate(75%,25%);
+    -o-transform:translate(75%,25%);
+    transform:translate(75%,25%);
+    /*content: "\292B";*/ /* Unicode Character 'RISING DIAGONAL CROSSING FALLING DIAGONAL' (U+292B) */
+    content: "\f057"; /* times-circle */
+}
 .widget-switch .widget-switch-handle {
     display: block;
     position: absolute;

@@ -317,6 +317,10 @@ OUT;
         {
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]}\"></i>";
         }
+        elseif ( isset($attr["iconon"]) )
+        {
+            $wiconoff = "<i class=\"fa fa-{$attr["iconon"]} negative\"></i>";
+        }
         if ( $wreverse ) 
         {
             $wclass .= ' reverse';
