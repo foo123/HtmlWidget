@@ -227,6 +227,11 @@
 {
     font-size: 1.6em;
 }
+.widget-label.widget-xlarge.widget-icon-only > .fa-wrapper,
+.widget-button.widget-xlarge.widget-icon-only > .fa-wrapper
+{
+    font-size: 2em;
+}
 .widget-button:hover,
 .widget-button:focus
 {
@@ -351,6 +356,11 @@
 .widget-wrapper.widget-icon-right > .widget.widget-large ~ .fa-wrapper
 {
     font-size: 1.5em;
+}
+.widget-wrapper.widget-icon > .widget.widget-xlarge ~ .fa-wrapper,
+.widget-wrapper.widget-icon-right > .widget.widget-xlarge ~ .fa-wrapper
+{
+    font-size: 2em;
 }
 .widget-wrapper.widget-icon > .widget.widget-text ~ .fa-wrapper,
 .widget-wrapper.widget-icon-right > .widget.widget-text ~ .fa-wrapper
@@ -640,6 +650,17 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-border-radius: 6px;
     border-radius: 6px;
 }
+.widget-switch.widget-xlarge {
+    line-height: 50px;
+    height: 50px;
+    width: 120px;
+    font-size: 1.2em;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    -ms-border-radius: 6px;
+    -o-border-radius: 6px;
+    border-radius: 6px;
+}
 .widget-switch  label {
     position: relative;
     display: block;
@@ -702,11 +723,18 @@ input.widget-radio.widget-led-button:checked + label:before
 .widget-switch label.widget-switch-on > .fa, 
 .widget-switch label.widget-switch-off > .fa 
 {
-    position: absolute;
-    display: inline-block;
+    position: absolute; display: block;
+    margin: 0; padding: 0; border: none;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
     z-index: 1;
     color: white;
     font-size: 1.5em;
+}
+.widget-switch label.widget-switch-on > .fa::before, 
+.widget-switch label.widget-switch-off > .fa::before 
+{
+    position: absolute; display: block;
     top: 50%; left: 50%;
     -webkit-transform: translate(-50%,-50%);
     -moz-transform: translate(-50%,-50%);
@@ -729,15 +757,14 @@ input.widget-radio.widget-led-button:checked + label:before
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: FontAwesome, sans-serif;
-    font-weight: normal;
-    font-size: 0.8em;
+    font-weight: normal; font-size: 0.8em;
     color: inherit;
-    top: -50%; left: 50%;
-    -webkit-transform:translate(75%,25%);
-    -moz-transform:translate(75%,25%);
-    -ms-transform:translate(75%,25%);
-    -o-transform:translate(75%,25%);
-    transform:translate(75%,25%);
+    top: 0; right: 0;
+    -webkit-transform:translate(25%,-25%);
+    -moz-transform:translate(25%,-25%);
+    -ms-transform:translate(25%,-25%);
+    -o-transform:translate(25%,-25%);
+    transform:translate(25%,-25%);
 }
 .widget-switch label > .fa.positive::after
 {
@@ -973,11 +1000,22 @@ input.widget-radio.widget-led-button:checked + label:before
     padding: 12px 8px;
     font-size: 1.2em;
 }
+.widget-text.widget-xlarge
+{
+    padding: 20px 8px;
+    font-size: 1.8em;
+}
 .widget-dropdown.widget-large,
 .widget-select.widget-large,
 .widget-label.widget-large
 {
     font-size: 1.2em;
+}
+.widget-dropdown.widget-xlarge,
+.widget-select.widget-xlarge,
+.widget-label.widget-xlarge
+{
+    font-size: 1.8em;
 }
 
 @media all and (-webkit-min-device-pixel-ratio:0) 
