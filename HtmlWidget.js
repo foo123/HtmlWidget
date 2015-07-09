@@ -339,6 +339,10 @@ var HtmlWidget = self = {
         {
             wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
         }
+        else if ( attr[HAS]("iconoff") )
+        {
+            wiconon = '<i class="fa fa-'+attr.iconoff+' positive"></i>';
+        }
         if ( attr[HAS]("iconoff") )
         {
             wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';

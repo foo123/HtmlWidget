@@ -307,12 +307,15 @@ OUT;
         $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
         $wreverse = isset($attr["reverse"])&&$attr["reverse"];
-        $wiconon = '&nbsp;';
+        $wiconon = '&nbsp;'; $wiconoff = '&nbsp;';
         if ( isset($attr["iconon"]) )
         {
             $wiconon = "<i class=\"fa fa-{$attr["iconon"]}\"></i>";
         }
-        $wiconoff = '&nbsp;';
+        elseif ( isset($attr["iconoff"]) )
+        {
+            $wiconon = "<i class=\"fa fa-{$attr["iconoff"]} positive\"></i>";
+        }
         if ( isset($attr["iconoff"]) )
         {
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]}\"></i>";
