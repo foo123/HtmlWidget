@@ -1,8 +1,9 @@
 <?php
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone for PHP, Node/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
+*  @dependencies: FontAwesome, jQuery
 *  @version: 0.1
 *  https://github.com/foo123/HtmlWidget
 *
@@ -92,9 +93,11 @@ class HtmlWidget
             {
                 case 'empty':       $out = self::widget_empty($attr, $data); break;
                 case 'separator':   $out = self::widget_separator($attr, $data); break;
-                case 'delayable':   $out = self::widget_delayable($attr, $data); break;
                 case 'icon':        $out = self::widget_icon($attr, $data); break;
+                case 'delayable':   $out = self::widget_delayable($attr, $data); break;
+                case 'disabable':   $out = self::widget_disabable($attr, $data); break;
                 case 'dialog':      $out = self::widget_dialog($attr, $data); break;
+                case 'tooltip':     $out = self::widget_tooltip($attr, $data); break;
                 case 'link':        $out = self::widget_link($attr, $data); break;
                 case 'button':      $out = self::widget_button($attr, $data); break;
                 case 'label':       $out = self::widget_label($attr, $data); break;
@@ -131,7 +134,10 @@ class HtmlWidget
     public static function widget_separator($attr, $data)
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        return '<div class="widget-separator"></div>';
+        $wclass = 'widget-separator'; 
+        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        return "<div class=\"$wclass\" $wstyle></div>";
     }
     
     public static function widget_icon($attr, $data)
@@ -149,6 +155,23 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-delayable-overlay'; 
+        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wspinner = 'widget-spinner';
+        $wspinner .= isset($attr['spinner']) ? " {$attr['spinner']}" : " widget-spinner-dots";
+        return <<<OUT
+<div id="$wid" class="$wclass" $wstyle $wextra>
+<div class="$wspinner"></div>
+</div>
+OUT;
+    }
+    
+    public static function widget_disabable($attr, $data)
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wclass = 'widget-disabable-overlay'; 
         if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
@@ -186,6 +209,47 @@ OUT;
 <div class="widget-dialog-title">$wicon$wtitle</div>
 <div class="widget-dialog-content">$wcontent</div>
 <div class="widget-dialog-buttons">$wbuttons</div>
+</div>
+OUT;
+    }
+    
+    public static function widget_tooltip($attr, $data)
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wtext = isset($data['text']) ? $data['text'] : '';
+        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
+        $wclass = 'widget-tooltip'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( isset($attr['icon']) )
+        {
+            $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
+        }
+        elseif ( isset($attr['iconr']) )
+        {
+            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
+        }
+        if ( isset($attr['tooltip']) )
+        {
+            if ( 'top' === $attr['tooltip'] )
+                $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-bottom"></div>';
+            elseif ( 'bottom' === $attr['tooltip'] )
+                $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-top"></div>';
+            elseif ( 'right' === $attr['tooltip'] )
+                $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-left"></div>';
+            else
+                $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+        }
+        else
+        {
+            $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+        }
+        $wdata = self::attr_data($attr);
+        return <<<OUT
+<div id="$wid" class="$wclass" $wstyle $wextra title="$wtitle" $wdata>
+$wtext
+$warrow
 </div>
 OUT;
     }
@@ -288,9 +352,12 @@ OUT;
         elseif ( "radio" === $wtype ) $wclass .= ' widget-radio';
         $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wstate = '';
+        if ( isset($attr['state-on']) ) $wstate .= " data-state-on=\"{$attr['state-on']}\"";
+        if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
         return <<<OUT
-<input type="$wtype" id="$wid" name="$wname" class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle">&nbsp;</label>
+<input type="$wtype" id="$wid" name="$wname" class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle" $wstate>&nbsp;</label>
 OUT;
     }
     
@@ -421,7 +488,7 @@ var \$el = \$('#$wid'), suggest = \$el.parent();
         });
     },
     select: function( ) {
-        console.log(\$el.remoteList('selectedOption'), \$el.remoteList('selectedData'))
+        //console.log(\$el.remoteList('selectedOption'), \$el.remoteList('selectedData'))
     }
 });
 });
@@ -448,7 +515,7 @@ OUT;
         {
             $wclass = 'widget widget-editor'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = isset($attr["style"]) ? $attr["style"] : '';
-            $weditor = isset($attr['editor_cfg']) ? json_encode($attr['editor_cfg']) : '';
+            $weditor = isset($attr['config']) ? json_encode($attr['config']) : '';
             $script = <<<SCRIPT
 jQuery(function(\$){
 \$('#$wid').trumbowyg($weditor);

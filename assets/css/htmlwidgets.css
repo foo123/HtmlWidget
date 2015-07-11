@@ -1,3 +1,12 @@
+/**
+*  HtmlWidget
+*  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
+*
+*  @dependencies: FontAwesome, jQuery
+*  @version: 0.1
+*  https://github.com/foo123/HtmlWidget
+*
+**/
 .widget
 {
     position: relative;
@@ -375,10 +384,8 @@ input[type=checkbox].widget-checkbox
 input.widget-radio + label,
 input.widget-checkbox + label
 {
-    position: relative;
-    display: inline-block;
-    margin: 0;
-    padding: 0;
+    position: relative; display: inline-block;
+    margin: 0; padding: 0;
     overflow: visible;
     vertical-align: middle;
     -webkit-box-sizing:border-box;
@@ -393,10 +400,8 @@ input.widget-checkbox + label
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    margin-right: 8px;
-    margin-left: 8px;
-    width: 16px;
-    height: 16px;
+    margin-right: 8px; margin-left: 8px;
+    width: 16px; height: 16px;
     line-height: 16px;
     font-size: 16px;
     font-family: sans-serif;
@@ -420,33 +425,32 @@ input.widget-checkbox + label:before
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    position: relative;
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-    vertical-align: middle;
-    text-align: center;
-    cursor: inherit;
-    width: 100%;
-    font-size: 75%;
-    line-height: 150%;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    position: absolute; display: inline-block;
+    padding: 0; margin: 0; 
+    border: none; background: none;
+    z-index: 2; overflow: hidden;
     font-family: inherit;
+    font-size: 75%;
     color: inherit;
-    border: 0;
-    background: none;
-    content: " ";
+    cursor: inherit;
     font-weight: bold;
-    z-index: 2;
+    content: " ";
+    top: 50%; left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
 }
+input.widget-radio + label:before,
 input.widget-radio + label
 {
     border-radius: 50%;
-}
-input.widget-radio + label:before
-{
-    border-radius: 50%;
-    margin-top:-1px;
 }
 input.widget-checkbox:disabled + label,
 input.widget-radio:disabled + label
@@ -482,13 +486,6 @@ input.widget-checkbox.heavy-cross + label:before,
 input.widget-radio.heavy-cross + label:before
 {
     content: "\271A";
-}
-/* fat x */
-input.widget-checkbox.fat-x-mark + label:before,
-input.widget-radio.fat-x-mark + label:before
-{
-    content: "\271A";
-    transform: rotate(45deg);
 }
 /* CROSS X MARK */
 input.widget-checkbox.cross-x-mark + label:before,
@@ -551,7 +548,18 @@ input.widget-radio.empty-on-unchecked:not(:checked) + label:before
 {
     content: " ";
 }
-
+/* user-defined ON state */
+input.widget-checkbox:checked + label[data-state-on]:before,
+input.widget-radio:checked + label[data-state-on]:before
+{
+    content: attr(data-state-on) !important;
+}
+/* user-defined OFF state */
+input.widget-checkbox:not(:checked) + label[data-state-off]:before,
+input.widget-radio:not(:checked) + label[data-state-off]:before
+{
+    content: attr(data-state-off) !important;
+}
 input.widget-radio.widget-inset:not(.widget-push-button) + label,
 input.widget-checkbox.widget-inset:not(.widget-push-button) + label
 {
@@ -864,6 +872,131 @@ input.widget-radio.widget-led-button:checked + label:before
 .widget-switch input.widget-switch-button:disabled  ~ .widget-switch-handle
 {
     background-color: #efefef;
+}
+
+.widget-tooltip
+{
+    position: absolute;
+    display: block;
+    font-size: 1em;
+    visibility: visible;
+    z-index: 1000;
+    max-width: 400px;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, .9);
+    border-color: rgba(0, 0, 0, .9);
+    border-style: solid;
+    border-width: 1px;
+    color: #fff;
+    padding: 6px 10px;
+    text-align: center;
+    text-decoration: none;
+    -webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, .9);
+    box-shadow: inset 0 1px 0 #000;
+    -moz-border-radius-topleft: 4px;
+    -webkit-border-top-left-radius: 4px;
+    -khtml-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    -webkit-border-top-right-radius: 4px;
+    -khtml-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    -khtml-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    -khtml-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.widget-tooltip > .fa.left-fa
+{
+    margin-right: 10px;
+}
+.widget-tooltip > .fa.right-fa
+{
+    margin-left: 10px;
+}
+.widget-tooltip-arrow
+{
+    overflow:hidden;
+    position:absolute;
+    margin-left:0;
+    height:20px;
+    width:20px;
+    border-width:0;
+    border-color:inherit;
+    border-style:inherit;
+}
+.widget-tooltip-arrow:after
+{
+    content:" ";
+    position:absolute;
+    height:0;
+    left:0;
+    top:0;
+    width:0;
+    margin:0;
+    border-color:inherit;
+    border-style:inherit;
+    border-width:6px;
+    box-shadow:6px 5px 9px -9px rgba(0, 0, 0, .9)
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-bottom
+{
+    top:100%;
+    left:38%
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-bottom:after
+{
+    border-width:8px;
+    border-right-color:transparent;
+    border-bottom-color:transparent;
+    border-left-color:transparent;
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-top
+{
+    top:-13px;
+    left:42%
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-top:after
+{
+    border-top-color:transparent;
+    border-right-color:transparent;
+    border-left-color:transparent;
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-left
+{
+    top:25%;
+    left:-13px;
+    bottom:-16px
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-left:after
+{
+    width:0;
+    border-top-color:transparent;
+    border-bottom-color:transparent;
+    border-left-color:transparent;
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-right
+{
+    top:26%;
+    left:100%;
+    bottom:-16px;
+}
+.widget-tooltip-arrow.widget-tooltip-arrow-right:after
+{
+    width:0;
+    border-top-color:transparent;
+    border-right-color:transparent;
+    border-bottom-color:transparent;
 }
 
 .widget-time-component,
@@ -1323,28 +1456,38 @@ input.widget-radio.widget-led-button:checked + label:before
     box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.5), -2.6em 0em 0 0em rgba(128,128,128, 0.7), -1.8em -1.8em 0 0em #808080;
   }
 }
+.widget-disabable-overlay,
 .widget-delayable-overlay
 {
-    position: absolute;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
-    display: block;
-    visibility: visible;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+    position: absolute; display: block;
+    padding: 0; margin: 0;
+    top: 0; left: 0;
+    visibility: visible; overflow: hidden;
+    width: 100%; height: 100%;
     background: none;
     background-color: rgba(255,255,255,.4);
     background-repeat: no-repeat;
     background-position: center center;
-    z-index: -10;
-    opacity: 0;
+    z-index: -10; opacity: 0;
     transition-property: z-index, opacity;
     transition-duration: .02s, .6s;
     transition-delay: 0s, .04s;
     cursor: inherit;
+}
+.widget-disabled  > .widget-disabable-overlay,
+.widget-delayed  > .widget-delayable-overlay
+{
+    z-index: 500;
+    opacity: 1;
+    transition-delay: .65s, 0s;
+}
+.widget-delayed  > .widget-delayable-overlay
+{
+    cursor: progress;
+}
+.widget-disabled  > .widget-disabable-overlay
+{
+    cursor: not-allowed;
 }
 .widget-delayable-overlay > .widget-spinner
 {
@@ -1363,12 +1506,6 @@ input.widget-radio.widget-led-button:checked + label:before
 {
     position: fixed;
 }
-.widget-delayed  > .widget-delayable-overlay
-{
-    z-index: 500;
-    opacity: 1;
-    cursor: progress;
-}
 .widget-delayed  > .widget-delayable-overlay > .widget-spinner
 {
     visibility: visible;
@@ -1379,9 +1516,16 @@ input.widget-radio.widget-led-button:checked + label:before
     -webkit-animation-name: widget-spin-dots;
     animation-name: widget-spin-dots;
 }
+/*.widget-enabled  > .widget-disabable-overlay,
 .widget-undelayed  > .widget-delayable-overlay
 {
     transition-delay: .65s, 0s;
+}*/
+.widget-delayed > .widget-disabable-overlay
+{
+    background-color: rgba(255,255,255,0);
+    z-index: 100;
+    cursor: progress;
 }
 
 
@@ -1469,12 +1613,18 @@ table.widget-table.dataTable thead .sorting_asc::after
     position: absolute; display: block; z-index: 1;
     font-family: FontAwesome, sans-serif;
     font-size: inherit;
+    opacity: 1;
     top: 50%; right: 5px;
     -webkit-transform: translateY(-50%);
     -moz-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
+}
+table.widget-table.dataTable thead .sorting_desc_disabled::after, 
+table.widget-table.dataTable thead .sorting_asc_disabled::after 
+{
+    opacity: 0.6;
 }
 table.widget-table.dataTable thead .sorting::after
 {

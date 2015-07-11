@@ -1,7 +1,8 @@
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone for PHP, Node/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
+*  @dependencies: FontAwesome, jQuery
 *  @version: 0.1
 *  https://github.com/foo123/HtmlWidget
 *
@@ -116,7 +117,9 @@ var HtmlWidget = self = {
                 case 'separator':   out = self.widget_separator(attr, data); break;
                 case 'icon':        out = self.widget_icon(attr, data); break;
                 case 'delayable':   out = self.widget_delayable(attr, data); break;
+                case 'disabable':   out = self.widget_disabable(attr, data); break;
                 case 'dialog':      out = self.widget_dialog(attr, data); break;
+                case 'tooltip':     out = self.widget_tooltip(attr, data); break;
                 case 'link':        out = self.widget_link(attr, data); break;
                 case 'button':      out = self.widget_button(attr, data); break;
                 case 'label':       out = self.widget_label(attr, data); break;
@@ -150,8 +153,12 @@ var HtmlWidget = self = {
     }
     
     ,widget_separator: function(attr, data) {
+        var wclass, wstyle;
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<div class="widget-separator"></div>';
+        wclass = 'widget-separator'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        return '<div class="'+wclass+'" '+wstyle+'></div>';
     }
     
     ,widget_icon: function(attr, data) {
@@ -169,6 +176,23 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid();
         wclass = 'widget-delayable-overlay'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wspinner = 'widget-spinner';
+        wspinner += attr[HAS]('spinner') ? " "+attr['spinner'] : " widget-spinner-dots";
+        return '\
+<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>\
+<div class="'+wspinner+'"></div>\
+</div>\
+';
+    }
+    
+    ,widget_disabable: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wspinner;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid();
+        wclass = 'widget-disabable-overlay'; 
         if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
         wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = attr[HAS]("extra") ? attr["extra"] : '';
@@ -207,6 +231,48 @@ var HtmlWidget = self = {
 <div class="widget-dialog-title">'+wicon+wtitle+'</div>\
 <div class="widget-dialog-content">'+wcontent+'</div>\
 <div class="widget-dialog-buttons">'+wbuttons+'</div>\
+</div>\
+';
+    }
+    
+    ,widget_tooltip: function(attr, data) {
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wtext = data[HAS]('text') ? data['text'] : '';
+        wtitle = attr[HAS]('title') ? attr['title'] : wtext;
+        wclass = 'widget-tooltip'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        if ( attr[HAS]('icon') )
+        {
+            wtext = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>" + wtext;
+        }
+        else if ( attr[HAS]('iconr') )
+        {
+            wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
+        }
+        if ( attr[HAS]('tooltip') )
+        {
+            if ( 'top' === attr.toolip )
+                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-bottom"></div>';
+            else if ( 'bottom' === attr.toolip )
+                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-top"></div>';
+            else if ( 'right' === attr.toolip )
+                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-left"></div>';
+            else
+                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+        }
+        else
+        {
+            warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+        }
+        wdata = self.attr_data(attr);
+        return '\
+<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>\
+'+wtext+'\
+'+warrow+'\
 </div>\
 ';
     }
@@ -300,7 +366,7 @@ var HtmlWidget = self = {
     }
     
     ,widget_control: function(attr, data) {
-        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype;
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
         wname = attr['name'];
@@ -314,9 +380,12 @@ var HtmlWidget = self = {
         else if ( "radio" === wtype ) wclass += ' widget-radio';
         wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        wstate = '';
+        if ( attr[HAS]('state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
+        if ( attr[HAS]('state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         wdata = self.attr_data(attr);
         return '\
-<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'">&nbsp;</label>\
+<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" '+wstate+'>&nbsp;</label>\
 ';
     }
     
@@ -451,7 +520,7 @@ $el.remoteList({\
         });\
     },\
     select: function( ) {\
-        console.log($el.remoteList("selectedOption"), $el.remoteList("selectedData"))\
+        //console.log($el.remoteList("selectedOption"), $el.remoteList("selectedData"))\
     }\
 });\
 });\
@@ -482,7 +551,7 @@ $el.remoteList({\
             wclass = 'widget widget-editor'; 
             if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
             wstyle = attr[HAS]("style") ? attr["style"] : ''; 
-            weditor = attr[HAS]('editor_cfg') ? toJSON(attr['editor_cfg']) : '';
+            weditor = attr[HAS]('config') ? toJSON(attr['config']) : '';
             script = '<script>\
 jQuery(function($){\
 $("#'+wid+'").trumbowyg('+weditor+');\
