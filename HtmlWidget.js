@@ -35,6 +35,59 @@ var isNode = 'undefined' !== typeof global && '[object global]' === Object.proto
     HAS = 'hasOwnProperty', KEYS = Object.keys, toJSON = JSON.stringify, 
     cnt = 0, self, widgets = {}, enqueuer = null;
     
+// http://davidwalsh.name/add-rules-stylesheets
+function addCSSRule( style, selector, rules, index ) 
+{
+    if ( "insertRule" in style.sheet ) 
+    {
+        style.sheet.insertRule( selector + "{" + rules + "}", index );
+        return style.sheet.cssRules[ index ];
+    }
+    else if ( "addRule" in style.sheet ) 
+    {
+        style.sheet.addRule( selector, rules, index );
+        return style.sheet.rules[ index ];
+    }
+}
+
+function addCSS( style, css ) 
+{
+    if ( "object" === typeof css )
+    {
+        var n, declaration, i = 0;
+        for (n in css)
+        {
+            if ( css[HAS](n) )
+            {
+                declaration = css[ n ];
+                declaration.css = addCSSRule( style, declaration.selector, [].concat(declaration.rules).join('; '), i++ );
+            }
+        }
+    }
+    return css;
+}
+
+function createStyleSheet( media, css ) 
+{
+    // Create the <style> tag
+    var style = document.createElement("style");
+    // Add a media (and/or media query) here if you'd like!
+    style.setAttribute("media", media || "all");
+    style.setAttribute("type", "text/css");
+    // WebKit hack :(
+    style.appendChild( document.createTextNode("") );
+    // Add the <style> element to the page
+    document.head.appendChild( style );
+    if ( css ) addCSS( style, css );
+    return style;
+}
+
+function disposeStyleSheet( style ) 
+{
+    if ( style ) 
+        document.head.removeChild( style );
+}
+
 var HtmlWidget = self = {
     
     VERSION: "0.1",
@@ -118,6 +171,7 @@ var HtmlWidget = self = {
                 case 'icon':        out = self.widget_icon(attr, data); break;
                 case 'delayable':   out = self.widget_delayable(attr, data); break;
                 case 'disabable':   out = self.widget_disabable(attr, data); break;
+                case 'morphable':   out = self.widget_morphable(attr, data); break;
                 case 'dialog':      out = self.widget_dialog(attr, data); break;
                 case 'tooltip':     out = self.widget_tooltip(attr, data); break;
                 case 'link':        out = self.widget_link(attr, data); break;
@@ -203,6 +257,66 @@ var HtmlWidget = self = {
 <div class="'+wspinner+'"></div>\
 </div>\
 ';
+    }
+    
+    ,widget_morphable: function(attr, data) {
+        var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector;
+        //self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr["id"];
+        wclass = 'widget-morphable'; 
+        wmodes = [].concat(attr['modes']);
+        wmode_class = attr[HAS]('mode') ? attr['mode'] : 'mode-${MODE}';
+        wshow_class = attr[HAS]('show') ? attr['show'] : 'show-if-${MODE}';
+        whide_class = attr[HAS]('hide') ? attr['hide'] : 'hide-if-${MODE}';
+        wselector = "#"+wid+".widget-morphable";
+        wshow_selector = [];
+        whide_selector = [];
+        var i, j, l = wmodes.length;
+        for(i=0; i<l; i++)
+        {
+            whide_selector.push(
+                wselector + '.' + wmode_class.split('${MODE}').join(wmodes[i]) + ' .' + whide_class.split('${MODE}').join(wmodes[i])
+            );
+            wshow_selector.push(
+                wselector + '.' + wmode_class.split('${MODE}').join(wmodes[i]) + ' .' + wshow_class.split('${MODE}').join(wmodes[i])
+            );
+            for (j=0; j<l; j++)
+            {
+                if ( j === i ) continue;
+                whide_selector.push(
+                    wselector + '.' + wmode_class.split('${MODE}').join(wmodes[i]) + ' .' + wshow_class.split('${MODE}').join(wmodes[j]) + ':not(.' + wshow_class.split('${MODE}').join(wmodes[i]) + ')'
+                );
+                wshow_selector.push(
+                    wselector + '.' + wmode_class.split('${MODE}').join(wmodes[i]) + ' .' + whide_class.split('${MODE}').join(wmodes[j]) + ':not(.' + whide_class.split('${MODE}').join(wmodes[i]) + ')'
+                );
+            }
+        }
+        if ( isNode )
+        {
+            wstyle = '';
+            wstyle += whide_selector.join(',') + '{display: none !important}';
+            wstyle += wshow_selector.join(',') + '{display: block}';
+            self.enqueue('styles', "widget-morphable-"+wid, [wstyle], []);
+        }
+        else
+        {
+            wstyle = {
+                hide_mode: {
+                    selector: whide_selector.join(','),
+                    rules: [
+                        'display: none !important'
+                    ]
+                },
+                show_mode: {
+                    selector: wshow_selector.join(','),
+                    rules: [
+                        'display: block'
+                    ]
+                }
+            };
+            createStyleSheet( 'all', wstyle ).setAttribute("id", "widget-morphable-"+wid);
+        }
+        return '';
     }
     
     ,widget_dialog: function(attr, data) {

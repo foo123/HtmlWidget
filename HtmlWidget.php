@@ -96,6 +96,7 @@ class HtmlWidget
                 case 'icon':        $out = self::widget_icon($attr, $data); break;
                 case 'delayable':   $out = self::widget_delayable($attr, $data); break;
                 case 'disabable':   $out = self::widget_disabable($attr, $data); break;
+                case 'morphable':   $out = self::widget_morphable($attr, $data); break;
                 case 'dialog':      $out = self::widget_dialog($attr, $data); break;
                 case 'tooltip':     $out = self::widget_tooltip($attr, $data); break;
                 case 'link':        $out = self::widget_link($attr, $data); break;
@@ -182,6 +183,38 @@ OUT;
 <div class="$wspinner"></div>
 </div>
 OUT;
+    }
+    
+    public static function widget_morphable($attr, $data)
+    {
+        //self::enqueue('styles', 'htmlwidgets.css');
+        $wid = $attr["id"]; 
+        $wclass = 'widget-morphable'; 
+        $wmodes = (array)$attr['modes'];
+        $wmode_class = isset($attr['mode']) ? $attr['mode'] : 'mode-${MODE}';
+        $wshow_class = isset($attr['show']) ? $attr['show'] : 'show-if-${MODE}';
+        $whide_class = isset($attr['hide']) ? $attr['hide'] : 'hide-if-${MODE}';
+        $wselector = "#{$wid}.widget-morphable";
+        $wshow_selector = array();
+        $whide_selector = array();
+        foreach($wmodes as $mode)
+        {
+            $mode_class = str_replace('${MODE}', $mode, $wmode_class);
+            $whide_selector[] = $wselector . '.' . $mode_class . ' .' . str_replace('${MODE}', $mode, $whide_class);
+            $wshow_selector[] = $wselector . '.' . $mode_class . ' .' . str_replace('${MODE}', $mode, $wshow_class);
+            
+            foreach($wmodes as $mode2)
+            {
+                if ( $mode === $mode2 ) continue;
+                $whide_selector[] = $wselector . '.' . $mode_class . ' .' . str_replace('${MODE}', $mode2, $wshow_class) . ':not(.' . str_replace('${MODE}', $mode, $wshow_class) . ')';
+                $wshow_selector[] = $wselector . '.' . $mode_class . ' .' . str_replace('${MODE}', $mode2, $whide_class) . ':not(.' . str_replace('${MODE}', $mode, $whide_class) . ')';
+            }
+        }
+        $wstyle = '';
+        $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
+        $wstyle .= implode(',',$wshow_selector) . '{display: block}';
+        self::enqueue('styles', "widget-morphable-$wid", array($wstyle), array());
+        return '';
     }
     
     public static function widget_dialog($attr, $data) 
