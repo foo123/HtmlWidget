@@ -76,7 +76,7 @@ $.htmlwidget.morphable = function morphable( options, el ){
     var self = this;
     if ( !(self instanceof morphable) ) return new morphable(options, el);
     var cur_mode = null;
-    self.mode = function( mode ) {
+    self.morph = function( mode ) {
         if ( mode !== cur_mode )
         {
             var $el = $(el);
