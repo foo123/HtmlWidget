@@ -105,15 +105,12 @@ var HtmlWidget = self = {
     assets: function(base) {
         base = (base||'') + '/assets/';
         return [
-         ['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.js', ["jquery"]]
-        ,['styles', 'htmlwidgets.css', base+'css/htmlwidgets.css', ["responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/]]
+         ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.css', ['responsive.css','font-awesome.css']]
+        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.js', ['jquery']]
         ,['styles', 'trumbowyg.css', base+'css/trumbowyg.min.css']
         ,['scripts', 'trumbowyg', base+'js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
         ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.css']
-        ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.js', ['jquery.dataTables.css', 'jquery']]
-        ,['styles', 'jquery.pikaday.css', base+'css/jquery.pikaday.css']
-        ,['scripts', 'jquery.pikaday', base+'js/jquery.pikaday.js', ['jquery.pikaday.css', 'jquery']]
-        ,['scripts', 'jquery.remote-list', base+'js/jquery.remote-list.js', ['jquery']]
+        ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.js', ['jquery.dataTables.css','jquery']]
         ];
     },
     
@@ -617,7 +614,7 @@ var HtmlWidget = self = {
         var _script = '', script = '\
 jQuery(function($){\
 var $el = $("#'+wid+'"), suggest = $el.parent();\
-$el.remoteList({\
+$el.suggest({\
     minLength: 2,\
     maxLength: -1,\
     source: function(value, response) {\
@@ -634,16 +631,16 @@ $el.remoteList({\
         });\
     },\
     select: function( ) {\
-        //console.log($el.remoteList("selectedOption"), $el.remoteList("selectedData"))\
+        //console.log($el.suggest("selectedOption"), $el.suggest("selectedData"))\
     }\
 });\
 });\
 ';
-        if ( isNode ) self.enqueue('scripts', "widget-suggest-"+wid, [script], ['jquery.remote-list']);
+        if ( isNode ) self.enqueue('scripts', "widget-suggest-"+wid, [script], ['htmlwidgets.js']);
         else _script = script;
         return '\
 <span class="'+wrapper_class+'" '+wstyle+'>\
-<input type="text" data-list-highlight="true" data-list-value-completion="true" id="'+wid+'" name="'+wname+'" title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
+<input type="text" id="'+wid+'" name="'+wname+'" title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
 '+wicon+'\
 </span>\
 ' + _script;
@@ -720,10 +717,15 @@ $("#'+wid+'").closest(".trumbowyg-box").addClass("widget widget-editor-box").att
         wdata = self.attr_data(attr);
         var _script = '', script = '\
 jQuery(function($){\
-$("#'+wid+'").pikaday({format:"'+wformat+'",encoder:Pikaday.date_encoder,decoder:Pikaday.date_decoder});\
+$("#'+wid+'").datetime({\
+    format: "'+wformat+'",\
+    datetimelocale: $.htmlwidget.datetime.default_locale,\
+    encoder: $.htmlwidget.datetime.date_encoder,\
+    decoder: $.htmlwidget.datetime.date_decoder\
+});\
 });\
 ';
-        if ( isNode ) self.enqueue('scripts', "widget-pikaday-"+wid, [script], ['jquery.pikaday']);
+        if ( isNode ) self.enqueue('scripts', "widget-datetime-"+wid, [script], ['htmlwidgets.js']);
         else _script = script;
         return '\
 <span class="'+wrapper_class+'" '+wstyle+'>\

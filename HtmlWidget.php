@@ -32,15 +32,12 @@ class HtmlWidget
     {
         $base = $base . '/assets/';
         return array(
-         array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.js', array("jquery"))
-        ,array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.css', array("responsive.css", "font-awesome.css"/*,"htmlwidgets.js"*/))
+         array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.css', array('responsive.css','font-awesome.css'))
+        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.js', array('jquery'))
         ,array('styles', 'trumbowyg.css', $base.'css/trumbowyg.min.css')
         ,array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'))
         ,array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.css')
-        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.js', array('jquery.dataTables.css', 'jquery'))
-        ,array('styles', 'jquery.pikaday.css', $base.'css/jquery.pikaday.css')
-        ,array('scripts', 'jquery.pikaday', $base.'js/jquery.pikaday.js', array('jquery.pikaday.css', 'jquery'))
-        ,array('scripts', 'jquery.remote-list', $base.'js/jquery.remote-list.js', array('jquery'))
+        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.js', array('jquery.dataTables.css','jquery'))
         );
     }
     
@@ -504,7 +501,7 @@ OUT;
         $script = <<<SCRIPT
 jQuery(function(\$){
 var \$el = \$('#$wid'), suggest = \$el.parent();
-\$el.remoteList({
+\$el.suggest({
     minLength: 2,
     maxLength: -1,
     source: function(value, response) {
@@ -521,15 +518,15 @@ var \$el = \$('#$wid'), suggest = \$el.parent();
         });
     },
     select: function( ) {
-        //console.log(\$el.remoteList('selectedOption'), \$el.remoteList('selectedData'))
+        //console.log(\$el.suggest('selectedOption'), \$el.suggest('selectedData'))
     }
 });
 });
 SCRIPT;
-        self::enqueue('scripts', "widget-suggest-$wid", array($script), array('jquery.remote-list'));
+        self::enqueue('scripts', "widget-suggest-$wid", array($script), array('htmlwidgets.js'));
         return <<<OUT
 <span class="$wrapper_class" $wstyle>
-<input type="text" data-list-highlight="true" data-list-value-completion="true" id="$wid" name="$wname" title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
+<input type="text" id="$wid" name="$wname" title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
 $wicon
 </span>
 OUT;
@@ -599,10 +596,15 @@ OUT;
         $wdata = self::attr_data($attr);
         $script = <<<SCRIPT
 jQuery(function(\$){
-\$('#$wid').pikaday({format:"$wformat",encoder:Pikaday.date_encoder,decoder:Pikaday.date_decoder});
+\$('#$wid').datetime({
+    format: "$wformat",
+    datetimelocale: $.htmlwidget.datetime.default_locale,
+    encoder: $.htmlwidget.datetime.date_encoder,
+    decoder: $.htmlwidget.datetime.date_decoder
+});
 });
 SCRIPT;
-        self::enqueue('scripts', "widget-pikaday-$wid", array($script), array('jquery.pikaday'));
+        self::enqueue('scripts', "widget-datetime-$wid", array($script), array('htmlwidgets.js'));
         return <<<OUT
 <span class="$wrapper_class" $wstyle>
 <input type="text" id="$wid" name="$wname" title="$wtitle" class="$wclass" placeholder="$wplaceholder" value="$wvalue" $wextra $wdata />
