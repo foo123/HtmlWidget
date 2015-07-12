@@ -416,6 +416,20 @@ input.widget-checkbox + label
     text-align: center;
     z-index: 1;
 }
+input.widget-radio.widget-large + label,
+input.widget-checkbox.widget-large + label
+{
+    width: 24px; height: 24px;
+    line-height: 24px;
+    font-size: 24px;
+}
+input.widget-radio.widget-xlarge + label,
+input.widget-checkbox.widget-xlarge + label
+{
+    width: 32px; height: 32px;
+    line-height: 32px;
+    font-size: 32px;
+}
 input.widget-radio + label:before,
 input.widget-checkbox + label:before
 {
