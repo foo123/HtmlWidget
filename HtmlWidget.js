@@ -501,14 +501,16 @@ var HtmlWidget = self = {
     }
     
     ,widget_switch: function(attr, data) {
-        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wiconon, wiconoff, wvalue, wname, wtype, wreverse, wstates;
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wiconon, wiconoff, wvalue, wvalue2, wdual, wname, wtype, wreverse, wstates, wswitches;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
         wname = attr['name'];
         wtype = attr[HAS]('type') ? attr['type'] : 'checkbox';
         wvalue = data[HAS]("value") ? data["value"] : "1"; 
+        wvalue2 = data[HAS]("valueoff") ? data["valueoff"] : false;
+        wdual = false !== wvalue2;
         wtitle = attr[HAS]("title") ? attr["title"] : ""; 
-        wchecked = attr[HAS]('checked') && attr['checked'] ? 'checked' : '';
+        wchecked = attr[HAS]('checked') && attr['checked'];
         wclass = 'widget widget-switch'; 
         if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
         wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
@@ -530,21 +532,49 @@ var HtmlWidget = self = {
             wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
             wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';
         }
-        if ( wreverse ) 
+        wdata = self.attr_data(attr);
+        if ( wdual )
         {
-            wclass += ' reverse';
-            wstates = '<label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label><label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label>';
+            // dual switch with separate on/off states
+            wclass += ' dual';
+            wtype = 'radio';
+            if ( wchecked )
+            {
+                wstates = '<input type="'+wtype+'" id="'+wid+'-on" name="'+wname+'" class="widget-switch-state widget-switch-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' checked /><input type="'+wtype+'" id="'+wid+'-off" name="'+wname+'" class="widget-switch-state widget-switch-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' />';
+            }
+            else
+            {
+                wstates = '<input type="'+wtype+'" id="'+wid+'-on" name="'+wname+'" class="widget-switch-state widget-switch-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' /><input type="'+wtype+'" id="'+wid+'-off" name="'+wname+'" class="widget-switch-state widget-switch-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' checked />';
+            }
+            if ( wreverse ) 
+            {
+                wclass += ' reverse';
+                wswitches = '<label for="'+wid+'-off" class="widget-switch-off">'+wiconoff+'</label><label for="'+wid+'-on" class="widget-switch-on">'+wiconon+'</label>';
+            }
+            else
+            {
+                wswitches = '<label for="'+wid+'-on" class="widget-switch-on">'+wiconon+'</label><label for="'+wid+'-off" class="widget-switch-off">'+wiconoff+'</label>';
+            }
         }
         else
         {
-            wstates = '<label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label><label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label>';
+            // switch with one state for on/off
+            if ( wchecked ) wchecked = 'checked';
+            wstates = '<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="widget-switch-state" value="'+wvalue+'" '+wextra+' '+wdata+' '+wchecked+' />';
+            if ( wreverse ) 
+            {
+                wclass += ' reverse';
+                wswitches = '<label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label><label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label>';
+            }
+            else
+            {
+                wswitches = '<label for="'+wid+'" class="widget-switch-on">'+wiconon+'</label><label for="'+wid+'" class="widget-switch-off">'+wiconoff+'</label>';
+            }
         }
-        wdata = self.attr_data(attr);
         return '\
 <span class="'+wclass+'" title="'+wtitle+'" '+wstyle+'>\
-<input type="'+wtype+'" id="'+wid+'" name="'+wname+'" class="widget-switch-button" value="'+wvalue+'" '+wextra+' '+wdata+' '+wchecked+' />\
-'+wstates+'\
-<span class="widget-switch-handle widget-state-default"></span>\
+'+wstates+wswitches+'\
+<span class="widget-switch-handle"></span>\
 </span>\
 ';
     }

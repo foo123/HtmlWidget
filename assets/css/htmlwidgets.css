@@ -574,16 +574,22 @@ input.widget-radio:not(:checked) + label[data-state-off]:before
 {
     content: attr(data-state-off) !important;
 }
-input.widget-radio.widget-inset:not(.widget-push-button) + label,
-input.widget-checkbox.widget-inset:not(.widget-push-button) + label
+/* HEAVY */
+input.widget-checkbox.heavy + label:before,
+input.widget-radio.heavy + label:before
+{
+    font-weight: bold !important;
+}
+input.widget-radio.inset:not(.widget-push-button) + label,
+input.widget-checkbox.inset:not(.widget-push-button) + label
 {
     background-color: #fefefe;
     border: 1px solid rgba(0,0,0,.2);
     box-shadow: 1px 1px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.8) inset,
                 2px 2px 2px rgba(0,0,0,.3) inset;
 }
-input.widget-radio.widget-inset:not(.widget-push-button):checked + label,
-input.widget-checkbox.widget-inset:not(.widget-push-button):checked + label
+input.widget-radio.inset:not(.widget-push-button):checked + label,
+input.widget-checkbox.inset:not(.widget-push-button):checked + label
 {
     box-shadow: 1px 1px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.8) inset,
                 2px 2px 3px rgba(0,0,0,.5) inset;
@@ -634,11 +640,12 @@ input.widget-radio.widget-led-button:checked + label:before
 }
 
 /* sliding switch checkboxes */
-.widget-switch input.widget-switch-button 
+.widget-switch > input.widget-switch-state 
 {
     display: none !important;
 }
-.widget-switch {
+.widget-switch 
+{
     position: relative;
     display: inline-block;
     overflow: hidden;
@@ -660,7 +667,8 @@ input.widget-radio.widget-led-button:checked + label:before
     border-radius: 5px;
     z-index: 1;
 }
-.widget-switch.widget-large {
+.widget-switch.widget-large 
+{
     line-height: 30px;
     height: 30px;
     width: 90px;
@@ -670,7 +678,8 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-border-radius: 6px;
     border-radius: 6px;
 }
-.widget-switch.widget-xlarge {
+.widget-switch.widget-xlarge 
+{
     line-height: 50px;
     height: 50px;
     width: 120px;
@@ -681,7 +690,8 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-border-radius: 6px;
     border-radius: 6px;
 }
-.widget-switch  label {
+.widget-switch  > label 
+{
     position: relative;
     display: block;
     z-index: 1;
@@ -727,21 +737,22 @@ input.widget-radio.widget-led-button:checked + label:before
     user-select: none;
     cursor: pointer;
 }
-.widget-switch  label:focus,
-.widget-switch  label:active {
+.widget-switch  > label:focus,
+.widget-switch  > label:active 
+{
     cursor: pointer;
     outline: 0;
 }
-.widget-switch label.widget-switch-on 
+.widget-switch > label.widget-switch-on 
 {
     background-color: green;
 }
-.widget-switch label.widget-switch-off 
+.widget-switch > label.widget-switch-off 
 {
     background-color: red;
 }
-.widget-switch label.widget-switch-on > .fa, 
-.widget-switch label.widget-switch-off > .fa 
+.widget-switch > label.widget-switch-on > .fa, 
+.widget-switch > label.widget-switch-off > .fa 
 {
     position: absolute; display: block;
     margin: 0; padding: 0; border: none;
@@ -751,8 +762,8 @@ input.widget-radio.widget-led-button:checked + label:before
     color: white;
     font-size: 1.5em;
 }
-.widget-switch label.widget-switch-on > .fa::before, 
-.widget-switch label.widget-switch-off > .fa::before 
+.widget-switch > label.widget-switch-on > .fa::before, 
+.widget-switch > label.widget-switch-off > .fa::before 
 {
     position: absolute; display: block;
     top: 50%; left: 50%;
@@ -762,18 +773,18 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
 }
-.widget-switch label > .fa.positive::before,
-.widget-switch label > .fa.negative::before
+.widget-switch > label > .fa.positive::before,
+.widget-switch > label > .fa.negative::before
 {
     font-size: 0.8em;
 }
-.widget-switch label > .fa.not-positive::before,
-.widget-switch label > .fa.negative::before
+.widget-switch > label > .fa.not-positive::before,
+.widget-switch > label > .fa.negative::before
 {
     opacity: 0.6;
 }
-.widget-switch label > .fa.positive::after,
-.widget-switch label > .fa.negative::after
+.widget-switch > label > .fa.positive::after,
+.widget-switch > label > .fa.negative::after
 {
     position:absolute; display: block; z-index: 2;
     padding: 0; margin: 0; border: none;
@@ -790,16 +801,17 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-transform:translate(25%,-25%);
     transform:translate(25%,-25%);
 }
-.widget-switch label > .fa.positive::after
+.widget-switch > label > .fa.positive::after
 {
     content: "\f058"; /* check-circle */
 }
-.widget-switch label > .fa.negative::after
+.widget-switch > label > .fa.negative::after
 {
     content: "\f057"; /* times-circle */
     /*content: "\292B";*/ /* Unicode Character 'RISING DIAGONAL CROSSING FALLING DIAGONAL' (U+292B) */
 }
-.widget-switch .widget-switch-handle {
+.widget-switch > .widget-switch-handle 
+{
     display: block;
     position: absolute;
     padding: 0;
@@ -852,14 +864,17 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-transition: -o-transform .25s ease-out;
     transition: transform .25s ease-out;
 }
-.widget-switch.reverse .widget-switch-handle {
+.widget-switch.reverse > .widget-switch-handle 
+{
     -webkit-transform: translate(100%, -50%);
     -moz-transform: translate(100%, -50%);
     -ms-transform: translate(100%, -50%);
     -o-transform: translate(100%, -50%);
     transform: translate(100%, -50%);
 }
-.widget-switch input.widget-switch-button:checked  ~ .widget-switch-handle {
+.widget-switch.dual > input.widget-switch-state-on:checked  ~ .widget-switch-handle,
+.widget-switch:not(.dual) > input.widget-switch-state:checked  ~ .widget-switch-handle 
+{
     -webkit-transform: translate(100%, -50%);
     -moz-transform: translate(100%, -50%);
     -ms-transform: translate(100%, -50%);
@@ -871,19 +886,21 @@ input.widget-radio.widget-led-button:checked + label:before
     -o-transition: -o-transform .25s ease-out;
     transition: transform .25s ease-out;
 }
-.widget-switch.reverse input.widget-switch-button:checked  ~ .widget-switch-handle {
+.widget-switch.reverse.dual > input.widget-switch-state-on:checked  ~ .widget-switch-handle,
+.widget-switch.reverse:not(.dual) > input.widget-switch-state:checked  ~ .widget-switch-handle 
+{
     -webkit-transform: translate(0, -50%);
     -moz-transform: translate(0, -50%);
     -ms-transform: translate(0, -50%);
     -o-transform: translate(0, -50%);
     transform: translate(0, -50%);
 }
-.widget-switch input.widget-switch-button:disabled  ~ label.widget-switch-on, 
-.widget-switch input.widget-switch-button:disabled  ~ label.widget-switch-off
+.widget-switch > input.widget-switch-state:disabled  ~ label.widget-switch-on, 
+.widget-switch > input.widget-switch-state:disabled  ~ label.widget-switch-off
 {
     opacity: 0.6;
 }
-.widget-switch input.widget-switch-button:disabled  ~ .widget-switch-handle
+.widget-switch > input.widget-switch-state:disabled  ~ .widget-switch-handle
 {
     background-color: #efefef;
 }

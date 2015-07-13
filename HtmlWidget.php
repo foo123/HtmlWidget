@@ -398,8 +398,10 @@ OUT;
         $wname = $attr["name"];
         $wtype = isset($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
+        $wvalue2 = isset($data['valueoff']) ? $data['valueoff'] : false;
+        $wdual = false !== $wvalue2;
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
-        $wchecked = isset($attr['checked']) && $attr['checked'] ? 'checked' : '';
+        $wchecked = isset($attr['checked']) && $attr['checked'];
         $wclass = "widget widget-switch"; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
@@ -420,21 +422,49 @@ OUT;
             $wiconon = "<i class=\"fa fa-{$attr["iconon"]}\"></i>";
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]}\"></i>";
         }
-        if ( $wreverse ) 
+        $wdata = self::attr_data($attr);
+        if ( $wdual )
         {
-            $wclass .= ' reverse';
-            $wstates = "<label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label><label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label>";
+            // dual switch with separate on/off states
+            $wclass .= ' dual';
+            $wtype = 'radio';
+            if ( $wchecked )
+            {
+                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" name=\"$wname\" class=\" widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata checked /><input type=\"$wtype\" id=\"{$wid}-off\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata />";
+            }
+            else
+            {
+                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata /><input type=\"$wtype\" id=\"{$wid}-off\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata checked />";
+            }
+            if ( $wreverse ) 
+            {
+                $wclass .= ' reverse';
+                $wswitches = "<label for=\"{$wid}-off\" class=\"widget-switch-off\">$wiconoff</label><label for=\"{$wid}-on\" class=\"widget-switch-on\">$wiconon</label>";
+            }
+            else
+            {
+                $wswitches = "<label for=\"{$wid}-on\" class=\"widget-switch-on\">$wiconon</label><label for=\"{$wid}-off\" class=\"widget-switch-off\">$wiconoff</label>";
+            }
         }
         else
         {
-            $wstates = "<label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label><label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label>";
+            // switch with one state for on/off
+            if ( $wchecked ) $wchecked = 'checked';
+            $wstates = "<input type=\"$wtype\" id=\"$wid\" name=\"$wname\" class=\"widget-switch-state\" value=\"$wvalue\" $wextra $wdata $wchecked />";
+            if ( $wreverse ) 
+            {
+                $wclass .= ' reverse';
+                $wswitches = "<label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label><label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label>";
+            }
+            else
+            {
+                $wswitches = "<label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label><label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label>";
+            }
         }
-        $wdata = self::attr_data($attr);
         return <<<OUT
 <span class="$wclass" title="$wtitle" $wstyle>
-<input type="$wtype" id="$wid" name="$wname" class="widget-switch-button" value="$wvalue" $wextra $wdata $wchecked />
-$wstates
-<span class="widget-switch-handle widget-state-default"></span>
+{$wstates}{$wswitches}
+<span class="widget-switch-handle"></span>
 </span>
 OUT;
     }
