@@ -139,12 +139,12 @@
     font-weight: bold;
     margin: 0px 2px;
 }
-.widget-wrapper.widget-icon-right > .widget.widget-suggest ~ .fa-wrapper.right-fa
+.widget-wrapper > .widget.widget-suggest ~ .fa-wrapper.widget-suggest-spinner
 {
     display: none;
     z-index: -1;
 }
-.widget-wrapper.widget-icon-right.ajax > .widget.widget-suggest ~ .fa-wrapper.right-fa
+.widget-wrapper.ajax > .widget.widget-suggest ~ .fa-wrapper.widget-suggest-spinner
 {
     display: inline-block; 
     z-index: 2;

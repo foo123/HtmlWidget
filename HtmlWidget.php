@@ -32,12 +32,12 @@ class HtmlWidget
     {
         $base = $base . '/assets/';
         return array(
-         array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.css', array('responsive.css','font-awesome.css'))
-        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.js', array('jquery'))
+         array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.min.css', array('responsive.css','font-awesome.css'))
+        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery'))
         ,array('styles', 'trumbowyg.css', $base.'css/trumbowyg.min.css')
         ,array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'))
-        ,array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.css')
-        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.js', array('jquery.dataTables.css','jquery'))
+        ,array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css')
+        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery.dataTables.css','jquery'))
         );
     }
     
@@ -522,11 +522,18 @@ OUT;
         $wrapper_class = 'widget-wrapper';
         if ( isset($attr['icon']) )
         {
-            $wicon = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
+            $wicon .= "<span class=\"fa-wrapper right-fa widget-suggest-spinner\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
         }
-        $wicon .= "<span class=\"fa-wrapper right-fa\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-        $wrapper_class .= ' widget-icon-right';
+        elseif ( isset($attr['iconr']) )
+        {
+            $wicon .= "<span class=\"fa-wrapper left-fa widget-suggest-spinner\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            $wrapper_class .= ' widget-icon';
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wrapper_class .= ' widget-icon-right';
+        }
         $wdata = self::attr_data($attr);
         $script = <<<SCRIPT
 jQuery(function(\$){

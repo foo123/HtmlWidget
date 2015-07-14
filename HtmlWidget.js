@@ -105,12 +105,12 @@ var HtmlWidget = self = {
     assets: function(base) {
         base = (base||'') + '/assets/';
         return [
-         ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.css', ['responsive.css','font-awesome.css']]
-        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.js', ['jquery']]
+         ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.min.css', ['responsive.css','font-awesome.css']]
+        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.min.js', ['jquery']]
         ,['styles', 'trumbowyg.css', base+'css/trumbowyg.min.css']
         ,['scripts', 'trumbowyg', base+'js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
-        ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.css']
-        ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.js', ['jquery.dataTables.css','jquery']]
+        ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.min.css']
+        ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.min.js', ['jquery.dataTables.css','jquery']]
         ];
     },
     
@@ -635,11 +635,18 @@ var HtmlWidget = self = {
         wrapper_class = 'widget-wrapper';
         if ( attr[HAS]('icon') )
         {
-            wicon = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
             wrapper_class += ' widget-icon';
+            wicon += "<span class=\"fa-wrapper right-fa widget-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            wrapper_class += ' widget-icon-right';
         }
-        wicon += "<span class=\"fa-wrapper right-fa\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-        wrapper_class += ' widget-icon-right';
+        else if ( attr[HAS]('iconr') )
+        {
+            wicon += "<span class=\"fa-wrapper left-fa widget-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            wrapper_class += ' widget-icon';
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wrapper_class += ' widget-icon-right';
+        }
         wdata = self.attr_data(attr);
         var _script = '', script = '\
 jQuery(function($){\
