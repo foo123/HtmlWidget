@@ -225,6 +225,7 @@ var HtmlWidget = self = {
     ,widget_delayable: function(attr, data) {
         var wid, wclass, wstyle, wextra, wspinner;
         self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid();
         wclass = 'widget-delayable-overlay'; 
         if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
@@ -240,18 +241,16 @@ var HtmlWidget = self = {
     }
     
     ,widget_disabable: function(attr, data) {
-        var wid, wclass, wstyle, wextra, wspinner;
+        var wid, wclass, wstyle, wextra;
         self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid();
         wclass = 'widget-disabable-overlay'; 
         if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
         wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = attr[HAS]("extra") ? attr["extra"] : '';
-        wspinner = 'widget-spinner';
-        wspinner += attr[HAS]('spinner') ? " "+attr['spinner'] : " widget-spinner-dots";
         return '\
 <div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>\
-<div class="'+wspinner+'"></div>\
 </div>\
 ';
     }
@@ -259,6 +258,7 @@ var HtmlWidget = self = {
     ,widget_morphable: function(attr, data) {
         var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector;
         //self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
         wid = attr["id"];
         wclass = 'widget-morphable'; 
         wmodes = [].concat(attr['modes']);

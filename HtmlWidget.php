@@ -151,6 +151,7 @@ class HtmlWidget
     public static function widget_delayable($attr, $data)
     {
         self::enqueue('styles', 'htmlwidgets.css');
+        self::enqueue('scripts', 'htmlwidgets.js');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-delayable-overlay'; 
         if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -168,16 +169,14 @@ OUT;
     public static function widget_disabable($attr, $data)
     {
         self::enqueue('styles', 'htmlwidgets.css');
+        self::enqueue('scripts', 'htmlwidgets.js');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-disabable-overlay'; 
         if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $wspinner = 'widget-spinner';
-        $wspinner .= isset($attr['spinner']) ? " {$attr['spinner']}" : " widget-spinner-dots";
         return <<<OUT
 <div id="$wid" class="$wclass" $wstyle $wextra>
-<div class="$wspinner"></div>
 </div>
 OUT;
     }
@@ -185,6 +184,7 @@ OUT;
     public static function widget_morphable($attr, $data)
     {
         //self::enqueue('styles', 'htmlwidgets.css');
+        self::enqueue('scripts', 'htmlwidgets.js');
         $wid = $attr["id"]; 
         $wclass = 'widget-morphable'; 
         $wmodes = (array)$attr['modes'];

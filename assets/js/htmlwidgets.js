@@ -16,7 +16,7 @@ var slice = Array.prototype.slice;
 function widget2jquery( name, widget )
 {
     $.fn[ name ] = function( options ) {
-        var method = "string" === typeof options ? options : false,
+        var method = "string" === typeof options ? 'widget_'+options : false,
             args = slice.call( arguments, 1 ), return_value = this;
 
         if ( method ) 
@@ -25,7 +25,7 @@ function widget2jquery( name, widget )
                 var method_value,
                     instance = $.data( this, name );
 
-                if ( "instance" === options ) 
+                if ( "widget_instance" === method ) 
                 {
                     return_value = instance;
                     return false;
@@ -33,15 +33,16 @@ function widget2jquery( name, widget )
                 
                 if ( !instance ) return false;
                 
-                if ( "dispose" === options ) 
+                if ( "widget_dispose" === method || "widget_destroy" === method ) 
                 {
                     if ( 'function' === typeof instance.dispose ) instance.dispose( );
+                    else if ( 'function' === typeof instance.destroy ) instance.destroy( );
                     instance = null;
                     $.removeData( this, name );
                     return false;
                 }
                 
-                if ( 'function' !== typeof instance[method] ) return false;
+                if ( 'function' !== typeof instance[ method ] ) return false;
 
                 method_value = instance[ method ].apply( instance, args );
                 if ( method_value !== instance && undef !== method_value ) 
@@ -59,11 +60,14 @@ function widget2jquery( name, widget )
                 var instance = $.data( this, name );
                 if ( instance ) 
                 {
-                    instance.option( options || {} );
+                    if ( 'function' === typeof instance.widget_option ) 
+                        instance.widget_option( options || {} );
                 } 
                 else 
                 {
-                    $.data( this, name, new widget( options, this ) );
+                    $.data( this, name, instance = new widget( options || {}, this ) );
+                    if ( 'function' === typeof instance.widget_init ) 
+                        instance.widget_init( );
                 }
             });
         }
@@ -76,7 +80,7 @@ $.htmlwidget.morphable = function morphable( options, el ){
     var self = this;
     if ( !(self instanceof morphable) ) return new morphable(options, el);
     var cur_mode = null;
-    self.morph = function( mode ) {
+    self.widget_morph = function( mode ) {
         if ( mode !== cur_mode )
         {
             var $el = $(el);
@@ -89,6 +93,65 @@ $.htmlwidget.morphable = function morphable( options, el ){
             if ( cur_mode )
                 $el.addClass( options.modeClass.split('${MODE}').join(cur_mode) );
         }
+    };
+};
+
+$.htmlwidget.delayable = function delayable( options, el ){
+    var self = this;
+    if ( !(self instanceof delayable) ) return new delayable(options, el);
+    self.widget_init = function( ) {
+        var $el = $(el);
+        if ( $el.hasClass('widget-delayed') ) 
+            $el.removeClass('widget-delayed');
+        if ( !$el.hasClass('widget-undelayed') ) 
+            $el.addClass('widget-undelayed');
+        if ( !$el.children('.widget-delayable-overlay').length )
+        {
+            $el.append('\
+<div class="widget-delayable-overlay">\
+<div class="widget-spinner widget-spinner-dots"></div>\
+</div>\
+            ');
+        }
+    };
+    self.widget_enable = function( ) {
+        var $el = $(el);
+        if ( !$el.hasClass('widget-delayed') )
+            $el.addClass('widget-delayed').removeClass('widget-undelayed');
+    };
+    self.widget_disable = function( ) {
+        var $el = $(el);
+        if ( $el.hasClass('widget-delayed') )
+            $el.addClass('widget-undelayed').removeClass('widget-delayed');
+    };
+};
+
+$.htmlwidget.disabable = function disabable( options, el ){
+    var self = this;
+    if ( !(self instanceof disabable) ) return new disabable(options, el);
+    self.widget_init = function( ) {
+        var $el = $(el);
+        if ( $el.hasClass('widget-delayed') ) 
+            $el.removeClass('widget-delayed');
+        if ( !$el.hasClass('widget-undelayed') ) 
+            $el.addClass('widget-undelayed');
+        if ( !$el.children('.widget-disabable-overlay').length )
+        {
+            $el.append('\
+<div class="widget-disabable-overlay">\
+</div>\
+            ');
+        }
+    };
+    self.widget_enable = function( ) {
+        var $el = $(el);
+        if ( !$el.hasClass('widget-disabled') )
+            $el.addClass('widget-disabled').removeClass('widget-undisabled');
+    };
+    self.widget_disable = function( ) {
+        var $el = $(el);
+        if ( $el.hasClass('widget-disabled') )
+            $el.addClass('widget-undisabled').removeClass('widget-disabled');
     };
 };
 
@@ -1729,6 +1792,8 @@ return RemoteList;
 })();
 
 widget2jquery( 'morphable', $.htmlwidget.morphable );
+widget2jquery( 'delayable', $.htmlwidget.delayable );
+widget2jquery( 'disabable', $.htmlwidget.disabable );
 widget2jquery( 'datetime', $.htmlwidget.datetime );
 widget2jquery( 'suggest', $.htmlwidget.suggest );
 if ( HtmlWidget )
@@ -1738,8 +1803,8 @@ if ( HtmlWidget )
     };
 }
 
-/*
 $(function(){
+    /*
     // controllers
     $('body')
     .on('change', 'input[data-controller]', function(evt){
@@ -1759,7 +1824,12 @@ $(function(){
     });
     $('input[data-controller]').trigger('change');
     $('input[data-synchronise]').trigger('change');
+    */
+    
+    $('.widget-delayable').delayable( );
+    $('.widget-disabable').disabable( );
+    //$('.widget-morphable').morphable( );
 });
-*/
+
 
 }(jQuery, 'undefined' !== HtmlWidget ? HtmlWidget : null);
