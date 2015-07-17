@@ -208,6 +208,17 @@
     line-height: 1.33;
     padding: 10px 16px;
 }
+.widget-button.widget-xlarge
+{
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    border-radius: 8px;
+    font-size: 1.4em;
+    line-height: 1.33;
+    padding: 18px 16px;
+}
 .widget-label.widget-icon > .fa-wrapper.left-fa,
 .widget-button.widget-icon > .fa-wrapper.left-fa
 {
