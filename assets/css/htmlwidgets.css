@@ -197,7 +197,7 @@
     line-height: 1.5;
     padding: 5px 10px;
 }
-.widget-button.widget-large
+.widget-button.widget-large:not(.widget-icon-only)
 {
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
@@ -208,7 +208,7 @@
     line-height: 1.33;
     padding: 10px 16px;
 }
-.widget-button.widget-xlarge
+.widget-button.widget-xlarge:not(.widget-icon-only)
 {
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
