@@ -34,7 +34,7 @@ else if ( !(name in root) )
 "use strict";
 
 var isNode = 'undefined' !== typeof global && '[object global]' === Object.prototype.toString.call(global),
-    HAS = 'hasOwnProperty', KEYS = Object.keys, toJSON = JSON.stringify, 
+    HAS = 'hasOwnProperty', ATTR = 'setAttribute', KEYS = Object.keys, toJSON = JSON.stringify, 
     cnt = 0, self, widgets = {}, enqueuer = null;
     
 // http://davidwalsh.name/add-rules-stylesheets
@@ -54,7 +54,10 @@ function addCSSRule( style, selector, rules, index )
 
 function addCSS( style, css ) 
 {
-    if ( "object" === typeof css )
+    var css_type = typeof css;
+    
+    // css rules object
+    if ( "object" === css_type )
     {
         var n, declaration, i = 0;
         for (n in css)
@@ -66,28 +69,138 @@ function addCSS( style, css )
             }
         }
     }
+    // css literal string
+    else if ( "string" === css_type )
+    {
+        if ( style.styleSheet ) style.styleSheet.cssText = (style.styleSheet.cssText||'') + css;
+        else style.appendChild( document.createTextNode( css ) );
+    }
     return css;
 }
 
-function createStyleSheet( media, css ) 
+function createAsset( type, src ) 
 {
-    // Create the <style> tag
-    var style = document.createElement("style");
-    // Add a media (and/or media query) here if you'd like!
-    style.setAttribute("media", media || "all");
-    style.setAttribute("type", "text/css");
-    // WebKit hack :(
-    style.appendChild( document.createTextNode("") );
-    // Add the <style> element to the page
-    document.head.appendChild( style );
-    if ( css ) addCSS( style, css );
-    return style;
+    var asset = null;
+    switch( type )
+    {
+        // external script, only if not exists
+        case "script-link-unique":
+            var i, links = document.head.getElementsByTagName("script"), link = null;
+            for (i=links.length-1; i>=0; i--) 
+            {
+                if ( links[i].src && src === links[i].src ) 
+                {
+                    // found existing link
+                    link = links[ i ];
+                    break;
+                }
+            }
+            if ( link )
+            {
+                // return it, instead
+                asset = link;
+            }
+            else
+            {
+                // Create the <script> tag
+                asset = document.createElement('script');
+                asset[ATTR]("type", "text/javascript");
+                asset[ATTR]("language", "javascript");
+                asset[ATTR]("src", src);
+                // Add the <script> element to the page
+                document.head.appendChild( asset );
+            }
+            break;
+        
+        // external script
+        case "script-link":
+            // Create the <script> tag
+            asset = document.createElement('script');
+            asset[ATTR]("type", "text/javascript");
+            asset[ATTR]("language", "javascript");
+            asset[ATTR]("src", src);
+            // Add the <script> element to the page
+            document.head.appendChild( asset );
+            break;
+        
+        // literal script
+        case "script":
+            // Create the <script> tag
+            asset = document.createElement("script");
+            asset[ATTR]("type", "text/javascript");
+            asset[ATTR]("language", "javascript");
+            // WebKit hack :(
+            asset.appendChild( document.createTextNode(src) );
+            // Add the <script> element to the page
+            document.head.appendChild( asset );
+            break;
+            
+        // external stylesheet, only if not exists
+        case "style-link-unique":
+            var i, links = document.head.getElementsByTagName("link"), link = null;
+            for (i=links.length-1; i>=0; i--) 
+            {
+                if ( src === links[i].href ) 
+                {
+                    // found existing link
+                    link = links[ i ];
+                    break;
+                }
+            }
+            if ( link )
+            {
+                // return it, instead
+                asset = link;
+            }
+            else
+            {
+                // Create the <link> tag
+                asset = document.createElement('link');
+                // Add a media (and/or media query) here if you'd like!
+                asset[ATTR]("type", "text/css");
+                asset[ATTR]("rel", "stylesheet");
+                asset[ATTR]("media", "all");
+                asset[ATTR]("href", src);
+                // Add the <style> element to the page
+                document.head.appendChild( asset );
+            }
+            break;
+        
+        // external stylesheet
+        case "style-link":
+            // Create the <link> tag
+            asset = document.createElement('link');
+            // Add a media (and/or media query) here if you'd like!
+            asset[ATTR]("type", "text/css");
+            asset[ATTR]("rel", "stylesheet");
+            asset[ATTR]("media", "all");
+            asset[ATTR]("href", src);
+            // Add the <style> element to the page
+            document.head.appendChild( asset );
+            break;
+        
+        // literal stylesheet
+        case "style":
+        default:
+            // Create the <style> tag
+            asset = document.createElement("style");
+            // Add a media (and/or media query) here if you'd like!
+            asset[ATTR]("type", "text/css");
+            asset[ATTR]("media", "all");
+            // WebKit hack :(
+            asset.appendChild( document.createTextNode("") );
+            // Add the <style> element to the page
+            document.head.appendChild( asset );
+            if ( src ) addCSS( asset, src );
+            break;
+    }
+    return asset;
 }
 
-function disposeStyleSheet( style ) 
+function disposeAsset( asset ) 
 {
-    if ( style ) 
-        document.head.removeChild( style );
+    if ( asset ) 
+        document.head.removeChild( asset );
 }
 
 var HtmlWidget = self = {
@@ -105,7 +218,8 @@ var HtmlWidget = self = {
     },
     
     assets: function(base) {
-        base = (base||'') + '/assets/';
+        base = base || '';
+        base = base + ('/' === base.slice(-1) ? 'assets/' : '/assets/');
         return [
          ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.min.css', ['responsive.css','font-awesome.css']]
         ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.min.js', ['jquery']]
@@ -290,16 +404,17 @@ var HtmlWidget = self = {
                 );
             }
         }
+        wstyle = '';
+        wstyle += whide_selector.join(',') + '{display: none !important}';
+        wstyle += wshow_selector.join(',') + '{display: block}';
+        
         if ( isNode )
         {
-            wstyle = '';
-            wstyle += whide_selector.join(',') + '{display: none !important}';
-            wstyle += wshow_selector.join(',') + '{display: block}';
             self.enqueue('styles', "widget-morphable-"+wid, [wstyle], []);
         }
         else
         {
-            wstyle = {
+            /*wstyle = {
                 hide_mode: {
                     selector: whide_selector.join(','),
                     rules: [
@@ -312,8 +427,8 @@ var HtmlWidget = self = {
                         'display: block'
                     ]
                 }
-            };
-            createStyleSheet( 'all', wstyle ).setAttribute("id", "widget-morphable-"+wid);
+            };*/
+            createAsset( 'style', wstyle ).setAttribute("id", "widget-morphable-"+wid);
         }
         return '';
     }

@@ -30,9 +30,10 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='')
+    public static function assets( $base='' )
     {
-        $base = $base . '/assets/';
+        if ( empty($base) ) $base = '';
+        $base = $base . ('/' === substr($base, -1)  ? 'assets/' : '/assets/');
         return array(
          array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.min.css', array('responsive.css','font-awesome.css'))
         ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery'))
