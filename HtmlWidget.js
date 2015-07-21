@@ -794,7 +794,7 @@ $el.suggest({\
         else _script = script;
         return '\
 <span class="'+wrapper_class+'" '+wstyle+'>\
-<input type="text" id="'+wid+'" name="'+wname+'" title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
+<input type="text" id="'+wid+'" name="'+wname+'" title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" '+wdata+' />\
 '+wicon+'\
 </span>\
 ' + _script;
