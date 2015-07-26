@@ -67,7 +67,6 @@
 .widget-label,
 .widget-text,
 .widget-textarea,
-.widget-editor,
 .widget-select,
 .widget-time-component,
 .widget-button
@@ -84,6 +83,11 @@
     -ms-border-radius: 3px;
     -o-border-radius: 3px;
     border-radius: 3px;
+}
+.widget-editor
+{
+    position: relative;
+    display: inline-block;
 }
 .widget-text,
 .widget-textarea,
