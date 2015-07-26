@@ -586,9 +586,9 @@ var HtmlWidget = self = {
         }
         else
         {
-            wtype = attr[HAS]('type') ? 'type="'+attr['type']+'"' : '';
+            wtype = attr[HAS]('type') ? attr['type'] : 'button';
             return '\
-<button id="'+wid+'" '+wtype+' class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</button>\
+<button id="'+wid+'" type="'+wtype+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</button>\
 ';
         }
     }

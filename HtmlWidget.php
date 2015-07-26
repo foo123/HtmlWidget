@@ -364,9 +364,9 @@ OUT;
         }
         else
         {
-            $wtype = isset($attr['type']) ? 'type="'.$attr['type'].'"' : '';
+            $wtype = isset($attr['type']) ? $attr['type'] : 'button';
             return <<<OUT
-<button id="$wid" $wtype class="$wclass" $wstyle $wextra title="$wtitle" $wdata>$wtext</button>
+<button id="$wid" type="$wtype" class="$wclass" $wstyle $wextra title="$wtitle" $wdata>$wtext</button>
 OUT;
         }
     }
