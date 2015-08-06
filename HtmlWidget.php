@@ -18,13 +18,13 @@ class HtmlWidget
     public static $enqueuer = null;
     public static $widgets = array( );
     
-    public static function enqueueAssets($enqueuer=null)
+    public static function enqueueAssets( $enqueuer=null )
     {
         if ( $enqueuer && is_callable($enqueuer) ) self::$enqueuer = $enqueuer;
         else self::$enqueuer = null;
     }
     
-    public static function enqueue($type, $id, $asset=null, $deps=array())
+    public static function enqueue( $type, $id, $asset=null, $deps=array() )
     {
         if ( self::$enqueuer ) 
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
@@ -44,13 +44,13 @@ class HtmlWidget
         );
     }
     
-    public static function uuid($namespace="widget")
+    public static function uuid( $namespace="widget" )
     {
         static $cnt = 0;
         return implode("_", array($namespace, time(), ++$cnt));
     }
     
-    public static function attr_data($attr)
+    public static function attr_data( $attr )
     {
         $data_attr = '';
         if ( !empty($attr['data']) )
@@ -64,7 +64,7 @@ class HtmlWidget
         return $data_attr;
     }
     
-    public static function addWidget($widget, $renderer)
+    public static function addWidget( $widget, $renderer )
     {
         if ( $widget && $renderer && is_callable($renderer) )
             self::$widgets['wi_'.$widget] = $renderer;
@@ -72,7 +72,7 @@ class HtmlWidget
             unset(self::$widgets['wi_'.$widget]);
     }
     
-    public static function widget($widget, $attr=array(), $data=array())
+    public static function widget( $widget, $attr=array(), $data=array() )
     {
         $out = '';
         if ( $widget )
@@ -97,6 +97,8 @@ class HtmlWidget
                 case 'delayable':   $out = self::widget_delayable($attr, $data); break;
                 case 'disabable':   $out = self::widget_disabable($attr, $data); break;
                 case 'morphable':   $out = self::widget_morphable($attr, $data); break;
+                case 'pages':       $out = self::widget_pages($attr, $data); break;
+                case 'tabs':        $out = self::widget_tabs($attr, $data); break;
                 case 'dialog':      $out = self::widget_dialog($attr, $data); break;
                 case 'tooltip':     $out = self::widget_tooltip($attr, $data); break;
                 case 'link':        $out = self::widget_link($attr, $data); break;
@@ -126,13 +128,13 @@ class HtmlWidget
         return $out;
     }
     
-    public static function widget_empty($attr, $data)
+    public static function widget_empty( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         return '';
     }
     
-    public static function widget_separator($attr, $data)
+    public static function widget_separator( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wclass = 'widget-separator'; 
@@ -141,7 +143,7 @@ class HtmlWidget
         return "<div class=\"$wclass\" $wstyle></div>";
     }
     
-    public static function widget_icon($attr, $data)
+    public static function widget_icon( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wclass = 'fa'; 
@@ -151,7 +153,7 @@ class HtmlWidget
         return "<i class=\"$wclass\" $wstyle></i>";
     }
     
-    public static function widget_delayable($attr, $data)
+    public static function widget_delayable( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         self::enqueue('scripts', 'htmlwidgets.js');
@@ -169,7 +171,7 @@ class HtmlWidget
 OUT;
     }
     
-    public static function widget_disabable($attr, $data)
+    public static function widget_disabable( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         self::enqueue('scripts', 'htmlwidgets.js');
@@ -184,7 +186,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_morphable($attr, $data)
+    public static function widget_morphable( $attr, $data )
     {
         //self::enqueue('styles', 'htmlwidgets.css');
         self::enqueue('scripts', 'htmlwidgets.js');
@@ -217,7 +219,80 @@ OUT;
         return '';
     }
     
-    public static function widget_dialog($attr, $data) 
+    public static function widget_tabs( $attr, $data )
+    {
+        return '';
+    }
+    
+    public static function widget_pages( $attr, $data )
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $wpages = (array)$attr['pages'];
+        $wselector = '#' . implode(',#', $wpages);
+        $wstyle = <<<OUT
+{$wselector}
+{
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+OUT;
+        // first / main page
+        $main_page = array_shift($wpages);
+        $wstyle .= <<<OUT
+.widget-page-transition-controller:not(#page_{$main_page}):target ~ {$wcontext}#{$main_page}
+{
+    position: absolute;
+    
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+    
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+OUT;
+        $wcontrollers = <<<OUT
+<span id="page_{$main_page}" class="widget-page-transition-controller"></span>
+OUT;
+        foreach ($wpages as $page)
+        {
+            $wstyle .= <<<OUT
+#page_{$page}.widget-page-transition-controller:target ~ {$wcontext}#{$page}
+{
+    position: relative;
+    
+    -webkit-transform: translateX(0px);
+    -moz-transform: translateX(0px);
+    -ms-transform: translateX(0px);
+    -o-transform: translateX(0px);
+    transform: translateX(0px);
+    
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+OUT;
+            $wcontrollers .= <<<OUT
+<span id="page_{$page}" class="widget-transition-controller"></span>
+OUT;
+        }
+        self::enqueue('styles', "widget-pages-$wid", array($wstyle), array());
+        return $wcontrollers;
+    }
+    
+    public static function widget_dialog( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -246,7 +321,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_tooltip($attr, $data)
+    public static function widget_tooltip( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -287,7 +362,7 @@ $warrow
 OUT;
     }
     
-    public static function widget_link($attr, $data)
+    public static function widget_link( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -307,7 +382,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_label($attr, $data)
+    public static function widget_label( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -333,7 +408,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_button($attr, $data)
+    public static function widget_button( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -371,7 +446,7 @@ OUT;
         }
     }
     
-    public static function widget_control($attr, $data)
+    public static function widget_control( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -394,7 +469,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_switch($attr, $data)
+    public static function widget_switch( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
@@ -472,7 +547,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_text($attr, $data)
+    public static function widget_text( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -510,7 +585,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_suggest($attr, $data)
+    public static function widget_suggest( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -572,7 +647,7 @@ $wicon
 OUT;
     }
     
-    public static function widget_textarea($attr, $data)
+    public static function widget_textarea( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -605,7 +680,7 @@ SCRIPT;
 OUT;
     }
     
-    public static function widget_date($attr, $data)
+    public static function widget_date( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -653,7 +728,7 @@ $wicon
 OUT;
     }
     
-    public static function widget_time($attr, $data)
+    public static function widget_time( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -699,7 +774,7 @@ $wtimes
 OUT;
     }
     
-    public static function widget_select($attr, $data)
+    public static function widget_select( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
@@ -745,7 +820,7 @@ $woptions
 OUT;
     }
     
-    public static function widget_menu($attr, $data)
+    public static function widget_menu( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wmenu = $data['menu'];
@@ -758,7 +833,7 @@ OUT;
 OUT;
     }
     
-    public static function widget_table($attr, $data)
+    public static function widget_table( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();

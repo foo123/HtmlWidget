@@ -5,6 +5,8 @@
 *  @dependencies: FontAwesome, jQuery
 *  @version: 0.1
 *  https://github.com/foo123/HtmlWidget
+*  https://github.com/foo123/components.css
+*  https://github.com/foo123/jquery-ui-widgets
 *
 **/
 .widget
@@ -1510,6 +1512,18 @@ input.widget-radio.widget-led-button:checked + label:before
     background-repeat: no-repeat;
     background-position: center center;
     z-index: -10; opacity: 0;
+    -webkit-transition-property: z-index, opacity;
+    -webkit-transition-duration: .02s, .6s;
+    -webkit-transition-delay: 0s, .04s;
+    -moz-transition-property: z-index, opacity;
+    -moz-transition-duration: .02s, .6s;
+    -moz-transition-delay: 0s, .04s;
+    -ms-transition-property: z-index, opacity;
+    -ms-transition-duration: .02s, .6s;
+    -ms-transition-delay: 0s, .04s;
+    -o-transition-property: z-index, opacity;
+    -o-transition-duration: .02s, .6s;
+    -o-transition-delay: 0s, .04s;
     transition-property: z-index, opacity;
     transition-duration: .02s, .6s;
     transition-delay: 0s, .04s;
@@ -1520,6 +1534,19 @@ input.widget-radio.widget-led-button:checked + label:before
 {
     z-index: 500;
     opacity: 1;
+    -webkit-transition-delay: .65s, 0s;
+    -moz-transition-delay: .65s, 0s;
+    -ms-transition-delay: .65s, 0s;
+    -o-transition-delay: .65s, 0s;
+    transition-delay: .65s, 0s;
+}
+.widget-enabled  > .widget-disabable-overlay,
+.widget-undelayed  > .widget-delayable-overlay
+{
+    -webkit-transition-delay: .65s, 0s;
+    -moz-transition-delay: .65s, 0s;
+    -ms-transition-delay: .65s, 0s;
+    -o-transition-delay: .65s, 0s;
     transition-delay: .65s, 0s;
 }
 .widget-delayed  > .widget-delayable-overlay
@@ -1557,11 +1584,6 @@ input.widget-radio.widget-led-button:checked + label:before
     -webkit-animation-name: widget-spin-dots;
     animation-name: widget-spin-dots;
 }
-/*.widget-enabled  > .widget-disabable-overlay,
-.widget-undelayed  > .widget-delayable-overlay
-{
-    transition-delay: .65s, 0s;
-}*/
 .widget-delayed > .widget-disabable-overlay
 {
     background-color: rgba(255,255,255,0);
@@ -1910,6 +1932,10 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     margin: 10px 0;
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.widget-page-transition-controller
+{
+    position: fixed !important;
 }
 .widget-wrapper > .widget:read-only ~ .fa-wrapper,
 [class|="widget"]:read-only,

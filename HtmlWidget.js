@@ -212,12 +212,12 @@ var HtmlWidget = self = {
         else enqueuer = null;
     },
     
-    enqueue: function(type, id, asset, deps) {
+    enqueue: function( type, id, asset, deps ) {
         if ( enqueuer ) 
             enqueuer(type, id, asset||null, deps||[]);
     },
     
-    assets: function(base) {
+    assets: function( base ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? 'assets/' : '/assets/');
         return [
@@ -230,12 +230,12 @@ var HtmlWidget = self = {
         ];
     },
     
-    uuid: function(namespace) {
+    uuid: function( namespace ) {
         namespace = namespace || "widget"
         return [namespace, new Date().getTime(), ++cnt].join("_");
     }
     
-    ,attr_data: function(attr) {
+    ,attr_data: function( attr ) {
         var data_attr = '';
         if ( attr[HAS]('data') )
         {
@@ -253,14 +253,14 @@ var HtmlWidget = self = {
         return data_attr;
     }
     
-    ,addWidget: function(widget, renderer) {
+    ,addWidget: function( widget, renderer ) {
         if ( widget && "function"===typeof renderer )
             widgets['wi_'+widget] = renderer;
         else if ( widget && false === renderer && widgets[HAS]('wi_'+widget) )
             delete widgets['wi_'+widget];
     }
     
-    ,widget: function(widget, attr, data) {
+    ,widget: function( widget, attr, data ) {
         var out = '';
         if ( widget )
         {
@@ -285,6 +285,8 @@ var HtmlWidget = self = {
                 case 'delayable':   out = self.widget_delayable(attr, data); break;
                 case 'disabable':   out = self.widget_disabable(attr, data); break;
                 case 'morphable':   out = self.widget_morphable(attr, data); break;
+                case 'pages':       out = self.widget_pages(attr, data); break;
+                case 'tabs':        out = self.widget_tabs(attr, data); break;
                 case 'dialog':      out = self.widget_dialog(attr, data); break;
                 case 'tooltip':     out = self.widget_tooltip(attr, data); break;
                 case 'link':        out = self.widget_link(attr, data); break;
@@ -314,12 +316,12 @@ var HtmlWidget = self = {
         return out;
     }
     
-    ,widget_empty: function(attr, data) {
+    ,widget_empty: function( attr, data ) {
         self.enqueue('styles', 'htmlwidgets.css');
         return '';
     }
     
-    ,widget_separator: function(attr, data) {
+    ,widget_separator: function( attr, data ) {
         var wclass, wstyle;
         self.enqueue('styles', 'htmlwidgets.css');
         wclass = 'widget-separator'; 
@@ -328,7 +330,7 @@ var HtmlWidget = self = {
         return '<div class="'+wclass+'" '+wstyle+'></div>';
     }
     
-    ,widget_icon: function(attr, data) {
+    ,widget_icon: function( attr, data ) {
         var wclass, wstyle;
         self.enqueue('styles', 'htmlwidgets.css');
         wclass = 'fa'; 
@@ -338,7 +340,7 @@ var HtmlWidget = self = {
         return "<i class=\""+wclass+"\" "+wstyle+"></i>";
     }
     
-    ,widget_delayable: function(attr, data) {
+    ,widget_delayable: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wspinner;
         self.enqueue('styles', 'htmlwidgets.css');
         self.enqueue('scripts', 'htmlwidgets.js');
@@ -356,7 +358,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_disabable: function(attr, data) {
+    ,widget_disabable: function( attr, data ) {
         var wid, wclass, wstyle, wextra;
         self.enqueue('styles', 'htmlwidgets.css');
         self.enqueue('scripts', 'htmlwidgets.js');
@@ -371,7 +373,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_morphable: function(attr, data) {
+    ,widget_morphable: function( attr, data ) {
         var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector;
         //self.enqueue('styles', 'htmlwidgets.css');
         self.enqueue('scripts', 'htmlwidgets.js');
@@ -433,7 +435,88 @@ var HtmlWidget = self = {
         return '';
     }
     
-    ,widget_dialog: function(attr, data) {
+    ,widget_tabs: function( attr, data ) {
+        return '';
+    }
+    
+    ,widget_pages: function( attr, data ) {
+        var wid, wstyle, wcontext, wpages, main_page, page, i, l, wcontrollers, wselector;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid();
+        wcontext = attr[HAS]('context') ? (attr['context']+" ") : "";
+        wpages = [].concat(attr['pages']);
+        wselector = '#' + wpages.join(',#');
+        wstyle = '\
+'+wselector+'\
+{\
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
+}\
+';
+        // first / main page
+        main_page = wpages.shift();
+        wstyle += '\
+.widget-page-transition-controller:not(#page_'+main_page+'):target ~ '+wcontext+'#'+main_page+'\
+{\
+    position: absolute;\
+    \
+    -webkit-transform: translateX(-100%);\
+    -moz-transform: translateX(-100%);\
+    -ms-transform: translateX(-100%);\
+    -o-transform: translateX(-100%);\
+    transform: translateX(-100%);\
+    \
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
+}\
+';
+        wcontrollers = '\
+<span id="page_'+main_page+'" class="widget-page-transition-controller"></span>\
+';
+        for (i=0,l=wpages.length; i<l; i++)
+        {
+            page = wpages[i];
+            wstyle += '\
+#page_'+page+'.widget-page-transition-controller:target ~ '+wcontext+'#'+page+'\
+{\
+    position: relative;\
+    \
+    -webkit-transform: translateX(0px);\
+    -moz-transform: translateX(0px);\
+    -ms-transform: translateX(0px);\
+    -o-transform: translateX(0px);\
+    transform: translateX(0px);\
+    \
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
+}\
+';
+            wcontrollers += '\
+<span id="page_'+page+'" class="widget-transition-controller"></span>\
+';
+        }
+        
+        if ( isNode )
+        {
+            self.enqueue('styles', "widget-pages-"+wid, [wstyle], []);
+        }
+        else
+        {
+            createAsset( 'style', wstyle ).setAttribute("id", "widget-pages-"+wid);
+        }
+        return wcontrollers;
+    }
+    
+    ,widget_dialog: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wbuttons, wcontent;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -463,7 +546,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_tooltip: function(attr, data) {
+    ,widget_tooltip: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -505,7 +588,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_link: function(attr, data) {
+    ,widget_link: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, whref, wtext;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -527,7 +610,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_label: function(attr, data) {
+    ,widget_label: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wfor, wtext, wtitle;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -554,7 +637,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_button: function(attr, data) {
+    ,widget_button: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtype, wtitle, wtext, whref;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -593,7 +676,7 @@ var HtmlWidget = self = {
         }
     }
     
-    ,widget_control: function(attr, data) {
+    ,widget_control: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -617,7 +700,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_switch: function(attr, data) {
+    ,widget_switch: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wiconon, wiconoff, wvalue, wvalue2, wdual, wname, wtype, wreverse, wstates, wswitches;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -696,7 +779,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_text: function(attr, data) {
+    ,widget_text: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtype, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -735,7 +818,7 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_suggest: function(attr, data) {
+    ,widget_suggest: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -800,7 +883,7 @@ $el.suggest({\
 ' + _script;
     }
     
-    ,widget_textarea: function(attr, data) {
+    ,widget_textarea: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wplaceholder, wvalue, wname, wtitle, weditor;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -838,7 +921,7 @@ $("#'+wid+'").closest(".trumbowyg-box").addClass("widget widget-editor-box").att
 ' + _script;
     }
     
-    ,widget_date: function(attr, data) {
+    ,widget_date: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wtitle, wformat, wrapper_class;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -889,7 +972,7 @@ $("#'+wid+'").datetime({\
 ' + _script;
     }
     
-    ,widget_time: function(attr, data) {
+    ,widget_time: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wformat, wtimes,
             time_options, i, tt, t, p, f, selected;
         self.enqueue('styles', 'htmlwidgets.css');
@@ -940,7 +1023,7 @@ $("#'+wid+'").datetime({\
 ';
     }
     
-    ,widget_select: function(attr, data) {
+    ,widget_select: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, woptions, wselected, 
             opts, o, opt, l, key, val, selected;
         self.enqueue('styles', 'htmlwidgets.css');
@@ -992,7 +1075,7 @@ $("#'+wid+'").datetime({\
 ';
     }
     
-    ,widget_menu: function(attr, data) {
+    ,widget_menu: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wmenu;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
@@ -1007,7 +1090,7 @@ $("#'+wid+'").datetime({\
 ';
     }
     
-    ,widget_table: function(attr, data) {
+    ,widget_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wdataTable, wcolumns, wrows, woptions, wcontrols,
             column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls;
         self.enqueue('styles', 'htmlwidgets.css');
