@@ -287,6 +287,7 @@ var HtmlWidget = self = {
                 case 'morphable':   out = self.widget_morphable(attr, data); break;
                 case 'pages':       out = self.widget_pages(attr, data); break;
                 case 'tabs':        out = self.widget_tabs(attr, data); break;
+                case 'accordeon':   out = self.widget_accordeon(attr, data); break;
                 case 'dialog':      out = self.widget_dialog(attr, data); break;
                 case 'tooltip':     out = self.widget_tooltip(attr, data); break;
                 case 'link':        out = self.widget_link(attr, data); break;
@@ -435,20 +436,86 @@ var HtmlWidget = self = {
         return '';
     }
     
-    ,widget_tabs: function( attr, data ) {
-        return '';
-    }
-    
-    ,widget_pages: function( attr, data ) {
-        var wid, wstyle, wcontext, wpages, main_page, page, i, l, wcontrollers, wselector;
+    ,widget_accordeon: function( attr, data ) {
+        var wid, wstyle, wcontext, witems, i, l, wcontrollers, wctrl, wselector, wselected;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid();
         wcontext = attr[HAS]('context') ? (attr['context']+" ") : "";
-        wpages = [].concat(attr['pages']);
-        wselector = '#' + wpages.join(',#');
-        wstyle = '\
-'+wselector+'\
+        witems = [].concat(attr['items']);
+        
+        wctrl = "ctrl_"+wid;
+        wcontrollers = "<input name=\""+wctrl+"\" type=\"radio\" id=\"item_" + witems.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"item_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
+        
+        wstyle = '';
+        
+        // de-activate
+        wselector = [];
+        for (i=0,l=witems.length; i<l; i++)
+            wselector.push(".widget-"+wctrl+"-controller.widget-transition-controller:not(#item_"+witems[i]+"):checked ~ "+wcontext+"#"+witems[i]+"");
+        wstyle += '\
+'+wselector.join(',')+'\
 {\
+    max-height: 0;\
+    -webkit-transition: max-height .3s ease;\
+    -moz-transition: max-height .3s ease;\
+    -ms-transition: max-height .3s ease;\
+    -o-transition: max-height .3s ease;\
+    transition: max-height .3s ease;\
+}\
+';
+        // activate
+        wselector = [];
+        for (i=0,l=witems.length; i<l; i++)
+            wselector.push("#item_"+witems[i]+".widget-"+wctrl+"-controller.widget-transition-controller:checked ~ "+wcontext+"#"+witems[i]+"");
+        wstyle += '\
+'+wselector.join(',')+'\
+{\
+    max-height: 1500px;\
+    -webkit-transition: max-height .3s ease;\
+    -moz-transition: max-height .3s ease;\
+    -ms-transition: max-height .3s ease;\
+    -o-transition: max-height .3s ease;\
+    transition: max-height .3s ease;\
+}\
+';
+        if ( isNode )
+        {
+            self.enqueue('styles', "widget-accordeon-"+wid, [wstyle], []);
+        }
+        else
+        {
+            createAsset( 'style', wstyle ).setAttribute("id", "widget-accordeon-"+wid);
+        }
+        return wcontrollers;
+    }
+    
+    ,widget_tabs: function( attr, data ) {
+        var wid, wstyle, wcontext, wtabs, i, l, wcontrollers, wctrl, wselector, wselected;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid();
+        wcontext = attr[HAS]('context') ? (attr['context']+" ") : "";
+        wtabs = [].concat(attr['tabs']);
+        
+        wctrl = "ctrl_"+wid;
+        wcontrollers = "<input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
+        
+        wstyle = '';
+        
+        // de-activate
+        wselector = [];
+        for (i=0,l=wtabs.length; i<l; i++)
+            wselector.push(".widget-"+wctrl+"-controller.widget-transition-controller:not(#tab_"+wtabs[i]+"):checked ~ "+wcontext+"#"+wtabs[i]+"");
+        wstyle += '\
+'+wselector.join(',')+'\
+{\
+    position: absolute;\
+    \
+    -webkit-transform: translateX(-100%);\
+    -moz-transform: translateX(-100%);\
+    -ms-transform: translateX(-100%);\
+    -o-transform: translateX(-100%);\
+    transform: translateX(-100%);\
+    \
     -webkit-transition: -webkit-transform .3s ease;\
     -moz-transition: -moz-transform .3s ease;\
     -ms-transition: -ms-transform .3s ease;\
@@ -456,9 +523,62 @@ var HtmlWidget = self = {
     transition: transform .3s ease;\
 }\
 ';
-        // first / main page
+        // activate
+        wselector = [];
+        for (i=0,l=wtabs.length; i<l; i++)
+            wselector.push("#tab_"+wtabs[i]+".widget-"+wctrl+"-controller.widget-transition-controller:checked ~ "+wcontext+"#"+wtabs[i]+"");
+        wstyle += '\
+'+wselector.join(',')+'\
+{\
+    position: relative;\
+    \
+    -webkit-transform: translateX(0px);\
+    -moz-transform: translateX(0px);\
+    -ms-transform: translateX(0px);\
+    -o-transform: translateX(0px);\
+    transform: translateX(0px);\
+    \
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
+}\
+';
+        if ( isNode )
+        {
+            self.enqueue('styles', "widget-tabs-"+wid, [wstyle], []);
+        }
+        else
+        {
+            createAsset( 'style', wstyle ).setAttribute("id", "widget-tabs-"+wid);
+        }
+        return wcontrollers;
+    }
+    
+    ,widget_pages: function( attr, data ) {
+        var wid, wstyle, wcontext, wpages, main_page, i, l, wcontrollers, wselector;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid();
+        wcontext = attr[HAS]('context') ? (attr['context']+" ") : "";
+        wpages = [].concat(attr['pages']);
+        
+        wcontrollers = "<span id=\"page_" + wpages.join( "\" class=\"widget-transition-controller widget-page-transition-controller\"></span><span id=\"page_" ) + "\" class=\"widget-transition-controller widget-page-transition-controller\"></span>";
+        
+        wstyle = '';
+        
+        // main page
         main_page = wpages.shift();
         wstyle += '\
+#'+main_page+'\
+{\
+    position: relative;\
+    -webkit-transform: translateX(0px);\
+    -moz-transform: translateX(0px);\
+    -ms-transform: translateX(0px);\
+    -o-transform: translateX(0px);\
+    transform: translateX(0px);\
+}\
 .widget-page-transition-controller:not(#page_'+main_page+'):target ~ '+wcontext+'#'+main_page+'\
 {\
     position: absolute;\
@@ -476,14 +596,12 @@ var HtmlWidget = self = {
     transition: transform .3s ease;\
 }\
 ';
-        wcontrollers = '\
-<span id="page_'+main_page+'" class="widget-page-transition-controller"></span>\
-';
+        // rest pages
+        wselector = [];
         for (i=0,l=wpages.length; i<l; i++)
-        {
-            page = wpages[i];
-            wstyle += '\
-#page_'+page+'.widget-page-transition-controller:target ~ '+wcontext+'#'+page+'\
+            wselector.push('#page_'+wpages[i]+'.widget-page-transition-controller:target ~ '+wcontext+'#'+wpages[i]+'');
+        wstyle += '\
+'+wselector.join(',')+'\
 {\
     position: relative;\
     \
@@ -500,11 +618,6 @@ var HtmlWidget = self = {
     transition: transform .3s ease;\
 }\
 ';
-            wcontrollers += '\
-<span id="page_'+page+'" class="widget-transition-controller"></span>\
-';
-        }
-        
         if ( isNode )
         {
             self.enqueue('styles', "widget-pages-"+wid, [wstyle], []);

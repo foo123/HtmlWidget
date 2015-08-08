@@ -99,6 +99,7 @@ class HtmlWidget
                 case 'morphable':   $out = self::widget_morphable($attr, $data); break;
                 case 'pages':       $out = self::widget_pages($attr, $data); break;
                 case 'tabs':        $out = self::widget_tabs($attr, $data); break;
+                case 'accordeon':   $out = self::widget_accordeon($attr, $data); break;
                 case 'dialog':      $out = self::widget_dialog($attr, $data); break;
                 case 'tooltip':     $out = self::widget_tooltip($attr, $data); break;
                 case 'link':        $out = self::widget_link($attr, $data); break;
@@ -219,9 +220,115 @@ OUT;
         return '';
     }
     
+    public static function widget_accordeon( $attr, $data )
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $witems = (array)$attr['items'];
+        
+        $wctrl = "ctrl_{$wid}";
+        $wcontrollers = "<input name=\"{$wctrl}\" type=\"radio\" id=\"item_" . implode( "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"item_", $witems ) . "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/>";
+        
+        $wstyle = '';
+        
+        // de-activate
+        $wselector = array();
+        foreach ($witems as $witem)
+            $wselector[] = ".widget-{$wctrl}-controller.widget-transition-controller:not(#item_{$witem}):checked ~ {$wcontext}#{$witem}";
+        $wselector = implode(',', $wselector);
+        $wstyle .= <<<OUT
+{$wselector}
+{
+    max-height: 0;
+    -webkit-transition: max-height .3s ease;
+    -moz-transition: max-height .3s ease;
+    -ms-transition: max-height .3s ease;
+    -o-transition: max-height .3s ease;
+    transition: max-height .3s ease;
+}
+OUT;
+        // activate
+        $wselector = array();
+        foreach ($witems as $witem)
+            $wselector[] = "#item_{$witem}.widget-{$wctrl}-controller.widget-transition-controller:checked ~ {$wcontext}#{$witem}";
+        $wselector = implode(',', $wselector);
+        $wstyle .= <<<OUT
+{$wselector}
+{
+    max-height: 1500px;
+    -webkit-transition: max-height .3s ease;
+    -moz-transition: max-height .3s ease;
+    -ms-transition: max-height .3s ease;
+    -o-transition: max-height .3s ease;
+    transition: max-height .3s ease;
+}
+OUT;
+        self::enqueue('styles', "widget-accordeon-$wid", array($wstyle), array());
+        return $wcontrollers;
+    }
+    
     public static function widget_tabs( $attr, $data )
     {
-        return '';
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $wtabs = (array)$attr['tabs'];
+        //$wselected = isset($data['selected']) ? $data['selected'] : 0;
+        
+        $wctrl = "ctrl_{$wid}";
+        $wcontrollers = "<input name=\"{$wctrl}\" type=\"radio\" id=\"tab_" . implode( "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"tab_", $wtabs ) . "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/>";
+        
+        $wstyle = '';
+        
+        // de-activate
+        $wselector = array();
+        foreach ($wtabs as $wtab)
+            $wselector[] = ".widget-{$wctrl}-controller.widget-transition-controller:not(#tab_{$wtab}):checked ~ {$wcontext}#{$wtab}";
+        $wselector = implode(',', $wselector);
+        $wstyle .= <<<OUT
+{$wselector}
+{
+    position: absolute;
+    
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+    
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+OUT;
+        // activate
+        $wselector = array();
+        foreach ($wtabs as $wtab)
+            $wselector[] = "#tab_{$wtab}.widget-{$wctrl}-controller.widget-transition-controller:checked ~ {$wcontext}#{$wtab}";
+        $wselector = implode(',', $wselector);
+        $wstyle .= <<<OUT
+{$wselector}
+{
+    position: relative;
+    
+    -webkit-transform: translateX(0px);
+    -moz-transform: translateX(0px);
+    -ms-transform: translateX(0px);
+    -o-transform: translateX(0px);
+    transform: translateX(0px);
+    
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+OUT;
+        self::enqueue('styles', "widget-tabs-$wid", array($wstyle), array());
+        return $wcontrollers;
     }
     
     public static function widget_pages( $attr, $data )
@@ -230,20 +337,23 @@ OUT;
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
         $wpages = (array)$attr['pages'];
-        $wselector = '#' . implode(',#', $wpages);
-        $wstyle = <<<OUT
-{$wselector}
-{
-    -webkit-transition: -webkit-transform .3s ease;
-    -moz-transition: -moz-transform .3s ease;
-    -ms-transition: -ms-transform .3s ease;
-    -o-transition: -o-transform .3s ease;
-    transition: transform .3s ease;
-}
-OUT;
-        // first / main page
-        $main_page = array_shift($wpages);
+        
+        $wcontrollers = "<span id=\"page_" . implode( "\" class=\"widget-transition-controller widget-page-transition-controller\"></span><span id=\"page_", $wpages ) . "\" class=\"widget-transition-controller widget-page-transition-controller\"></span>";
+        
+        $wstyle = '';
+        
+        // main page
+        $main_page = array_shift( $wpages );
         $wstyle .= <<<OUT
+#{$main_page}
+{
+    position: relative;
+    -webkit-transform: translateX(0px);
+    -moz-transform: translateX(0px);
+    -ms-transform: translateX(0px);
+    -o-transform: translateX(0px);
+    transform: translateX(0px);
+}
 .widget-page-transition-controller:not(#page_{$main_page}):target ~ {$wcontext}#{$main_page}
 {
     position: absolute;
@@ -261,13 +371,13 @@ OUT;
     transition: transform .3s ease;
 }
 OUT;
-        $wcontrollers = <<<OUT
-<span id="page_{$main_page}" class="widget-page-transition-controller"></span>
-OUT;
-        foreach ($wpages as $page)
-        {
-            $wstyle .= <<<OUT
-#page_{$page}.widget-page-transition-controller:target ~ {$wcontext}#{$page}
+        // rest pages
+        $wselector = array();
+        foreach ($wpages as $wpage)
+            $wselector[] = "#page_{$wpage}.widget-page-transition-controller:target ~ {$wcontext}#{$wpage}";
+        $wselector = implode(',', $wselector);
+        $wstyle .= <<<OUT
+{$wselector}
 {
     position: relative;
     
@@ -284,10 +394,6 @@ OUT;
     transition: transform .3s ease;
 }
 OUT;
-            $wcontrollers .= <<<OUT
-<span id="page_{$page}" class="widget-transition-controller"></span>
-OUT;
-        }
         self::enqueue('styles', "widget-pages-$wid", array($wstyle), array());
         return $wcontrollers;
     }

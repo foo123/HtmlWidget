@@ -1933,10 +1933,66 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
 }
-.widget-page-transition-controller
+.widget-page-transition-controller,
+.widget-transition-controller
 {
     position: fixed !important;
+    height: 0;
+    position: absolute;
+    visibility: hidden;
+    z-index: -1;
 }
+.widget-tabs-wrapper,
+.widget-pages-wrapper
+{
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.widget-tab,
+.widget-page
+{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute; display: inline-block;
+    top: 0; left: 0;
+    z-index: 10; width: 100%;
+    float: left !important; clear: none !important;
+    -webkit-transform: translateX(100%);
+    -moz-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -o-transform: translateX(100%);
+    transform: translateX(100%);
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
+}
+.widget-accordeon-item
+{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    position:relative;
+    max-height: 0;
+    -webkit-transition: max-height .3s ease;
+    -moz-transition: max-height .3s ease;
+    -ms-transition: max-height .3s ease;
+    -o-transition: max-height .3s ease;
+    transition: max-height .3s ease;
+}
+
 .widget-wrapper > .widget:read-only ~ .fa-wrapper,
 [class|="widget"]:read-only,
 .widget:read-only
