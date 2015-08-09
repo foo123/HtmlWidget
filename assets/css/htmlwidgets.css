@@ -17,6 +17,45 @@
     display: inline-block;
     vertical-align: middle;
 }
+/* some defaults */
+.widget.animated,
+.widget-animated 
+{
+    /* duration 0.5 sec */
+    -webkit-animation-duration: 0.5s;
+    -moz-animation-duration: 0.5s;
+    -ms-animation-duration: 0.5s;
+    -o-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+    
+    /* delay 0 sec */
+    -webkit-animation-delay: 0s;
+    -moz-animation-delay: 0s;
+    -ms-animation-delay: 0s;
+    -o-animation-delay: 0s;
+    animation-delay: 0s;
+    
+    /* one iteration */
+    -webkit-animation-iteration-count: 1;
+    -moz-animation-iteration-count: 1;
+    -ms-animation-iteration-count: 1;
+    -o-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+    
+    /* linear easing */
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+    -ms-animation-timing-function: linear;
+    -o-animation-timing-function: linear;
+    animation-timing-function: linear;
+    
+    /* fill mode both */
+    -webkit-animation-fill-mode: both;
+    -moz-animation-fill-mode: both;
+    -ms-animation-fill-mode: both;
+    -o-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
 .widget-wrapper
 {
     position: relative;
@@ -392,7 +431,6 @@ input[type=checkbox].widget-checkbox
 {
     display: none !important;
 }
-
 input.widget-radio + label,
 input.widget-checkbox + label
 {
@@ -1442,62 +1480,8 @@ input.widget-radio.widget-led-button:checked + label:before
 .active.widget-spinner.widget-spinner-dots:before
 {
     visibility: visible;
-    -webkit-animation-name: widget-spin-dots;
-    animation-name: widget-spin-dots;
-}
-@-webkit-keyframes widget-spin-dots {
-  0%,
-  100% {
-    box-shadow: 0em -2.6em 0em 0em #808080, 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.5), -1.8em -1.8em 0 0em rgba(128,128,128, 0.7);
-  }
-  12.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.7), 1.8em -1.8em 0 0em #808080, 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.5);
-  }
-  25% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.5), 1.8em -1.8em 0 0em rgba(128,128,128, 0.7), 2.5em 0em 0 0em #808080, 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  37.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.5), 2.5em 0em 0 0em rgba(128,128,128, 0.7), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  50% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.5), 1.75em 1.75em 0 0em rgba(128,128,128, 0.7), 0em 2.5em 0 0em #808080, -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  62.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.5), 0em 2.5em 0 0em rgba(128,128,128, 0.7), -1.8em 1.8em 0 0em #808080, -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  75% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.5), -1.8em 1.8em 0 0em rgba(128,128,128, 0.7), -2.6em 0em 0 0em #808080, -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  87.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.5), -2.6em 0em 0 0em rgba(128,128,128, 0.7), -1.8em -1.8em 0 0em #808080;
-  }
-}
-@keyframes widget-spin-dots {
-  0%,
-  100% {
-    box-shadow: 0em -2.6em 0em 0em #808080, 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.5), -1.8em -1.8em 0 0em rgba(128,128,128, 0.7);
-  }
-  12.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.7), 1.8em -1.8em 0 0em #808080, 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.5);
-  }
-  25% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.5), 1.8em -1.8em 0 0em rgba(128,128,128, 0.7), 2.5em 0em 0 0em #808080, 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  37.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.5), 2.5em 0em 0 0em rgba(128,128,128, 0.7), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  50% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.5), 1.75em 1.75em 0 0em rgba(128,128,128, 0.7), 0em 2.5em 0 0em #808080, -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  62.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.5), 0em 2.5em 0 0em rgba(128,128,128, 0.7), -1.8em 1.8em 0 0em #808080, -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  75% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.5), -1.8em 1.8em 0 0em rgba(128,128,128, 0.7), -2.6em 0em 0 0em #808080, -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
-  }
-  87.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.5), -2.6em 0em 0 0em rgba(128,128,128, 0.7), -1.8em -1.8em 0 0em #808080;
-  }
+    -webkit-animation-name: widget-fx-spindots;
+    animation-name: widget-fx-spindots;
 }
 .widget-disabable-overlay,
 .widget-delayable-overlay
@@ -1581,8 +1565,8 @@ input.widget-radio.widget-led-button:checked + label:before
 .widget-delayed  > .widget-delayable-overlay > .widget-spinner.widget-spinner-dots:before
 {
     visibility: visible;
-    -webkit-animation-name: widget-spin-dots;
-    animation-name: widget-spin-dots;
+    -webkit-animation-name: widget-fx-spindots;
+    animation-name: widget-fx-spindots;
 }
 .widget-delayed > .widget-disabable-overlay
 {
@@ -1590,7 +1574,6 @@ input.widget-radio.widget-led-button:checked + label:before
     z-index: 100;
     cursor: progress;
 }
-
 
 /* Generic Styling, for Desktops/Laptops */
 table.widget-table
@@ -1701,33 +1684,11 @@ table.widget-table.dataTable thead .sorting_asc::after
 {
     content: "\f0de";
 }
-/*
-.widget-controllable
-{
-    max-height: 0;
-    overflow: hidden;
-    -webkit-transition: max-height 0.5s ease-out;
-    -moz-transition: max-height 0.5s ease-out;
-    -ms-transition: max-height 0.5s ease-out;
-    -o-transition: max-height 0.5s ease-out;
-    transition: max-height 0.5s ease-out;
-}
-.widget-controllable.widget-controller-checked
-{
-    max-height: 900px;
-    -webkit-transition: max-height 0.5s ease-in;
-    -moz-transition: max-height 0.5s ease-in;
-    -ms-transition: max-height 0.5s ease-in;
-    -o-transition: max-height 0.5s ease-in;
-    transition: max-height 0.5s ease-in;
-}
-*/
 
 /*!
  * Pikaday
  * Copyright © 2014 David Bushell | BSD & MIT license | http://dbushell.com/
  */
-
 .pika-single {
     z-index: 9999;
     display: block;
@@ -1942,6 +1903,27 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     visibility: hidden;
     z-index: -1;
 }
+/*
+.widget-controllable
+{
+    max-height: 0;
+    overflow: hidden;
+    -webkit-transition: max-height 0.5s ease-out;
+    -moz-transition: max-height 0.5s ease-out;
+    -ms-transition: max-height 0.5s ease-out;
+    -o-transition: max-height 0.5s ease-out;
+    transition: max-height 0.5s ease-out;
+}
+.widget-controllable.widget-controller-checked
+{
+    max-height: 900px;
+    -webkit-transition: max-height 0.5s ease-in;
+    -moz-transition: max-height 0.5s ease-in;
+    -ms-transition: max-height 0.5s ease-in;
+    -o-transition: max-height 0.5s ease-in;
+    transition: max-height 0.5s ease-in;
+}
+*/
 .widget-tabs-wrapper,
 .widget-pages-wrapper
 {
@@ -1992,7 +1974,48 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     -o-transition: max-height .3s ease;
     transition: max-height .3s ease;
 }
-
+.widget-tab.widget-animated
+{
+    overflow: hidden;
+    float: none;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    /*opacity: 1;*/
+    
+    /* init using auxilliary animations as styles */
+    -webkit-animation-name: widget-aux-hide;
+    -moz-animation-name: widget-aux-hide;
+    -ms-animation-name: widget-aux-hide;
+    -o-animation-name: widget-aux-hide;
+    animation-name: widget-aux-hide;
+    
+    -webkit-animation-delay: 0s;
+    -moz-animation-delay: 0s;
+    -ms-animation-delay: 0s;
+    -o-animation-delay: 0s;
+    animation-delay: 0s;
+    
+    -webkit-animation-duration: 0.1s;
+    -moz-animation-duration: 0.1s;
+    -ms-animation-duration: 0.1s;
+    -o-animation-duration: 0.1s;
+    animation-duration: 0.1s;
+    
+    -webkit-animation-iteration-count: 1;
+    -moz-animation-iteration-count: 1;
+    -ms-animation-iteration-count: 1;
+    -o-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+    
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    -ms-animation-fill-mode: forwards;
+    -o-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
 .widget-wrapper > .widget:read-only ~ .fa-wrapper,
 [class|="widget"]:read-only,
 .widget:read-only
@@ -2005,4 +2028,101 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 {
     cursor: not-allowed !important;
     opacity: 0.6 !important;
+}
+/* widget FX and auxiliaries */
+@-webkit-keyframes widget-aux-show
+{
+    0% { z-index: 10; opacity: 1; }
+    100% { z-index: 10; opacity: 1; }
+}
+@keyframes widget-aux-show
+{
+    0% { z-index: 10; opacity: 1; }
+    100% { z-index: 10; opacity: 1; }
+}
+@-webkit-keyframes widget-aux-hide
+{
+    0% { z-index: -1; opacity: 0; }
+    100% { z-index: -1; opacity: 0; }
+}
+@keyframes widget-aux-hide
+{
+    0% { z-index: -1; opacity: 0; }
+    100% { z-index: -1; opacity: 0; }
+}
+@-webkit-keyframes widget-fx-slidein
+{
+    0% { -webkit-transform: translateX(100%); }
+    100% { -webkit-transform: translateX(0px);}
+}
+@keyframes widget-fx-slidein
+{
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(0px);}
+}
+@-webkit-keyframes widget-fx-slideout
+{
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(-100%); }
+}
+@keyframes widget-fx-slideout
+{
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(-100%); }
+}
+@-webkit-keyframes widget-fx-spindots 
+{
+  0%,
+  100% {
+    box-shadow: 0em -2.6em 0em 0em #808080, 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.5), -1.8em -1.8em 0 0em rgba(128,128,128, 0.7);
+  }
+  12.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.7), 1.8em -1.8em 0 0em #808080, 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.5);
+  }
+  25% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.5), 1.8em -1.8em 0 0em rgba(128,128,128, 0.7), 2.5em 0em 0 0em #808080, 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  37.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.5), 2.5em 0em 0 0em rgba(128,128,128, 0.7), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  50% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.5), 1.75em 1.75em 0 0em rgba(128,128,128, 0.7), 0em 2.5em 0 0em #808080, -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  62.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.5), 0em 2.5em 0 0em rgba(128,128,128, 0.7), -1.8em 1.8em 0 0em #808080, -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  75% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.5), -1.8em 1.8em 0 0em rgba(128,128,128, 0.7), -2.6em 0em 0 0em #808080, -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  87.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.5), -2.6em 0em 0 0em rgba(128,128,128, 0.7), -1.8em -1.8em 0 0em #808080;
+  }
+}
+@keyframes widget-fx-spindots 
+{
+  0%,
+  100% {
+    box-shadow: 0em -2.6em 0em 0em #808080, 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.5), -1.8em -1.8em 0 0em rgba(128,128,128, 0.7);
+  }
+  12.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.7), 1.8em -1.8em 0 0em #808080, 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.5);
+  }
+  25% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.5), 1.8em -1.8em 0 0em rgba(128,128,128, 0.7), 2.5em 0em 0 0em #808080, 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  37.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.5), 2.5em 0em 0 0em rgba(128,128,128, 0.7), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  50% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.5), 1.75em 1.75em 0 0em rgba(128,128,128, 0.7), 0em 2.5em 0 0em #808080, -1.8em 1.8em 0 0em rgba(128,128,128, 0.2), -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  62.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.5), 0em 2.5em 0 0em rgba(128,128,128, 0.7), -1.8em 1.8em 0 0em #808080, -2.6em 0em 0 0em rgba(128,128,128, 0.2), -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  75% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.5), -1.8em 1.8em 0 0em rgba(128,128,128, 0.7), -2.6em 0em 0 0em #808080, -1.8em -1.8em 0 0em rgba(128,128,128, 0.2);
+  }
+  87.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(128,128,128, 0.2), 1.8em -1.8em 0 0em rgba(128,128,128, 0.2), 2.5em 0em 0 0em rgba(128,128,128, 0.2), 1.75em 1.75em 0 0em rgba(128,128,128, 0.2), 0em 2.5em 0 0em rgba(128,128,128, 0.2), -1.8em 1.8em 0 0em rgba(128,128,128, 0.5), -2.6em 0em 0 0em rgba(128,128,128, 0.7), -1.8em -1.8em 0 0em #808080;
+  }
 }

@@ -100,6 +100,7 @@ class HtmlWidget
                 case 'pages':       $out = self::widget_pages($attr, $data); break;
                 case 'tabs':        $out = self::widget_tabs($attr, $data); break;
                 case 'accordeon':   $out = self::widget_accordeon($attr, $data); break;
+                case 'panel':       $out = self::widget_panel($attr, $data); break;
                 case 'dialog':      $out = self::widget_dialog($attr, $data); break;
                 case 'tooltip':     $out = self::widget_tooltip($attr, $data); break;
                 case 'link':        $out = self::widget_link($attr, $data); break;
@@ -220,6 +221,11 @@ OUT;
         return '';
     }
     
+    public static function widget_panel( $attr, $data )
+    {
+        return '';
+    }
+    
     public static function widget_accordeon( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
@@ -291,17 +297,29 @@ OUT;
 {
     position: absolute;
     
-    -webkit-transform: translateX(-100%);
-    -moz-transform: translateX(-100%);
-    -ms-transform: translateX(-100%);
-    -o-transform: translateX(-100%);
-    transform: translateX(-100%);
+    -webkit-animation-name: widget-fx-slideout, widget-aux-hide;
+    -moz-animation-name: widget-fx-slideout, widget-aux-hide;
+    -ms-animation-name: widget-fx-slideout, widget-aux-hide;
+    -o-animation-name: widget-fx-slideout, widget-aux-hide;
+    animation-name: widget-fx-slideout, widget-aux-hide;
     
-    -webkit-transition: -webkit-transform .3s ease;
-    -moz-transition: -moz-transform .3s ease;
-    -ms-transition: -ms-transform .3s ease;
-    -o-transition: -o-transform .3s ease;
-    transition: transform .3s ease;
+    -webkit-animation-delay: 0s, 1s;
+    -moz-animation-delay: 0s, 1s;
+    -ms-animation-delay: 0s, 1s;
+    -o-animation-delay: 0s, 1s;
+    animation-delay: 0s, 1s;
+    
+    -webkit-animation-duration: 0.5s;
+    -moz-animation-duration: 0.5s;
+    -ms-animation-duration: 0.5s;
+    -o-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+    
+    -webkit-animation-timing-function: ease-out;
+    -moz-animation-timing-function: ease-out;
+    -ms-animation-timing-function: ease-out;
+    -o-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
 }
 OUT;
         // activate
@@ -314,17 +332,29 @@ OUT;
 {
     position: relative;
     
-    -webkit-transform: translateX(0px);
-    -moz-transform: translateX(0px);
-    -ms-transform: translateX(0px);
-    -o-transform: translateX(0px);
-    transform: translateX(0px);
+    -webkit-animation-name: widget-aux-show, widget-fx-slidein;
+    -moz-animation-name: widget-aux-show, widget-fx-slidein;
+    -ms-animation-name: widget-aux-show, widget-fx-slidein;
+    -o-animation-name: widget-aux-show, widget-fx-slidein;
+    animation-name: widget-aux-show, widget-fx-slidein;
     
-    -webkit-transition: -webkit-transform .3s ease;
-    -moz-transition: -moz-transform .3s ease;
-    -ms-transition: -ms-transform .3s ease;
-    -o-transition: -o-transform .3s ease;
-    transition: transform .3s ease;
+    -webkit-animation-delay: 0.6s;
+    -moz-animation-delay: 0.6s;
+    -ms-animation-delay: 0.6s;
+    -o-animation-delay: 0.6s;
+    animation-delay: 0.6s;
+    
+    -webkit-animation-duration: 0.5s;
+    -moz-animation-duration: 0.5s;
+    -ms-animation-duration: 0.5s;
+    -o-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+    
+    -webkit-animation-timing-function: ease-in;
+    -moz-animation-timing-function: ease-in;
+    -ms-animation-timing-function: ease-in;
+    -o-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
 }
 OUT;
         self::enqueue('styles', "widget-tabs-$wid", array($wstyle), array());
