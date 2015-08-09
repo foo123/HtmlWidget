@@ -283,7 +283,7 @@ OUT;
         //$wselected = isset($data['selected']) ? $data['selected'] : 0;
         
         $wctrl = "ctrl_{$wid}";
-        $wcontrollers = "<input name=\"{$wctrl}\" type=\"radio\" id=\"tab_" . implode( "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"tab_", $wtabs ) . "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/>";
+        $wcontrollers = "<input name=\"{$wctrl}\" checked type=\"radio\" id=\"tab_" . implode( "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"tab_", $wtabs ) . "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/>";
         
         $wstyle = '';
         
@@ -297,23 +297,11 @@ OUT;
 {
     position: absolute;
     
-    -webkit-animation-name: widget-fx-slideout, widget-aux-hide;
-    -moz-animation-name: widget-fx-slideout, widget-aux-hide;
-    -ms-animation-name: widget-fx-slideout, widget-aux-hide;
-    -o-animation-name: widget-fx-slideout, widget-aux-hide;
-    animation-name: widget-fx-slideout, widget-aux-hide;
-    
-    -webkit-animation-delay: 0s, 1s;
-    -moz-animation-delay: 0s, 1s;
-    -ms-animation-delay: 0s, 1s;
-    -o-animation-delay: 0s, 1s;
-    animation-delay: 0s, 1s;
-    
-    -webkit-animation-duration: 0.5s;
-    -moz-animation-duration: 0.5s;
-    -ms-animation-duration: 0.5s;
-    -o-animation-duration: 0.5s;
-    animation-duration: 0.5s;
+    -webkit-animation-name: widget-fx-slideout;
+    -moz-animation-name: widget-fx-slideout;
+    -ms-animation-name: widget-fx-slideout;
+    -o-animation-name: widget-fx-slideout;
+    animation-name: widget-fx-slideout;
     
     -webkit-animation-timing-function: ease-out;
     -moz-animation-timing-function: ease-out;
@@ -331,24 +319,13 @@ OUT;
 {$wselector}
 {
     position: relative;
+    z-index: 10;
     
-    -webkit-animation-name: widget-aux-show, widget-fx-slidein;
-    -moz-animation-name: widget-aux-show, widget-fx-slidein;
-    -ms-animation-name: widget-aux-show, widget-fx-slidein;
-    -o-animation-name: widget-aux-show, widget-fx-slidein;
-    animation-name: widget-aux-show, widget-fx-slidein;
-    
-    -webkit-animation-delay: 0.6s;
-    -moz-animation-delay: 0.6s;
-    -ms-animation-delay: 0.6s;
-    -o-animation-delay: 0.6s;
-    animation-delay: 0.6s;
-    
-    -webkit-animation-duration: 0.5s;
-    -moz-animation-duration: 0.5s;
-    -ms-animation-duration: 0.5s;
-    -o-animation-duration: 0.5s;
-    animation-duration: 0.5s;
+    -webkit-animation-name: widget-fx-slidein;
+    -moz-animation-name: widget-fx-slidein;
+    -ms-animation-name: widget-fx-slidein;
+    -o-animation-name: widget-fx-slidein;
+    animation-name: widget-fx-slidein;
     
     -webkit-animation-timing-function: ease-in;
     -moz-animation-timing-function: ease-in;
@@ -498,26 +475,6 @@ $warrow
 OUT;
     }
     
-    public static function widget_link( $attr, $data )
-    {
-        self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $whref = $attr['href']; $wtext = isset($data['text']) ? $data['text'] : '';
-        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'widget-link'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $wicon = '';
-        if ( isset($attr['icon']) )
-        {
-            $wicon = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>";
-        }
-        $wdata = self::attr_data($attr);
-        return <<<OUT
-<a id="$wid" class="$wclass" $wstyle $wextra title="$wtitle" href="$whref" $wdata>$wicon$wtext</a>
-OUT;
-    }
-    
     public static function widget_label( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
@@ -544,6 +501,42 @@ OUT;
 OUT;
     }
     
+    public static function widget_link( $attr, $data )
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wtext = isset($data['text']) ? $data['text'] : '';
+        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
+        $wclass = 'widget-link'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( isset($attr['icon']) )
+        {
+            $wclass .= ' widget-icon';
+            $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
+        }
+        if ( isset($attr['iconr']) )
+        {
+            $wclass .= ' widget-icon-right';
+            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
+        }
+        $wdata = self::attr_data($attr);
+        if ( isset($attr['for']))
+        {
+            $wfor = $attr['for'];
+            return <<<OUT
+<label id="$wid" class="$wclass" $wstyle $wextra title="$wtitle" for="$wfor" $wdata>$wtext</label>
+OUT;
+        }
+        else
+        {
+            $whref = isset($attr['href']) ? $attr['href'] : '#'; 
+            return <<<OUT
+<a id="$wid" class="$wclass" $wstyle $wextra title="$wtitle" href="$whref" $wdata>$wtext</a>
+OUT;
+        }
+    }
+    
     public static function widget_button( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
@@ -566,7 +559,14 @@ OUT;
             $wtext = $wtext . "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
         }
         $wdata = self::attr_data($attr);
-        if ( isset($attr['href']) )
+        if ( isset($attr['for']) )
+        {
+            $wfor = $attr['for'];
+            return <<<OUT
+<label id="$wid" for="$wfor" class="$wclass" $wstyle $wextra title="$wtitle" $wdata>$wtext</label>
+OUT;
+        }
+        elseif ( isset($attr['href']) )
         {
             $whref = $attr['href'];
             return <<<OUT

@@ -1980,17 +1980,8 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     float: none;
     
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     z-index: 1;
-    /*opacity: 1;*/
-    
-    /* init using auxilliary animations as styles */
-    -webkit-animation-name: widget-aux-hide;
-    -moz-animation-name: widget-aux-hide;
-    -ms-animation-name: widget-aux-hide;
-    -o-animation-name: widget-aux-hide;
-    animation-name: widget-aux-hide;
     
     -webkit-animation-delay: 0s;
     -moz-animation-delay: 0s;
@@ -1998,11 +1989,11 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     -o-animation-delay: 0s;
     animation-delay: 0s;
     
-    -webkit-animation-duration: 0.1s;
-    -moz-animation-duration: 0.1s;
-    -ms-animation-duration: 0.1s;
-    -o-animation-duration: 0.1s;
-    animation-duration: 0.1s;
+    -webkit-animation-duration: 0.2s;
+    -moz-animation-duration: 0.2s;
+    -ms-animation-duration: 0.2s;
+    -o-animation-duration: 0.2s;
+    animation-duration: 0.2s;
     
     -webkit-animation-iteration-count: 1;
     -moz-animation-iteration-count: 1;

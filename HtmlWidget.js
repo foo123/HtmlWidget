@@ -502,7 +502,7 @@ var HtmlWidget = self = {
         wtabs = [].concat(attr['tabs']);
         
         wctrl = "ctrl_"+wid;
-        wcontrollers = "<input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
+        wcontrollers = "<input name=\""+wctrl+"\" checked type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
         
         wstyle = '';
         
@@ -515,23 +515,11 @@ var HtmlWidget = self = {
 {\
     position: absolute;\
     \
-    -webkit-animation-name: widget-fx-slideout, widget-aux-hide;\
-    -moz-animation-name: widget-fx-slideout, widget-aux-hide;\
-    -ms-animation-name: widget-fx-slideout, widget-aux-hide;\
-    -o-animation-name: widget-fx-slideout, widget-aux-hide;\
-    animation-name: widget-fx-slideout, widget-aux-hide;\
-    \
-    -webkit-animation-delay: 0s, 1s;\
-    -moz-animation-delay: 0s, 1s;\
-    -ms-animation-delay: 0s, 1s;\
-    -o-animation-delay: 0s, 1s;\
-    animation-delay: 0s, 1s;\
-    \
-    -webkit-animation-duration: 0.5s;\
-    -moz-animation-duration: 0.5s;\
-    -ms-animation-duration: 0.5s;\
-    -o-animation-duration: 0.5s;\
-    animation-duration: 0.5s;\
+    -webkit-animation-name: widget-fx-slideout;\
+    -moz-animation-name: widget-fx-slideout;\
+    -ms-animation-name: widget-fx-slideout;\
+    -o-animation-name: widget-fx-slideout;\
+    animation-name: widget-fx-slideout;\
     \
     -webkit-animation-timing-function: ease-out;\
     -moz-animation-timing-function: ease-out;\
@@ -548,24 +536,13 @@ var HtmlWidget = self = {
 '+wselector.join(',')+'\
 {\
     position: relative;\
+    z-index: 10;\
     \
-    -webkit-animation-name: widget-aux-show, widget-fx-slidein;\
-    -moz-animation-name: widget-aux-show, widget-fx-slidein;\
-    -ms-animation-name: widget-aux-show, widget-fx-slidein;\
-    -o-animation-name: widget-aux-show, widget-fx-slidein;\
-    animation-name: widget-aux-show, widget-fx-slidein;\
-    \
-    -webkit-animation-delay: 0.6s;\
-    -moz-animation-delay: 0.6s;\
-    -ms-animation-delay: 0.6s;\
-    -o-animation-delay: 0.6s;\
-    animation-delay: 0.6s;\
-    \
-    -webkit-animation-duration: 0.5s;\
-    -moz-animation-duration: 0.5s;\
-    -ms-animation-duration: 0.5s;\
-    -o-animation-duration: 0.5s;\
-    animation-duration: 0.5s;\
+    -webkit-animation-name: widget-fx-slidein;\
+    -moz-animation-name: widget-fx-slidein;\
+    -ms-animation-name: widget-fx-slidein;\
+    -o-animation-name: widget-fx-slidein;\
+    animation-name: widget-fx-slidein;\
     \
     -webkit-animation-timing-function: ease-in;\
     -moz-animation-timing-function: ease-in;\
@@ -730,28 +707,6 @@ var HtmlWidget = self = {
 ';
     }
     
-    ,widget_link: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, whref, wtext;
-        self.enqueue('styles', 'htmlwidgets.css');
-        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
-        whref = attr['href']; 
-        wtext = data[HAS]('text') ? data['text'] : '';
-        wtitle = attr[HAS]('title') ? attr['title'] : wtext;
-        wclass = 'widget-link'; 
-        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
-        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
-        wextra = attr[HAS]("extra") ? attr["extra"] : '';
-        wicon = '';
-        if ( attr[HAS]('icon') )
-        {
-            wicon = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>";
-        }
-        wdata = self.attr_data(attr);
-        return '\
-<a id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" href="'+whref+'" '+wdata+'>'+wicon+wtext+'</a>\
-';
-    }
-    
     ,widget_label: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wfor, wtext, wtitle;
         self.enqueue('styles', 'htmlwidgets.css');
@@ -779,8 +734,45 @@ var HtmlWidget = self = {
 ';
     }
     
+    ,widget_link: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wtitle, whref, wfor, wtext;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
+        wtext = data[HAS]('text') ? data['text'] : '';
+        wtitle = attr[HAS]('title') ? attr['title'] : wtext;
+        wclass = 'widget-link'; 
+        if ( attr[HAS]("class") ) wclass += ' '+attr["class"];
+        wstyle = attr[HAS]("style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = attr[HAS]("extra") ? attr["extra"] : '';
+        if ( attr[HAS]('icon') )
+        {
+            wclass += ' widget-icon';
+            wtext = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>" + wtext;
+        }
+        if ( attr[HAS]('iconr') )
+        {
+            wclass += ' widget-icon-right';
+            wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
+        }
+        wdata = self.attr_data(attr);
+        if ( attr[HAS]('for') )
+        {
+            wfor = attr['for'];
+            return '\
+<label id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" for="'+wfor+'" '+wdata+'>'+wtext+'</label>\
+';
+        }
+        else
+        {
+            whref = attr[HAS]('href') ? attr['href'] : '#';
+            return '\
+<a id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" href="'+whref+'" '+wdata+'>'+wtext+'</a>\
+';
+        }
+    }
+    
     ,widget_button: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wtype, wtitle, wtext, whref;
+        var wid, wclass, wstyle, wextra, wdata, wtype, wtitle, wtext, whref, wfor;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = attr[HAS]("id") ? attr["id"] : self.uuid(); 
         wtext = data[HAS]('text') ? data['text'] : '';
@@ -802,7 +794,14 @@ var HtmlWidget = self = {
             wtext = wtext + "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
         }
         wdata = self.attr_data(attr);
-        if ( attr[HAS]('href') )
+        if ( attr[HAS]('for') )
+        {
+            wfor = attr['for'];
+            return '\
+<label id="'+wid+'" for="'+wfor+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</label>\
+';
+        }
+        else if ( attr[HAS]('href') )
         {
             whref = attr['href'];
             return '\
