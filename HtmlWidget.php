@@ -30,18 +30,47 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='' )
+    public static function assets( $base='', $full=true )
     {
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? 'assets/' : '/assets/');
-        return array(
+        $assets = array(
          array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.min.css', array('responsive.css','font-awesome.css'))
         ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery'))
-        ,array('styles', 'trumbowyg.css', $base.'css/trumbowyg.min.css')
-        ,array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'))
-        ,array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css')
-        ,array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery.dataTables.css','jquery'))
         );
+        if ( true === $full )
+        {
+            // DataTables
+            $assets[] = array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css');
+            $assets[] = array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery'))l
+            
+            // CodeMirror
+            $assets[] = array('styles', 'codemirror.css', $base.'css/codemirror.min.css');
+            $assets[] = array('scripts', 'codemirror.js', $base.'js/codemirror.min.js');
+            
+            $assets[] = array('scripts', 'codemirror-multiplex', $base.'js/addon/mode/multiplex.js', array('codemirror.js'));
+            $assets[] = array('scripts', 'codemirror-comment', $base.'js/addon/comment/comment.js', array('codemirror.js'));
+            
+            $assets[] = array('scripts', 'codemirror-xml', $base.'js/mode/xml.js', array('codemirror.js'));
+            $assets[] = array('scripts', 'codemirror-javascript', $base.'js/mode/javascript.js', array('codemirror.js'));
+            $assets[] = array('scripts', 'codemirror-css', $base.'js/mode/css.js', array('codemirror.js'));
+            
+            $assets[] = array('styles', 'codemirror-fold.css', $base.'js/addon/fold/foldgutter.css', array('codemirror.css'));
+            $assets[] = array('scripts', 'codemirror-fold-gutter', $base.'js/addon/fold/foldgutter.js', array('codemirror.js'));
+            $assets[] = array('scripts', 'codemirror-fold-code', $base.'js/addon/fold/foldcode.js', array('codemirror-fold-gutter'));
+            $assets[] = array('scripts', 'codemirror-fold-comment', $base.'js/addon/fold/comment-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
+            $assets[] = array('scripts', 'codemirror-fold-brace', $base.'js/addon/fold/brace-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
+            $assets[] = array('scripts', 'codemirror-fold-indent', $base.'js/addon/fold/indent-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
+            $assets[] = array('scripts', 'codemirror-fold-xml', $base.'js/addon/fold/xml-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
+            
+            $assets[] = array('styles', 'codemirror-styles', $base.'js/addon/fold/foldgutter.css', array('codemirror.css'));
+            $assets[] = array('scripts', 'codemirror', $base.'js/mode/htmlmixed.js', array('codemirror.js','codemirror-multiplex','codemirror-comment','codemirror-xml','codemirror-javascript','codemirror-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'));
+            
+            // Trumbowyg
+            $assets[] = array('styles', 'trumbowyg-styles', $base.'css/trumbowyg.min.css');
+            $assets[] = array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('jquery'));
+        }
+        return $assets;
     }
     
     public static function uuid( $namespace="widget" )
@@ -87,7 +116,8 @@ class HtmlWidget
             if ( "checkbox" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radio" === $widget ) $attr["type"] = "radio";
             elseif ( "dropdown" === $widget ) $attr["dropdown"] = true;
-            elseif ( "editor" === $widget ) $attr["editor"] = true;
+            elseif ( "syntax-editor" === $widget || "source-editor" === $widget || "syntax" === $widget || "source" === $widget || "highlight-editor" === $widget || "highlighter" === $widget ) $attr["syntax-editor"] = true;
+            elseif ( "wysiwyg-editor" === $widget || "wysiwyg" === $widget || "rich-editor" === $widget || "rich" === $widget || "editor" === $widget ) $attr["wysiwyg-editor"] = true;
             
             switch( $widget )
             {
@@ -109,8 +139,19 @@ class HtmlWidget
                 case 'suggestbox':
                 case 'suggest':     $out = self::widget_suggest($attr, $data); break;
                 case 'textbox':
+                case 'textfield':
                 case 'text':        $out = self::widget_text($attr, $data); break;
                 case 'editor':
+                case 'rich-editor':
+                case 'rich':
+                case 'wysiwyg-editor':
+                case 'wysiwyg':
+                case 'source-editor':
+                case 'source':
+                case 'syntax-editor':
+                case 'syntax':
+                case 'highlight-editor':
+                case 'highlighter':
                 case 'textarea':    $out = self::widget_textarea($attr, $data); break;
                 case 'date':        $out = self::widget_date($attr, $data); break;
                 case 'time':        $out = self::widget_time($attr, $data); break;
@@ -140,8 +181,8 @@ class HtmlWidget
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wclass = 'widget-separator'; 
-        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         return "<div class=\"$wclass\" $wstyle></div>";
     }
     
@@ -149,9 +190,9 @@ class HtmlWidget
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wclass = 'fa'; 
-        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        if (isset($attr['icon'])) $wclass .= ' fa-'.$attr['icon'];
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        if ( !empty($attr['icon']) ) $wclass .= ' fa-'.$attr['icon'];
         return "<i class=\"$wclass\" $wstyle></i>";
     }
     
@@ -161,11 +202,11 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets.js');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-delayable-overlay'; 
-        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wspinner = 'widget-spinner';
-        $wspinner .= isset($attr['spinner']) ? " {$attr['spinner']}" : " widget-spinner-dots";
+        $wspinner .= !empty($attr['spinner']) ? " {$attr['spinner']}" : " widget-spinner-dots";
         return <<<OUT
 <div id="$wid" class="$wclass" $wstyle $wextra>
 <div class="$wspinner"></div>
@@ -179,9 +220,9 @@ OUT;
         self::enqueue('scripts', 'htmlwidgets.js');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-disabable-overlay'; 
-        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         return <<<OUT
 <div id="$wid" class="$wclass" $wstyle $wextra>
 </div>
@@ -192,12 +233,12 @@ OUT;
     {
         //self::enqueue('styles', 'htmlwidgets.css');
         self::enqueue('scripts', 'htmlwidgets.js');
-        $wid = $attr["id"]; 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wclass = 'widget-morphable'; 
         $wmodes = (array)$attr['modes'];
-        $wmode_class = isset($attr['mode']) ? $attr['mode'] : 'mode-${MODE}';
-        $wshow_class = isset($attr['show']) ? $attr['show'] : 'show-if-${MODE}';
-        $whide_class = isset($attr['hide']) ? $attr['hide'] : 'hide-if-${MODE}';
+        $wmode_class = !empty($attr['mode']) ? $attr['mode'] : 'mode-${MODE}';
+        $wshow_class = !empty($attr['show']) ? $attr['show'] : 'show-if-${MODE}';
+        $whide_class = !empty($attr['hide']) ? $attr['hide'] : 'hide-if-${MODE}';
         $wselector = "#{$wid}.widget-morphable";
         $wshow_selector = array();
         $whide_selector = array();
@@ -230,7 +271,7 @@ OUT;
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $witems = (array)$attr['items'];
         
         $wctrl = "ctrl_{$wid}";
@@ -278,9 +319,9 @@ OUT;
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $wtabs = (array)$attr['tabs'];
-        //$wselected = isset($data['selected']) ? $data['selected'] : 0;
+        //$wselected = !empty($data['selected']) ? $data['selected'] : 0;
         
         $wctrl = "ctrl_{$wid}";
         $wcontrollers = "<input name=\"{$wctrl}\" checked type=\"radio\" id=\"tab_" . implode( "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"tab_", $wtabs ) . "\" class=\"widget-transition-controller widget-{$wctrl}-controller\"/>";
@@ -342,7 +383,7 @@ OUT;
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wcontext = isset($attr['context']) ? "{$attr['context']} " : "";
+        $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $wpages = (array)$attr['pages'];
         
         $wcontrollers = "<span id=\"page_" . implode( "\" class=\"widget-transition-controller widget-page-transition-controller\"></span><span id=\"page_", $wpages ) . "\" class=\"widget-transition-controller widget-page-transition-controller\"></span>";
@@ -410,17 +451,17 @@ OUT;
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wtitle = isset($data['title']) ? $data['title'] : '';
-        $wbuttons = isset($attr['buttons']) ? $attr['buttons'] : ''; 
-        $wcontent = isset($data['content']) ? $data['content'] : '';
-        $wclass = 'widget-dialog'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
+        $wcontent = !empty($data['content']) ? $data['content'] : '';
+        $wclass = 'widget-dialog'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wicon = '';
-        if ( isset($attr['icon']) )
+        if ( !empty($attr['icon']) )
         {
             $wicon = "<i class=\"fa fa-{$attr['icon']}\"></i>";
         }
-        if ( isset($attr["form"]) && $attr['form'] )
+        if ( !empty($attr["form"]) && $attr['form'] )
         {
             $wcontent = "<form id=\"{$wid}_form\">$wcontent</form>";
         }
@@ -440,18 +481,18 @@ OUT;
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'widget-tooltip'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']) )
+        $wclass = 'widget-tooltip'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr['icon']) )
         {
             $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
         }
-        elseif ( isset($attr['iconr']) )
+        elseif ( !empty($attr['iconr']) )
         {
             $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
         }
-        if ( isset($attr['tooltip']) )
+        if ( !empty($attr['tooltip']) )
         {
             if ( 'top' === $attr['tooltip'] )
                 $warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-bottom"></div>';
@@ -478,44 +519,44 @@ OUT;
     public static function widget_label( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wfor = $attr["for"];
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wfor = isset($attr["for"]) ? 'for="'.$attr["for"].'"' : '';
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr["title"]) ? $attr['title'] : $wtext;
-        $wclass = 'widget widget-label'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']) )
+        $wclass = 'widget widget-label'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr['icon']) )
         {
             $wclass .= ' widget-icon';
             $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
         }
-        if ( isset($attr['iconr']) )
+        if ( !empty($attr['iconr']) )
         {
             $wclass .= ' widget-icon-right';
             $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
         }
         $wdata = self::attr_data($attr);
         return <<<OUT
-<label id="$wid" for="$wfor" class="$wclass" title="$wtitle" $wstyle $wextra $wdata>$wtext</label>
+<label id="$wid" $wfor class="$wclass" title="$wtitle" $wstyle $wextra $wdata>$wtext</label>
 OUT;
     }
     
     public static function widget_link( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'widget-link'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']) )
+        $wclass = 'widget-link'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr['icon']) )
         {
             $wclass .= ' widget-icon';
             $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
         }
-        if ( isset($attr['iconr']) )
+        if ( !empty($attr['iconr']) )
         {
             $wclass .= ' widget-icon-right';
             $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
@@ -543,16 +584,16 @@ OUT;
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'widget widget-button'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        if ( isset($attr['icon']) )
+        $wclass = 'widget widget-button'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr['icon']) )
         {
             if ( empty($wtext) )  $wclass .= ' widget-icon-only';
             else $wclass .= ' widget-icon';
             $wtext = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>" . $wtext;
         }
-        if ( isset($attr['iconr']) )
+        if ( !empty($attr['iconr']) )
         {
             if ( empty($wtext) )  $wclass .= ' widget-icon-only';
             else $wclass .= ' widget-icon-right';
@@ -585,53 +626,53 @@ OUT;
     public static function widget_control( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wname = $attr["name"];
-        $wtype = isset($attr['type']) ? $attr['type'] : "checkbox";
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
-        $wchecked = isset($attr['checked']) && $attr['checked'] ? 'checked' : '';
-        $wclass = 'widget widget-control'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wchecked = !empty($attr['checked']) ? 'checked' : '';
+        $wclass = 'widget widget-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox';
         elseif ( "radio" === $wtype ) $wclass .= ' widget-radio';
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wstate = '';
         if ( isset($attr['state-on']) ) $wstate .= " data-state-on=\"{$attr['state-on']}\"";
         if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
         return <<<OUT
-<input type="$wtype" id="$wid" name="$wname" class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle" $wstate>&nbsp;</label>
+<input type="$wtype" id="$wid" class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle" $wstate>&nbsp;</label>
 OUT;
     }
     
     public static function widget_switch( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wname = $attr["name"];
-        $wtype = isset($attr['type']) ? $attr['type'] : "checkbox";
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
         $wvalue2 = isset($data['valueoff']) ? $data['valueoff'] : false;
         $wdual = false !== $wvalue2;
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
-        $wchecked = isset($attr['checked']) && $attr['checked'];
-        $wclass = "widget widget-switch"; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $wreverse = isset($attr["reverse"])&&$attr["reverse"];
+        $wchecked = !empty($attr['checked']);
+        $wclass = "widget widget-switch"; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wreverse = !empty($attr["reverse"]);
         $wiconon = '&nbsp;'; $wiconoff = '&nbsp;';
-        if ( isset($attr["iconon"]) && !isset($attr["iconoff"]) )
+        if ( !empty($attr["iconon"]) && empty($attr["iconoff"]) )
         {
             $wiconon = "<i class=\"fa fa-{$attr["iconon"]} not-negative\"></i>";
             $wiconoff = "<i class=\"fa fa-{$attr["iconon"]} negative\"></i>";
         }
-        elseif ( isset($attr["iconoff"]) && !isset($attr["iconon"]) )
+        elseif ( !empty($attr["iconoff"]) && empty($attr["iconon"]) )
         {
             $wiconon = "<i class=\"fa fa-{$attr["iconoff"]} positive\"></i>";
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]} not-positive\"></i>";
         }
-        elseif ( isset($attr["iconon"]) && isset($attr["iconoff"]) )
+        elseif ( !empty($attr["iconon"]) && !empty($attr["iconoff"]) )
         {
             $wiconon = "<i class=\"fa fa-{$attr["iconon"]}\"></i>";
             $wiconoff = "<i class=\"fa fa-{$attr["iconoff"]}\"></i>";
@@ -644,11 +685,11 @@ OUT;
             $wtype = 'radio';
             if ( $wchecked )
             {
-                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" name=\"$wname\" class=\" widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata checked /><input type=\"$wtype\" id=\"{$wid}-off\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata />";
+                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" $wname class=\" widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata checked /><input type=\"$wtype\" id=\"{$wid}-off\" $wname class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata />";
             }
             else
             {
-                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata /><input type=\"$wtype\" id=\"{$wid}-off\" name=\"$wname\" class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata checked />";
+                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" $wname class=\"widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata /><input type=\"$wtype\" id=\"{$wid}-off\" $wname class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata checked />";
             }
             if ( $wreverse ) 
             {
@@ -664,7 +705,7 @@ OUT;
         {
             // switch with one state for on/off
             if ( $wchecked ) $wchecked = 'checked';
-            $wstates = "<input type=\"$wtype\" id=\"$wid\" name=\"$wname\" class=\"widget-switch-state\" value=\"$wvalue\" $wextra $wdata $wchecked />";
+            $wstates = "<input type=\"$wtype\" id=\"$wid\" $wname class=\"widget-switch-state\" value=\"$wvalue\" $wextra $wdata $wchecked />";
             if ( $wreverse ) 
             {
                 $wclass .= ' reverse';
@@ -686,23 +727,24 @@ OUT;
     public static function widget_text( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
-        $wclass = 'widget widget-text'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wclass = 'widget widget-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         // text, number, email, url, tel etc..
-        $wtype = isset($attr["type"]) ? $attr["type"] : 'text';
+        $wtype = !empty($attr["type"]) ? $attr["type"] : 'text';
         $wicon = '';
         $wrapper_class = 'widget-wrapper';
-        if ( isset($attr['icon']) )
+        if ( !empty($attr['icon']) )
         {
             $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
-        if ( isset($attr['iconr']) )
+        if ( !empty($attr['iconr']) )
         {
             $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
@@ -711,37 +753,38 @@ OUT;
         if ( !empty($wicon) )
             return <<<OUT
 <span class="$wrapper_class" $wstyle>
-<input type="$wtype" id="$wid" name="$wname" title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
+<input type="$wtype" id="$wid" $wname title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
 $wicon
 </span>
 OUT;
         else
             return <<<OUT
-<input type="$wtype" id="$wid" name="$wname" title="$wtitle" class="$wclass" $wstyle $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
+<input type="$wtype" id="$wid" $wname title="$wtitle" class="$wclass" $wstyle $wextra placeholder="$wplaceholder" value="$wvalue" $wdata />
 OUT;
     }
     
     public static function widget_suggest( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
-        $wclass = 'widget widget-text widget-suggest'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wclass = 'widget widget-text widget-suggest'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wajax = $attr["ajax"];
         $wicon = '';
         $wrapper_class = 'widget-wrapper';
-        if ( isset($attr['icon']) )
+        if ( !empty($attr['icon']) )
         {
             $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
             $wicon .= "<span class=\"fa-wrapper right-fa widget-suggest-spinner\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
-        elseif ( isset($attr['iconr']) )
+        elseif ( !empty($attr['iconr']) )
         {
             $wicon .= "<span class=\"fa-wrapper left-fa widget-suggest-spinner\"><i id=\"$wid-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
             $wrapper_class .= ' widget-icon';
@@ -777,7 +820,7 @@ SCRIPT;
         self::enqueue('scripts', "widget-suggest-$wid", array($script), array('htmlwidgets.js'));
         return <<<OUT
 <span class="$wrapper_class" $wstyle>
-<input type="text" id="$wid" name="$wname" title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" autocomplete="off" $wdata />
+<input type="text" id="$wid" $wname title="$wtitle" class="$wclass" $wextra placeholder="$wplaceholder" value="$wvalue" autocomplete="off" $wdata />
 $wicon
 </span>
 OUT;
@@ -786,60 +829,89 @@ OUT;
     public static function widget_textarea( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
-        if ( isset($attr['editor']) && $attr['editor'] ) 
+        if ( !empty($attr['syntax-editor']) ) 
         {
-            $wclass = 'widget widget-editor'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wstyle = isset($attr["style"]) ? $attr["style"] : '';
-            $weditor = isset($attr['config']) ? json_encode($attr['config']) : '';
+            $defaults = array(
+             'mode'             => 'text/html'
+            ,'theme'            => 'default'
+            ,'lineWrapping'     => false
+            ,'lineNumbers'      => true
+            ,'indentUnit'       => 4
+            ,'indentWithTabs'   => false
+            ,'lint'             => false
+            ,'foldGutter'       => true
+            ,'gutters'          => array("CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter")
+            );
+            $wclass = 'widget widget-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
+            $weditor = json_encode(!empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults);
+            $script = <<<SCRIPT
+jQuery(function(\$){
+CodeMirror.fromTextArea(document.getElementById('$wid'), $weditor);
+});
+SCRIPT;
+            self::enqueue('styles', 'codemirror-styles');
+            self::enqueue('scripts', "widget-syntax-editor-$wid", array($script), array('codemirror'));
+            $wstyle = '';
+        }
+        elseif ( !empty($attr['wysiwyg-editor']) ) 
+        {
+            $defaults = array( );
+            $wclass = 'widget widget-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
+            $weditor = !empty($attr['config']) ? json_encode(array_merge($defaults,(array)$attr['config'])) : '';
             $script = <<<SCRIPT
 jQuery(function(\$){
 \$('#$wid').trumbowyg($weditor);
-\$('#$wid').closest('.trumbowyg-box').addClass('widget widget-editor-box').attr("style","$wstyle");
+\$('#$wid').closest('.trumbowyg-box').addClass('widget widget-wysiwyg-editor-box').attr("style","$wstyle");
 });
 SCRIPT;
-            self::enqueue('scripts', "widget-editor-$wid", array($script), array('trumbowyg'));
+            self::enqueue('styles', 'trumbowyg-styles');
+            self::enqueue('scripts', "widget-wysiwyg-editor-$wid", array($script), array('trumbowyg'));
             $wstyle = '';
         }
         else
         {
-            $wclass = 'widget widget-textarea'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+            $wclass = 'widget widget-textarea'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         }
         return <<<OUT
-<textarea id="$wid" name="$wname" title="$wtitle" class="$wclass" $wstyle $wextra placeholder="$wplaceholder" $wdata>$wvalue</textarea>
+<textarea id="$wid" $wname title="$wtitle" class="$wclass" $wstyle $wextra placeholder="$wplaceholder" $wdata>$wvalue</textarea>
 OUT;
     }
     
     public static function widget_date( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
-        $wclass = 'widget widget-text widget-date'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
-        $wformat = isset($attr["format"]) ? $attr["format"] : 'Y-m-d';
+        $wclass = 'widget widget-text widget-date'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wformat = !empty($attr["format"]) ? $attr["format"] : 'Y-m-d';
         $wicon = '';
         $wrapper_class = 'widget-wrapper';
-        if ( isset($attr['icon']) )
+        if ( !empty($attr['icon']) )
         {
             $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
             $wrapper_class .= ' widget-icon';
         }
-        if ( isset($attr['iconr']) )
+        if ( !empty($attr['iconr']) )
         {
             $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
         }
-        if ( !isset($attr['icon']) && !isset($attr['iconr']) )
+        if ( empty($attr['icon']) && empty($attr['iconr']) )
         {
             $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-calendar\"></i></span>";
             $wrapper_class .= ' widget-icon-right';
@@ -858,7 +930,7 @@ SCRIPT;
         self::enqueue('scripts', "widget-datetime-$wid", array($script), array('htmlwidgets.js'));
         return <<<OUT
 <span class="$wrapper_class" $wstyle>
-<input type="text" id="$wid" name="$wname" title="$wtitle" class="$wclass" placeholder="$wplaceholder" value="$wvalue" $wextra $wdata />
+<input type="text" id="$wid" $wname title="$wtitle" class="$wclass" placeholder="$wplaceholder" value="$wvalue" $wextra $wdata />
 $wicon
 </span>
 OUT;
@@ -867,8 +939,9 @@ OUT;
     public static function widget_time( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
-        $wformat = isset($attr['format']) ? explode(":", $attr['format']) : array("h","m","s");
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? $attr["name"] : '';
+        $wformat = !empty($attr['format']) ? explode(":", $attr['format']) : array("h","m","s");
         if (isset($data['value'])) 
         {
             $wvalue = is_array($data['value']) ? $data['value'] : explode(':',$data['value']);
@@ -878,9 +951,9 @@ OUT;
         {
             $wvalue = array("00", "00", "00");
         }
-        $wclass = 'widget widget-time'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wclass = 'widget widget-time'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
         $time_options = array(
             'h'=>array(),
@@ -900,7 +973,8 @@ OUT;
         $wtimes = array();
         foreach($wformat as $t)
         {
-            $wtimes[] = '<select class="widget-time-component" id="'.$wid.'_'.$t.'" name="'.$wname.'['.$t.']">'.implode('',$time_options[$t]).'</select>';
+            $wnam = !empty($wname) ? 'name="'.$wname.'['.$t.']"' : '';
+            $wtimes[] = '<select class="widget-time-component" id="'.$wid.'_'.$t.'" '.$wnam.'>'.implode('',$time_options[$t]).'</select>';
         }
         $wtimes = implode('<span class="widget-time-sep">:</span>', $wtimes);
         return <<<OUT
@@ -913,18 +987,16 @@ OUT;
     public static function widget_select( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wname = $attr["name"];
-        $wdropdown = isset($attr['dropdown']) && $attr['dropdown'];
-        if ( $wdropdown )
-            $wclass = "widget widget-dropdown widget-state-default";
-        else
-            $wclass = "widget widget-select"; 
-        if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wdropdown = !empty($attr['dropdown']);
+        $wclass = $wdropdown ? "widget widget-dropdown widget-state-default" : "widget widget-select"; 
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wselected = isset($data['selected']) ? (array)$data['selected'] : array();
         $woptions = '';
-        foreach($data['options'] as $opt)
+        foreach((array)$data['options'] as $opt)
         {
             if (is_array($opt))
             {
@@ -943,14 +1015,14 @@ OUT;
         if ( $wdropdown )
             return <<<OUT
 <span class="$wclass" $wstyle>
-<select id="$wid" name="$wname" class="widget-dropdown-select widget-state-default" $wextra $wdata>
+<select id="$wid" $wname class="widget-dropdown-select widget-state-default" $wextra $wdata>
 $woptions
 </select>
 </span>
 OUT;
         else
             return <<<OUT
-<select id="$wid" name="$wname" class="$wclass" $wstyle $wextra $wdata>
+<select id="$wid" $wname class="$wclass" $wstyle $wextra $wdata>
 $woptions
 </select>
 OUT;
@@ -960,9 +1032,9 @@ OUT;
     {
         self::enqueue('styles', 'htmlwidgets.css');
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); $wmenu = $data['menu'];
-        $wclass = 'widget widget-dropdown-menu'; if ( isset($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        $wclass = 'widget widget-dropdown-menu'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
         return <<<OUT
 <div id="$wid" class="$wclass" $wstyle $wextra $wdata>$wmenu</div>
@@ -976,9 +1048,9 @@ OUT;
         $wclass = 'widget widget-table'; 
         if ( !isset($attr['stripped']) || $attr['stripped'] ) $wclass .= ' stripped';
         if ( !isset($attr['responsive']) || $attr['responsive'] ) $wclass .= ' responsive';
-        if ( isset($attr['class']) ) $wclass .= ' '.$attr['class'];
-        $wstyle = isset($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = isset($attr["extra"]) ? $attr["extra"] : '';
+        if ( !empty($attr['class']) ) $wclass .= ' '.$attr['class'];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wcolumns = '';
         $data_cols = $data['columns'];
         $column_keys = array_keys($data_cols);
@@ -1008,7 +1080,7 @@ OUT;
             "\$('#{$wid}_filter').find('input').addClass('widget-text');"
             ,"\$('#{$wid}_length').find('select').addClass('widget-select');"
             );
-            if ( isset($attr['controls']) ) 
+            if ( !empty($attr['controls']) ) 
             {
                 $ctrls = (array)$attr['controls'];
                 foreach($ctrls as $ctrl)
@@ -1027,6 +1099,7 @@ jQuery(function(\$){
 $wcontrols
 });
 SCRIPT;
+            self::enqueue('styles', 'jquery.dataTables.css');
             self::enqueue('scripts', "widget-datatable-$wid", array($script), array('jquery.dataTables'));
         }
         return <<<OUT

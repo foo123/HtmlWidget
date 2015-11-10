@@ -95,12 +95,14 @@
 {
     display: table;
 }
-.widget.widget-editor-box
+.widget.widget-syntax-editor-box,
+.widget.widget-wysiwyg-editor-box
 {
     display: block;
 }
 .widget.widget-textarea,
-.widget.widget-editor,
+.widget.widget-syntax-editor,
+.widget.widget-wysiwyg-editor,
 .widget.widget-table
 {
     vertical-align: top;
@@ -125,21 +127,23 @@
     -o-border-radius: 3px;
     border-radius: 3px;
 }
-.widget-editor
+.widget-syntax-editor,
+.widget-wysiwyg-editor
 {
     position: relative;
     display: inline-block;
 }
 .widget-text,
 .widget-textarea,
-.widget-editor
+.widget-syntax-editor,
+.widget-wysiwyg-editor
 {
     border: 1px solid transparent;
     border-color: #ccc;
     color: #333;
     padding: 8px;
 }
-.widget-editor-box.trumbowyg.trumbowyg-box
+.widget-wysiwyg-editor-box.trumbowyg.trumbowyg-box
 {
     position: relative;
     display: block;
