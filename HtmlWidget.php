@@ -42,7 +42,7 @@ class HtmlWidget
         {
             // DataTables
             $assets[] = array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css');
-            $assets[] = array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery'))l
+            $assets[] = array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery'));
             
             // CodeMirror
             $assets[] = array('styles', 'codemirror.css', $base.'css/codemirror.min.css');
@@ -642,7 +642,7 @@ OUT;
         if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
         return <<<OUT
-<input type="$wtype" id="$wid" class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle" $wstate>&nbsp;</label>
+<input type="$wtype" id="$wid" $wname class="$wclass" $wstyle $wextra value="$wvalue" $wdata $wchecked /><label for="$wid" title="$wtitle" $wstate>&nbsp;</label>
 OUT;
     }
     
@@ -1000,7 +1000,8 @@ OUT;
         {
             if (is_array($opt))
             {
-                $key = array_shift(array_keys($opt));
+                $keys = array_keys($opt);
+                $key = array_shift($keys);
                 $val = $opt[$key];
             }
             else
