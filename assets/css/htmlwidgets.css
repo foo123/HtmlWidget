@@ -1898,6 +1898,45 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
 }
+.widget-collapsable-panel
+{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+input.widget-collapsable-panel-controller
+{
+    position: absolute;
+    display: none !important;
+}
+.widget-collapsable-panel > .widget-collapsable-panel-content
+{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 3000px;
+    -webkit-transition: max-height 0.3s ease-in-out;
+    -moz-transition: max-height 0.3s ease-in-out;
+    -ms-transition: max-height 0.3s ease-in-out;
+    -o-transition: max-height 0.3s ease-in-out;
+    transition: max-height 0.3s ease-in-out;
+}
+.widget-collapsable-panel > input.widget-collapsable-panel-controller:checked  ~ .widget-collapsable-panel-content
+{
+    max-height: 0px;
+    -webkit-transition: max-height 0.3s ease-in-out;
+    -moz-transition: max-height 0.3s ease-in-out;
+    -ms-transition: max-height 0.3s ease-in-out;
+    -o-transition: max-height 0.3s ease-in-out;
+    transition: max-height 0.3s ease-in-out;
+}
 .widget-page-transition-controller,
 .widget-transition-controller
 {
