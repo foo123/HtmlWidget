@@ -37,11 +37,13 @@ class HtmlWidget
         $base = $base . ('/' === substr($base, -1)  ? 'assets/' : '/assets/');
         $assets = array(
          array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.min.css', array('responsive.css','font-awesome.css'))
-        ,array('scripts', 'datex.js', $base.'js/DateX.min.js')
-        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery','datex.js'))
+        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery','datex'))
         );
         if ( true === $full )
         {
+            // DateX
+            $assets[] = array('scripts', 'datex', $base.'js/DateX.min.js');
+            
             // DataTables
             $assets[] = array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css');
             $assets[] = array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery'));
@@ -444,11 +446,11 @@ OUT;
     -o-transform: {$wtransform2};
     transform: {$wtransform2};
     
-    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
 }
 OUT;
         // rest pages
@@ -481,11 +483,11 @@ OUT;
     -o-transform: {$wtransform1};
     transform: {$wtransform1};
     
-    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
 }
 OUT;
         self::enqueue('styles', "widget-pages-$wid", array($wstyle), array());
@@ -656,15 +658,25 @@ OUT;
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wchecked = !empty($attr['checked']) ? 'checked' : '';
         $wclass = 'widget widget-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox';
-        elseif ( "radio" === $wtype ) $wclass .= ' widget-radio';
+        if ( !empty($attr['image']) )
+        {
+            if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox-image';
+            elseif ( "radio" === $wtype ) $wclass .= ' widget-radio-image';
+            $wimg = '<span style="background-image:url('.$attr['image'].');"></span>';
+        }
+        else
+        {
+            if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox';
+            elseif ( "radio" === $wtype ) $wclass .= ' widget-radio';
+            $wimg = '&nbsp;';
+        }
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wstate = '';
         if ( isset($attr['state-on']) ) $wstate .= " data-state-on=\"{$attr['state-on']}\"";
         if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
-        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wclass\" $wstyle $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" $wstate>&nbsp;</label>";
+        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wclass\" $wstyle $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" $wstate>$wimg</label>";
     }
     
     public static function w_switch( $attr, $data )

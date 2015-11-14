@@ -430,11 +430,76 @@
     color: #ccc;
 }
 
+input[type=radio].widget-radio-image,
+input[type=checkbox].widget-checkbox-image,
 input[type=radio].widget-radio,
 input[type=checkbox].widget-checkbox
 {
     display: none !important;
 }
+input[type=radio].widget-radio-image + label,
+input[type=checkbox].widget-checkbox-image + label
+{
+    display: inline-block;
+    position: relative;
+    max-width: 100%;
+    background: none;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    border-radius: 6px;
+}
+input[type=radio].widget-radio-image + label > span,
+input[type=checkbox].widget-checkbox-image + label > span
+{
+    display: block !important;
+    position: relative;
+    padding: 0; margin: 0;
+    -webkit-box-sizing:padding-box;
+    -moz-box-sizing:padding-box;
+    -ms-box-sizing:padding-box;
+    -o-box-sizing:padding-box;
+    box-sizing:padding-box;
+    overflow: hidden; z-index: 2;
+    width: 100%;  height: 0; padding-bottom: 100%; /* 1:1 */
+    border: 4px solid rgba(200,200,200,.9);
+    border-radius: inherit;
+    background-color: transparent;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.5);
+    -webkit-transition: all 0.15s ease-out;
+    -moz-transition: all 0.15s ease-out;
+    -ms-transition: all 0.15s ease-out;
+    -o-transition: all 0.15s ease-out;
+    transition: all 0.15s ease-out;
+    opacity: .5;
+}
+input[type=radio].widget-radio-image + label:hover > span,
+input[type=checkbox].widget-checkbox-image + label:hover > span
+{
+    opacity: 1;
+}
+input[type=radio].widget-radio-image:checked + label > span,
+input[type=checkbox].widget-checkbox-image:checked + label > span
+{
+    border-color: rgba(0,101,183,1);
+    background-size: 125% auto;
+    background-position: 15% 15%;
+    -webkit-transition: all 0.15s ease-out;
+    -moz-transition: all 0.15s ease-out;
+    -ms-transition: all 0.15s ease-out;
+    -o-transition: all 0.15s ease-out;
+    transition: all 0.15s ease-out;
+    opacity: 1;
+}
+/*label.img.luxury > span
+{
+    background-image: url(./photos/step2/room/luxury.jpg);
+}*/
 input.widget-radio + label,
 input.widget-checkbox + label
 {
@@ -1970,41 +2035,41 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 }
 .widget-panel:not(.widget-side-panel-left):not(.widget-side-panel-right) > .widget-panel-content
 {
-    max-height: 3000px;
-    -webkit-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    max-height: 1500px;
+    -webkit-transition: max-height 0.3s ease-in;
+    -moz-transition: max-height 0.3s ease-in;
+    -ms-transition: max-height 0.3s ease-in;
+    -o-transition: max-height 0.3s ease-in;
+    transition: max-height 0.3s ease-in;
 }
 .widget-panel.widget-side-panel-right > .widget-panel-content,
 .widget-panel.widget-side-panel-left > .widget-panel-content
 {
-    max-width: 3000px;
-    -webkit-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    max-width: 1500px;
+    -webkit-transition: max-width 0.3s ease-in;
+    -moz-transition: max-width 0.3s ease-in;
+    -ms-transition: max-width 0.3s ease-in;
+    -o-transition: max-width 0.3s ease-in;
+    transition: max-width 0.3s ease-in;
 }
 .widget-panel:not(.widget-side-panel-left):not(.widget-side-panel-right) > input.widget-panel-controller:checked  ~ .widget-panel-content
 {
     max-height: 0px;
-    -webkit-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
-    transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: max-height 0.3s ease-out;
+    -moz-transition: max-height 0.3s ease-out;
+    -ms-transition: max-height 0.3s ease-out;
+    -o-transition: max-height 0.3s ease-out;
+    transition: max-height 0.3s ease-out;
 }
 .widget-panel.widget-side-panel-right > input.widget-panel-controller:checked  ~ .widget-panel-content,
 .widget-panel.widget-side-panel-left > input.widget-panel-controller:checked  ~ .widget-panel-content
 {
     max-width: 0px;
-    -webkit-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
-    transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: max-width 0.3s ease-out;
+    -moz-transition: max-width 0.3s ease-out;
+    -ms-transition: max-width 0.3s ease-out;
+    -o-transition: max-width 0.3s ease-out;
+    transition: max-width 0.3s ease-out;
 }
 .widget-tabs-wrapper,
 .widget-pages-wrapper
@@ -2035,11 +2100,11 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     -ms-transform: translateX(100%);
     -o-transform: translateX(100%);
     transform: translateX(100%);
-    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);
-    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .3s ease;
+    -moz-transition: -moz-transform .3s ease;
+    -ms-transition: -ms-transform .3s ease;
+    -o-transition: -o-transform .3s ease;
+    transition: transform .3s ease;
 }
 /*.widget-tab,
 .widget-page
@@ -2076,11 +2141,11 @@ transform-style: preserve-3d;*/
     box-sizing: border-box;
     position:relative;
     max-height: 0;
-    -webkit-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
-    -o-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
-    transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: max-height .3s ease;
+    -moz-transition: max-height .3s ease;
+    -ms-transition: max-height .3s ease;
+    -o-transition: max-height .3s ease;
+    transition: max-height .3s ease;
 }
 .widget-tab.widget-animated
 {

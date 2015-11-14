@@ -10,7 +10,7 @@
 *  https://github.com/foo123/DateX
 *
 **/
-!function($, DateX, HtmlWidget, undef){
+!function(window, $, undef){
 "use strict";
 
 var htmlwidget = { VERSION: "0.5.0" }, slice = Array.prototype.slice;
@@ -1140,21 +1140,40 @@ Pikaday.prototype = {
 return Pikaday;
 })();
 // custom date codecs and locale
-htmlwidget.datetime.locale = DateX.defaultLocale;
+//htmlwidget.datetime.locale = DateX.defaultLocale;
 htmlwidget.datetime.encoder = function encoder( format, locale ) {
-    locale = locale || htmlwidget.datetime.locale;
-    return function( date/*, pikaday*/ ) {
-        //var opts = pikaday._o;
-        return DateX.format( date, format, locale );
-    };
+    if ( 'undefined' !== typeof window.DateX )
+    {
+        locale = locale || DateX.defaultLocale;
+        return function( date/*, pikaday*/ ) {
+            //var opts = pikaday._o;
+            return DateX.format( date, format, locale );
+        };
+    }
+    else
+    {
+        return function( date ) {
+            return date.toDateString( );
+        };
+    }
 };
 htmlwidget.datetime.decoder = function decoder( format, locale ) {
-    locale = locale || htmlwidget.datetime.locale;
-    var parse = DateX.getParser( format, locale );
-    return function( date/*, pikaday*/ ) {
-        //var opts = pikaday._o;
-        return !!data && parse( date );
-    };
+    if ( 'undefined' !== typeof window.DateX )
+    {
+        locale = locale || DateX.defaultLocale;
+        var date_parse = DateX.getParser( format, locale );
+        return function( date/*, pikaday*/ ) {
+            //var opts = pikaday._o;
+            return !!date && date_parse( date );
+        };
+    }
+    else
+    {
+
+        return function( date ) {
+            return new Date( Date.parse( date ) );
+        };
+    }
 };
 
 
@@ -1391,7 +1410,7 @@ return RemoteList;
 
 })();
 
-/*if ( HtmlWidget )
+/*if ( 'undefined' !== typeof window.HtmlWidget )
 {
     $.HtmlWidget = function( widget, attr, data ) {
         return $( HtmlWidget.widget( widget, attr, data ) );
@@ -1411,4 +1430,4 @@ $(function(){
 });
 
 
-}(jQuery, DateX, 'undefined' !== typeof HtmlWidget ? HtmlWidget : null);
+}(window, jQuery);

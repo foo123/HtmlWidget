@@ -81,14 +81,16 @@ var HtmlWidget = self = {
         base = base + ('/' === base.slice(-1) ? 'assets/' : '/assets/');
         var assets = [
          ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.min.css', ['responsive.css','font-awesome.css']]
-        ,['scripts', 'datex.js', base+'js/DateX.min.js']
-        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.min.js', ['jquery','datex.js']]
+        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.min.js', ['jquery','datex']]
         ];
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
+            // DateX
+             ['scripts', 'datex', base+'js/DateX.min.js']
+            
             // DataTables
-             ['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.min.css']
+            ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.min.css']
             ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.min.js', ['jquery']]
              
             // CodeMirror
@@ -504,11 +506,11 @@ var HtmlWidget = self = {
     -o-transform: '+wtransform2+';\
     transform: '+wtransform2+';\
     \
-    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);\
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
 }\
 ';
         // rest pages
@@ -539,11 +541,11 @@ var HtmlWidget = self = {
     -o-transform: '+wtransform1+';\
     transform: '+wtransform1+';\
     \
-    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);\
-    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);\
+    -webkit-transition: -webkit-transform .3s ease;\
+    -moz-transition: -moz-transform .3s ease;\
+    -ms-transition: -ms-transform .3s ease;\
+    -o-transition: -o-transform .3s ease;\
+    transition: transform .3s ease;\
 }\
 ';
         self.enqueue('styles', "widget-pages-"+wid, [wstyle], []);
@@ -710,7 +712,7 @@ var HtmlWidget = self = {
     }
     
     ,w_control: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate;
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -720,15 +722,25 @@ var HtmlWidget = self = {
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
         wclass = 'widget widget-control'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        if ( "checkbox" === wtype ) wclass += ' widget-checkbox';
-        else if ( "radio" === wtype ) wclass += ' widget-radio';
+        if ( !empty(attr,'image') )
+        {
+            if ( "checkbox" === wtype ) wclass += ' widget-checkbox-image';
+            else if ( "radio" === wtype ) wclass += ' widget-radio-image';
+            wimg = '<span style="background-image:url('+attr['image']+');"></span>';
+        }
+        else
+        {
+            if ( "checkbox" === wtype ) wclass += ' widget-checkbox';
+            else if ( "radio" === wtype ) wclass += ' widget-radio';
+            wimg = '&nbsp;';
+        }
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wstate = '';
         if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
         if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         wdata = self.attr_data(attr);
-        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" '+wstate+'>&nbsp;</label>';
+        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" '+wstate+'>'+wimg+'</label>';
     }
     
     ,w_switch: function( attr, data ) {
@@ -1176,7 +1188,7 @@ $("#'+wid+'").closest(".dataTables_wrapper").addClass("widget-table-wrapper");\
     
     ,w_animation: function( attr, data )  {
         var wid, wselector, wanimation, wtransition, wduration, wdelay, wtiming_function, weasing, witeration_count, wfill_mode, wanimation_def;
-        self::enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_animation');
         wselector = isset(attr,"selector") ? attr["selector"] : '.animate-'+wid;
         wanimation = !empty(attr,'animation') ? attr['animation'] : '';
@@ -1268,9 +1280,8 @@ else if ( isWebWorker )
 }
 else
 {
-    var this_script = document.getElementsByTagName('script'), link = document.createElement('a');
-    link.href = this_script[this_script.length-1].src||'./'; // absolute uri
-    HtmlWidget.BASE = link.href.split('/').slice(0,-1).join('/');
+    var this_script = document.getElementsByTagName('script');
+    HtmlWidget.BASE = (this_script[this_script.length-1].src||'./').split('/').slice(0,-1).join('/'); // absolute uri
 }
 
 // export it
