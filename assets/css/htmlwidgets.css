@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.1
+*  @version: 0.5.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -1884,7 +1884,8 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 }
 
 .separator,
-.widget-separator
+.widget-separator,
+.widget-sep
 {
     position: relative;
     display: block;
@@ -1898,75 +1899,113 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
 }
-.widget-collapsable-panel
-{
-    position: relative;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    box-sizing: border-box;
-}
-input.widget-collapsable-panel-controller
-{
-    position: absolute;
-    display: none !important;
-}
-.widget-collapsable-panel > .widget-collapsable-panel-content
-{
-    position: relative;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    box-sizing: border-box;
-    overflow: hidden;
-    max-height: 3000px;
-    -webkit-transition: max-height 0.3s ease-in-out;
-    -moz-transition: max-height 0.3s ease-in-out;
-    -ms-transition: max-height 0.3s ease-in-out;
-    -o-transition: max-height 0.3s ease-in-out;
-    transition: max-height 0.3s ease-in-out;
-}
-.widget-collapsable-panel > input.widget-collapsable-panel-controller:checked  ~ .widget-collapsable-panel-content
-{
-    max-height: 0px;
-    -webkit-transition: max-height 0.3s ease-in-out;
-    -moz-transition: max-height 0.3s ease-in-out;
-    -ms-transition: max-height 0.3s ease-in-out;
-    -o-transition: max-height 0.3s ease-in-out;
-    transition: max-height 0.3s ease-in-out;
-}
-.widget-page-transition-controller,
-.widget-transition-controller
+.widget-transition-controller,
+.widget-page-controller
 {
     position: fixed !important;
     height: 0;
-    position: absolute;
     visibility: hidden;
     z-index: -1;
 }
-/*
-.widget-controllable
+.widget-panel-controller
 {
-    max-height: 0;
+    position: absolute !important;
+    display: none;
+    height: 0;
+    visibility: hidden;
+    z-index: -1;
+}
+.widget-panel
+{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.widget-panel > .widget-panel-header
+{
+    position: relative;
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.widget-panel > .widget-panel-header > .widget-panel-controller-button,
+.widget-panel > .widget-panel-controller-button
+{
+    position: absolute;
+    display: inline-block;
+    cursor: pointer !important;
+    right: 10px; top: 50%;
+    -webkit-transform: translate(0px, -50%);
+    -moz-transform: translate(0px, -50%);
+    -ms-transform: translate(0px, -50%);
+    -o-transform: translate(0px, -50%);
+    transform: translate(0px, -50%);
+}
+.widget-panel > input.widget-panel-controller:not(:checked)  + .widget-panel-header  > .widget-panel-controller-button  > .fa::before,
+.widget-panel > input.widget-panel-controller:not(:checked)  + .widget-panel-controller-button  > .fa::before
+{
+    content: "\f01b";
+}
+.widget-panel > input.widget-panel-controller:checked  + .widget-panel-header  > .widget-panel-controller-button  > .fa::before,
+.widget-panel > input.widget-panel-controller:checked  + .widget-panel-controller-button  > .fa::before
+{
+    content: "\f01a";
+}
+.widget-panel > .widget-panel-content
+{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
     overflow: hidden;
-    -webkit-transition: max-height 0.5s ease-out;
-    -moz-transition: max-height 0.5s ease-out;
-    -ms-transition: max-height 0.5s ease-out;
-    -o-transition: max-height 0.5s ease-out;
-    transition: max-height 0.5s ease-out;
 }
-.widget-controllable.widget-controller-checked
+.widget-panel:not(.widget-side-panel-left):not(.widget-side-panel-right) > .widget-panel-content
 {
-    max-height: 900px;
-    -webkit-transition: max-height 0.5s ease-in;
-    -moz-transition: max-height 0.5s ease-in;
-    -ms-transition: max-height 0.5s ease-in;
-    -o-transition: max-height 0.5s ease-in;
-    transition: max-height 0.5s ease-in;
+    max-height: 3000px;
+    -webkit-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
 }
-*/
+.widget-panel.widget-side-panel-right > .widget-panel-content,
+.widget-panel.widget-side-panel-left > .widget-panel-content
+{
+    max-width: 3000px;
+    -webkit-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+}
+.widget-panel:not(.widget-side-panel-left):not(.widget-side-panel-right) > input.widget-panel-controller:checked  ~ .widget-panel-content
+{
+    max-height: 0px;
+    -webkit-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+    transition: max-height 0.3s cubic-bezier(0, 1, 0.5, 1);
+}
+.widget-panel.widget-side-panel-right > input.widget-panel-controller:checked  ~ .widget-panel-content,
+.widget-panel.widget-side-panel-left > input.widget-panel-controller:checked  ~ .widget-panel-content
+{
+    max-width: 0px;
+    -webkit-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+    transition: max-width 0.3s cubic-bezier(0, 1, 0.5, 1);
+}
 .widget-tabs-wrapper,
 .widget-pages-wrapper
 {
@@ -1996,12 +2035,38 @@ input.widget-collapsable-panel-controller
     -ms-transform: translateX(100%);
     -o-transform: translateX(100%);
     transform: translateX(100%);
-    -webkit-transition: -webkit-transform .3s ease;
-    -moz-transition: -moz-transform .3s ease;
-    -ms-transition: -ms-transform .3s ease;
-    -o-transition: -o-transform .3s ease;
-    transition: transform .3s ease;
+    -webkit-transition: -webkit-transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: -moz-transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: -ms-transform .3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: -o-transform .3s cubic-bezier(0, 1, 0.5, 1);
+    transition: transform .3s cubic-bezier(0, 1, 0.5, 1);
 }
+/*.widget-tab,
+.widget-page
+{
+    -webkit-transform: translateX(100%);
+    -moz-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -o-transform: translateX(100%);
+    transform: translateX(100%);
+}
+*/
+/* using 3D transform should be faster than 2D transform, using optimised layers rendering */
+/*
+.widget-tab.widget-3d,
+.widget-page.widget-3d
+{
+    -webkit-transform: translate3d(100%,0px,0px);
+    -moz-transform: translate3d(100%,0px,0px);
+    -ms-transform: translate3d(100%,0px,0px);
+    -o-transform: translate3d(100%,0px,0px);
+    transform: translate3d(100%,0px,0px);
+}
+*/
+/*-webkit-transform-style: preserve-3d;
+-moz-transform-style: preserve-3d;
+-ms-transform-style: preserve-3d;
+transform-style: preserve-3d;*/
 .widget-accordeon-item
 {
     -webkit-box-sizing: border-box;
@@ -2011,11 +2076,11 @@ input.widget-collapsable-panel-controller
     box-sizing: border-box;
     position:relative;
     max-height: 0;
-    -webkit-transition: max-height .3s ease;
-    -moz-transition: max-height .3s ease;
-    -ms-transition: max-height .3s ease;
-    -o-transition: max-height .3s ease;
-    transition: max-height .3s ease;
+    -webkit-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
+    -o-transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
+    transition: max-height .3s cubic-bezier(0, 1, 0.5, 1);
 }
 .widget-tab.widget-animated
 {
@@ -2044,6 +2109,12 @@ input.widget-collapsable-panel-controller
     -o-animation-iteration-count: 1;
     animation-iteration-count: 1;
     
+    -webkit-animation-timing-function: ease;
+    -moz-animation-timing-function: ease;
+    -ms-animation-timing-function: ease;
+    -o-animation-timing-function: ease;
+    animation-timing-function: ease;
+    
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     -ms-animation-fill-mode: forwards;
@@ -2054,16 +2125,27 @@ input.widget-collapsable-panel-controller
 [class|="widget"]:read-only,
 .widget:read-only
 {
-    cursor: not-allowed !important;
+    /*cursor: not-allowed !important;*/
 }
 .widget-wrapper > .widget:disabled ~ .fa-wrapper,
 [class|="widget"]:disabled,
 .widget:disabled
 {
-    cursor: not-allowed !important;
+    /*cursor: not-allowed !important;*/
     opacity: 0.6 !important;
 }
 /* widget FX and auxiliaries */
+/*timing-function cubic-bezier(0, 1, 0.5, 1);*/
+/*.widget-fx-blur
+{
+    filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='blur'><feGaussianBlur stdDeviation='4' /></filter></svg>#blur");
+    filter: progid:DXImageTransform.Microsoft.Blur(pixelradius=4);
+    -webkit-filter: blur(4px);
+    -moz-filter: blur(4px);
+    -o-filter: blur(4px);
+    -ms-filter: blur(4px);
+    filter: blur(4px);
+}*/
 @-webkit-keyframes widget-aux-show
 {
     0% { z-index: 10; opacity: 1; }
@@ -2094,6 +2176,16 @@ input.widget-collapsable-panel-controller
     0% { transform: translateX(100%); }
     100% { transform: translateX(0px);}
 }
+@-webkit-keyframes widget-fx-slidein-3d
+{
+    0% { -webkit-transform: translate3d(100%,0px,0px); }
+    100% { -webkit-transform: translate3d(0px,0px,0px);}
+}
+@keyframes widget-fx-slidein-3d
+{
+    0% { transform: translate3d(100%,0px,0px); }
+    100% { transform: translate3d(0px,0px,0px);}
+}
 @-webkit-keyframes widget-fx-slideout
 {
     0% { transform: translateX(0px); }
@@ -2103,6 +2195,16 @@ input.widget-collapsable-panel-controller
 {
     0% { transform: translateX(0px); }
     100% { transform: translateX(-100%); }
+}
+@-webkit-keyframes widget-fx-slideout-3d
+{
+    0% { transform: translate3d(0px,0px,0px); }
+    100% { transform: translate3d(-100%,0px,0px); }
+}
+@keyframes widget-fx-slideout-3d
+{
+    0% { transform: translate3d(0px,0px,0px); }
+    100% { transform: translate3d(-100%,0px,0px); }
 }
 @-webkit-keyframes widget-fx-spindots 
 {
