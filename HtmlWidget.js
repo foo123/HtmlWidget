@@ -184,6 +184,9 @@ var HtmlWidget = self = {
             case 'end_panel':
             case 'panel_end':   out = self.w_panel_end(attr, data); break;
             case 'dialog':      out = self.w_dialog(attr, data); break;
+            case 'modal':       out = self.w_modal(attr, data); break;
+            case 'end_modal':
+            case 'modal_end':   out = self.w_modal_end(attr, data); break;
             case 'tooltip':     out = self.w_tooltip(attr, data); break;
             case 'link':        out = self.w_link(attr, data); break;
             case 'button':      out = self.w_button(attr, data); break;
@@ -576,6 +579,28 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+'</div><div class="widget-dialog-content">'+wcontent+'</div><div class="widget-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
+    ,w_modal: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wclosebt, woverlay;
+        self.enqueue('styles', 'htmlwidgets.css');
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'widget-modal widget-dialog'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wtitle = isset(data,'title') ? data['title'] : ''; 
+        wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
+        wclosebt = self.w_label({'for':'modal_'+wid,'title':'Close','icon':'times-circle','class':'widget-dialog-close'},{});
+        woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="widget-modal-overlay"></label>' : '<div class="widget-modal-overlay"></div>';
+        wdata = self.attr_data(attr);
+        return '<input id="modal_'+wid+'" type="checkbox" class="widget-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+wclosebt+'</div><div class="widget-dialog-content">';
+    }
+    
+    ,w_modal_end: function( attr, data ) {
+        var wbuttons;
+        wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
+        return '</div><div class="widget-dialog-buttons">'+wbuttons+'</div></div>';
+    }
+    
     ,w_tooltip: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
         self.enqueue('styles', 'htmlwidgets.css');
@@ -635,7 +660,8 @@ var HtmlWidget = self = {
             wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
         wdata = self.attr_data(attr);
-        return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtext+'</label>';
+        // iOS needs an onlick attribute to handle lable update if used as controller
+        return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+' '+wdata+'>'+wtext+'</label>';
     }
     
     ,w_link: function( attr, data ) {
@@ -662,7 +688,7 @@ var HtmlWidget = self = {
         if ( isset(attr,'for') )
         {
             wfor = attr['for'];
-            return '<label id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" for="'+wfor+'" '+wdata+'>'+wtext+'</label>';
+            return '<label id="'+wid+'" class="'+wclass+'" '+wstyle+' onclick="" '+wextra+' title="'+wtitle+'" for="'+wfor+'" '+wdata+'>'+wtext+'</label>';
         }
         else
         {
@@ -697,7 +723,7 @@ var HtmlWidget = self = {
         if ( isset(attr,'for') )
         {
             wfor = attr['for'];
-            return '<label id="'+wid+'" for="'+wfor+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</label>';
+            return '<label id="'+wid+'" for="'+wfor+'" class="'+wclass+'" '+wstyle+' onclick="" '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+'</label>';
         }
         else if ( isset(attr,'href') )
         {
@@ -1094,7 +1120,10 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
             woptions += "<option value=\""+key+"\""+selected+">"+val+"</option>";
         }
         if ( !empty(attr,'placeholder') )
-            woptions = "<option value=\"\" class=\"dummy\" disabled=\"disabled\""+(has_selected?'':' selected="selected"')+">"+attr['placeholder']+"</option>" + woptions;
+        {
+            woptions = "<option value=\"\" class=\"option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
+            wextra = 'required ' + wextra;
+        }
         
         wdata = self.attr_data(attr);
         if ( wdropdown )

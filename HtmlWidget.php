@@ -137,6 +137,9 @@ class HtmlWidget
             case 'end_panel':
             case 'panel_end':   $out = self::w_panel_end($attr, $data); break;
             case 'dialog':      $out = self::w_dialog($attr, $data); break;
+            case 'modal':       $out = self::w_modal($attr, $data); break;
+            case 'end_modal':
+            case 'modal_end':   $out = self::w_modal_end($attr, $data); break;
             case 'tooltip':     $out = self::w_tooltip($attr, $data); break;
             case 'link':        $out = self::w_link($attr, $data); break;
             case 'button':      $out = self::w_button($attr, $data); break;
@@ -517,6 +520,27 @@ OUT;
         return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"widget-dialog-title\">{$wicon}{$wtitle}</div><div class=\"widget-dialog-content\">$wcontent</div><div class=\"widget-dialog-buttons\">$wbuttons</div></div>";
     }
     
+    public static function w_modal( $attr, $data )
+    {
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wclass = 'widget-modal widget-dialog'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wtitle = isset($data['title']) ? $data['title'] : '';
+        $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
+        $wclosebt = self::w_label(array('for'=>"modal_{$wid}",'title'=>'Close','icon'=>'times-circle','class'=>'widget-dialog-close'), array());
+        $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="widget-modal-overlay"></label>' : '<div class="widget-modal-overlay"></div>';
+        $wdata = self::attr_data($attr);
+        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"widget-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"widget-dialog-title\">{$wicon}{$wtitle}{$wclosebt}</div><div class=\"widget-dialog-content\">";
+    }
+    
+    public static function w_modal_end( $attr, $data )
+    {
+        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
+        return "</div><div class=\"widget-dialog-buttons\">$wbuttons</div></div>";
+    }
+    
     public static function w_tooltip( $attr, $data )
     {
         self::enqueue('styles', 'htmlwidgets.css');
@@ -574,7 +598,8 @@ OUT;
             $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
         }
         $wdata = self::attr_data($attr);
-        return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle $wextra $wdata>$wtext</label>";
+        // iOS needs an onlick attribute to handle lable update if used as controller
+        return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle onclick=\"\" $wextra $wdata>$wtext</label>";
     }
     
     public static function w_link( $attr, $data )
@@ -600,7 +625,7 @@ OUT;
         if ( isset($attr['for']))
         {
             $wfor = $attr['for'];
-            return "<label id=\"$wid\" class=\"$wclass\" $wstyle $wextra title=\"$wtitle\" for=\"$wfor\" $wdata>$wtext</label>";
+            return "<label id=\"$wid\" class=\"$wclass\" $wstyle onclick=\"\" $wextra title=\"$wtitle\" for=\"$wfor\" $wdata>$wtext</label>";
         }
         else
         {
@@ -634,7 +659,7 @@ OUT;
         if ( isset($attr['for']) )
         {
             $wfor = $attr['for'];
-            return "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle $wextra title=\"$wtitle\" $wdata>$wtext</label>";
+            return "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle onclick=\"\" $wextra title=\"$wtitle\" $wdata>$wtext</label>";
         }
         elseif ( isset($attr['href']) )
         {
@@ -1017,7 +1042,10 @@ SCRIPT;
             $woptions .= "<option value=\"$key\"$selected>$val</option>";
         }
         if ( !empty($attr['placeholder']) )
-            $woptions = "<option value=\"\" class=\"dummy\" disabled=\"disabled\"".($has_selected?'':' selected="selected"').">{$attr['placeholder']}</option>" . $woptions;
+        {
+            $woptions = "<option value=\"\" class=\"option-placeholder\" disabled".($has_selected?'':' selected').">{$attr['placeholder']}</option>" . $woptions;
+            $wextra = 'required ' . $wextra;
+        }
         
         $wdata = self::attr_data($attr);
         if ( $wdropdown )

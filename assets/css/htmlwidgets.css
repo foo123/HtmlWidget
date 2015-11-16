@@ -1321,9 +1321,22 @@ input.widget-radio:checked + label.widget-led-button:before
 .widget-dropdown > select  option {
     margin: 4px;
 }
-.widget-select option.dummy:disabled,
-.widget-dropdown option.dummy:disabled {
-    display: none !important;
+select.widget-select:required:invalid,
+.widget-dropdown > select:required:invalid {
+    outline: none !important;
+    box-shadow: none !important;
+    color: rgba(10, 10, 10, 0.6);
+    font-style: oblique;
+}
+select.widget-select option,
+.widget-dropdown > select option {
+    color: rgba(10, 10, 10, 1);
+    font-style: normal;
+}
+select.widget-select option.option-placeholder,
+.widget-dropdown > select option.option-placeholder {
+    color: rgba(10, 10, 10, 0.6);
+    font-style: oblique;
 }
 .widget-text.widget-large
 {
@@ -1536,6 +1549,56 @@ input.widget-radio:checked + label.widget-led-button:before
     padding: 20px 0px;
     text-align: right;
     font-weight: bold;
+}
+.widget-dialog > .widget-dialog-title > .widget-dialog-close {
+    position: absolute;
+    right: 5px; top: 50%;
+    transform: translateY(-50%);
+}
+.widget-dialog > .widget-dialog-title > .widget-dialog-close > .fa {
+    font-size: 2em; /* fa-2x*/
+}
+.widget-modal.widget-dialog > .widget-dialog-content {
+    min-height: 200px;
+}
+.widget-modal.widget-dialog
+{
+    position: fixed;
+    min-width: 350px;
+    display: block;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none !important;
+    opacity: 0;
+    z-index: -100;
+    transition: opacity .3s ease-in .05s;
+}
+.widget-modal-overlay
+{
+    display: block;
+    position: fixed;
+    z-index: -100;
+    top: 0; left: 0;
+    padding: 0; margin: 0;
+    width: 100%; height: 100%;
+    pointer-events: none !important;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity .2s ease-in .01s;
+}
+.widget-modal-controller:checked  + .widget-modal-overlay
+{
+    z-index: 1000;
+    opacity: 1;
+    pointer-events: auto !important;
+    transition: opacity .3s ease .05s;
+}
+.widget-modal-controller:checked  + .widget-modal-overlay + .widget-modal.widget-dialog
+{
+    z-index: 1001;
+    opacity: 1;
+    pointer-events: auto !important;
+    transition: opacity .2s ease 0s;
 }
 
 .widget-spinner
@@ -2022,6 +2085,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     visibility: hidden;
     z-index: -1;
 }
+.widget-modal-controller,
 .widget-panel-controller
 {
     position: absolute !important;
