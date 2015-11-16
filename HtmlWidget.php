@@ -281,7 +281,7 @@ class HtmlWidget
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
         
-        return "<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><input type=\"checkbox\" id=\"controller_{$wid}\" class=\"widget-panel-controller\" value=\"1\" $wchecked/><div class=\"widget-panel-header\">$wtitle<label class=\"widget-panel-controller-button\" for=\"controller_{$wid}\"><i class=\"fa fa-2x\"></i></label></div><div class=\"widget-panel-content\">";
+        return "<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><input type=\"checkbox\" id=\"controller_{$wid}\" class=\"widget-panel-controller\" value=\"1\" $wchecked/><div class=\"widget-panel-header\">$wtitle<label class=\"widget-panel-controller-button\" for=\"controller_{$wid}\" onclick=\"\"><i class=\"fa fa-2x\"></i></label></div><div class=\"widget-panel-content\">";
     }
     
     public static function w_panel_end( $attr, $data )
@@ -540,9 +540,9 @@ OUT;
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wtitle = isset($data['title']) ? $data['title'] : '';
         $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
-        $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="widget-modal-overlay"></label>' : '<div class="widget-modal-overlay"></div>';
+        $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="widget-modal-overlay" onclick=\"\"></label>' : '<div class="widget-modal-overlay"></div>';
         $wdata = self::attr_data($attr);
-        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"widget-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"widget-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"widget-label widget-dialog-close\" title=\"Close\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"widget-dialog-content\">";
+        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"widget-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"widget-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"widget-label widget-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"widget-dialog-content\">";
     }
     
     public static function w_modal_end( $attr, $data )
@@ -709,7 +709,7 @@ OUT;
         if ( isset($attr['state-on']) ) $wstate .= " data-state-on=\"{$attr['state-on']}\"";
         if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
-        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wstate>$wimg</label>";
+        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wstate onclick=\"\">$wimg</label>";
     }
     
     public static function w_switch( $attr, $data )
@@ -760,11 +760,11 @@ OUT;
             if ( $wreverse ) 
             {
                 $wclass .= ' reverse';
-                $wswitches = "<label for=\"{$wid}-off\" class=\"widget-switch-off\">$wiconoff</label><label for=\"{$wid}-on\" class=\"widget-switch-on\">$wiconon</label>";
+                $wswitches = "<label for=\"{$wid}-off\" class=\"widget-switch-off\" onclick=\"\">$wiconoff</label><label for=\"{$wid}-on\" class=\"widget-switch-on\" onclick=\"\">$wiconon</label>";
             }
             else
             {
-                $wswitches = "<label for=\"{$wid}-on\" class=\"widget-switch-on\">$wiconon</label><label for=\"{$wid}-off\" class=\"widget-switch-off\">$wiconoff</label>";
+                $wswitches = "<label for=\"{$wid}-on\" class=\"widget-switch-on\" onclick=\"\">$wiconon</label><label for=\"{$wid}-off\" class=\"widget-switch-off\" onclick=\"\">$wiconoff</label>";
             }
         }
         else
@@ -775,11 +775,11 @@ OUT;
             if ( $wreverse ) 
             {
                 $wclass .= ' reverse';
-                $wswitches = "<label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label><label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label>";
+                $wswitches = "<label for=\"$wid\" class=\"widget-switch-off\" onclick=\"\">$wiconoff</label><label for=\"$wid\" class=\"widget-switch-on\" onclick=\"\">$wiconon</label>";
             }
             else
             {
-                $wswitches = "<label for=\"$wid\" class=\"widget-switch-on\">$wiconon</label><label for=\"$wid\" class=\"widget-switch-off\">$wiconoff</label>";
+                $wswitches = "<label for=\"$wid\" class=\"widget-switch-on\" onclick=\"\">$wiconon</label><label for=\"$wid\" class=\"widget-switch-off\" onclick=\"\">$wiconoff</label>";
             }
         }
         return "<span class=\"$wclass\" title=\"$wtitle\" $wstyle>{$wstates}{$wswitches}<span class=\"widget-switch-handle\"></span></span>";
