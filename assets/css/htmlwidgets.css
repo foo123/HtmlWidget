@@ -535,15 +535,15 @@ input.widget-checkbox + label
     text-align: center;
     z-index: 1;
 }
-input.widget-radio.widget-large + label,
-input.widget-checkbox.widget-large + label
+input.widget-radio + label.widget-large,
+input.widget-checkbox + label.widget-large
 {
     width: 24px; height: 24px;
     line-height: 24px;
     font-size: 24px;
 }
-input.widget-radio.widget-xlarge + label,
-input.widget-checkbox.widget-xlarge + label
+input.widget-radio + label.widget-xlarge,
+input.widget-checkbox + label.widget-xlarge
 {
     width: 32px; height: 32px;
     line-height: 32px;
@@ -604,80 +604,108 @@ input.widget-checkbox + label:before,
 input.widget-radio + label:before,
 /* HEAVY CHECK MARK */
 input.widget-checkbox.heavy-check-mark + label:before,
-input.widget-radio.heavy-check-mark + label:before
+input.widget-radio.heavy-check-mark + label:before,
+input.widget-checkbox + label.heavy-check-mark:before,
+input.widget-radio + label.heavy-check-mark:before
 {
     content: "\2714";
 }
 /* HEAVY PLUS SIGN */
 input.widget-checkbox.heavy-plus-sign + label:before,
-input.widget-radio.heavy-plus-sign + label:before
+input.widget-radio.heavy-plus-sign + label:before,
+input.widget-checkbox + label.heavy-plus-sign:before,
+input.widget-radio + label.heavy-plus-sign:before
 {
     content: "\2795";
 }
 /* HEAVY cross */
 input.widget-checkbox.heavy-cross + label:before,
-input.widget-radio.heavy-cross + label:before
+input.widget-radio.heavy-cross + label:before,
+input.widget-checkbox + label.heavy-cross:before,
+input.widget-radio + label.heavy-cross:before
 {
     content: "\271A";
 }
 /* CROSS X MARK */
 input.widget-checkbox.cross-x-mark + label:before,
-input.widget-radio.cross-x-mark + label:before
+input.widget-radio.cross-x-mark + label:before,
+input.widget-checkbox + label.cross-x-mark:before,
+input.widget-radio + label.cross-x-mark:before
 {
     content: "\274C";
 }
 /* CHECK MARK */
 input.widget-checkbox.check-mark + label:before,
-input.widget-radio.check-mark + label:before
+input.widget-radio.check-mark + label:before,
+input.widget-checkbox + label.check-mark:before,
+input.widget-radio + label.check-mark:before
 {
     content: "\2713";
 }
 /* MULT SIGN */
 input.widget-checkbox.mult-sign + label:before,
-input.widget-radio.mult-sign + label:before
+input.widget-radio.mult-sign + label:before,
+input.widget-checkbox + label.mult-sign:before,
+input.widget-radio + label.mult-sign:before
 {
     content: "\2715";
 }
 /* HEAVY MULT SIGN */
 input.widget-checkbox.heavy-mult-sign + label:before,
-input.widget-radio.heavy-mult-sign + label:before
+input.widget-radio.heavy-mult-sign + label:before,
+input.widget-checkbox + label.heavy-mult-sign:before,
+input.widget-radio + label.heavy-mult-sign:before
 {
     content: "\2716";
 }
 /* BALLOT X */
 input.widget-checkbox.ballot-x + label:before,
-input.widget-radio.ballot-x + label:before
+input.widget-radio.ballot-x + label:before,
+input.widget-checkbox + label.ballot-x:before,
+input.widget-radio + label.ballot-x:before
 {
     content: "\2717";
 }
 /* HEAVY BALLOT X */
 input.widget-checkbox.heavy-ballot-x + label:before,
-input.widget-radio.heavy-ballot-x + label:before
+input.widget-radio.heavy-ballot-x + label:before,
+input.widget-checkbox + label.heavy-ballot-x:before,
+input.widget-radio + label.heavy-ballot-x:before
 {
     content: "\2718";
 }
 /* LARGE SQUARE */
 input.widget-checkbox.square + label:before,
-input.widget-radio.square + label:before
+input.widget-radio.square + label:before,
+input.widget-checkbox + label.square:before,
+input.widget-radio + label.square:before
 {
     content: "\2B1B";
 }
 /* SMALL SQUARE */
 input.widget-checkbox.square-sm + label:before,
-input.widget-radio.square-sm + label:before
+input.widget-radio.square-sm + label:before,
+input.widget-checkbox + label.square-sm:before,
+input.widget-radio + label.square-sm:before
 {
     content: "\25A0";
 }
 /* BLACK CIRCLE */
 input.widget-checkbox.discus + label:before,
-input.widget-radio.discus + label:before
+input.widget-radio.discus + label:before,
+input.widget-checkbox + label.discus:before,
+input.widget-radio + label.discus:before
 {
     content: "\25CF";
 }
 input.widget-checkbox:not(.widget-push-button):not(.widget-led-button):not(:checked) + label:before,
 input.widget-radio:not(.widget-push-button):not(.widget-led-button):not(:checked) + label:before,
 input.widget-checkbox.empty-on-unchecked:not(:checked) + label:before,
-input.widget-radio.empty-on-unchecked:not(:checked) + label:before
+input.widget-radio.empty-on-unchecked:not(:checked) + label:before,
+input.widget-checkbox:not(:checked) + label:not(.widget-push-button):not(.widget-led-button):before,
+input.widget-radio:not(:checked) + label:not(.widget-push-button):not(.widget-led-button):before,
+input.widget-checkbox:not(:checked) + label.empty-on-unchecked:before,
+input.widget-radio:not(:checked) + label.empty-on-unchecked:before
 {
     content: " ";
 }
@@ -695,12 +723,16 @@ input.widget-radio:not(:checked) + label[data-state-off]:before
 }
 /* HEAVY */
 input.widget-checkbox.heavy + label:before,
-input.widget-radio.heavy + label:before
+input.widget-radio.heavy + label:before,
+input.widget-checkbox + label.heavy:before,
+input.widget-radio + label.heavy:before
 {
     font-weight: bold !important;
 }
 input.widget-radio.inset:not(.widget-push-button) + label,
-input.widget-checkbox.inset:not(.widget-push-button) + label
+input.widget-checkbox.inset:not(.widget-push-button) + label,
+input.widget-radio + label.inset:not(.widget-push-button),
+input.widget-checkbox + label.inset:not(.widget-push-button)
 {
     background-color: #fefefe;
     border: 1px solid rgba(0,0,0,.2);
@@ -708,14 +740,18 @@ input.widget-checkbox.inset:not(.widget-push-button) + label
                 2px 2px 2px rgba(0,0,0,.3) inset;
 }
 input.widget-radio.inset:not(.widget-push-button):checked + label,
-input.widget-checkbox.inset:not(.widget-push-button):checked + label
+input.widget-checkbox.inset:not(.widget-push-button):checked + label,
+input.widget-radio:checked + label.inset:not(.widget-push-button),
+input.widget-checkbox:checked + label.inset:not(.widget-push-button)
 {
     box-shadow: 1px 1px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.1) inset, 2px 2px rgba(0,0,0,.8) inset,
                 2px 2px 3px rgba(0,0,0,.5) inset;
 }
 /* adapted from https://github.com/LeaVerou/regexplained demo page */
 input.widget-checkbox.widget-push-button + label,
-input.widget-radio.widget-push-button + label
+input.widget-radio.widget-push-button + label,
+input.widget-checkbox + label.widget-push-button,
+input.widget-radio + label.widget-push-button
 {
     min-width: 1em;
     line-height: 1;
@@ -732,19 +768,25 @@ input.widget-radio.widget-push-button + label
     transition-property: box-shadow, transform;
 }
 input.widget-checkbox.widget-push-button + label:before,
-input.widget-radio.widget-push-button + label:before
+input.widget-radio.widget-push-button + label:before,
+input.widget-checkbox + label.widget-push-button:before,
+input.widget-radio + label.widget-push-button:before
 {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, .9);
 }
 input.widget-checkbox.widget-push-button:checked + label,
-input.widget-radio.widget-push-button:checked + label
+input.widget-radio.widget-push-button:checked + label,
+input.widget-checkbox:checked + label.widget-push-button,
+input.widget-radio:checked + label.widget-push-button
 {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px hsl(30,20%,14%) inset, 2px 2px hsl(30,20%,16%) inset, 2px 2px hsl(30,20%,18%) inset,
                 2px 2px 5px rgba(0,0,0,.5) inset;
 }
 input.widget-checkbox.widget-led-button + label:before,
-input.widget-radio.widget-led-button + label:before
+input.widget-radio.widget-led-button + label:before,
+input.widget-checkbox + label.widget-led-button:before,
+input.widget-radio + label.widget-led-button:before
 {
     color: rgba(255, 0, 0, .4);
     text-shadow: 0px 0px 1px rgba(200, 0, 0, .8);
@@ -752,7 +794,9 @@ input.widget-radio.widget-led-button + label:before
     transition-property: text-shadow, color;
 }
 input.widget-checkbox.widget-led-button:checked + label:before,
-input.widget-radio.widget-led-button:checked + label:before
+input.widget-radio.widget-led-button:checked + label:before,
+input.widget-checkbox:checked + label.widget-led-button:before,
+input.widget-radio:checked + label.widget-led-button:before
 {
     color: rgba(255, 0, 0, 1);
     text-shadow: 0px 0px 100px rgba(200, 0, 0, .8);
@@ -1277,6 +1321,7 @@ input.widget-radio.widget-led-button:checked + label:before
 .widget-dropdown > select  option {
     margin: 4px;
 }
+.widget-select option.dummy:disabled,
 .widget-dropdown option.dummy:disabled {
     display: none !important;
 }
@@ -1580,6 +1625,11 @@ input.widget-radio.widget-led-button:checked + label:before
     transition-property: z-index, opacity;
     transition-duration: .02s, .6s;
     transition-delay: 0s, .04s;
+    -webkit-transition-timing-function: linear, ease-in;
+    -moz-transition-timing-function: linear, ease-in;
+    -ms-transition-timing-function: linear, ease-in;
+    -o-transition-timing-function: linear, ease-in;
+    transition-timing-function: linear, ease-in;
     cursor: inherit;
 }
 .widget-disabled  > .widget-disabable-overlay,

@@ -712,7 +712,7 @@ var HtmlWidget = self = {
     }
     
     ,w_control: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
+        var wid, wclass, wstyle, wctrl, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -720,27 +720,25 @@ var HtmlWidget = self = {
         wvalue = isset(data,"value") ? data["value"] : "1"; 
         wtitle = isset(attr,"title") ? attr["title"] : ""; 
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
-        wclass = 'widget widget-control'; 
-        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         if ( !empty(attr,'image') )
         {
-            if ( "checkbox" === wtype ) wclass += ' widget-checkbox-image';
-            else if ( "radio" === wtype ) wclass += ' widget-radio-image';
+            wctrl = "checkbox" === wtype ? 'widget-checkbox-image' : 'widget-radio-image';
             wimg = '<span style="background-image:url('+attr['image']+');"></span>';
         }
         else
         {
-            if ( "checkbox" === wtype ) wclass += ' widget-checkbox';
-            else if ( "radio" === wtype ) wclass += ' widget-radio';
+            wctrl = "checkbox" === wtype ? 'widget-checkbox' : 'widget-radio';
             wimg = '&nbsp;';
         }
+        wclass = 'widget widget-control'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wstate = '';
         if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
         if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         wdata = self.attr_data(attr);
-        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" '+wstate+'>'+wimg+'</label>';
+        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wstate+'>'+wimg+'</label>';
     }
     
     ,w_switch: function( attr, data ) {
@@ -1064,7 +1062,7 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
     
     ,w_select: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, woptions, wselected, 
-            opts, o, opt, l, key, val, selected;
+            opts, o, opt, l, key, val, selected, has_selected;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1076,8 +1074,8 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         wselected = isset(data,'selected') ? data['selected'] : [];
         if ( !(wselected instanceof Array) ) wselected = [wselected];
         woptions = ''; 
-        opts = data['options'];
-        l = opts.length;
+        opts = data['options']; l = opts.length;
+        has_selected = false;
         for(o=0; o<l; o++)
         {
             opt = opts[o];
@@ -1091,9 +1089,13 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
                 key = opt;
                 val = opt;
             }
-            selected = -1 < wselected.indexOf(key) ? 'selected="selected"' : '';
-            woptions += "<option value=\""+key+"\" "+selected+">"+val+"</option>";
+            selected = -1 < wselected.indexOf(key) ? ' selected="selected"' : '';
+            if ( selected.length ) has_selected = true;
+            woptions += "<option value=\""+key+"\""+selected+">"+val+"</option>";
         }
+        if ( !empty(attr,'placeholder') )
+            woptions = "<option value=\"\" class=\"dummy\" disabled=\"disabled\""+(has_selected?'':' selected="selected"')+">"+attr['placeholder']+"</option>" + woptions;
+        
         wdata = self.attr_data(attr);
         if ( wdropdown )
             return '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="widget-dropdown-select widget-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>';

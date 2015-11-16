@@ -657,26 +657,24 @@ OUT;
         $wvalue = isset($data['value']) ? $data['value'] : "1";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wchecked = !empty($attr['checked']) ? 'checked' : '';
-        $wclass = 'widget widget-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         if ( !empty($attr['image']) )
         {
-            if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox-image';
-            elseif ( "radio" === $wtype ) $wclass .= ' widget-radio-image';
+            $wctrl = "checkbox" === $wtype ? 'widget-checkbox-image' : 'widget-radio-image';
             $wimg = '<span style="background-image:url('.$attr['image'].');"></span>';
         }
         else
         {
-            if ( "checkbox" === $wtype ) $wclass .= ' widget-checkbox';
-            elseif ( "radio" === $wtype ) $wclass .= ' widget-radio';
+            $wctrl = "checkbox" === $wtype ? 'widget-checkbox' : 'widget-radio';
             $wimg = '&nbsp;';
         }
+        $wclass = 'widget widget-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wstate = '';
         if ( isset($attr['state-on']) ) $wstate .= " data-state-on=\"{$attr['state-on']}\"";
         if ( isset($attr['state-off']) ) $wstate .= " data-state-off=\"{$attr['state-off']}\"";
         $wdata = self::attr_data($attr);
-        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wclass\" $wstyle $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" $wstate>$wimg</label>";
+        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" $wextra value=\"$wvalue\" $wdata $wchecked /><label for=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wstate>$wimg</label>";
     }
     
     public static function w_switch( $attr, $data )
@@ -718,7 +716,7 @@ OUT;
             $wtype = 'radio';
             if ( $wchecked )
             {
-                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" $wname class=\" widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata checked /><input type=\"$wtype\" id=\"{$wid}-off\" $wname class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata />";
+                $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" $wname class=\"widget-switch-state widget-switch-state-on\" value=\"$wvalue\" $wextra $wdata checked /><input type=\"$wtype\" id=\"{$wid}-off\" $wname class=\"widget-switch-state widget-switch-state-off\" value=\"$wvalue2\" $wextra $wdata />";
             }
             else
             {
@@ -1000,6 +998,7 @@ SCRIPT;
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wselected = isset($data['selected']) ? (array)$data['selected'] : array();
         $woptions = '';
+        $has_selected = false;
         foreach((array)$data['options'] as $opt)
         {
             if (is_array($opt))
@@ -1013,9 +1012,13 @@ SCRIPT;
                 $key = $opt;
                 $val = $opt;
             }
-            $selected = in_array($key, $wselected) ? 'selected="selected"' : '';
-            $woptions .= "<option value=\"$key\" $selected>$val</option>";
+            $selected = in_array($key, $wselected) ? ' selected="selected"' : '';
+            if ( !empty($selected) ) $has_selected = true;
+            $woptions .= "<option value=\"$key\"$selected>$val</option>";
         }
+        if ( !empty($attr['placeholder']) )
+            $woptions = "<option value=\"\" class=\"dummy\" disabled=\"disabled\"".($has_selected?'':' selected="selected"').">{$attr['placeholder']}</option>" . $woptions;
+        
         $wdata = self::attr_data($attr);
         if ( $wdropdown )
             return "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"widget-dropdown-select widget-state-default\" $wextra $wdata>$woptions</select></span>";
