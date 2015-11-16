@@ -549,7 +549,6 @@ input.widget-radio + label.widget-led-button:before
 .widget-switch 
 {
     overflow: hidden;
-    height: 0; padding-bottom: 26.7%; /* 60:15 */
     color: transparent;
     text-shadow: none;
     background-image: none;
@@ -2116,7 +2115,7 @@ input.widget-checkbox + label.widget-xlarge
 .widget-switch 
 {
     margin: 0px 5px;
-    width: 60px;
+    width: 60px; height: 15px; /*26.7% */
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
@@ -2125,7 +2124,7 @@ input.widget-checkbox + label.widget-xlarge
 }
 .widget-switch.widget-large 
 {
-    width: 90px;
+    width: 90px; height: 30px; /*26.7% */
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     -ms-border-radius: 6px;
@@ -2134,7 +2133,7 @@ input.widget-checkbox + label.widget-xlarge
 }
 .widget-switch.widget-xlarge 
 {
-    width: 120px;
+    width: 120px; height: 60px; /*26.7% */
     font-size: 1.2em;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
