@@ -1321,22 +1321,22 @@ input.widget-radio:checked + label.widget-led-button:before
 .widget-dropdown > select  option {
     margin: 4px;
 }
-select.widget-select:required:invalid,
-.widget-dropdown > select:required:invalid {
+select.widget-select[data-widget-placeholder]:required:invalid,
+.widget-dropdown > select[data-widget-placeholder]:required:invalid {
     outline: none !important;
     box-shadow: none !important;
     color: rgba(10, 10, 10, 0.6);
-    font-style: oblique;
+    font-style: italic;
 }
 select.widget-select option,
 .widget-dropdown > select option {
     color: rgba(10, 10, 10, 1);
     font-style: normal;
 }
-select.widget-select option.option-placeholder,
-.widget-dropdown > select option.option-placeholder {
+select.widget-select option.widget-option-placeholder,
+.widget-dropdown > select option.widget-option-placeholder {
     color: rgba(10, 10, 10, 0.6);
-    font-style: oblique;
+    font-style: italic;
 }
 .widget-text.widget-large
 {

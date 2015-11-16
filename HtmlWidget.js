@@ -181,10 +181,12 @@ var HtmlWidget = self = {
             case 'tabs':        out = self.w_tabs(attr, data); break;
             case 'accordeon':   out = self.w_accordeon(attr, data); break;
             case 'panel':       out = self.w_panel(attr, data); break;
+            case 'endpanel':
             case 'end_panel':
             case 'panel_end':   out = self.w_panel_end(attr, data); break;
             case 'dialog':      out = self.w_dialog(attr, data); break;
             case 'modal':       out = self.w_modal(attr, data); break;
+            case 'endmodal':
             case 'end_modal':
             case 'modal_end':   out = self.w_modal_end(attr, data); break;
             case 'tooltip':     out = self.w_tooltip(attr, data); break;
@@ -220,6 +222,7 @@ var HtmlWidget = self = {
             case 'selectbox':
             case 'select':      out = self.w_select(attr, data); break;
             case 'menu':        out = self.w_menu(attr, data); break;
+            case 'endmenu':
             case 'end_menu':
             case 'menu_end':    out = self.w_menu_end(attr, data); break;
             case 'table':       out = self.w_table(attr, data); break;
@@ -335,12 +338,22 @@ var HtmlWidget = self = {
     }
     
     ,w_panel: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wtitle, wchecked, wdata;
         self.enqueue('styles', 'htmlwidgets.css');
-        return '';
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'widget-panel';
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wtitle = !empty(attr,'title') ? attr['title'] : '&nbsp;';
+        wchecked = !empty(attr,'closed') ? 'checked' : '';
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
+        
+        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><input type="checkbox" id="controller_'+wid+'" class="widget-panel-controller" value="1" '+wchecked+'/><div class="widget-panel-header">'+wtitle+'<label class="widget-panel-controller-button" for="controller_'+wid+'"><i class="fa fa-2x"></i></label></div><div class="widget-panel-content">';
     }
     
     ,w_panel_end: function( attr, data ) {
-        return '';
+        return '</div></div>';
     }
     
     ,w_accordeon: function( attr, data ) {
@@ -580,7 +593,7 @@ var HtmlWidget = self = {
     }
     
     ,w_modal: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wclosebt, woverlay;
+        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay;
         self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'widget-modal widget-dialog'; 
@@ -589,10 +602,9 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wtitle = isset(data,'title') ? data['title'] : ''; 
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
-        wclosebt = self.w_label({'for':'modal_'+wid,'title':'Close','icon':'times-circle','class':'widget-dialog-close'},{});
         woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="widget-modal-overlay"></label>' : '<div class="widget-modal-overlay"></div>';
         wdata = self.attr_data(attr);
-        return '<input id="modal_'+wid+'" type="checkbox" class="widget-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+wclosebt+'</div><div class="widget-dialog-content">';
+        return '<input id="modal_'+wid+'" type="checkbox" class="widget-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="widget-label widget-dialog-close" title="Close"><i class="fa fa-times-circle"></i></label></div><div class="widget-dialog-content">';
     }
     
     ,w_modal_end: function( attr, data ) {
@@ -1121,7 +1133,10 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         }
         if ( !empty(attr,'placeholder') )
         {
-            woptions = "<option value=\"\" class=\"option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
+            woptions = "<option value=\"\" class=\"widget-option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
+            if ( !/\brequired\b/.test(wextra) ) wextra += ' required';
+            if ( !wname.length ) wextra += ' form="__NONE__"';
+            wextra += ' data-widget-placeholder="'+attr['placeholder']+'"';
         }
         
         wdata = self.attr_data(attr);
