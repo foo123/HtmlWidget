@@ -1122,7 +1122,6 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         if ( !empty(attr,'placeholder') )
         {
             woptions = "<option value=\"\" class=\"option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
-            wextra = 'required ' + wextra;
         }
         
         wdata = self.attr_data(attr);
