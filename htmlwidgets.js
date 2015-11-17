@@ -169,6 +169,62 @@ htmlwidget.disabable = function disabable( options, el ){
     };
 };
 
+// http://nikos-web-development.netai.net
+// http://maps.googleapis.com/maps/api/js?sensor=false
+htmlwidget.gmap3 = function gmap3( options, el ) {
+    var self = this;
+    if ( !(self instanceof gmap3) ) return new gmap3(options, el);
+    
+    function addMarker( map, lat, lng, title, info ) 
+    { 
+        var marker = new google.maps.Marker({
+            map: map,
+            title: title,
+            position: new google.maps.LatLng( lat, lng )
+        });
+        if ( !!info )
+        {
+            var infowindow = new google.maps.InfoWindow({content: info});
+            google.maps.event.addListener(marker, 'click', function( ){
+                infowindow.open( map, marker );
+            });
+        }
+    }
+    
+    self._map = null;
+    
+    self.w_init = function( ) {
+        //google.maps.MapTypeId.ROADMAP
+        options = $.extend({
+            type: "ROADMAP",
+            markers: null,
+            center: null,
+            kml: null
+        }, options||{});
+        
+        self._map = new google.maps.Map(el, {
+            zoom: options.center.zoom,
+            center: new google.maps.LatLng( options.center.lat, options.center.lng ),
+            mapTypeId: google.maps.MapTypeId[ options.type ]
+        });
+        var i, markers = options.markers, marker, l = markers ? markers.length : 0;
+        for (i=0; i<l; i++)
+        {
+            // add markers, infos to map
+            marker = markers[i];
+            addMarker( self._map, marker.lat, marker.lng, marker.title||'', marker.info );
+        }
+        if ( null != options.kml )
+        {
+            var georssLayer = new google.maps.KmlLayer( options.kml );
+            georssLayer.setMap( self._map );
+        }
+    };
+    self.w_dispose = function( ) {
+        self._map = null;
+    };
+};	
+
 htmlwidget.datetime = (function( ){
 "use strict";
 
@@ -1423,6 +1479,7 @@ widget2jquery( 'delayable', htmlwidget.delayable );
 widget2jquery( 'disabable', htmlwidget.disabable );
 widget2jquery( 'datetime', htmlwidget.datetime );
 widget2jquery( 'suggest', htmlwidget.suggest );
+widget2jquery( 'gmap3', htmlwidget.gmap3 );
 
 htmlwidget._ = function( type, el, opts ) {
     opts = opts || {};
@@ -1485,7 +1542,14 @@ htmlwidget._ = function( type, el, opts ) {
         break;
     
     case 'select2':
+    case 'select':
         $(el).select2( opts );
+        break;
+    
+    case 'gmap3':
+    case 'gmap':
+    case 'map':
+        $(el).gmap3( opts );
         break;
     
     default: break;

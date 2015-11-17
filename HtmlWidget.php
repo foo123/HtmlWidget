@@ -174,6 +174,8 @@ class HtmlWidget
             case 'textarea':    $out = self::w_textarea($attr, $data); break;
             case 'date':        $out = self::w_date($attr, $data); break;
             case 'time':        $out = self::w_time($attr, $data); break;
+            case 'map':
+            case 'gmap':        $out = self::w_gmap($attr, $data); break;
             case 'checkbox-image':
             case 'radio-image':
             case 'checkbox':
@@ -973,6 +975,17 @@ OUT;
         $wtimes = implode('<span class="w-time-sep">:</span>', $wtimes);
         self::enqueue('styles', 'htmlwidgets.css');
         return "<span class=\"$wclass\" $wstyle $wextra $wdata>$wtimes</span>";
+    }
+    
+    public static function w_gmap( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'widget w-map'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wdata = self::attr_data($attr);
+        self.enqueue('scripts', "w-map-$wid", array(self::htmlwidget_('gmap', $wid, isset($attr['config'])?$attr['config']:null)), array('htmlwidgets'));
+        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata></div>";
     }
     
     public static function w_select( $attr, $data )

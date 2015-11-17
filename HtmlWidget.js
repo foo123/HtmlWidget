@@ -227,6 +227,8 @@ var HtmlWidget = self = {
             case 'textarea':    out = self.w_textarea(attr, data); break;
             case 'date':        out = self.w_date(attr, data); break;
             case 'time':        out = self.w_time(attr, data); break;
+            case 'map':
+            case 'gmap':        out = self.w_gmap(attr, data); break;
             case 'checkbox-image':
             case 'radio-image':
             case 'checkbox':
@@ -1055,6 +1057,18 @@ var HtmlWidget = self = {
         wtimes = wtimes.join('<span class="w-time-sep">:</span>');
         self.enqueue('styles', 'htmlwidgets.css');
         return '<span class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtimes+'</span>';
+    }
+    
+    ,w_gmap: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wvalue;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'widget w-map'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);   
+        self.enqueue('scripts', 'w-map-'+wid, [htmlwidget_('gmap', wid, attr['config'])], ['htmlwidgets']);
+        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></div>';
     }
     
     ,w_select: function( attr, data ) {
