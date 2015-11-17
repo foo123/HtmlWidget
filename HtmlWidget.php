@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.6.1
+*  @version: 0.7.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -14,7 +14,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.6.1";
+    const VERSION = "0.7.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -39,49 +39,48 @@ class HtmlWidget
     public static function assets( $base='', $full=true )
     {
         if ( empty($base) ) $base = '';
-        $base = $base . ('/' === substr($base, -1)  ? 'assets/' : '/assets/');
+        $base = $base . ('/' === substr($base, -1)  ? '' : '/');
+        $asset_base = $base . 'assets/';
         $assets = array(
-         array('styles', 'htmlwidgets.css', $base.'css/htmlwidgets.min.css', array('responsive.css','font-awesome.css'))
-        ,array('scripts', 'htmlwidgets.js', $base.'js/htmlwidgets.min.js', array('jquery','datex'))
+         array('styles', 'htmlwidgets.css', $base.'htmlwidgets.min.css', array('responsive.css','fontawesome.css'))
+        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.min.js', array('htmlwidgets.css','jquery'))
         );
         if ( true === $full )
         {
             // DateX
-            $assets[] = array('scripts', 'datex', $base.'js/DateX.min.js');
+            $assets[] = array('scripts', 'datex', $asset_base.'js/DateX.min.js');
             
             // Select2
-            $assets[] = array('styles', 'jquery.select2.css', $base.'css/select2.min.css');
-            $assets[] = array('scripts', 'jquery.select2', $base.'js/select2.full.min.js', array('jquery'));
+            $assets[] = array('styles', 'select2.css', $asset_base.'css/select2.min.css');
+            $assets[] = array('scripts', 'select2', $asset_base.'js/select2.full.min.js', array('select2.css','jquery'));
             
             // DataTables
-            $assets[] = array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css');
-            $assets[] = array('scripts', 'jquery.dataTables', $base.'js/jquery.dataTables.min.js', array('jquery'));
-            
-            // CodeMirror
-            $assets[] = array('styles', 'codemirror.css', $base.'css/codemirror.min.css');
-            $assets[] = array('scripts', 'codemirror.js', $base.'js/codemirror.min.js');
-            
-            $assets[] = array('scripts', 'codemirror-multiplex', $base.'js/addon/mode/multiplex.js', array('codemirror.js'));
-            $assets[] = array('scripts', 'codemirror-comment', $base.'js/addon/comment/comment.js', array('codemirror.js'));
-            
-            $assets[] = array('scripts', 'codemirror-xml', $base.'js/mode/xml.js', array('codemirror.js'));
-            $assets[] = array('scripts', 'codemirror-javascript', $base.'js/mode/javascript.js', array('codemirror.js'));
-            $assets[] = array('scripts', 'codemirror-css', $base.'js/mode/css.js', array('codemirror.js'));
-            
-            $assets[] = array('styles', 'codemirror-fold.css', $base.'js/addon/fold/foldgutter.css', array('codemirror.css'));
-            $assets[] = array('scripts', 'codemirror-fold-gutter', $base.'js/addon/fold/foldgutter.js', array('codemirror.js'));
-            $assets[] = array('scripts', 'codemirror-fold-code', $base.'js/addon/fold/foldcode.js', array('codemirror-fold-gutter'));
-            $assets[] = array('scripts', 'codemirror-fold-comment', $base.'js/addon/fold/comment-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
-            $assets[] = array('scripts', 'codemirror-fold-brace', $base.'js/addon/fold/brace-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
-            $assets[] = array('scripts', 'codemirror-fold-indent', $base.'js/addon/fold/indent-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
-            $assets[] = array('scripts', 'codemirror-fold-xml', $base.'js/addon/fold/xml-fold.js', array('codemirror-fold-gutter','codemirror-fold-code'));
-            
-            $assets[] = array('styles', 'codemirror-styles', $base.'js/addon/fold/foldgutter.css', array('codemirror.css'));
-            $assets[] = array('scripts', 'codemirror', $base.'js/mode/htmlmixed.js', array('codemirror.js','codemirror-multiplex','codemirror-comment','codemirror-xml','codemirror-javascript','codemirror-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'));
+            $assets[] = array('styles', 'datatables.css', $asset_base.'css/jquery.dataTables.min.css');
+            $assets[] = array('scripts', 'datatables', $asset_base.'js/jquery.dataTables.min.js', array('datatables.css','jquery'));
             
             // Trumbowyg
-            $assets[] = array('styles', 'trumbowyg-styles', $base.'css/trumbowyg.min.css');
-            $assets[] = array('scripts', 'trumbowyg', $base.'js/trumbowyg.min.js', array('jquery'));
+            $assets[] = array('styles', 'trumbowyg.css', $asset_base.'css/trumbowyg.min.css');
+            $assets[] = array('scripts', 'trumbowyg', $asset_base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'));
+            
+            // CodeMirror
+            $assets[] = array('scripts', 'codemirror-mode-multiplex', $asset_base.'js/addon/mode/multiplex.js');
+            $assets[] = array('scripts', 'codemirror-comment', $asset_base.'js/addon/comment/comment.js');
+            
+            $assets[] = array('scripts', 'codemirror-mode-xml', $asset_base.'js/mode/xml.js');
+            $assets[] = array('scripts', 'codemirror-mode-javascript', $asset_base.'js/mode/javascript.js');
+            $assets[] = array('scripts', 'codemirror-mode-css', $asset_base.'js/mode/css.js');
+            
+            $assets[] = array('styles', 'codemirror-fold.css', $asset_base.'js/addon/fold/foldgutter.css');
+            $assets[] = array('scripts', 'codemirror-fold-gutter', $asset_base.'js/addon/fold/foldgutter.js');
+            $assets[] = array('scripts', 'codemirror-fold-code', $asset_base.'js/addon/fold/foldcode.js');
+            $assets[] = array('scripts', 'codemirror-fold-comment', $asset_base.'js/addon/fold/comment-fold.js');
+            $assets[] = array('scripts', 'codemirror-fold-brace', $asset_base.'js/addon/fold/brace-fold.js');
+            $assets[] = array('scripts', 'codemirror-fold-indent', $asset_base.'js/addon/fold/indent-fold.js');
+            $assets[] = array('scripts', 'codemirror-fold-xml', $asset_base.'js/addon/fold/xml-fold.js');
+            
+            $assets[] = array('styles', 'codemirror.css', $asset_base.'css/codemirror.min.css');
+            $assets[] = array('scripts', 'codemirror', $asset_base.'js/codemirror.min.js', array('codemirror.css'));
+            $assets[] = array('scripts', 'codemirror-full', $asset_base.'js/mode/htmlmixed.js', array('codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'));
         }
         return $assets;
     }
@@ -231,8 +230,7 @@ class HtmlWidget
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wspinner = 'w-spinner';
         $wspinner .= !empty($attr['spinner']) ? " {$attr['spinner']}" : " w-spinner-dots";
-        self::enqueue('styles', 'htmlwidgets.css');
-        self::enqueue('scripts', 'htmlwidgets.js');
+        self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra><div class=\"$wspinner\"></div></div>";
     }
     
@@ -243,8 +241,7 @@ class HtmlWidget
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
-        self::enqueue('styles', 'htmlwidgets.css');
-        self::enqueue('scripts', 'htmlwidgets.js');
+        self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra></div>";
     }
     
@@ -275,8 +272,7 @@ class HtmlWidget
         $wstyle = '';
         $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
         $wstyle .= implode(',',$wshow_selector) . '{display: block}';
-        //self::enqueue('styles', 'htmlwidgets.css');
-        self::enqueue('scripts', 'htmlwidgets.js');
+        self::enqueue('scripts', 'htmlwidgets');
         self::enqueue('styles', "w-morphable-$wid", array($wstyle), array());
         return '';
     }
@@ -852,8 +848,7 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::attr_data($attr);
-        self::enqueue('styles', 'htmlwidgets.css');
-        self::enqueue('scripts', "w-suggest-$wid", array(self::htmlwidget_('suggest', $wid)), array('htmlwidgets.js'));
+        self::enqueue('scripts', "w-suggest-$wid", array(self::htmlwidget_('suggest', $wid)), array('htmlwidgets'));
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
     }
     
@@ -882,9 +877,7 @@ OUT;
             $wclass = 'widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
-            self::enqueue('styles', 'htmlwidgets.css');
-            self::enqueue('styles', 'codemirror-styles');
-            self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('codemirror'));
+            self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('htmlwidgets','codemirror-full'));
             $wstyle = '';
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
@@ -893,9 +886,7 @@ OUT;
             $wclass = 'widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
-            self::enqueue('styles', 'htmlwidgets.css');
-            self::enqueue('styles', 'trumbowyg-styles');
-            self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('trumbowyg'));
+            self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('htmlwidgets','trumbowyg'));
             $wstyle = '';
         }
         else
@@ -936,8 +927,7 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::attr_data($attr);
-        self::enqueue('styles', 'htmlwidgets.css');
-        self::enqueue('scripts', "w-datetime-$wid", array(self::htmlwidget_('datetime', $wid)), array('htmlwidgets.js'));
+        self::enqueue('scripts', "w-datetime-$wid", array(self::htmlwidget_('datetime', $wid)), array('htmlwidgets'));
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datetime-format=\"$wformat\" $wdata />$wicon</span>";
     }
     
@@ -1027,9 +1017,7 @@ OUT;
         self::enqueue('styles', 'htmlwidgets.css');
         if ( $wselect2 )
         {
-            self::enqueue('styles', 'jquery.select2.css');
-            self::enqueue('scripts', 'jquery.select2.js');
-            self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets.js'));
+            self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets','select2'));
         }
         return $wdropdown
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
@@ -1112,8 +1100,7 @@ else \$(this).closest('tr').removeClass('selected');
 $wcontrols
 });
 SCRIPT;
-            self::enqueue('styles', 'jquery.dataTables.css');
-            self::enqueue('scripts', "w-datatable-$wid", array($script), array('jquery.dataTables'));
+            self::enqueue('scripts', "w-datatable-$wid", array($script), array('htmlwidgets','datatables'));
         }
         return "<table id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }

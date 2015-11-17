@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.6.1
+*  @version: 0.7.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -68,7 +68,7 @@ function htmlwidget_( type, id, options )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.6.1"
+    VERSION: "0.7.0"
     
     ,BASE: './'
     
@@ -89,50 +89,49 @@ var HtmlWidget = self = {
     
     ,assets: function( base, full ) {
         base = base || '';
-        base = base + ('/' === base.slice(-1) ? 'assets/' : '/assets/');
+        base = base + ('/' === base.slice(-1) ? '' : '/');
+        var asset_base = base + 'assets/';
         var assets = [
-         ['styles', 'htmlwidgets.css', base+'css/htmlwidgets.min.css', ['responsive.css','font-awesome.css']]
-        ,['scripts', 'htmlwidgets.js', base+'js/htmlwidgets.min.js', ['jquery','datex']]
+         ['styles', 'htmlwidgets.css', base+'htmlwidgets.min.css', ['responsive.css','fontawesome.css']]
+        ,['scripts', 'htmlwidgets', base+'htmlwidgets.min.js', ['htmlwidgets.css','jquery']]
         ];
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
             // DateX
-             ['scripts', 'datex', base+'js/DateX.min.js']
+             ['scripts', 'datex', asset_base+'js/DateX.min.js']
             
             // Select2
-            ,['styles', 'jquery.select2.css', base+'css/select2.min.css']
-            ,['scripts', 'jquery.select2', base+'js/select2.full.min.js', ['jquery']]
+            ,['styles', 'select2.css', asset_base+'css/select2.min.css']
+            ,['scripts', 'select2', asset_base+'js/select2.full.min.js', ['select2.css','jquery']]
              
             // DataTables
-            ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.min.css']
-            ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.min.js', ['jquery']]
-             
-            // CodeMirror
-            ,['styles', 'codemirror.css', base+'css/codemirror.min.css']
-            ,['scripts', 'codemirror.js', base+'js/codemirror.min.js']
-            
-            ,['scripts', 'codemirror-multiplex', base+'js/addon/mode/multiplex.js', ['codemirror.js']]
-            ,['scripts', 'codemirror-comment', base+'js/addon/comment/comment.js', ['codemirror.js']]
-            
-            ,['scripts', 'codemirror-xml', base+'js/mode/xml.js', ['codemirror.js']]
-            ,['scripts', 'codemirror-javascript', base+'js/mode/javascript.js', ['codemirror.js']]
-            ,['scripts', 'codemirror-css', base+'js/mode/css.js', ['codemirror.js']]
-            
-            ,['styles', 'codemirror-fold.css', base+'js/addon/fold/foldgutter.css', ['codemirror.css']]
-            ,['scripts', 'codemirror-fold-gutter', base+'js/addon/fold/foldgutter.js', ['codemirror.js']]
-            ,['scripts', 'codemirror-fold-code', base+'js/addon/fold/foldcode.js', ['codemirror-fold-gutter']]
-            ,['scripts', 'codemirror-fold-comment', base+'js/addon/fold/comment-fold.js', ['codemirror-fold-gutter','codemirror-fold-code']]
-            ,['scripts', 'codemirror-fold-brace', base+'js/addon/fold/brace-fold.js', ['codemirror-fold-gutter','codemirror-fold-code']]
-            ,['scripts', 'codemirror-fold-indent', base+'js/addon/fold/indent-fold.js', ['codemirror-fold-gutter','codemirror-fold-code']]
-            ,['scripts', 'codemirror-fold-xml', base+'js/addon/fold/xml-fold.js', ['codemirror-fold-gutter','codemirror-fold-code']]
-            
-            ,['styles', 'codemirror-styles', base+'js/addon/fold/foldgutter.css', ['codemirror.css']]
-            ,['scripts', 'codemirror', base+'js/mode/htmlmixed.js', ['codemirror.js','codemirror-multiplex','codemirror-comment','codemirror-xml','codemirror-javascript','codemirror-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent']]
+            ,['styles', 'datatables.css', asset_base+'css/jquery.dataTables.min.css']
+            ,['scripts', 'datatables', asset_base+'js/jquery.dataTables.min.js', ['datatables.css','jquery']]
             
             // Trumbowyg
-            ,['styles', 'trumbowyg.css', base+'css/trumbowyg.min.css']
-            ,['scripts', 'trumbowyg', base+'js/trumbowyg.min.js', ['jquery']]
+            ,['styles', 'trumbowyg.css', asset_base+'css/trumbowyg.min.css']
+            ,['scripts', 'trumbowyg', asset_base+'js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
+             
+            // CodeMirror
+            ,['scripts', 'codemirror-mode-multiplex', asset_base+'js/addon/mode/multiplex.js']
+            ,['scripts', 'codemirror-comment', asset_base+'js/addon/comment/comment.js']
+            
+            ,['scripts', 'codemirror-mode-xml', asset_base+'js/mode/xml.js']
+            ,['scripts', 'codemirror-mode-javascript', asset_base+'js/mode/javascript.js']
+            ,['scripts', 'codemirror-mode-css', asset_base+'js/mode/css.js']
+            
+            ,['styles', 'codemirror-fold.css', asset_base+'js/addon/fold/foldgutter.css']
+            ,['scripts', 'codemirror-fold-gutter', asset_base+'js/addon/fold/foldgutter.js']
+            ,['scripts', 'codemirror-fold-code', asset_base+'js/addon/fold/foldcode.js']
+            ,['scripts', 'codemirror-fold-comment', asset_base+'js/addon/fold/comment-fold.js']
+            ,['scripts', 'codemirror-fold-brace', asset_base+'js/addon/fold/brace-fold.js']
+            ,['scripts', 'codemirror-fold-indent', asset_base+'js/addon/fold/indent-fold.js']
+            ,['scripts', 'codemirror-fold-xml', asset_base+'js/addon/fold/xml-fold.js']
+            
+            ,['styles', 'codemirror.css', asset_base+'css/codemirror.min.css']
+            ,['scripts', 'codemirror', asset_base+'js/codemirror.min.js', ['codemirror.css']]
+            ,['scripts', 'codemirror-full', asset_base+'js/mode/htmlmixed.js', ['codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent']]
             ]);
         }
         return assets;
@@ -283,8 +282,7 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wspinner = 'w-spinner';
         wspinner += !empty(attr,'spinner') ? " "+attr['spinner'] : " w-spinner-dots";
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
+        self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'><div class="'+wspinner+'"></div></div>';
     }
     
@@ -295,8 +293,7 @@ var HtmlWidget = self = {
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
+        self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
     }
     
@@ -348,9 +345,7 @@ var HtmlWidget = self = {
                 ]
             }
         };*/
-        //self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
-        self.enqueue('styles', "w-morphable-"+wid, [wstyle], []);
+        self.enqueue('styles', "w-morphable-"+wid, [wstyle], ['htmlwidgets']);
         return '';
     }
     
@@ -927,8 +922,7 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets.js']);
+        self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
     }
     
@@ -958,9 +952,7 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : '';
             weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : defaults;
-            self.enqueue('styles', 'htmlwidgets.css');
-            self.enqueue('styles', 'codemirror-styles');
-            self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['codemirror']);
+            self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['htmlwidgets','codemirror-full']);
             wstyle = '';
         }
         else if ( !empty(attr,'wysiwyg-editor') && true == attr['wysiwyg-editor'] ) 
@@ -970,9 +962,7 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : ''; 
             weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : null;
-            self.enqueue('styles', 'htmlwidgets.css');
-            self.enqueue('styles', 'trumbowyg-styles');
-            self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['trumbowyg']);
+            self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['htmlwidgets','trumbowyg']);
             wstyle = '';
         }
         else
@@ -1015,8 +1005,7 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['htmlwidgets.js']);
+        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['htmlwidgets']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datetime-format="'+wformat+'" '+wdata+' />'+wicon+'</span>';
     }
     
@@ -1113,9 +1102,7 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         if ( wselect2 )
         {
-            self.enqueue('styles', 'jquery.select2.css');
-            self.enqueue('scripts', 'jquery.select2.js');
-            self.enqueue('scripts', 'w-select-'+wid, [htmlwidget_('select2', wid, attr['config'])], ['htmlwidgets.js']);
+            self.enqueue('scripts', 'w-select-'+wid, [htmlwidget_('select2', wid, attr['config'])], ['htmlwidgets','select2']);
         }
         return wdropdown
         ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="w-dropdown-select w-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
@@ -1201,8 +1188,7 @@ $("#'+wid+'").closest(".dataTables_wrapper").addClass("w-table-wrapper");\
 '+wcontrols+'\
 });\
 ';
-            self.enqueue('styles', 'jquery.dataTables.css');
-            self.enqueue('scripts', "w-datatable-"+wid, [script], ['jquery.dataTables']);
+            self.enqueue('scripts', "w-datatable-"+wid, [script], ['htmlwidgets','datatables']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
