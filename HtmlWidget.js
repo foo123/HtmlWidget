@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.5.0
+*  @version: 0.6.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -61,9 +61,14 @@ function merge( a, b )
     return c;
 }
 
+function htmlwidget_( type, id, options )
+{
+    return 'jQuery(function($){$.htmlwidget._("'+type+'","#'+id+'",'+(!!options?json_encode(options):'null')+');});';
+}
+
 var HtmlWidget = self = {
     
-    VERSION: "0.5.0"
+    VERSION: "0.6.0"
     
     ,BASE: './'
     
@@ -72,8 +77,14 @@ var HtmlWidget = self = {
     }
     
     ,enqueue: function( type, id, asset, deps ) {
-        if ( enqueuer ) 
-            enqueuer(type, id, asset||null, deps||[]);
+        if ( enqueuer )
+        {            
+            if ( isNode )
+                enqueuer(type, id, asset||null, deps||[]);
+            else
+                // add a small delay for browser to load asset after widget has been output
+                setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
+        }
     }
     
     ,assets: function( base, full ) {
@@ -240,60 +251,58 @@ var HtmlWidget = self = {
     
     ,w_sep: function( attr, data ) {
         var wclass, wstyle;
-        self.enqueue('styles', 'htmlwidgets.css');
-        wclass = 'widget-separator'; 
+        wclass = 'w-separator'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        self.enqueue('styles', 'htmlwidgets.css');
         return '<div class="'+wclass+'" '+wstyle+'></div>';
     }
     
     ,w_icon: function( attr, data ) {
         var wclass, wstyle;
-        self.enqueue('styles', 'htmlwidgets.css');
         wclass = 'fa'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         if ( !empty(attr,'icon') ) wclass += ' fa-'+attr['icon'];
+        self.enqueue('styles', 'htmlwidgets.css');
         return '<i class="'+wclass+'" '+wstyle+'></i>';
     }
     
     ,w_delayable: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wspinner;
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
-        wclass = 'widget-delayable-overlay'; 
+        wclass = 'w-delayable-overlay'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wspinner = 'widget-spinner';
-        wspinner += !empty(attr,'spinner') ? " "+attr['spinner'] : " widget-spinner-dots";
+        wspinner = 'w-spinner';
+        wspinner += !empty(attr,'spinner') ? " "+attr['spinner'] : " w-spinner-dots";
+        self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'><div class="'+wspinner+'"></div></div>';
     }
     
     ,w_disabable: function( attr, data ) {
         var wid, wclass, wstyle, wextra;
-        self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
-        wclass = 'widget-disabable-overlay'; 
+        wclass = 'w-disabable-overlay'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
     }
     
     ,w_morphable: function( attr, data ) {
         var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector;
-        //self.enqueue('styles', 'htmlwidgets.css');
-        self.enqueue('scripts', 'htmlwidgets.js');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
-        wclass = 'widget-morphable'; 
+        wclass = 'w-morphable'; 
         wmodes = [].concat(attr['modes']);
         wmode_class = !empty(attr,'mode') ? attr['mode'] : 'mode-${MODE}';
         wshow_class = !empty(attr,'show') ? attr['show'] : 'show-if-${MODE}';
         whide_class = !empty(attr,'hide') ? attr['hide'] : 'hide-if-${MODE}';
-        wselector = "#"+wid+".widget-morphable";
+        wselector = "#"+wid+".w-morphable";
         wshow_selector = [];
         whide_selector = [];
         var i, j, l = wmodes.length;
@@ -333,15 +342,16 @@ var HtmlWidget = self = {
                 ]
             }
         };*/
-        self.enqueue('styles', "widget-morphable-"+wid, [wstyle], []);
+        //self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'htmlwidgets.js');
+        self.enqueue('styles', "w-morphable-"+wid, [wstyle], []);
         return '';
     }
     
     ,w_panel: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wtitle, wchecked, wdata;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'widget-panel';
+        wclass = 'w-panel';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wtitle = !empty(attr,'title') ? attr['title'] : '&nbsp;';
@@ -349,16 +359,16 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.attr_data(attr);
         
-        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><input type="checkbox" id="controller_'+wid+'" class="widget-panel-controller" value="1" '+wchecked+'/><div class="widget-panel-header">'+wtitle+'<label class="widget-panel-controller-button" for="controller_'+wid+'" onclick=""><i class="fa fa-2x"></i></label></div><div class="widget-panel-content">';
+        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button" for="controller_'+wid+'" onclick=""><i class="fa fa-2x"></i></label></div><div class="w-panel-content">';
     }
     
     ,w_panel_end: function( attr, data ) {
+        self.enqueue('styles', 'htmlwidgets.css');
         return '</div></div>';
     }
     
     ,w_accordeon: function( attr, data ) {
         var wid, wstyle, wcontext, wtype, witems, i, l, wcontrollers, wctrl, wselector, wselected, wheight;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
         wheight = !empty(attr,'height') ? attr['height'] : '1500px';
@@ -366,14 +376,14 @@ var HtmlWidget = self = {
         witems = [].concat(attr['items']);
         
         wctrl = "ctrl_"+wid;
-        wcontrollers = "<input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" + witems.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
+        wcontrollers = "<input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" + witems.join( "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" ) + "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/>";
         
         wstyle = '';
         
         // de-activate
         wselector = [];
         for (i=0,l=witems.length; i<l; i++)
-            wselector.push(".widget-"+wctrl+"-controller.widget-transition-controller:not(#item_"+witems[i]+"):checked ~ "+wcontext+"#"+witems[i]+"");
+            wselector.push(".w-"+wctrl+"-controller.w-transition-controller:not(#item_"+witems[i]+"):checked ~ "+wcontext+"#"+witems[i]+"");
         wstyle += '\
 '+wselector.join(',')+'\
 {\
@@ -388,49 +398,48 @@ var HtmlWidget = self = {
         // activate
         wselector = [];
         for (i=0,l=witems.length; i<l; i++)
-            wselector.push("#item_"+witems[i]+".widget-"+wctrl+"-controller.widget-transition-controller:checked ~ "+wcontext+"#"+witems[i]+"");
+            wselector.push("#item_"+witems[i]+".w-"+wctrl+"-controller.w-transition-controller:checked ~ "+wcontext+"#"+witems[i]+"");
         wstyle += '\
 '+wselector.join(',')+'\
 {\
     max-height: '+wheight+';\
-    -webkit-transition: max-height .3s ease;\
-    -moz-transition: max-height .3s ease;\
-    -ms-transition: max-height .3s ease;\
-    -o-transition: max-height .3s ease;\
-    transition: max-height .3s ease;\
+    -webkit-transition: max-height .2s ease .1s;\
+    -moz-transition: max-height .2s ease .1s;\
+    -ms-transition: max-height .2s ease .1s;\
+    -o-transition: max-height .2s ease .1s;\
+    transition: max-height .2s ease .1s;\
 }\
 ';
-        self.enqueue('styles', "widget-accordeon-"+wid, [wstyle], []);
+        self.enqueue('styles', "w-accordeon-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
     
     ,w_tabs: function( attr, data ) {
         var wid, wstyle, wcontext, wtabs, i, l, wcontrollers, wctrl, wselector, wselected, wtransform1, wtransform2;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
         wtabs = [].concat(attr['tabs']);
         
         if ( !empty(attr['3d']) )
         {
-            wtransform1 = 'widget-fx-slideout-3d';
-            wtransform2 = 'widget-fx-slidein-3d';
+            wtransform1 = 'w-fx-slideout-3d';
+            wtransform2 = 'w-fx-slidein-3d';
         }
         else
         {
-            wtransform1 = 'widget-fx-slideout';
-            wtransform2 = 'widget-fx-slidein';
+            wtransform1 = 'w-fx-slideout';
+            wtransform2 = 'w-fx-slidein';
         }
         
         wctrl = "ctrl_"+wid;
-        wcontrollers = "<input name=\""+wctrl+"\" checked type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"widget-transition-controller widget-"+wctrl+"-controller\"/>";
+        wcontrollers = "<input name=\""+wctrl+"\" checked type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/>";
         
         wstyle = '';
         
         // de-activate
         wselector = [];
         for (i=0,l=wtabs.length; i<l; i++)
-            wselector.push(".widget-"+wctrl+"-controller.widget-transition-controller:not(#tab_"+wtabs[i]+"):checked ~ "+wcontext+"#"+wtabs[i]+"");
+            wselector.push(".w-"+wctrl+"-controller.w-transition-controller:not(#tab_"+wtabs[i]+"):checked ~ "+wcontext+"#"+wtabs[i]+"");
         wstyle += '\
 '+wselector.join(',')+'\
 {\
@@ -452,7 +461,7 @@ var HtmlWidget = self = {
         // activate
         wselector = [];
         for (i=0,l=wtabs.length; i<l; i++)
-            wselector.push("#tab_"+wtabs[i]+".widget-"+wctrl+"-controller.widget-transition-controller:checked ~ "+wcontext+"#"+wtabs[i]+"");
+            wselector.push("#tab_"+wtabs[i]+".w-"+wctrl+"-controller.w-transition-controller:checked ~ "+wcontext+"#"+wtabs[i]+"");
         wstyle += '\
 '+wselector.join(',')+'\
 {\
@@ -472,13 +481,12 @@ var HtmlWidget = self = {
     animation-timing-function: ease-in;\
 }\
 ';
-        self.enqueue('styles', "widget-tabs-"+wid, [wstyle], []);
+        self.enqueue('styles', "w-tabs-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
     
     ,w_pages: function( attr, data ) {
         var wid, wstyle, wcontext, wpages, main_page, i, l, wcontrollers, wselector, wtransform1, wtransform2, wtransform3;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
         wpages = [].concat(attr['pages']);
@@ -496,14 +504,14 @@ var HtmlWidget = self = {
             wtransform3 = 'translateX(100%)';
         }
         
-        wcontrollers = "<span id=\"page_" + wpages.join( "\" class=\"widget-page-controller\"></span><span id=\"page_" ) + "\" class=\"widget-page-controller\"></span>";
+        wcontrollers = "<span id=\"page_" + wpages.join( "\" class=\"w-page-controller\"></span><span id=\"page_" ) + "\" class=\"w-page-controller\"></span>";
         
         wstyle = '';
         
         // main page
         main_page = wpages.shift();
         wstyle += '\
-#'+main_page+'.widget-page\
+#'+main_page+'.w-page\
 {\
     position: relative;\
     -webkit-transform: '+wtransform1+';\
@@ -512,7 +520,7 @@ var HtmlWidget = self = {
     -o-transform: '+wtransform1+';\
     transform: '+wtransform1+';\
 }\
-.widget-page-controller:not(#page_'+main_page+'):target ~ '+wcontext+'#'+main_page+'.widget-page\
+.w-page-controller:not(#page_'+main_page+'):target ~ '+wcontext+'#'+main_page+'.w-page\
 {\
     position: absolute;\
     \
@@ -532,7 +540,7 @@ var HtmlWidget = self = {
         // rest pages
         wselector = [];
         for (i=0,l=wpages.length; i<l; i++)
-            wselector.push('#page_'+wpages[i]+'.widget-page-controller:not(:target) ~ '+wcontext+'#'+wpages[i]+'.widget-page');
+            wselector.push('#page_'+wpages[i]+'.w-page-controller:not(:target) ~ '+wcontext+'#'+wpages[i]+'.w-page');
         wstyle += '\
 '+wselector.join(',')+'\
 {\
@@ -545,7 +553,7 @@ var HtmlWidget = self = {
 ';
         wselector = [];
         for (i=0,l=wpages.length; i<l; i++)
-            wselector.push('#page_'+wpages[i]+'.widget-page-controller:target ~ '+wcontext+'#'+wpages[i]+'.widget-page');
+            wselector.push('#page_'+wpages[i]+'.w-page-controller:target ~ '+wcontext+'#'+wpages[i]+'.w-page');
         wstyle += '\
 '+wselector.join(',')+'\
 {\
@@ -564,18 +572,17 @@ var HtmlWidget = self = {
     transition: transform .3s ease;\
 }\
 ';
-        self.enqueue('styles', "widget-pages-"+wid, [wstyle], []);
+        self.enqueue('styles', "w-pages-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
     
     ,w_dialog: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wbuttons, wcontent;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtitle = isset(data,'title') ? data['title'] : ''; 
         wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
         wcontent = isset(data,'content') ? data['content'] : '';
-        wclass = 'widget-dialog'; 
+        wclass = 'w-dialog'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -589,37 +596,37 @@ var HtmlWidget = self = {
             wcontent = '<form id="'+wid+'_form">'+wcontent+'</form>';
         }
         wdata = self.attr_data(attr);
-        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+'</div><div class="widget-dialog-content">'+wcontent+'</div><div class="widget-dialog-buttons">'+wbuttons+'</div></div>';
+        self.enqueue('styles', 'htmlwidgets.css');
+        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'</div><div class="w-dialog-content">'+wcontent+'</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
     ,w_modal: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'widget-modal widget-dialog'; 
+        wclass = 'w-modal w-dialog'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wtitle = isset(data,'title') ? data['title'] : ''; 
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
-        woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="widget-modal-overlay" onclick=""></label>' : '<div class="widget-modal-overlay"></div>';
+        woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick=""></label>' : '<div class="w-modal-overlay"></div>';
         wdata = self.attr_data(attr);
-        return '<input id="modal_'+wid+'" type="checkbox" class="widget-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="widget-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="widget-label widget-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="widget-dialog-content">';
+        return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
     
     ,w_modal_end: function( attr, data ) {
         var wbuttons;
         wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
-        return '</div><div class="widget-dialog-buttons">'+wbuttons+'</div></div>';
+        self.enqueue('styles', 'htmlwidgets.css');
+        return '</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
     ,w_tooltip: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'widget-tooltip'; 
+        wclass = 'w-tooltip'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -634,69 +641,70 @@ var HtmlWidget = self = {
         if ( !empty(attr,'tooltip') )
         {
             if ( 'top' === attr.toolip )
-                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-bottom"></div>';
+                warrow = '<div class="w-tooltip-arrow w-arrow-bottom"></div>';
             else if ( 'bottom' === attr.toolip )
-                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-top"></div>';
+                warrow = '<div class="w-tooltip-arrow w-arrow-top"></div>';
             else if ( 'right' === attr.toolip )
-                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-left"></div>';
+                warrow = '<div class="w-tooltip-arrow w-arrow-left"></div>';
             else
-                warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+                warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
         }
         else
         {
-            warrow = '<div class="widget-tooltip-arrow widget-tooltip-arrow-right"></div>';
+            warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
         }
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+warrow+'</div>';
     }
     
     ,w_label: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wfor, wtext, wtitle;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wfor = isset(attr,"for") ? 'for="'+attr['for']+'"' : '';
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'widget widget-label'; 
+        wclass = 'widget w-label'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         if ( !empty(attr,'icon') )
         {
-            wclass += ' widget-icon';
+            wclass += ' w-icon';
             wtext = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>" + wtext;
         }
         if ( !empty(attr,'iconr') )
         {
-            wclass += ' widget-icon-right';
+            wclass += ' w-icon-right';
             wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         // iOS needs an onlick attribute to handle lable update if used as controller
         return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+' '+wdata+'>'+wtext+'</label>';
     }
     
     ,w_link: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, whref, wfor, wtext;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'widget-link'; 
+        wclass = 'w-link'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         if ( !empty(attr,'icon') )
         {
-            wclass += ' widget-icon';
+            wclass += ' w-icon';
             wtext = "<i class=\"fa fa-" + attr['icon'] + " left-fa\"></i>" + wtext;
         }
         if ( !empty(attr,'iconr') )
         {
-            wclass += ' widget-icon-right';
+            wclass += ' w-icon-right';
             wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         if ( isset(attr,'for') )
         {
             wfor = attr['for'];
@@ -711,27 +719,27 @@ var HtmlWidget = self = {
     
     ,w_button: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtype, wtitle, wtext, whref, wfor;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'widget widget-button'; 
+        wclass = 'widget w-button'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         if ( !empty(attr,'icon') )
         {
-            if ( !wtext.length ) wclass += ' widget-icon-only';
-            else wclass += ' widget-icon';
+            if ( !wtext.length ) wclass += ' w-icon-only';
+            else wclass += ' w-icon';
             wtext = "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>" + wtext;
         }
         if ( !empty(attr,'iconr') )
         {
-            if ( !wtext.length ) wclass += ' widget-icon-only';
-            else wclass += ' widget-icon-right';
+            if ( !wtext.length ) wclass += ' w-icon-only';
+            else wclass += ' w-icon-right';
             wtext = wtext + "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
         }
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         if ( isset(attr,'for') )
         {
             wfor = attr['for'];
@@ -751,7 +759,6 @@ var HtmlWidget = self = {
     
     ,w_control: function( attr, data ) {
         var wid, wclass, wstyle, wctrl, wextra, wdata, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
@@ -760,15 +767,15 @@ var HtmlWidget = self = {
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
         if ( !empty(attr,'image') )
         {
-            wctrl = "checkbox" === wtype ? 'widget-checkbox-image' : 'widget-radio-image';
+            wctrl = "checkbox" === wtype ? 'w-checkbox-image' : 'w-radio-image';
             wimg = '<span style="background-image:url('+attr['image']+');"></span>';
         }
         else
         {
-            wctrl = "checkbox" === wtype ? 'widget-checkbox' : 'widget-radio';
+            wctrl = "checkbox" === wtype ? 'w-checkbox' : 'w-radio';
             wimg = '&nbsp;';
         }
-        wclass = 'widget widget-control'; 
+        wclass = 'widget w-control'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -776,12 +783,12 @@ var HtmlWidget = self = {
         if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
         if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wimg+'</label>';
     }
     
     ,w_switch: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wchecked, wiconon, wiconoff, wvalue, wvalue2, wdual, wname, wtype, wreverse, wstates, wswitches;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
@@ -790,7 +797,7 @@ var HtmlWidget = self = {
         wdual = false !== wvalue2;
         wtitle = isset(attr,"title") ? attr["title"] : ""; 
         wchecked = !empty(attr,'checked') && attr['checked'];
-        wclass = 'widget widget-switch'; 
+        wclass = 'widget w-switch'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -819,138 +826,108 @@ var HtmlWidget = self = {
             wtype = 'radio';
             if ( wchecked )
             {
-                wstates = '<input type="'+wtype+'" id="'+wid+'-on" '+wname+' class="widget-switch-state widget-switch-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' checked /><input type="'+wtype+'" id="'+wid+'-off" '+wname+' class="widget-switch-state widget-switch-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' />';
+                wstates = '<input type="'+wtype+'" id="'+wid+'-on" '+wname+' class="w-switch-state w-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' checked /><input type="'+wtype+'" id="'+wid+'-off" '+wname+' class="w-switch-state w-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' />';
             }
             else
             {
-                wstates = '<input type="'+wtype+'" id="'+wid+'-on" '+wname+' class="widget-switch-state widget-switch-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' /><input type="'+wtype+'" id="'+wid+'-off" '+wname+' class="widget-switch-state widget-switch-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' checked />';
+                wstates = '<input type="'+wtype+'" id="'+wid+'-on" '+wname+' class="w-switch-state w-state-on" value="'+wvalue+'" '+wextra+' '+wdata+' /><input type="'+wtype+'" id="'+wid+'-off" '+wname+' class="w-switch-state w-state-off" value="'+wvalue2+'" '+wextra+' '+wdata+' checked />';
             }
             if ( wreverse ) 
             {
                 wclass += ' reverse';
-                wswitches = '<label for="'+wid+'-off" class="widget-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'-on" class="widget-switch-on" onclick="">'+wiconon+'</label>';
+                wswitches = '<label for="'+wid+'-off" class="w-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'-on" class="w-switch-on" onclick="">'+wiconon+'</label>';
             }
             else
             {
-                wswitches = '<label for="'+wid+'-on" class="widget-switch-on" onclick="">'+wiconon+'</label><label for="'+wid+'-off" class="widget-switch-off" onclick="">'+wiconoff+'</label>';
+                wswitches = '<label for="'+wid+'-on" class="w-switch-on" onclick="">'+wiconon+'</label><label for="'+wid+'-off" class="w-switch-off" onclick="">'+wiconoff+'</label>';
             }
         }
         else
         {
             // switch with one state for on/off
             if ( wchecked ) wchecked = 'checked';
-            wstates = '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="widget-switch-state" value="'+wvalue+'" '+wextra+' '+wdata+' '+wchecked+' />';
+            wstates = '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="w-switch-state" value="'+wvalue+'" '+wextra+' '+wdata+' '+wchecked+' />';
             if ( wreverse ) 
             {
                 wclass += ' reverse';
-                wswitches = '<label for="'+wid+'" class="widget-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'" class="widget-switch-on" onclick="">'+wiconon+'</label>';
+                wswitches = '<label for="'+wid+'" class="w-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'" class="w-switch-on" onclick="">'+wiconon+'</label>';
             }
             else
             {
-                wswitches = '<label for="'+wid+'" class="widget-switch-on" onclick="">'+wiconon+'</label><label for="'+wid+'" class="widget-switch-off" onclick="">'+wiconoff+'</label>';
+                wswitches = '<label for="'+wid+'" class="w-switch-on" onclick="">'+wiconon+'</label><label for="'+wid+'" class="w-switch-off" onclick="">'+wiconoff+'</label>';
             }
         }
-        return '<span class="'+wclass+'" title="'+wtitle+'" '+wstyle+'>'+wstates+wswitches+'<span class="widget-switch-handle"></span></span>';
+        self.enqueue('styles', 'htmlwidgets.css');
+        return '<span class="'+wclass+'" title="'+wtitle+'" '+wstyle+'>'+wstates+wswitches+'<span class="w-switch-handle"></span></span>';
     }
     
     ,w_text: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wtype, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : ""; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : wtitle;
-        wclass = 'widget widget-text'; 
+        wclass = 'widget w-text'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wtype = !empty(attr,"type") ? attr["type"] : 'text';
         wicon = '';
-        wrapper_class = 'widget-wrapper';
+        wrapper_class = 'w-wrapper';
         if ( !empty(attr,'icon') )
         {
             wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
-            wrapper_class += ' widget-icon';
+            wrapper_class += ' w-icon';
         }
         if ( !empty(attr,'iconr') )
         {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
-            wrapper_class += ' widget-icon-right';
+            wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        if ( wicon.length )
-            return '\
-<span class="'+wrapper_class+'" '+wstyle+'>\
-<input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />\
-'+wicon+'\
-</span>\
-';
-        else
-            return '<input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />';
+        self.enqueue('styles', 'htmlwidgets.css');
+        return wicon.length
+        ? '<span class="'+wrapper_class+'" '+wstyle+'><input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />'+wicon+'</span>'
+        : '<input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />';
     }
     
     ,w_suggest: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, script;
-        self.enqueue('styles', 'htmlwidgets.css');
+        var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : ""; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : wtitle;
-        wclass = 'widget widget-text widget-suggest'; 
+        wclass = 'widget w-text w-suggest'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wajax = attr["ajax"];
         wicon = '';
-        wrapper_class = 'widget-wrapper';
+        wrapper_class = 'w-wrapper';
         if ( !empty(attr,'icon') )
         {
             wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
-            wrapper_class += ' widget-icon';
-            wicon += "<span class=\"fa-wrapper right-fa widget-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-            wrapper_class += ' widget-icon-right';
+            wrapper_class += ' w-icon';
+            wicon += "<span class=\"fa-wrapper right-fa w-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            wrapper_class += ' w-icon-right';
         }
         else if ( !empty(attr,'iconr') )
         {
-            wicon += "<span class=\"fa-wrapper left-fa widget-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
-            wrapper_class += ' widget-icon';
+            wicon += "<span class=\"fa-wrapper left-fa w-suggest-spinner\"><i id=\""+wid+"-spinner\" class=\"fa fa-spinner fa-pulse\"></i></span>";
+            wrapper_class += ' w-icon';
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
-            wrapper_class += ' widget-icon-right';
+            wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        script = '\
-jQuery(function($){\
-var $el = $("#'+wid+'"), suggest = $el.parent();\
-$el.suggest({\
-minLength: 2,\
-maxLength: -1,\
-source: function(value, response){\
-suggest.addClass("ajax");\
-$.ajax({\
-    url: "'+wajax+'",\
-    type: "POST",\
-    data: {suggest: value},\
-    dataType: "json",\
-    success: function( data ){ suggest.removeClass("ajax"); response(data); }\
-});\
-},\
-select: function(){ }\
-});});\
-';
-        self.enqueue('scripts', "widget-suggest-"+wid, [script], ['htmlwidgets.js']);
-        return '\
-<span class="'+wrapper_class+'" '+wstyle+'>\
-<input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" '+wdata+' />\
-'+wicon+'\
-</span>\
-';
+        self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets.js']);
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
     }
     
     ,w_textarea: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wvalue, wname, wtitle, weditor, defaults, script;
-        self.enqueue('styles', 'htmlwidgets.css');
+        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wvalue, wname, wtitle, weditor, defaults;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : ""; 
@@ -971,89 +948,75 @@ select: function(){ }\
             ,'foldGutter'       : true
             ,'gutters'          : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
             };
-            wclass = 'widget widget-syntax-editor';
+            wclass = 'widget w-syntax-editor';
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : '';
-            weditor = json_encode(!empty(attr,'config') ? merge(defaults,attr['config']) : defaults);
-            script = '<script>\
-jQuery(function(\$){\
-CodeMirror.fromTextArea(document.getElementById('+wid+'), '+weditor+');\
-});\
-</script>';
+            weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : defaults;
+            self.enqueue('styles', 'htmlwidgets.css');
             self.enqueue('styles', 'codemirror-styles');
-            self.enqueue('scripts', "widget-syntax-editor-"+wid, [script], ['codemirror']);
+            self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['codemirror']);
             wstyle = '';
         }
         else if ( !empty(attr,'wysiwyg-editor') && true == attr['wysiwyg-editor'] ) 
         {
             defaults = { };
-            wclass = 'widget widget-wysiwyg-editor'; 
+            wclass = 'widget w-wysiwyg-editor'; 
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : ''; 
-            weditor = !empty(attr,'config') ? json_encode(merge(defaults,attr['config'])) : '';
-            script = '<script>\
-jQuery(function($){\
-$("#'+wid+'").trumbowyg('+weditor+');\
-$("#'+wid+'").closest(".trumbowyg-box").addClass("widget widget-wysiwyg-editor-box").attr("style","'+wstyle+'");\
-});\
-</script>';
+            weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : null;
+            self.enqueue('styles', 'htmlwidgets.css');
             self.enqueue('styles', 'trumbowyg-styles');
-            self.enqueue('scripts', "widget-wysiwyg-editor-"+wid, [script], ['trumbowyg']);
+            self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['trumbowyg']);
             wstyle = '';
         }
         else
         {
-            wclass = 'widget widget-textarea'; 
+            wclass = 'widget w-textarea'; 
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+            self.enqueue('styles', 'htmlwidgets.css');
         }
         return '<textarea id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" '+wdata+'>'+wvalue+'</textarea>';
     }
     
     ,w_date: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wtitle, wformat, wrapper_class, script;
-        self.enqueue('styles', 'htmlwidgets.css');
+        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wtitle, wformat, wrapper_class;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : ""; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : wtitle;
-        wclass = 'widget widget-text widget-date'; 
+        wclass = 'widget w-text w-date'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wformat = !empty(attr,"format") ? attr["format"] : 'Y-m-d';
         wicon = '';
-        wrapper_class = 'widget-wrapper';
+        wrapper_class = 'w-wrapper';
         if ( !empty(attr,'icon') )
         {
             wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
-            wrapper_class += ' widget-icon';
+            wrapper_class += ' w-icon';
         }
         if ( !empty(attr,'iconr') )
         {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
-            wrapper_class += ' widget-icon-right';
+            wrapper_class += ' w-icon-right';
         }
         if ( empty(attr,'icon') && empty(attr,'iconr') )
         {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-calendar\"></i></span>";
-            wrapper_class += ' widget-icon-right';
+            wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        script = '\
-jQuery(function($){\
-$("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), decoder:$.htmlwidget.datetime.decoder("'+wformat+'")});\
-});\
-';
-        self.enqueue('scripts', "widget-datetime-"+wid, [script], ['htmlwidgets.js']);
-        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' '+wdata+' />'+wicon+'</span>';
+        self.enqueue('styles', 'htmlwidgets.css');
+        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['htmlwidgets.js']);
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datetime-format="'+wformat+'" '+wdata+' />'+wicon+'</span>';
     }
     
     ,w_time: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wnam, wformat, wtimes,
             time_options, i, tt, t, p, f, selected;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? attr["name"] : '';
         wformat = !empty(attr,'format') ? attr['format'].split(':') : ["h","m","s"];
@@ -1066,7 +1029,7 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         {
             wvalue = ["00", "00", "00"];
         }
-        wclass = 'widget widget-time'; 
+        wclass = 'widget w-time'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -1092,20 +1055,20 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         {
             t = wformat[p];
             wnam = wname.length ? 'name="'+wname+'['+t+']"' : '';
-            wtimes.push('<select class="widget-time-component" id="'+wid+'_'+t+'" '+wnam+'>'+time_options[t].join('')+'</select>');
+            wtimes.push('<select class="w-time-component" id="'+wid+'_'+t+'" '+wnam+'>'+time_options[t].join('')+'</select>');
         }
-        wtimes = wtimes.join('<span class="widget-time-sep">:</span>');
+        wtimes = wtimes.join('<span class="w-time-sep">:</span>');
+        self.enqueue('styles', 'htmlwidgets.css');
         return '<span class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtimes+'</span>';
     }
     
     ,w_select: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, woptions, wselected, 
             opts, o, opt, l, key, val, selected, has_selected;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wdropdown = !empty(attr,'dropdown') && true==attr['dropdown'];
-        wclass = wdropdown ? 'widget widget-dropdown widget-state-default' : 'widget widget-select';
+        wclass = wdropdown ? 'widget w-dropdown w-state-default' : 'widget w-select';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -1133,24 +1096,23 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         }
         if ( !empty(attr,'placeholder') )
         {
-            woptions = "<option value=\"\" class=\"widget-option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
-            if ( !/\brequired\b/.test(wextra) ) wextra += ' required';
-            if ( !wname.length ) wextra += ' form="__NONE__"';
-            wextra += ' data-widget-placeholder="'+attr['placeholder']+'"';
+            woptions = "<option value=\"\" class=\"w-option-placeholder\" disabled"+(has_selected?'':' selected')+">"+attr['placeholder']+"</option>" + woptions;
+            //if ( !/\brequired\b/.test(wextra) ) wextra += ' required';
+            //if ( !wname.length ) wextra += ' form="__NONE__"';
+            wextra += ' data-placeholder="'+attr['placeholder']+'"';
         }
         
         wdata = self.attr_data(attr);
-        if ( wdropdown )
-            return '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="widget-dropdown-select widget-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>';
-        else
-            return '<select id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';
+        self.enqueue('styles', 'htmlwidgets.css');
+        return wdropdown
+        ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="w-dropdown-select w-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
+        : '<select id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';
     }
     
     ,w_menu: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'widget widget-dropdown-menu'; 
+        wclass = 'widget w-dropdown-menu'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -1159,15 +1121,15 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
     }
     
     ,w_menu_end: function( attr, data ) {
+        self.enqueue('styles', 'htmlwidgets.css');
         return '</div>';
     }
     
     ,w_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wdataTable, wcolumns, wrows, wheader, wfooter, woptions, wcontrols,
             column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls, script;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'widget widget-table'; 
+        wclass = 'widget w-table'; 
         if ( !isset(attr,'stripped') || attr['stripped'] ) wclass += ' stripped';
         if ( !isset(attr,'responsive') || attr['responsive'] ) wclass += ' responsive';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -1180,7 +1142,7 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
         cl = column_keys.length
         for(c=0; c<cl; c++)
         {
-            wcolumns += "<th data-key=\""+column_keys[c]+"\">"+column_values[column_keys[c]]+"</th>";
+            wcolumns += "<th data-columnkey=\""+column_keys[c]+"\">"+column_values[column_keys[c]]+"</th>";
         }
         wcolumns = "<tr>"+wcolumns+"</tr>";
         wheader = !isset(attr['header']) || !empty(attr['header']) ? '<thead>'+wcolumns+'</thead>' : '';
@@ -1198,20 +1160,21 @@ $("#'+wid+'").datetime({encoder:$.htmlwidget.datetime.encoder("'+wformat+'"), de
             wrows += "</tr>";
         }
         wdata = self.attr_data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         wdataTable = isset(attr,'dataTable');
         if ( wdataTable )
         {
             woptions = Object===attr['dataTable'].constructor ? json_encode(attr['dataTable']) : '';
             wcontrols = [
-             "$('#"+wid+"_filter').find('input').addClass('widget-text');"
-            ,"$('#"+wid+"_length').find('select').addClass('widget-select');"
+             "$('#"+wid+"_filter').find('input').addClass('w-text');"
+            ,"$('#"+wid+"_length').find('select').addClass('w-select');"
             ];
             if ( !empty(attr,'controls') ) 
             {
                 ctrls = attr['controls'] instanceof Array ? attr['controls'] : [attr['controls']];
                 for(ctrl=0; ctrl<ctrls.length; ctrl++)
                 {
-                    wcontrols.push('$(".widget-table-controls", "#'+wid+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
+                    wcontrols.push('$(".w-table-controls", "#'+wid+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
                 }
             }
             wcontrols = wcontrols.join("\n");
@@ -1221,19 +1184,18 @@ $("#'+wid+'").dataTable('+woptions+').on("change", "input.select_row", function(
 if ( this.checked ) $(this).closest("tr").addClass("selected");\
 else $(this).closest("tr").removeClass("selected");\
 });\
-$("#'+wid+'").closest(".dataTables_wrapper").addClass("widget-table-wrapper");\
+$("#'+wid+'").closest(".dataTables_wrapper").addClass("w-table-wrapper");\
 '+wcontrols+'\
 });\
 ';
             self.enqueue('styles', 'jquery.dataTables.css');
-            self.enqueue('scripts', "widget-datatable-"+wid, [script], ['jquery.dataTables']);
+            self.enqueue('scripts', "w-datatable-"+wid, [script], ['jquery.dataTables']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
     
     ,w_animation: function( attr, data )  {
         var wid, wselector, wanimation, wtransition, wduration, wdelay, wtiming_function, weasing, witeration_count, wfill_mode, wanimation_def;
-        self.enqueue('styles', 'htmlwidgets.css');
         wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_animation');
         wselector = isset(attr,"selector") ? attr["selector"] : '.animate-'+wid;
         wanimation = !empty(attr,'animation') ? attr['animation'] : '';
@@ -1310,7 +1272,7 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
 }\
 ';
         }
-        self.enqueue('styles', wid, [wanimation_def]);
+        self.enqueue('styles', wid, [wanimation_def], ['htmlwidgets.css']);
         return '';
     }
 };

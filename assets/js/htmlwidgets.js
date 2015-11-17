@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, DateX, HtmlWidget
-*  @version: 0.5.0
+*  @version: 0.6.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -13,7 +13,7 @@
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = { VERSION: "0.5.0" }, slice = Array.prototype.slice;
+var htmlwidget = { VERSION: "0.6.0" }, slice = Array.prototype.slice;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
@@ -115,28 +115,28 @@ htmlwidget.delayable = function delayable( options, el ){
     if ( !(self instanceof delayable) ) return new delayable(options, el);
     self.w_init = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('widget-delayed') ) 
-            $el.removeClass('widget-delayed');
-        if ( !$el.hasClass('widget-undelayed') ) 
-            $el.addClass('widget-undelayed');
-        if ( !$el.children('.widget-delayable-overlay').length )
+        if ( $el.hasClass('w-delayed') ) 
+            $el.removeClass('w-delayed');
+        if ( !$el.hasClass('w-undelayed') ) 
+            $el.addClass('w-undelayed');
+        if ( !$el.children('.w-delayable-overlay').length )
         {
             $el.append('\
-<div class="widget-delayable-overlay">\
-<div class="widget-spinner widget-spinner-dots"></div>\
+<div class="w-delayable-overlay">\
+<div class="w-spinner w-spinner-dots"></div>\
 </div>\
 ');
         }
     };
     self.w_enable = function( ) {
         var $el = $(el);
-        if ( !$el.hasClass('widget-delayed') )
-            $el.addClass('widget-delayed').removeClass('widget-undelayed');
+        if ( !$el.hasClass('w-delayed') )
+            $el.addClass('w-delayed').removeClass('w-undelayed');
     };
     self.w_disable = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('widget-delayed') )
-            $el.addClass('widget-undelayed').removeClass('widget-delayed');
+        if ( $el.hasClass('w-delayed') )
+            $el.addClass('w-undelayed').removeClass('w-delayed');
     };
 };
 
@@ -145,27 +145,27 @@ htmlwidget.disabable = function disabable( options, el ){
     if ( !(self instanceof disabable) ) return new disabable(options, el);
     self.w_init = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('widget-delayed') ) 
-            $el.removeClass('widget-delayed');
-        if ( !$el.hasClass('widget-undelayed') ) 
-            $el.addClass('widget-undelayed');
-        if ( !$el.children('.widget-disabable-overlay').length )
+        if ( $el.hasClass('w-delayed') ) 
+            $el.removeClass('w-delayed');
+        if ( !$el.hasClass('w-undelayed') ) 
+            $el.addClass('w-undelayed');
+        if ( !$el.children('.w-disabable-overlay').length )
         {
             $el.append('\
-<div class="widget-disabable-overlay">\
+<div class="w-disabable-overlay">\
 </div>\
 ');
         }
     };
     self.w_enable = function( ) {
         var $el = $(el);
-        if ( !$el.hasClass('widget-disabled') )
-            $el.addClass('widget-disabled').removeClass('widget-undisabled');
+        if ( !$el.hasClass('w-disabled') )
+            $el.addClass('w-disabled').removeClass('w-undisabled');
     };
     self.w_disable = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('widget-disabled') )
-            $el.addClass('widget-undisabled').removeClass('widget-disabled');
+        if ( $el.hasClass('w-disabled') )
+            $el.addClass('w-undisabled').removeClass('w-disabled');
     };
 };
 
@@ -1417,17 +1417,80 @@ return RemoteList;
     };
 }*/
 $.htmlwidget = htmlwidget;
+
 widget2jquery( 'morphable', htmlwidget.morphable );
 widget2jquery( 'delayable', htmlwidget.delayable );
 widget2jquery( 'disabable', htmlwidget.disabable );
 widget2jquery( 'datetime', htmlwidget.datetime );
 widget2jquery( 'suggest', htmlwidget.suggest );
 
+htmlwidget._ = function( type, el, opts ) {
+    opts = opts || {};
+    switch( type )
+    {
+    case 'morphable':
+        $(el).morphable( );
+        break;
+    
+    case 'delayable':
+        $(el).delayable( );
+        break;
+    
+    case 'disabable':
+        $(el).disabable( );
+        break;
+    
+    case 'suggest':
+        var $el = $(el), suggest = $el.parent( ),
+            ajaxurl = $el.attr('data-ajax'),
+            method = $el.attr('data-request-method') || "POST",
+            dataType = $el.attr('data-response-type') || "json";
+        $el.suggest({
+            minLength: 2,
+            maxLength: -1,
+            source: function( value, response ){
+                suggest.addClass("ajax");
+                $.ajax({
+                    url: ajaxurl,
+                    type: method,
+                    dataType: dataType,
+                    data: {suggest: value},
+                    success: function( data ){
+                        suggest.removeClass("ajax");
+                        response( data );
+                    }
+                });
+            },
+            select: function( ){ }
+        });
+        break;
+    
+    case 'wysiwyg-editor':
+        var $el = $(el);
+        $el.trumbowyg( opts.editor||{} );
+        $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box").attr("style", opts.style||'');
+        break;
+    
+    case 'syntax-editor':
+        CodeMirror.fromTextArea( $(el)[0], opts.editor||{} );
+        break;
+    
+    case 'date':
+    case 'datetime':
+        var $el = $(el), format = $el.attr('data-datetime-format') || 'Y-m-d';
+        $el.datetime({
+            encoder: htmlwidget.datetime.encoder( format ),
+            decoder: htmlwidget.datetime.decoder( format )
+        });
+        break;
+    
+    default: break;
+    }
+};
 $(function(){
-    $('.widget-delayable').delayable( );
-    $('.widget-disabable').disabable( );
-    //$('.widget-morphable').morphable( );
+    $('.w-delayable').delayable( );
+    $('.w-disabable').disabable( );
+    //$('.w-morphable').morphable( );
 });
-
 
 }(window, jQuery);
