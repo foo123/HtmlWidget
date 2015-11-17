@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.6.0
+*  @version: 0.6.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -68,7 +68,7 @@ function htmlwidget_( type, id, options )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.6.0"
+    VERSION: "0.6.1"
     
     ,BASE: './'
     
@@ -100,6 +100,10 @@ var HtmlWidget = self = {
             // DateX
              ['scripts', 'datex', base+'js/DateX.min.js']
             
+            // Select2
+            ,['styles', 'jquery.select2.css', base+'css/select2.min.css']
+            ,['scripts', 'jquery.select2', base+'js/select2.full.min.js', ['jquery']]
+             
             // DataTables
             ,['styles', 'jquery.dataTables.css', base+'css/jquery.dataTables.min.css']
             ,['scripts', 'jquery.dataTables', base+'js/jquery.dataTables.min.js', ['jquery']]
@@ -175,6 +179,7 @@ var HtmlWidget = self = {
             else if ( "radio-image" === widget ) attr["type"] = "radio";
             else if ( "checkbox" === widget ) attr["type"] = "checkbox";
             else if ( "radio" === widget ) attr["type"] = "radio";
+            else if ( "select2" === widget ) attr["select2"] = true;
             else if ( "dropdown" === widget ) attr["dropdown"] = true;
             else if ( "syntax-editor" === widget || "source-editor" === widget || "syntax" === widget || "source" === widget || "highlight-editor" === widget || "highlighter" === widget ) attr["syntax-editor"] = true;
             else if ( "wysiwyg-editor" === widget || "wysiwyg" === widget || "rich-editor" === widget || "rich" === widget || "editor" === widget ) attr["wysiwyg-editor"] = true;
@@ -231,6 +236,7 @@ var HtmlWidget = self = {
             case 'switch':      out = self.w_switch(attr, data); break;
             case 'dropdown':
             case 'selectbox':
+            case 'select2':
             case 'select':      out = self.w_select(attr, data); break;
             case 'menu':        out = self.w_menu(attr, data); break;
             case 'endmenu':
@@ -1063,10 +1069,11 @@ var HtmlWidget = self = {
     }
     
     ,w_select: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, woptions, wselected, 
+        var wid, wclass, wstyle, wextra, wdata, wname, wdropdown, wselect2, woptions, wselected, 
             opts, o, opt, l, key, val, selected, has_selected;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
+        wselect2 = !empty(attr,'select2') && true==attr['select2'];
         wdropdown = !empty(attr,'dropdown') && true==attr['dropdown'];
         wclass = wdropdown ? 'widget w-dropdown w-state-default' : 'widget w-select';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -1104,6 +1111,12 @@ var HtmlWidget = self = {
         
         wdata = self.attr_data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
+        if ( wselect2 )
+        {
+            self.enqueue('styles', 'jquery.select2.css');
+            self.enqueue('scripts', 'jquery.select2.js');
+            self.enqueue('scripts', 'w-select-'+wid, [htmlwidget_('select2', wid, attr['config'])], ['htmlwidgets.js']);
+        }
         return wdropdown
         ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="w-dropdown-select w-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
         : '<select id="'+wid+'" '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';

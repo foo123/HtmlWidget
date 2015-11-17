@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, DateX, HtmlWidget
-*  @version: 0.6.0
+*  @version: 0.6.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -13,7 +13,7 @@
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = { VERSION: "0.6.0" }, slice = Array.prototype.slice;
+var htmlwidget = { VERSION: "0.6.1" }, slice = Array.prototype.slice;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
@@ -1482,6 +1482,10 @@ htmlwidget._ = function( type, el, opts ) {
             encoder: htmlwidget.datetime.encoder( format ),
             decoder: htmlwidget.datetime.decoder( format )
         });
+        break;
+    
+    case 'select2':
+        $(el).select2( opts );
         break;
     
     default: break;

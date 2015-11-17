@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.6.0
+*  @version: 0.6.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -14,7 +14,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.6.0";
+    const VERSION = "0.6.1";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -48,6 +48,10 @@ class HtmlWidget
         {
             // DateX
             $assets[] = array('scripts', 'datex', $base.'js/DateX.min.js');
+            
+            // Select2
+            $assets[] = array('styles', 'jquery.select2.css', $base.'css/select2.min.css');
+            $assets[] = array('scripts', 'jquery.select2', $base.'js/select2.full.min.js', array('jquery'));
             
             // DataTables
             $assets[] = array('styles', 'jquery.dataTables.css', $base.'css/jquery.dataTables.min.css');
@@ -122,6 +126,7 @@ class HtmlWidget
             elseif ( "radio-image" === $widget ) $attr["type"] = "radio";
             elseif ( "checkbox" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radio" === $widget ) $attr["type"] = "radio";
+            elseif ( "select2" === $widget ) $attr["select2"] = true;
             elseif ( "dropdown" === $widget ) $attr["dropdown"] = true;
             elseif ( "syntax-editor" === $widget || "source-editor" === $widget || "syntax" === $widget || "source" === $widget || "highlight-editor" === $widget || "highlighter" === $widget ) $attr["syntax-editor"] = true;
             elseif ( "wysiwyg-editor" === $widget || "wysiwyg" === $widget || "rich-editor" === $widget || "rich" === $widget || "editor" === $widget ) $attr["wysiwyg-editor"] = true;
@@ -178,6 +183,7 @@ class HtmlWidget
             case 'switch':      $out = self::w_switch($attr, $data); break;
             case 'dropdown':
             case 'selectbox':
+            case 'select2':
             case 'select':      $out = self::w_select($attr, $data); break;
             case 'menu':        $out = self::w_menu($attr, $data); break;
             case 'endmenu':
@@ -983,6 +989,7 @@ OUT;
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wselect2 = !empty($attr['select2']);
         $wdropdown = !empty($attr['dropdown']);
         $wclass = $wdropdown ? "widget w-dropdown w-state-default" : "widget w-select"; 
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1018,6 +1025,12 @@ OUT;
         
         $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
+        if ( $wselect2 )
+        {
+            self::enqueue('styles', 'jquery.select2.css');
+            self::enqueue('scripts', 'jquery.select2.js');
+            self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets.js'));
+        }
         return $wdropdown
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
         : "<select id=\"$wid\" $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
