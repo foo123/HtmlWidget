@@ -14,7 +14,7 @@
 .w-panel, .w-dialog, .w-table,
 .w-tab, .w-page, .w-accordeon-item,
 .w-dropdown, .w-select, .w-time, .w-time-component,
-.w-textarea, .w-text,
+.w-textarea, .w-text, .w-map,
 .w-link, .w-label, .w-button, .w-switch,
 input.w-radio-image + label,
 input.w-checkbox-image + label,
@@ -1916,6 +1916,13 @@ input.w-checkbox-image + label > span
     /* 1:1 aspect responsive */
     height: 0;
     padding-bottom: 100% !important;
+}
+.w-map
+{
+    /* 1:1 aspect responsive */
+    width: 400px;
+    height: 0;
+    padding-bottom: 100%;
 }
 .w-time-component,
 .w-dropdown,

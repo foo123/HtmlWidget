@@ -13,12 +13,13 @@
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = { VERSION: "0.7.0" }, slice = Array.prototype.slice;
+var htmlwidget = { VERSION: "0.7.0" }, PROTO = 'prototype', 
+slice = Array[PROTO].slice, toString = Object[PROTO].toString;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
 {
-    var _super = spr && spr.prototype ? spr.prototype : null;
+    var super_ = spr && spr[PROTO] ? spr[PROTO] : null;
     $.fn[ name ] = function( options ) {
         var method = "string" === typeof options ? 'w_'+options : false,
             args = slice.call( arguments, 1 ), return_value = this, method_;
@@ -43,19 +44,19 @@ function widget2jquery( name, widget, spr )
                     else if ( 'function' === typeof instance.w_destroy ) instance.w_destroy( );
                     else if ( 'function' === typeof instance.dispose ) instance.dispose( );
                     else if ( 'function' === typeof instance.destroy ) instance.destroy( );
-                    else if ( _super )
+                    else if ( super_ )
                     {
-                        if ( 'function' === typeof _super.w_dispose ) _super.w_dispose.call( instance );
-                        else if ( 'function' === typeof _super.w_destroy ) _super.w_destroy.call( instance )
-                        else if ( 'function' === typeof _super.dispose ) _super.dispose.call( instance )
-                        else if ( 'function' === typeof _super.destroy ) _super.destroy.call( instance )
+                        if ( 'function' === typeof super_.w_dispose ) super_.w_dispose.call( instance );
+                        else if ( 'function' === typeof super_.w_destroy ) super_.w_destroy.call( instance )
+                        else if ( 'function' === typeof super_.dispose ) super_.dispose.call( instance )
+                        else if ( 'function' === typeof super_.destroy ) super_.destroy.call( instance )
                     }
                     instance = null;
                     $.removeData( this, name );
                     return false;
                 }
                 
-                method_ = instance[ method ] || (_super && _super[ method ]);
+                method_ = instance[ method ] || (super_ && super_[ method ]);
                 if ( 'function' !== typeof method_ ) return false;
 
                 method_value = method_.apply( instance, args );
@@ -70,18 +71,18 @@ function widget2jquery( name, widget, spr )
         } 
         else 
         {
+            options = options || {};
             this.each(function( ){
                 var instance = $.data( this, name );
                 if ( instance ) 
                 {
-                    method_ = instance.w_option ||  (_super && _super.w_option);
-                    if ( 'function' === typeof method_ ) 
-                        method_.call( instance, options || {} );
+                    method_ = instance.w_option ||  (super_ && super_.w_option);
+                    if ( 'function' === typeof method_ ) method_.call( instance, options );
                 } 
                 else 
                 {
-                    $.data( this, name, instance = new widget( options || {}, this ) );
-                    method_ = instance.w_init ||  (_super && _super.w_init);
+                    $.data( this, name, instance = new widget( this, options ) );
+                    method_ = instance.w_init ||  (super_ && super_.w_init);
                     if ( 'function' === typeof method_ ) method_.call( instance );
                 }
             });
@@ -90,9 +91,9 @@ function widget2jquery( name, widget, spr )
     };
 }
 
-htmlwidget.morphable = function morphable( options, el ){
+htmlwidget.morphable = function morphable( el, options ){
     var self = this;
-    if ( !(self instanceof morphable) ) return new morphable(options, el);
+    if ( !(self instanceof morphable) ) return new morphable(el, options);
     var cur_mode = null;
     self.w_morph = function( mode ) {
         if ( mode !== cur_mode )
@@ -110,9 +111,9 @@ htmlwidget.morphable = function morphable( options, el ){
     };
 };
 
-htmlwidget.delayable = function delayable( options, el ){
+htmlwidget.delayable = function delayable( el, options ){
     var self = this;
-    if ( !(self instanceof delayable) ) return new delayable(options, el);
+    if ( !(self instanceof delayable) ) return new delayable(el, options);
     self.w_init = function( ) {
         var $el = $(el);
         if ( $el.hasClass('w-delayed') ) 
@@ -140,9 +141,9 @@ htmlwidget.delayable = function delayable( options, el ){
     };
 };
 
-htmlwidget.disabable = function disabable( options, el ){
+htmlwidget.disabable = function disabable( el, options ){
     var self = this;
-    if ( !(self instanceof disabable) ) return new disabable(options, el);
+    if ( !(self instanceof disabable) ) return new disabable(el, options);
     self.w_init = function( ) {
         var $el = $(el);
         if ( $el.hasClass('w-delayed') ) 
@@ -171,40 +172,67 @@ htmlwidget.disabable = function disabable( options, el ){
 
 // http://nikos-web-development.netai.net
 // http://maps.googleapis.com/maps/api/js?sensor=false
-htmlwidget.gmap3 = function gmap3( options, el ) {
-    var self = this;
-    if ( !(self instanceof gmap3) ) return new gmap3(options, el);
+function add_map_marker( map, lat, lng, title, info, opts ) 
+{ 
+    // https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions
+    var marker_options = {
+        map: map,
+        title: title,
+        position: new google.maps.LatLng( lat, lng )
+    }, marker, marker_popup;
     
-    function addMarker( map, lat, lng, title, info ) 
-    { 
-        var marker = new google.maps.Marker({
-            map: map,
-            title: title,
-            position: new google.maps.LatLng( lat, lng )
+    if ( 'undefined' !== opts.clickable ) marker_options.clickable = !!opts.clickable;
+    if ( 'undefined' !== opts.draggable ) marker_options.draggable = !!opts.draggable;
+    if ( 'undefined' !== opts.crossOnDrag ) marker_options.crossOnDrag = !!opts.crossOnDrag;
+    if ( 'undefined' !== opts.visible ) marker_options.visible = !!opts.visible;
+    if ( 'undefined' !== opts.icon ) marker_options.icon = opts.icon;
+    if ( 'undefined' !== opts.zIndex ) marker_options.zIndex = opts.zIndex;
+    if ( 'undefined' !== opts.shape ) marker_options.shape = opts.shape;
+    
+    marker = new google.maps.Marker( marker_options );
+    
+    if ( !!info )
+    {
+        marker_popup = new google.maps.InfoWindow({content: info});
+        google.maps.event.addListener(marker, 'click', function( ){
+            marker_popup.open( map, marker );
         });
-        if ( !!info )
+    }
+    
+    return marker;
+}
+htmlwidget.gmap3 = function gmap3( el, options ) {
+    var self = this, gmap, zoom, c_lat, c_lng, responsive;
+    if ( !(self instanceof gmap3) ) return new gmap3(el, options);
+    
+    gmap = null;
+    
+    //google.maps.MapTypeId.ROADMAP
+    options = $.extend({
+        type: "ROADMAP",
+        markers: null,
+        center: null,
+        kml: null,
+        responsive: false
+    }, options||{});
+    
+    function on_resize( )
+    {
+        if ( gmap )
         {
-            var infowindow = new google.maps.InfoWindow({content: info});
-            google.maps.event.addListener(marker, 'click', function( ){
-                infowindow.open( map, marker );
+            google.maps.event.addListenerOnce( gmap, 'idle', function( ){
+                google.maps.event.trigger( gmap, 'resize' );
+                gmap.setCenter( new google.maps.LatLng( c_lat, c_lng ) );
             });
         }
     }
     
-    self._map = null;
-    
     self.w_init = function( ) {
-        //google.maps.MapTypeId.ROADMAP
-        options = $.extend({
-            type: "ROADMAP",
-            markers: null,
-            center: null,
-            kml: null
-        }, options||{});
-        
-        self._map = new google.maps.Map(el, {
-            zoom: options.center.zoom,
-            center: new google.maps.LatLng( options.center.lat, options.center.lng ),
+        var center = options.center || {lat: 0, lng: 0, zoom: 6};
+        zoom = center.zoom || 6; c_lat = center.lat || 0; c_lng = center.lng || 0;
+        gmap = new google.maps.Map(el, {
+            zoom: zoom,
+            center: new google.maps.LatLng( c_lat, c_lng ),
             mapTypeId: google.maps.MapTypeId[ options.type ]
         });
         var i, markers = options.markers, marker, l = markers ? markers.length : 0;
@@ -212,16 +240,76 @@ htmlwidget.gmap3 = function gmap3( options, el ) {
         {
             // add markers, infos to map
             marker = markers[i];
-            addMarker( self._map, marker.lat, marker.lng, marker.title||'', marker.info );
+            add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
         }
         if ( null != options.kml )
         {
-            var georssLayer = new google.maps.KmlLayer( options.kml );
-            georssLayer.setMap( self._map );
+            var geoRssLayer = new google.maps.KmlLayer( options.kml );
+            geoRssLayer.setMap( gmap );
+        }
+        responsive = !!options.responsive;
+        if ( responsive ) $(el.parentNode||document.body).on( 'resize', on_resize );
+    };
+    
+    self.w_dispose = function( ) {
+        if ( responsive ) $(el.parentNode||document.body).off( 'resize', on_resize );
+        // http://stackoverflow.com/questions/10485582/what-is-the-proper-way-to-destroy-a-map-instance
+        gmap = null;
+    };
+    
+    self.w_map = function( ) {
+        return gmap;
+    };
+    
+    self.w_center = function( c ) {
+        if ( arguments.length )
+        {
+            if ( gmap )
+            {
+                c_lat = c.lat;
+                c_lng = c.lng;
+                gmap.setCenter( new google.maps.LatLng( c_lat, c_lng ) );
+            }
+        }
+        else
+        {
+            return {lat: c_lat, lng: c_lng};
         }
     };
-    self.w_dispose = function( ) {
-        self._map = null;
+    
+    self.w_add_marker = function( marker ) {
+        if ( gmap && marker )
+        {
+            return add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info||null, marker );
+        }
+    };
+    
+    self.w_remove_marker = function( marker ) {
+        if ( marker )
+        {
+            marker.setMap( null );
+        }
+    };
+    
+    self.w_add_markers = function( markers ) {
+        if ( gmap && markers )
+        {
+            for (var i=0; i<markers.length; i++)
+            {
+                // add markers, infos to map
+                var marker = markers[i];
+                markers[i] = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+            }
+            return markers;
+        }
+    };
+    
+    self.w_remove_markers = function( markers ) {
+        if ( markers )
+        {
+            for (var i=0; i<markers.length; i++)
+                markers[i].setMap( null );
+        }
     };
 };	
 
@@ -302,12 +390,12 @@ removeClass = function(el, cn)
 
 isArray = function(obj)
 {
-    return (/Array/).test(Object.prototype.toString.call(obj));
+    return (/Array/).test(toString.call(obj));
 },
 
 isDate = function(obj)
 {
-    return (/Date/).test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
+    return (/Date/).test(toString.call(obj)) && !isNaN(obj.getTime());
 },
 
 isLeapYear = function(year)
@@ -592,7 +680,7 @@ renderTable = function(opts, data)
 /**
  * Pikaday constructor
  */
-Pikaday = function(options, el)
+Pikaday = function(el, options/*, el*/)
 {
     options = options || {};
     options.field = options.field || el;
@@ -768,7 +856,7 @@ Pikaday = function(options, el)
 /**
  * public Pikaday API
  */
-Pikaday.prototype = {
+Pikaday[PROTO] = {
 
 
     /**
@@ -1237,7 +1325,7 @@ htmlwidget.suggest = (function(){
 "use strict";
 var id = 0;
 
-function RemoteList(options, element){
+function RemoteList(element, options){
     id++;
     this.element = $(element);
     this.options = $.extend({}, RemoteList.defaults, options);
@@ -1274,7 +1362,7 @@ RemoteList.createOption = function(option){
     return ret[0];
 };
 
-RemoteList.prototype = {
+RemoteList[PROTO] = {
 
     selectedData: function(){
         var elem = this.selectedOption();
@@ -1497,6 +1585,8 @@ htmlwidget._ = function( type, el, opts ) {
         $(el).disabable( );
         break;
     
+    case 'autocomplete':
+    case 'autosuggest':
     case 'suggest':
         var $el = $(el), suggest = $el.parent( ),
             ajaxurl = $el.attr('data-ajax'),
@@ -1518,7 +1608,7 @@ htmlwidget._ = function( type, el, opts ) {
                     }
                 });
             },
-            select: function( ){ }
+            select: opts.select || function( ){ }
         });
         break;
     
