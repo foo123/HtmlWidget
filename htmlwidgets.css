@@ -32,6 +32,32 @@ input.w-checkbox + label
     -o-box-sizing: border-box;
     box-sizing: border-box;
 }
+.w-error-msg
+{
+    position: relative;
+    display: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    float: none;
+    font-weight: normal;
+    border: 1px solid transparent;
+}
+.w-error-msg::before
+{
+    position: relative;
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: inherit;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    content: "\f071"; /* exclamation-triangle */
+}
 .w-select:hover,
 .w-time-component:hover,
 .w-text:hover,
@@ -2213,6 +2239,21 @@ input.w-checkbox + label.w-xlarge
 {
     margin-left: 10px;
 }
+.w-error-msg
+{
+    width: 100%;
+    max-width: 90%;
+    padding: 10px;
+    margin: 2px 0;
+    font-size: 0.95em;
+    border-radius: 6px;
+    word-spacing: 2px;
+    letter-spacing: 2px;
+}
+.w-error-msg::before
+{
+    margin-right: 5px;
+}
 
 
 /*********************************************************************************
@@ -2610,6 +2651,24 @@ table.w-table th
 {
     background: rgba(255,255,255,0.5);
     border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.w-select.w-error,
+.w-text.w-error,
+.w-date.w-error,
+.w-textarea.w-error,
+.w-checkbox.w-error + label,
+.w-radio.w-error + label
+{
+    -webkit-box-shadow: 0 0 0 1px rgb(248,0,0) !important;
+    -moz-box-shadow: 0 0 0 1px rgb(248,0,0) !important;
+    -ms-box-shadow: 0 0 0 1px rgb(248,0,0) !important;
+    -o-box-shadow: 0 0 0 1px rgb(248,0,0) !important;
+    box-shadow: 0 0 0 1px rgb(248,0,0) !important;
+    border-color: rgb(248,0,0) !important;
+}
+.w-error-msg
+{
+    color: rgb(248,0,0);
 }
 @-webkit-keyframes w-anim-spindots 
 {
