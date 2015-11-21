@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.7.0
+*  @version: 0.7.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -2015,7 +2015,7 @@ input.w-checkbox + label
 }
 .w-time .w-time-sep
 {
-    margin: 0px 2px;
+    margin: 0px 7px;
 }
 .w-button
 {
@@ -2198,12 +2198,14 @@ input.w-checkbox + label.w-xlarge
 }
 .w-dropdown.w-large,
 .w-select.w-large,
+.w-large  > .w-time-component,
 .w-label.w-large
 {
     font-size: 1.2em;
 }
 .w-dropdown.w-xlarge,
 .w-select.w-xlarge,
+.w-xlarge  > .w-time-component,
 .w-label.w-xlarge
 {
     font-size: 1.8em;

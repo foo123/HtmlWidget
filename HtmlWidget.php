@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.7.0
+*  @version: 0.7.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -14,7 +14,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.7.0";
+    const VERSION = "0.7.1";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -44,43 +44,81 @@ class HtmlWidget
         $assets = array(
          array('styles', 'htmlwidgets.css', $base.'htmlwidgets.min.css', array('responsive.css','fontawesome.css'))
         ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.min.js', array('htmlwidgets.css','jquery'))
+        //,array('styles', 'responsive.css', $asset_base.'css/responsive.css')
+        //,array('styles', 'fontawesome.css', $asset_base.'css/fontawesome.css')
         );
         if ( true === $full )
         {
-            // DateX
-            $assets[] = array('scripts', 'datex', $asset_base.'js/DateX.min.js');
+            $assets = array_merge($assets, array(
+            //  external APIS
+             array('scripts', 'google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
             
+            // DateX
+            ,array('scripts', 'datex', $asset_base.'js/datex.js')
+            
+            // Pikaday
+            ,array('styles', 'pikaday.css', $asset_base.'css/pikaday.css')
+            ,array('scripts', 'pikaday', $asset_base.'js/pikaday.js', array('pikaday.css', 'datex'))
+             
+            // ColorPicker
+            ,array('styles', 'colorpicker.css', $asset_base.'css/colorpicker.css')
+            ,array('scripts', 'colorpicker', $asset_base.'js/colorpicker.js', array('colorpicker.css', 'jquery'))
+             
+            // LocationPicker
+            ,array('scripts', 'locationpicker', $asset_base.'js/locationpicker.js', array('google-maps-api','jquery'))
+             
+            // Sortable
+            ,array('scripts', 'sortable', $asset_base.'js/sortable.js')
+             
             // Select2
-            $assets[] = array('styles', 'select2.css', $asset_base.'css/select2.min.css');
-            $assets[] = array('scripts', 'select2', $asset_base.'js/select2.full.min.js', array('select2.css','jquery'));
+            ,array('styles', 'select2.css', $asset_base.'css/select2.css')
+            ,array('scripts', 'select2', $asset_base.'js/select2.js', array('select2.css','jquery'))
+             
+            // Autocomplete
+            ,array('styles', 'autocomplete.css', $asset_base.'css/autocomplete.css')
+            ,array('scripts', 'autocomplete', $asset_base.'js/autocomplete.js', array('autocomplete.css','jquery'))
+             
+            // TagEditor
+            ,array('scripts', 'caret', $asset_base.'js/caret.js')
+            ,array('styles', 'tageditor.css', $asset_base.'css/tageditor.css')
+            ,array('scripts', 'tageditor', $asset_base.'js/tageditor.js', array('tageditor.css','jquery','caret'))
+             
+            // Tooltipster
+            ,array('styles', 'tooltipster.css', $asset_base.'css/tooltipster.css')
+            ,array('scripts', 'tooltipster', $asset_base.'js/tooltipster.js', array('tooltipster.css','jquery'))
+             
+            // Modal
+            ,array('styles', 'modal.css', $asset_base.'css/modal.css')
+            ,array('scripts', 'modal', $asset_base.'js/modal.js', array('modal.css','jquery'))
             
             // DataTables
-            $assets[] = array('styles', 'datatables.css', $asset_base.'css/jquery.dataTables.min.css');
-            $assets[] = array('scripts', 'datatables', $asset_base.'js/jquery.dataTables.min.js', array('datatables.css','jquery'));
+            ,array('styles', 'datatables.css', $asset_base.'css/datatables.css')
+            ,array('scripts', 'datatables', $asset_base.'js/datatables.js', array('datatables.css','jquery'))
             
             // Trumbowyg
-            $assets[] = array('styles', 'trumbowyg.css', $asset_base.'css/trumbowyg.min.css');
-            $assets[] = array('scripts', 'trumbowyg', $asset_base.'js/trumbowyg.min.js', array('trumbowyg.css','jquery'));
+            ,array('styles', 'trumbowyg.css', $asset_base.'css/trumbowyg.css')
+            ,array('scripts', 'trumbowyg', $asset_base.'js/trumbowyg.js', array('trumbowyg.css','jquery'))
             
             // CodeMirror
-            $assets[] = array('scripts', 'codemirror-mode-multiplex', $asset_base.'js/addon/mode/multiplex.js');
-            $assets[] = array('scripts', 'codemirror-comment', $asset_base.'js/addon/comment/comment.js');
+            ,array('scripts', 'codemirror-mode-multiplex', $asset_base.'js/addon/mode/multiplex.js')
+            ,array('scripts', 'codemirror-comment', $asset_base.'js/addon/comment/comment.js')
             
-            $assets[] = array('scripts', 'codemirror-mode-xml', $asset_base.'js/mode/xml.js');
-            $assets[] = array('scripts', 'codemirror-mode-javascript', $asset_base.'js/mode/javascript.js');
-            $assets[] = array('scripts', 'codemirror-mode-css', $asset_base.'js/mode/css.js');
+            ,array('scripts', 'codemirror-mode-xml', $asset_base.'js/mode/xml.js')
+            ,array('scripts', 'codemirror-mode-javascript', $asset_base.'js/mode/javascript.js')
+            ,array('scripts', 'codemirror-mode-css', $asset_base.'js/mode/css.js')
             
-            $assets[] = array('styles', 'codemirror-fold.css', $asset_base.'js/addon/fold/foldgutter.css');
-            $assets[] = array('scripts', 'codemirror-fold-gutter', $asset_base.'js/addon/fold/foldgutter.js');
-            $assets[] = array('scripts', 'codemirror-fold-code', $asset_base.'js/addon/fold/foldcode.js');
-            $assets[] = array('scripts', 'codemirror-fold-comment', $asset_base.'js/addon/fold/comment-fold.js');
-            $assets[] = array('scripts', 'codemirror-fold-brace', $asset_base.'js/addon/fold/brace-fold.js');
-            $assets[] = array('scripts', 'codemirror-fold-indent', $asset_base.'js/addon/fold/indent-fold.js');
-            $assets[] = array('scripts', 'codemirror-fold-xml', $asset_base.'js/addon/fold/xml-fold.js');
+            ,array('styles', 'codemirror-fold.css', $asset_base.'js/addon/fold/foldgutter.css')
+            ,array('scripts', 'codemirror-fold-gutter', $asset_base.'js/addon/fold/foldgutter.js')
+            ,array('scripts', 'codemirror-fold-code', $asset_base.'js/addon/fold/foldcode.js')
+            ,array('scripts', 'codemirror-fold-comment', $asset_base.'js/addon/fold/comment-fold.js')
+            ,array('scripts', 'codemirror-fold-brace', $asset_base.'js/addon/fold/brace-fold.js')
+            ,array('scripts', 'codemirror-fold-indent', $asset_base.'js/addon/fold/indent-fold.js')
+            ,array('scripts', 'codemirror-fold-xml', $asset_base.'js/addon/fold/xml-fold.js')
             
-            $assets[] = array('styles', 'codemirror.css', $asset_base.'css/codemirror.min.css');
-            $assets[] = array('scripts', 'codemirror', $asset_base.'js/codemirror.min.js', array('codemirror.css'));
-            $assets[] = array('scripts', 'codemirror-full', $asset_base.'js/mode/htmlmixed.js', array('codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'));
+            ,array('styles', 'codemirror.css', $asset_base.'css/codemirror.css')
+            ,array('scripts', 'codemirror', $asset_base.'js/codemirror.js', array('codemirror.css'))
+            ,array('scripts', 'codemirror-full', $asset_base.'js/mode/htmlmixed.js', array('codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'))
+            ));
         }
         return $assets;
     }

@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.7.0
+*  @version: 0.7.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -68,7 +68,7 @@ function htmlwidget_( type, id, options )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.7.0"
+    VERSION: "0.7.1"
     
     ,BASE: './'
     
@@ -94,24 +94,60 @@ var HtmlWidget = self = {
         var assets = [
          ['styles', 'htmlwidgets.css', base+'htmlwidgets.min.css', ['responsive.css','fontawesome.css']]
         ,['scripts', 'htmlwidgets', base+'htmlwidgets.min.js', ['htmlwidgets.css','jquery']]
+        //,['styles', 'responsive.css', asset_base+'css/responsive.css']
+        //,['styles', 'fontawesome.css', asset_base+'css/fontawesome.css']
         ];
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
-            // DateX
-             ['scripts', 'datex', asset_base+'js/DateX.min.js']
+            //  external APIS
+             ['scripts', 'google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
             
+            // DateX
+            ,['scripts', 'datex', asset_base+'js/datex.js']
+            
+            // Pikaday
+            ,['styles', 'pikaday.css', asset_base+'css/pikaday.css']
+            ,['scripts', 'pikaday', asset_base+'js/pikaday.js', ['pikaday.css', 'datex']]
+             
+            // ColorPicker
+            ,['styles', 'colorpicker.css', asset_base+'css/colorpicker.css']
+            ,['scripts', 'colorpicker', asset_base+'js/colorpicker.js', ['colorpicker.css', 'jquery']]
+             
+            // LocationPicker
+            ,['scripts', 'locationpicker', asset_base+'js/locationpicker.js', ['google-maps-api','jquery']]
+             
+            // Sortable
+            ,['scripts', 'sortable', asset_base+'js/sortable.js']
+             
             // Select2
-            ,['styles', 'select2.css', asset_base+'css/select2.min.css']
-            ,['scripts', 'select2', asset_base+'js/select2.full.min.js', ['select2.css','jquery']]
+            ,['styles', 'select2.css', asset_base+'css/select2.css']
+            ,['scripts', 'select2', asset_base+'js/select2.js', ['select2.css','jquery']]
+             
+            // Autocomplete
+            ,['styles', 'autocomplete.css', asset_base+'css/autocomplete.css']
+            ,['scripts', 'autocomplete', asset_base+'js/autocomplete.js', ['autocomplete.css','jquery']]
+             
+            // TagEditor
+            ,['scripts', 'caret', asset_base+'js/caret.js']
+            ,['styles', 'tageditor.css', asset_base+'css/tageditor.css']
+            ,['scripts', 'tageditor', asset_base+'js/tageditor.js', ['tageditor.css','jquery','caret']]
+             
+            // Tooltipster
+            ,['styles', 'tooltipster.css', asset_base+'css/tooltipster.css']
+            ,['scripts', 'tooltipster', asset_base+'js/tooltipster.js', ['tooltipster.css','jquery']]
+             
+            // Modal
+            ,['styles', 'modal.css', asset_base+'css/modal.css']
+            ,['scripts', 'modal', asset_base+'js/modal.js', ['modal.css','jquery']]
              
             // DataTables
-            ,['styles', 'datatables.css', asset_base+'css/jquery.dataTables.min.css']
-            ,['scripts', 'datatables', asset_base+'js/jquery.dataTables.min.js', ['datatables.css','jquery']]
+            ,['styles', 'datatables.css', asset_base+'css/datatables.css']
+            ,['scripts', 'datatables', asset_base+'js/datatables.js', ['datatables.css','jquery']]
             
             // Trumbowyg
-            ,['styles', 'trumbowyg.css', asset_base+'css/trumbowyg.min.css']
-            ,['scripts', 'trumbowyg', asset_base+'js/trumbowyg.min.js', ['trumbowyg.css','jquery']]
+            ,['styles', 'trumbowyg.css', asset_base+'css/trumbowyg.css']
+            ,['scripts', 'trumbowyg', asset_base+'js/trumbowyg.js', ['trumbowyg.css','jquery']]
              
             // CodeMirror
             ,['scripts', 'codemirror-mode-multiplex', asset_base+'js/addon/mode/multiplex.js']
@@ -129,8 +165,8 @@ var HtmlWidget = self = {
             ,['scripts', 'codemirror-fold-indent', asset_base+'js/addon/fold/indent-fold.js']
             ,['scripts', 'codemirror-fold-xml', asset_base+'js/addon/fold/xml-fold.js']
             
-            ,['styles', 'codemirror.css', asset_base+'css/codemirror.min.css']
-            ,['scripts', 'codemirror', asset_base+'js/codemirror.min.js', ['codemirror.css']]
+            ,['styles', 'codemirror.css', asset_base+'css/codemirror.css']
+            ,['scripts', 'codemirror', asset_base+'js/codemirror.js', ['codemirror.css']]
             ,['scripts', 'codemirror-full', asset_base+'js/mode/htmlmixed.js', ['codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent']]
             ]);
         }

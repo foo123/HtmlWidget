@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, DateX, HtmlWidget
-*  @version: 0.7.0
+*  @version: 0.7.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -13,7 +13,7 @@
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = { VERSION: "0.7.0" }, PROTO = 'prototype', 
+var htmlwidget = { VERSION: "0.7.1" }, PROTO = 'prototype', 
 slice = Array[PROTO].slice, toString = Object[PROTO].toString;
 
 // adapted from jquery-ui
