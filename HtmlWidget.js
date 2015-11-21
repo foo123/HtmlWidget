@@ -1043,7 +1043,7 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['htmlwidgets']);
+        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['pikaday','htmlwidgets']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datetime-format="'+wformat+'" '+wdata+' />'+wicon+'</span>';
     }
     
