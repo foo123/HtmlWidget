@@ -3,17 +3,18 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, DateX, HtmlWidget
-*  @version: 0.7.1
+*  @version: 0.8.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
-*  https://github.com/foo123/DateX
+*  https://github.com/foo123/modelview-widgets
 *
 **/
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = { VERSION: "0.7.1" }, PROTO = 'prototype', 
+var htmlwidget = {VERSION: "0.8.0", widget: {}},
+HAS = 'hasOwnProperty', PROTO = 'prototype', ID = 0,
 slice = Array[PROTO].slice, toString = Object[PROTO].toString;
 
 // adapted from jquery-ui
@@ -90,6 +91,26 @@ function widget2jquery( name, widget, spr )
         return return_value;
     };
 }
+
+htmlwidget.removable = function removable( el, options ){
+    var self = this;
+    if ( !(self instanceof removable) ) return new removable(el, options);
+    self.w_init = function( ) {
+        var $el = $(el);
+        if ( !$el.hasClass('w-removable') ) $el.addClass('w-removable');
+        $el.on('click.removable', options.handle||'.w-remove-handle', function( evt ){
+            var $el = $(this);
+            $el.fadeOut(400, function( evt ){
+               var remove = true;
+               if ( 'function' === typeof options.onremove ) remove = options.onremove.call( this, evt );
+               if ( false !== remove ) $el.remove( );
+            });
+        });
+    };
+    self.w_dispose = function( ) {
+        $(el).off('click.removable');
+    };
+};
 
 htmlwidget.morphable = function morphable( el, options ){
     var self = this;
@@ -537,15 +558,7 @@ RemoteList[PROTO] = {
     }
 };
 return RemoteList;
-
 })();
-
-/*if ( 'undefined' !== typeof HtmlWidget )
-{
-    $.HtmlWidget = function( widget, attr, data ) {
-        return $( HtmlWidget.widget( widget, attr, data ) );
-    };
-}*/
 
 // custom date codecs and locale
 //datetime_locale = DateX.defaultLocale;
@@ -586,99 +599,236 @@ function datetime_decoder( format, locale )
     }
 }
 
-$.htmlwidget = htmlwidget;
-
+widget2jquery( 'removable', htmlwidget.removable );
 widget2jquery( 'morphable', htmlwidget.morphable );
 widget2jquery( 'delayable', htmlwidget.delayable );
 widget2jquery( 'disabable', htmlwidget.disabable );
 widget2jquery( 'suggest', htmlwidget.suggest );
 widget2jquery( 'gmap3', htmlwidget.gmap3 );
 
-htmlwidget._ = function( type, el, opts ) {
+/*if ( 'undefined' !== typeof HtmlWidget )
+{
+    $.HtmlWidget = function( widget, attr, data ) {
+        return $( HtmlWidget.widget( widget, attr, data ) );
+    };
+}*/
+
+$.htmlwidget = htmlwidget;
+
+$.fn.htmlwidget = function( type, opts, before, after ) {
     opts = opts || {};
-    switch( type )
-    {
-    case 'morphable':
-        $(el).morphable( );
-        break;
-    
-    case 'delayable':
-        $(el).delayable( );
-        break;
-    
-    case 'disabable':
-        $(el).disabable( );
-        break;
-    
-    case 'autocomplete':
-    case 'autosuggest':
-    case 'suggest':
-        var $el = $(el), suggest = $el.parent( ),
-            ajaxurl = $el.attr('data-ajax'),
-            method = $el.attr('data-request-method') || "POST",
-            dataType = $el.attr('data-response-type') || "json";
-        $el.suggest({
-            minLength: 2,
-            maxLength: -1,
-            source: function( value, response ){
-                suggest.addClass("ajax");
-                $.ajax({
-                    url: ajaxurl,
-                    type: method,
-                    dataType: dataType,
-                    data: {suggest: value},
-                    success: function( data ){
-                        suggest.removeClass("ajax");
-                        response( data );
-                    }
+    if ( 'function' !== typeof before ) before = false;
+    if ( 'function' !== typeof after ) after = false;
+    this.each(function( ) {
+        var el = this, $el;
+        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+        {
+            htmlwidget.widget[type]( this, opts );
+        }
+        else
+        {
+            
+        $el = $(el);
+        switch( type )
+        {
+        case 'delayable':
+            if ( before ) before( $, el );
+            $el.delayable(opts);
+            if ( after ) after( $, el );
+            break;
+        
+        case 'disabable':
+            if ( before ) before( $, el );
+            $el.disabable(opts);
+            if ( after ) after( $, el );
+            break;
+        
+        case 'removable':
+            if ( before ) before( $, el );
+            $el.removable({
+                handle: opts.handle || $el.attr('data-removable-handle')
+            });
+            if ( after ) after( $, el );
+            break;
+        
+        case 'morphable':
+            if ( before ) before( $, el );
+            $el.morphable({
+                modeClass: opts.modeClass || $el.attr('data-morphable-mode')
+            });
+            if ( after ) after( $, el );
+            break;
+        
+        case 'draggable':
+            if ( 'undefined' !== typeof $.fn.tinyDraggable )
+            {
+                if ( before ) before( $, el );
+                $el.tinyDraggable( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'sortable':
+            if ( 'undefined' !== typeof Sortable )
+            {
+                if ( before ) before( $, el );
+                Sortable.create( el, {
+                    handle: opts.handle || $el.attr('data-sortable-handle')
                 });
-            },
-            select: opts.select || function( ){ }
-        });
-        break;
-    
-    case 'wysiwyg-editor':
-        var $el = $(el);
-        $el.trumbowyg( opts.editor||{} );
-        $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box").attr("style", opts.style||'');
-        break;
-    
-    case 'syntax-editor':
-        CodeMirror.fromTextArea( $(el)[0], opts.editor||{} );
-        break;
-    
-    case 'date':
-    case 'datetime':
-        var $el = $(el), format = $el.attr('data-datetime-format') || 'Y-m-d';
-        new Pikaday({
-            field  : $el[0],
-            encoder: datetime_encoder( format ),
-            decoder: datetime_decoder( format )
-        });
-        break;
-    
-    case 'sortable':
-        Sortable.create( $(el)[0], opts );
-        break;
-    
-    case 'select2':
-    case 'select':
-        $(el).select2( opts );
-        break;
-    
-    case 'gmap3':
-    case 'gmap':
-    case 'map':
-        $(el).gmap3( opts );
-        break;
-    
-    default: break;
-    }
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'autocomplete':
+        case 'autosuggest':
+        case 'suggest':
+            if ( before ) before( $, el );
+            var suggest = $el.parent( ),
+                ajaxurl = $el.attr('data-ajax'),
+                method = $el.attr('data-request-method') || "POST",
+                dataType = $el.attr('data-response-type') || "json";
+            $el.suggest({
+                minLength: 2,
+                maxLength: -1,
+                source: function( value, response ){
+                    suggest.addClass("ajax");
+                    $.ajax({
+                        url: ajaxurl,
+                        type: method,
+                        dataType: dataType,
+                        data: {suggest: value},
+                        success: function( data ){
+                            suggest.removeClass("ajax");
+                            response( data );
+                        }
+                    });
+                },
+                select: opts.select || function( ){ }
+            });
+            if ( after ) after( $, el );
+            break;
+        
+        case 'datepicker':
+        case 'date':
+        case 'datetime':
+            if ( 'undefined' !== typeof Pikaday )
+            {
+                if ( before ) before( $, el );
+                var format = $el.attr('data-datetime-format') || 'Y-m-d';
+                new Pikaday({
+                    field  : el,
+                    encoder: datetime_encoder( format ),
+                    decoder: datetime_decoder( format )
+                });
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'colorpicker':
+        case 'color':
+            if ( 'undefined' !== typeof $.fn.ColorPicker )
+            {
+                if ( before ) before( $, el );
+                $el.ColorPicker( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'select':
+        case 'select2':
+            if ( 'undefined' !== typeof $.fn.select2 )
+            {
+                if ( before ) before( $, el );
+                $el.select2( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'table':
+        case 'datatable':
+            if ( 'undefined' !== typeof $.fn.dataTable )
+            {
+                if ( before ) before( $, el );
+                $el.dataTable( opts ).on('change', 'input.select_row', function( ){ 
+                    if ( this.checked ) $(this).closest('tr').addClass('selected');
+                    else $(this).closest('tr').removeClass('selected');
+                });
+                $el.closest(".dataTables_wrapper").addClass("w-table-wrapper");
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'modal':
+            if ( 'undefined' !== typeof $.fn.modal )
+            {
+                if ( before ) before( $, el );
+                $el.modal( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'modelview':
+            if ( 'undefined' !== typeof ModelView )
+            {
+                ModelView.jquery( $ );
+                if ( before ) before( $, el );
+                $el.modelview( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'wysiwyg-editor':
+            if ( 'undefined' !== typeof $.fn.trumbowyg )
+            {
+                if ( before ) before( $, el );
+                $el.trumbowyg( opts.editor||{} );
+                $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box").attr("style", opts.style||'');
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'syntax-editor':
+            if ( 'undefined' !== typeof CodeMirror )
+            {
+                if ( before ) before( $, el );
+                CodeMirror.fromTextArea( el, opts.editor||{} );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'tag-editor':
+            if ( 'undefined' !== typeof $.fn.tagEditor )
+            {
+                if ( before ) before( $, el );
+                $el.tagEditor( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
+        case 'map':
+        case 'gmap':
+        case 'gmap3':
+            if ( before ) before( $, el );
+            $el.gmap3( opts );
+            if ( after ) after( $, el );
+            break;
+        
+        default: 
+            break;
+        }
+        }
+    });
+    return this;
 };
+
 $(function(){
-    $('.w-delayable').delayable( );
-    $('.w-disabable').disabable( );
-    //$('.w-morphable').morphable( );
+$('.widget.w-date').htmlwidget('date');
+$('.widget.w-color,.w-colorselector').htmlwidget('color');
+$('.w-removable').htmlwidget('removable');
+$('.w-delayable').htmlwidget('delayable');
+$('.w-disabable').htmlwidget('disabable');
+$('.w-morphable').htmlwidget('disabable');
+$('.w-sortable').htmlwidget('sortable');
 });
 
 }(window, jQuery);

@@ -3,10 +3,11 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.7.1
+*  @version: 0.8.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
+*  https://github.com/foo123/modelview-widgets
 *
 **/
 /* some defaults */
@@ -57,6 +58,57 @@ input.w-checkbox + label
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
     content: "\f071"; /* exclamation-triangle */
+}
+input.w-colorselector
+{
+    display: none !important;
+}
+.w-colorselector
+{
+    position: relative; display: inline-block;
+    z-index: 1; vertical-align: middle;
+    cursor: pointer;
+    background-image: url(assets/images/colorpicker_transparent.jpg);
+    background-repeat: repeat;
+    background-position: 0 0;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.w-colorselector:before
+{
+    position: absolute; display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    content: " ";
+    padding: 0; margin: 0;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+    z-index: 2;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: inherit;
+}
+.w-colorselector:after
+{
+    position: absolute; display: block; z-index: 3;
+    bottom: 0; right: 0;
+    text-align: center;
+    background: none;
+    content: "\25BE";
+}
+.w-colorselector:focus,
+.w-colorselector:active,
+.w-colorselector:hover
+{
+    outline: 0 !important;
 }
 .w-select:hover,
 .w-time-component:hover,
@@ -1936,6 +1988,31 @@ transform-style: preserve-3d;*/
 {
     margin: 3px 5px;
 }
+.w-colorselector
+{
+    width: 24px; height: 24px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    padding: 0; margin: 2px 4px;
+}
+.w-colorselector:before
+{
+    padding: 0; margin: 0;
+    border-width: 2px;
+}
+.w-colorselector:after
+{
+    width: 8px; height: 8px;
+    line-height: 8px; font-size: 8px;
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    -o-border-radius: 1px;
+    border-radius: 1px;
+}
 input.w-radio-image + label > span,
 input.w-checkbox-image + label > span
 {
@@ -2265,6 +2342,32 @@ input.w-checkbox + label.w-xlarge
 {
     background: none;
     color: #121212;
+}
+.w-colorselector
+{
+    background-color: #fff;
+}
+.w-colorselector:before
+{
+    border-color: rgba(127, 127, 127, .5);
+}
+.w-colorselector:after
+{
+    background-color: rgba(127, 127, 127, .5);
+    color: rgba(0, 0, 0, .8);
+    text-shadow: 0 1px 1px rgba(127, 127, 127, .3);
+}
+.w-colorselector:focus:before,
+.w-colorselector:active:before,
+.w-colorselector:hover:before
+{
+    border-color: rgba(255, 255, 255, .5);
+}
+.w-colorselector:focus:after,
+.w-colorselector:active:after,
+.w-colorselector:hover:after
+{
+    background-color: rgba(255, 255, 255, .5);
 }
 .w-time-component,
 .w-dropdown,

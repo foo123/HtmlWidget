@@ -3,40 +3,35 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.7.1
+*  @version: 0.8.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
+*  https://github.com/foo123/modelview-widgets
 *
 **/
 !function( root, name, factory ) {
 "use strict";
-
-// export the module, umd-style (no other dependencies)
-var isCommonJS = ("object" === typeof(module)) && module.exports, 
-    isAMD = ("function" === typeof(define)) && define.amd, m;
-
-// CommonJS, node, etc..
-if ( isCommonJS ) 
-    module.exports = (module.$deps = module.$deps || {})[ name ] = module.$deps[ name ] || (factory.call( root, {NODE:module} ) || 1);
-
-// AMD, requireJS, etc..
-else if ( isAMD && ("function" === typeof(require)) && ("function" === typeof(require.specified)) && require.specified(name) ) 
-    define( name, ['require', 'exports', 'module'], function( require, exports, module ){ return factory.call( root, {AMD:module} ); } );
-
-// browser, web worker, etc.. + AMD, other loaders
-else if ( !(name in root) ) 
-    (root[ name ] = (m=factory.call( root, {} ) || 1)) && isAMD && define( name, [], function( ){ return m; } );
-
+var m;
+if ( ('undefined'!==typeof Components)&&('object'===typeof Components.classes)&&('object'===typeof Components.classesByID)&&Components.utils&&('function'===typeof Components.utils['import']) ) /* XPCOM */
+    (root.EXPORTED_SYMBOLS = [ name ]) && (root[ name ] = factory.call( root ));
+else if ( ('object'===typeof module)&&module.exports ) /* CommonJS */
+    module.exports = factory.call( root );
+else if ( ('function'===typeof(define))&&define.amd&&('function'===typeof(require))&&('function'===typeof(require.specified))&&require.specified(name) ) /* AMD */
+    define(name,['require','exports','module'],function( ){return factory.call( root );});
+else if ( !(name in root) ) /* Browser/WebWorker/.. */
+    (root[ name ] = (m=factory.call( root )))&&('function'===typeof(define))&&define.amd&&define(function( ){return m;} );
 }(  /* current root */          this, 
     /* module name */           "HtmlWidget",
-    /* module factory */        function( exports, undef ) {
+    /* module factory */        function( undef ) {
 "use strict";
 
-var toString = Object.prototype.toString,
-    HAS = 'hasOwnProperty', ATTR = 'setAttribute', KEYS = Object.keys, json_encode = JSON.stringify,
+var HAS = 'hasOwnProperty', ATTR = 'setAttribute',
+    KEYS = Object.keys, json_encode = JSON.stringify, toString = Object.prototype.toString,
+    isXPCOM = ("undefined" !== typeof Components) && ("object" === typeof Components.classes) && ("object" === typeof Components.classesByID) && Components.utils && ("function" === typeof Components.utils['import']),
     isNode = ("undefined" !== typeof global) && ('[object global]' === toString.call(global)),
-    isWebWorker = !isNode && ('undefined' !== typeof WorkerGlobalScope) && ("function" === typeof importScripts) && (navigator instanceof WorkerNavigator),
+    isWebWorker = !isXPCOM && !isNode && ('undefined' !== typeof WorkerGlobalScope) && ("function" === typeof importScripts) && (navigator instanceof WorkerNavigator),
+    isBrowser = !isXPCOM && !isNode && !isWebWorker,
     GID = 0, self, widgets = {}, enqueuer = null;
 
 // http://php.net/manual/en/function.empty.php
@@ -61,14 +56,17 @@ function merge( a, b )
     return c;
 }
 
-function htmlwidget_( type, id, options )
+function htmlwidget_( type, id, options, before, after )
 {
-    return 'jQuery(function($){$.htmlwidget._("'+type+'","#'+id+'",'+(!!options?json_encode(options):'null')+');});';
+    options = !!options ? json_encode(options) : 'null';
+    before = !!before ? before : 'null';
+    after = !!after ? after : 'null';
+    return 'jQuery(function($){$("#'+id+'").htmlwidget("'+type+'"'+','+options+','+before+','+after+');});';
 }
 
 var HtmlWidget = self = {
     
-    VERSION: "0.7.1"
+    VERSION: "0.8.0"
     
     ,BASE: './'
     
@@ -79,11 +77,11 @@ var HtmlWidget = self = {
     ,enqueue: function( type, id, asset, deps ) {
         if ( enqueuer )
         {            
-            if ( isNode )
-                enqueuer(type, id, asset||null, deps||[]);
-            else
+            if ( isBrowser )
                 // add a small delay for browser to load asset after widget has been output
                 setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
+            else
+                enqueuer(type, id, asset||null, deps||[]);
         }
     }
     
@@ -94,80 +92,89 @@ var HtmlWidget = self = {
         var assets = [
          ['styles', 'htmlwidgets.css', base+'htmlwidgets.min.css', ['responsive.css','fontawesome.css']]
         ,['scripts', 'htmlwidgets', base+'htmlwidgets.min.js', ['htmlwidgets.css','jquery']]
-        //,['styles', 'responsive.css', asset_base+'css/responsive.css']
-        //,['styles', 'fontawesome.css', asset_base+'css/fontawesome.css']
+        //,['styles', 'responsive.css', asset_base+'responsive.css']
+        //,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
         ];
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
             //  external APIS
-             ['scripts', 'google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
+             ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
             
             // DateX
-            ,['scripts', 'datex', asset_base+'js/datex.js']
+            ,['scripts', 'datex', asset_base+'datex.js']
             
             // Pikaday
-            ,['styles', 'pikaday.css', asset_base+'css/pikaday.css']
-            ,['scripts', 'pikaday', asset_base+'js/pikaday.js', ['pikaday.css', 'datex']]
+            ,['styles', 'pikaday.css', asset_base+'pikaday.css']
+            ,['scripts', 'pikaday', asset_base+'pikaday.js', ['pikaday.css','datex']]
              
             // ColorPicker
-            ,['styles', 'colorpicker.css', asset_base+'css/colorpicker.css']
-            ,['scripts', 'colorpicker', asset_base+'js/colorpicker.js', ['colorpicker.css', 'jquery']]
+            ,['styles', 'colorpicker.css', asset_base+'colorpicker.css']
+            ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css','jquery']]
              
             // LocationPicker
-            ,['scripts', 'locationpicker', asset_base+'js/locationpicker.js', ['google-maps-api','jquery']]
+            ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['-external-google-maps-api','jquery']]
              
             // Sortable
-            ,['scripts', 'sortable', asset_base+'js/sortable.js']
+            ,['scripts', 'sortable', asset_base+'sortable.js']
+             
+            // TinyDraggable
+            ,['scripts', 'tinydraggable', asset_base+'tinydraggable.js']
              
             // Select2
-            ,['styles', 'select2.css', asset_base+'css/select2.css']
-            ,['scripts', 'select2', asset_base+'js/select2.js', ['select2.css','jquery']]
+            ,['styles', 'select2.css', asset_base+'select2.css']
+            ,['scripts', 'select2', asset_base+'select2.js', ['select2.css','jquery']]
              
             // Autocomplete
-            ,['styles', 'autocomplete.css', asset_base+'css/autocomplete.css']
-            ,['scripts', 'autocomplete', asset_base+'js/autocomplete.js', ['autocomplete.css','jquery']]
+            ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
+            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css','jquery']]
              
             // TagEditor
-            ,['scripts', 'caret', asset_base+'js/caret.js']
-            ,['styles', 'tageditor.css', asset_base+'css/tageditor.css']
-            ,['scripts', 'tageditor', asset_base+'js/tageditor.js', ['tageditor.css','jquery','caret']]
+            ,['scripts', 'caret', asset_base+'caret.js']
+            ,['styles', 'tageditor.css', asset_base+'tageditor.css']
+            ,['scripts', 'tageditor', asset_base+'tageditor.js', ['tageditor.css','jquery','caret']]
              
             // Tooltipster
-            ,['styles', 'tooltipster.css', asset_base+'css/tooltipster.css']
-            ,['scripts', 'tooltipster', asset_base+'js/tooltipster.js', ['tooltipster.css','jquery']]
+            ,['styles', 'tooltipster.css', asset_base+'tooltipster.css']
+            ,['scripts', 'tooltipster', asset_base+'tooltipster.js', ['tooltipster.css','jquery']]
              
             // Modal
-            ,['styles', 'modal.css', asset_base+'css/modal.css']
-            ,['scripts', 'modal', asset_base+'js/modal.js', ['modal.css','jquery']]
+            ,['styles', 'modal.css', asset_base+'modal.css']
+            ,['scripts', 'modal', asset_base+'modal.js', ['modal.css','jquery']]
+             
+            // ModelView
+            ,['scripts', 'modelview', asset_base+'modelview.js']
              
             // DataTables
-            ,['styles', 'datatables.css', asset_base+'css/datatables.css']
-            ,['scripts', 'datatables', asset_base+'js/datatables.js', ['datatables.css','jquery']]
+            ,['styles', 'datatables.css', asset_base+'datatables.css']
+            ,['scripts', 'datatables', asset_base+'datatables.js', ['datatables.css','jquery']]
+            
+            // MathJax
+            ,['scripts', 'mathjax', asset_base+'mathjax/mathjax.js?config=TeX-AMS_HTML-full']
             
             // Trumbowyg
-            ,['styles', 'trumbowyg.css', asset_base+'css/trumbowyg.css']
-            ,['scripts', 'trumbowyg', asset_base+'js/trumbowyg.js', ['trumbowyg.css','jquery']]
+            ,['styles', 'trumbowyg.css', asset_base+'trumbowyg.css']
+            ,['scripts', 'trumbowyg', asset_base+'trumbowyg.js', ['trumbowyg.css','jquery']]
              
             // CodeMirror
-            ,['scripts', 'codemirror-mode-multiplex', asset_base+'js/addon/mode/multiplex.js']
-            ,['scripts', 'codemirror-comment', asset_base+'js/addon/comment/comment.js']
+            ,['scripts', 'codemirror-mode-multiplex', asset_base+'codemirror/addon/mode/multiplex.js']
+            ,['scripts', 'codemirror-comment', asset_base+'codemirror/addon/comment/comment.js']
             
-            ,['scripts', 'codemirror-mode-xml', asset_base+'js/mode/xml.js']
-            ,['scripts', 'codemirror-mode-javascript', asset_base+'js/mode/javascript.js']
-            ,['scripts', 'codemirror-mode-css', asset_base+'js/mode/css.js']
+            ,['scripts', 'codemirror-mode-xml', asset_base+'codemirror/mode/xml.js']
+            ,['scripts', 'codemirror-mode-javascript', asset_base+'codemirror/mode/javascript.js']
+            ,['scripts', 'codemirror-mode-css', asset_base+'codemirror/mode/css.js']
             
-            ,['styles', 'codemirror-fold.css', asset_base+'js/addon/fold/foldgutter.css']
-            ,['scripts', 'codemirror-fold-gutter', asset_base+'js/addon/fold/foldgutter.js']
-            ,['scripts', 'codemirror-fold-code', asset_base+'js/addon/fold/foldcode.js']
-            ,['scripts', 'codemirror-fold-comment', asset_base+'js/addon/fold/comment-fold.js']
-            ,['scripts', 'codemirror-fold-brace', asset_base+'js/addon/fold/brace-fold.js']
-            ,['scripts', 'codemirror-fold-indent', asset_base+'js/addon/fold/indent-fold.js']
-            ,['scripts', 'codemirror-fold-xml', asset_base+'js/addon/fold/xml-fold.js']
+            ,['styles', 'codemirror-fold.css', asset_base+'codemirror/addon/fold/foldgutter.css']
+            ,['scripts', 'codemirror-fold-gutter', asset_base+'codemirror/addon/fold/foldgutter.js']
+            ,['scripts', 'codemirror-fold-code', asset_base+'codemirror/addon/fold/foldcode.js']
+            ,['scripts', 'codemirror-fold-comment', asset_base+'codemirror/addon/fold/comment-fold.js']
+            ,['scripts', 'codemirror-fold-brace', asset_base+'codemirror/addon/fold/brace-fold.js']
+            ,['scripts', 'codemirror-fold-indent', asset_base+'codemirror/addon/fold/indent-fold.js']
+            ,['scripts', 'codemirror-fold-xml', asset_base+'codemirror/addon/fold/xml-fold.js']
             
-            ,['styles', 'codemirror.css', asset_base+'css/codemirror.css']
-            ,['scripts', 'codemirror', asset_base+'js/codemirror.js', ['codemirror.css']]
-            ,['scripts', 'codemirror-full', asset_base+'js/mode/htmlmixed.js', ['codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent']]
+            ,['styles', 'codemirror.css', asset_base+'codemirror/codemirror.css']
+            ,['scripts', 'codemirror', asset_base+'codemirror/codemirror.js', ['codemirror.css']]
+            ,['scripts', 'codemirror-full', asset_base+'codemirror/mode/htmlmixed.js', ['codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent']]
             ]);
         }
         return assets;
@@ -261,8 +268,12 @@ var HtmlWidget = self = {
             case 'highlight-editor':
             case 'highlighter':
             case 'textarea':    out = self.w_textarea(attr, data); break;
+            case 'datepicker':
+            case 'datetime':
             case 'date':        out = self.w_date(attr, data); break;
             case 'time':        out = self.w_time(attr, data); break;
+            case 'colorpicker':
+            case 'color':       out = self.w_color(attr, data); break;
             case 'map':
             case 'gmap':        out = self.w_gmap(attr, data); break;
             case 'checkbox-image':
@@ -1095,6 +1106,22 @@ var HtmlWidget = self = {
         return '<span class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtimes+'</span>';
     }
     
+    ,w_color: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wtitle, wformat;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
+        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wtitle = isset(attr,'title') ? attr['title'] : "";
+        wclass = 'w-colorselector'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wformat = !empty(attr,"format") ? attr["format"] : 'rgba';
+        wdata = self.attr_data(attr);
+        self.enqueue('scripts', "w-colorpicker-"+wid, [htmlwidget_('color', wid)], ['colorpicker','htmlwidgets']);
+        return '<div id="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-color="'+wvalue+'"  data-color-format="'+wformat+'" '+wdata+'></div>';
+    }
+    
     ,w_gmap: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wvalue;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1177,7 +1204,7 @@ var HtmlWidget = self = {
     
     ,w_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wdataTable, wcolumns, wrows, wheader, wfooter, woptions, wcontrols,
-            column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls, script;
+            column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'widget w-table'; 
         if ( !isset(attr,'stripped') || attr['stripped'] ) wclass += ' stripped';
@@ -1214,7 +1241,7 @@ var HtmlWidget = self = {
         wdataTable = isset(attr,'dataTable');
         if ( wdataTable )
         {
-            woptions = Object===attr['dataTable'].constructor ? json_encode(attr['dataTable']) : '';
+            woptions = Object===attr['dataTable'].constructor ? attr['dataTable'] : {};
             wcontrols = [
              "$('#"+wid+"_filter').find('input').addClass('w-text');"
             ,"$('#"+wid+"_length').find('select').addClass('w-select');"
@@ -1227,18 +1254,7 @@ var HtmlWidget = self = {
                     wcontrols.push('$(".w-table-controls", "#'+wid+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
                 }
             }
-            wcontrols = wcontrols.join("\n");
-            script = '\
-jQuery(function($){\
-$("#'+wid+'").dataTable('+woptions+').on("change", "input.select_row", function( ){\
-if ( this.checked ) $(this).closest("tr").addClass("selected");\
-else $(this).closest("tr").removeClass("selected");\
-});\
-$("#'+wid+'").closest(".dataTables_wrapper").addClass("w-table-wrapper");\
-'+wcontrols+'\
-});\
-';
-            self.enqueue('scripts', "w-datatable-"+wid, [script], ['htmlwidgets','datatables']);
+            self.enqueue('scripts', "w-datatable-"+wid, [htmlwidget_('datatable', wid, woptions, null, 'function($){'+wcontrols.join("\n")+'}')], ['htmlwidgets','datatables']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
@@ -1326,7 +1342,11 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
     }
 };
 
-if ( isNode )
+if (isXPCOM )
+{
+    HtmlWidget.BASE = './';
+}
+else if ( isNode )
 {
     HtmlWidget.BASE = __dirname;
 }
