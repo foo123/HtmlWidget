@@ -81,6 +81,10 @@ class HtmlWidget
             ,array('styles', 'select2.css', $asset_base.'select2.css')
             ,array('scripts', 'select2', $asset_base.'select2.js', array('select2.css','jquery'))
              
+            // Awesomplete
+            ,array('styles', 'awesomplete.css', $asset_base.'awesomplete.css')
+            ,array('scripts', 'awesomplete', $asset_base.'awesomplete.js', array('awesomplete.css'))
+             
             // Autocomplete
             ,array('styles', 'autocomplete.css', $asset_base.'autocomplete.css')
             ,array('scripts', 'autocomplete', $asset_base.'autocomplete.js', array('autocomplete.css','jquery'))
@@ -871,10 +875,21 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::attr_data($attr);
+        if ( !empty($attr['autocomplete']) )
+        {
+            $wclass .= ' awesomplete';
+            $wextra .= ' list="list_'.$wid.'"';
+            $wautocomplete = '<datalist id="list_'.$wid.'"><option>'.implode('</option><option>',(array)$attr['autocomplete']).'</option></datalist>';
+            self::enqueue('scripts', 'awesomplete');
+        }
+        else
+        {
+            $wautocomplete = '';
+        }
         self::enqueue('styles', 'htmlwidgets.css');
         return !empty($wicon)
-        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />$wicon</span>"
-        : "<input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />";
+        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />$wicon</span>".$wautocomplete
+        : "<input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />".$wautocomplete;
     }
     
     public static function w_suggest( $attr, $data )

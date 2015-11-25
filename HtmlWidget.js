@@ -125,6 +125,10 @@ var HtmlWidget = self = {
             ,['styles', 'select2.css', asset_base+'select2.css']
             ,['scripts', 'select2', asset_base+'select2.js', ['select2.css','jquery']]
              
+            // Awesomplete
+            ,['styles', 'awesomplete.css', asset_base+'awesomplete.css']
+            ,['scripts', 'awesomplete', asset_base+'awesomplete.js', ['awesomplete.css']]
+             
             // Autocomplete
             ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
             ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css','jquery']]
@@ -912,7 +916,7 @@ var HtmlWidget = self = {
     }
     
     ,w_text: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wtype, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class;
+        var wid, wclass, wstyle, wextra, wdata, wtype, wicon, wautocomplete, wplaceholder, wvalue, wname, wtitle, wrapper_class;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : ""; 
@@ -936,10 +940,21 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
+        if ( !empty(attr,'autocomplete') )
+        {
+            wclass += ' awesomplete';
+            wextra += ' list="list_'+wid+'"';
+            wautocomplete = '<datalist id="list_'+wid+'"><option>'+attr['autocomplete'].join('</option><option>')+'</option></datalist>';
+            self.enqueue('scripts', 'awesomplete');
+        }
+        else
+        {
+            wautocomplete = '';
+        }
         self.enqueue('styles', 'htmlwidgets.css');
         return wicon.length
-        ? '<span class="'+wrapper_class+'" '+wstyle+'><input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />'+wicon+'</span>'
-        : '<input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />';
+        ? '<span class="'+wrapper_class+'" '+wstyle+'><input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />'+wicon+'</span>'+wautocomplete
+        : '<input type="'+wtype+'" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wdata+' />'+wautocomplete;
     }
     
     ,w_suggest: function( attr, data ) {
