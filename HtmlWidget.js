@@ -101,6 +101,9 @@ var HtmlWidget = self = {
             //  external APIS
              ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
             
+            // Timer
+            ,['scripts', 'timer', asset_base+'timer.js']
+            
             // DateX
             ,['scripts', 'datex', asset_base+'datex.js']
             
@@ -276,6 +279,7 @@ var HtmlWidget = self = {
             case 'datetime':
             case 'date':        out = self.w_date(attr, data); break;
             case 'time':        out = self.w_time(attr, data); break;
+            case 'timer':       out = self.w_timer(attr, data); break;
             case 'colorpicker':
             case 'color':       out = self.w_color(attr, data); break;
             case 'map':
@@ -1119,6 +1123,22 @@ var HtmlWidget = self = {
         wtimes = wtimes.join('<span class="w-time-sep">:</span>');
         self.enqueue('styles', 'htmlwidgets.css');
         return '<span class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wtimes+'</span>';
+    }
+    
+    ,w_timer: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wduration, wname, wformat, wtype;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wname = !empty(attr,"name") ? attr["name"] : '';
+        wtype = !empty(attr,'type') ? attr['type'] : 'down';
+        wformat = !empty(attr,'format') ? attr['format'] : '%hh%:%mm%:%ss%';
+        wduration = isset(data,'duration') ? data['duration'] : '10';
+        wclass = 'widget w-timer'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
+        self.enqueue('scripts', "w-timer-"+wid, [htmlwidget_('timer', wid)], ['timer','htmlwidgets']);
+        return '<span id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
     ,w_color: function( attr, data ) {

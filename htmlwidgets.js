@@ -724,6 +724,15 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
             }
             break;
         
+        case 'timer':
+            if ( 'undefined' !== typeof $.fn.Timer )
+            {
+                if ( before ) before( $, el );
+                $el.Timer( opts );
+                if ( after ) after( $, el );
+            }
+            break;
+        
         case 'colorpicker':
         case 'color':
             if ( 'undefined' !== typeof $.fn.ColorPicker )
@@ -823,6 +832,7 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
 
 $(function(){
 $('.widget.w-date').htmlwidget('date');
+$('.widget.w-timer').htmlwidget('timer');
 $('.widget.w-color,.w-colorselector').htmlwidget('color');
 $('.w-removable').htmlwidget('removable');
 $('.w-delayable').htmlwidget('delayable');
