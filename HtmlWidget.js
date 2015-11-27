@@ -88,7 +88,6 @@ var HtmlWidget = self = {
     ,assets: function( base, full ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
-        var asset_base = base + 'assets/';
         var assets = [
          ['styles', 'htmlwidgets.css', base+'htmlwidgets.min.css', ['responsive.css','fontawesome.css']]
         ,['scripts', 'htmlwidgets', base+'htmlwidgets.min.js', ['htmlwidgets.css','jquery']]
@@ -97,6 +96,7 @@ var HtmlWidget = self = {
         ];
         if ( arguments.length < 2 || true === full )
         {
+            var asset_base = base + 'assets/';
             assets = assets.concat([
             //  external APIS
              ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
@@ -107,6 +107,10 @@ var HtmlWidget = self = {
             // DateX
             ,['scripts', 'datex', asset_base+'datex.js']
             
+            // SunDial
+            ,['styles', 'sundial.css', asset_base+'sundial.css']
+            ,['scripts', 'sundial', asset_base+'sundial.js', ['sundial.css','datex']]
+             
             // Pikaday
             ,['styles', 'pikaday.css', asset_base+'pikaday.css']
             ,['scripts', 'pikaday', asset_base+'pikaday.js', ['pikaday.css','datex']]
@@ -274,6 +278,7 @@ var HtmlWidget = self = {
             case 'syntax':
             case 'highlight-editor':
             case 'highlighter':
+            case 'upload':      out = self.w_upload(attr, data); break;
             case 'textarea':    out = self.w_textarea(attr, data); break;
             case 'datepicker':
             case 'datetime':
@@ -992,6 +997,50 @@ var HtmlWidget = self = {
         wdata = self.attr_data(attr);
         self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
+    }
+    
+    ,w_upload: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wupload_base, wdimensions, wvalue, wname,
+            msg_upload, msg_delete, msg_full, image, thumb, image_data;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
+        wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
+        wclass = 'widget w-upload'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
+        wupload_base = !empty(attr,"upload-base") ? attr["upload-base"] : '';
+        wdimensions = !empty(attr,"dimensions") ? attr["dimensions"] : '600x400';
+        msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
+        msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
+        msg_full = !empty(attr,"msg-full-size") ? attr["msg-full-size"] : 'Click to view full-size image';
+        wvalue = !empty(data,"value") ? data["value"] : null;
+        if ( !!wvalue )
+        {
+            image = wupload_base + wvalue['image'];
+            thumb = wupload_base + wvalue['thumb'];
+            image_data = json_encode({
+                'original' : image,
+                'image' : wvalue['image'],
+                'thumb' : wvalue['thumb'],
+                'width' : !empty(wvalue,'width') ? wvalue['width'] : 600,
+                'height' : !empty(wvalue,'height') ? wvalue['height'] : 400
+            });
+        }
+        else
+        {
+            image = '';
+            thumb = '';
+            image_data = '';
+        }
+        if ( !empty(attr,'readonly') )
+        {
+            return '<div data-upload-base="'+upload_base+'" data-upload-image="'+image+'" class="'+wclass+'"><img class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" onclick="window.open(this.parentNode.getAttribute(\'data-upload-image\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();"/></div>';
+        }
+        else
+        {
+            self.enqueue('scripts', "w-upload-"+wid, [htmlwidget_('upload', wid)], ['htmlwidgets']);
+            return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-upload-base="'+wupload_base+'" data-upload-dimensions="'+wdimensions+'"><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+image_data+'</textarea><label class="widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
+        }
     }
     
     ,w_textarea: function( attr, data ) {

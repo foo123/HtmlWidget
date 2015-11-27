@@ -15,7 +15,9 @@
 
 var htmlwidget = {VERSION: "0.8.0", widget: {}},
 HAS = 'hasOwnProperty', PROTO = 'prototype', ID = 0,
-slice = Array[PROTO].slice, toString = Object[PROTO].toString;
+slice = Array[PROTO].slice,
+json_decode = JSON.parse, json_encode = JSON.stringify,
+toString = Object[PROTO].toString;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
@@ -108,7 +110,31 @@ htmlwidget.removable = function removable( el, options ){
         });
     };
     self.w_dispose = function( ) {
-        $(el).off('click.removable');
+        $(el).off('.removable');
+    };
+};
+
+htmlwidget.selectable = function selectable( el, options ){
+    var self = this;
+    if ( !(self instanceof selectable) ) return new selectable(el, options);
+    self.w_init = function( ) {
+        var $el = $(el);
+        if ( !$el.hasClass('w-selectable') ) $el.addClass('w-selectable');
+        $el.on('click.selectable', options.handle||'.w-select-handle', function( evt ){
+            if ( evt.shiftKey )
+            {
+                var $el = $(this);
+                if ( !!options.selector ) $el = $el.closest( options.selector );
+                if ( $el.hasClass('w-selected') ) $el.removeClass('w-selected');
+                else $el.addClass('w-selected');
+            }
+        });
+    };
+    self.w_clear = function( ) {
+        $(el).children('.w-selected').removeClass('w-selected');
+    };
+    self.w_dispose = function( ) {
+        $(el).off('.selectable');
     };
 };
 
@@ -181,6 +207,69 @@ htmlwidget.disabable = function disabable( el, options ){
         var $el = $(el);
         if ( $el.hasClass('w-disabled') )
             $el.addClass('w-undisabled').removeClass('w-disabled');
+    };
+};
+
+htmlwidget.uploadable = function uploadable( el, options ){
+    var self = this, thumbnail_size = 120;
+    if ( !(self instanceof uploadable) ) return new uploadable(el, options);
+    
+    self.w_dispose = function( ) {
+        var control = $(el);
+        control.off('.uploadable');
+        control = null;
+    };
+    self.w_init = function( ) {
+        var control = $(el);
+        control
+        .on('click.uploadable', '.w-upload-delete', function( evt ){
+            control[0].imdata = null;
+            control.find('._w-data').val('');
+            control.find('img').attr('src','');
+            return false;
+        })
+        .on('click.uploadable', '.w-upload-thumbnail', function( evt ){
+            var $imdata = control.find('_w-data'),
+                imdata = control[0].imdata || (!!$imdata.val() ? json_decode($imdata.val()) : null);
+                
+            if ( !!imdata )
+            {
+                if ( !control[0].imdata ) control[0].imdata = imdata;
+                window.open(
+                    !!imdata.original ? imdata.original : imdata.image,
+                    'preview_'+control.attr('id'),
+                    'scrollbars=yes,resizable=yes,width='+imdata.width+',height='+imdata.height
+                ).focus( );
+            }
+            return false;
+        })
+        .on('change.uploadable', 'input._w-uploader[type=file]', function( evt ){
+            var $el = $(this), img_reader,
+                file = evt.target.files[0] || null;
+            if ( !file || !file.type.match('image') ) return false;
+            img_reader = new FileReader( );
+            img_reader.addEventListener("load", function( evt ){
+                var img_src = evt.target.result, img = new Image( );
+                img.addEventListener("load", function( ) {
+                    // add a small delay
+                    setTimeout(function( ){
+                        var w = img.width, h = img.height,
+                            tw = thumbnail_size, th = Math.round(thumbnail_size*h/w),
+                            canvas = document.createElement('canvas'),
+                            ctx = canvas.getContext('2d'), img_thumb;
+                        canvas.width = tw; canvas.height = th;
+                        ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
+                        img_thumb = canvas.toDataURL("image/png");
+                        control[0].imdata = {name:file.name, width:w, height:h, image:img_src, thumb:img_thumb};
+                        control.find('_w-data').val( json_encode( control[0].imdata ) );
+                        control.find('img').attr('src', img_thumb);
+                    }, 10);
+                });
+                img.src = img_src;
+            });
+            img_reader.readAsDataURL( file );
+        })
+        ;
     };
 };
 
@@ -599,10 +688,12 @@ function datetime_decoder( format, locale )
     }
 }
 
+widget2jquery( 'selectable', htmlwidget.selectable );
 widget2jquery( 'removable', htmlwidget.removable );
 widget2jquery( 'morphable', htmlwidget.morphable );
 widget2jquery( 'delayable', htmlwidget.delayable );
 widget2jquery( 'disabable', htmlwidget.disabable );
+widget2jquery( 'uploadable', htmlwidget.uploadable );
 widget2jquery( 'suggest', htmlwidget.suggest );
 widget2jquery( 'gmap3', htmlwidget.gmap3 );
 
@@ -643,18 +734,34 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
             if ( after ) after( $, el );
             break;
         
-        case 'removable':
+        case 'morphable':
             if ( before ) before( $, el );
-            $el.removable({
-                handle: opts.handle || $el.attr('data-removable-handle')
+            $el.morphable({
+                modeClass: $el.attr('data-morphable-mode') || opts.modeClass
             });
             if ( after ) after( $, el );
             break;
         
-        case 'morphable':
+        case 'upload':
+        case 'uploadable':
             if ( before ) before( $, el );
-            $el.morphable({
-                modeClass: opts.modeClass || $el.attr('data-morphable-mode')
+            $el.uploadable( opts );
+            if ( after ) after( $, el );
+            break;
+        
+        case 'selectable':
+            if ( before ) before( $, el );
+            $el.selectable({
+                selector: $el.attr('data-selectable-item') || opts.selector || ".selectable-item",
+                handle: $el.attr('data-selectable-handle') || opts.handle || ".selectable-handle"
+            });
+            if ( after ) after( $, el );
+            break;
+        
+        case 'removable':
+            if ( before ) before( $, el );
+            $el.removable({
+                handle: $el.attr('data-removable-handle') || opts.handle || ".removable-handle"
             });
             if ( after ) after( $, el );
             break;
@@ -673,7 +780,12 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
             {
                 if ( before ) before( $, el );
                 Sortable.create( el, {
-                    handle: opts.handle || $el.attr('data-sortable-handle')
+                    sort: true,
+                    disabled: false,
+                    delay: parseInt($el.attr('data-sortable-delay') || opts.delay || 0,10),
+                    animation: parseInt($el.attr('data-sortable-animation') || opts.animation || 400,10),
+                    draggable: $el.attr('data-sortable-item') || opts.draggable || opts.item,
+                    handle: $el.attr('data-sortable-handle') || opts.handle || ".sortable-handle"
                 });
                 if ( after ) after( $, el );
             }
@@ -708,9 +820,24 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
             if ( after ) after( $, el );
             break;
         
-        case 'datepicker':
-        case 'date':
+        /*case 'datetime':
+        case 'datetimepicker':
+            if ( 'undefined' !== typeof Sundial )
+            {
+                if ( before ) before( $, el );
+                var dformat = $el.attr('data-date-format') || 'Y-m-d';
+                var tformat = $el.attr('data-time-format') || 'H:i:s';
+                new Sundial(el, {options: {
+                    encoder: datetime_encoder( format ),
+                    decoder: datetime_decoder( format )
+                }});
+                if ( after ) after( $, el );
+            }
+            break;*/
+        
         case 'datetime':
+        case 'date':
+        case 'datepicker':
             if ( 'undefined' !== typeof Pikaday )
             {
                 if ( before ) before( $, el );
@@ -831,13 +958,14 @@ $.fn.htmlwidget = function( type, opts, before, after ) {
 };
 
 $(function(){
-$('.widget.w-date').htmlwidget('date');
-$('.widget.w-timer').htmlwidget('timer');
-$('.widget.w-color,.w-colorselector').htmlwidget('color');
+$('.w-date').htmlwidget('date');
+$('.w-timer').htmlwidget('timer');
+$('.w-color,.w-colorselector').htmlwidget('color');
+$('.w-selectable').htmlwidget('selectable');
 $('.w-removable').htmlwidget('removable');
 $('.w-delayable').htmlwidget('delayable');
 $('.w-disabable').htmlwidget('disabable');
-$('.w-morphable').htmlwidget('disabable');
+$('.w-morphable').htmlwidget('morphable');
 $('.w-sortable').htmlwidget('sortable');
 });
 

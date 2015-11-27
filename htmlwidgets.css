@@ -33,6 +33,32 @@ input.w-checkbox + label
     -o-box-sizing: border-box;
     box-sizing: border-box;
 }
+.widget.w-upload,
+.w-upload
+{
+    position: relative;
+    display: inline-block;
+    padding: 0; margin: 0;
+    cursor: pointer;
+}
+img.w-upload-thumbnail
+{
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    margin-bottom: 10px;
+    display: block;
+}
+img.w-upload-thumbnail[src='']
+{
+    display: none;
+    margin-bottom: 0;
+}
+img.w-upload-thumbnail[src=''] ~ .w-upload-delete
+{
+    display: none;
+}
+
 .w-error-msg
 {
     position: relative;
@@ -2775,6 +2801,13 @@ table.w-table th
 {
     color: rgb(248,0,0);
 }
+.widget.w-selected
+.w-selected
+{
+    border-color: #f77c05 !important;
+    background-color: #f77c05 !important;
+}
+
 @-webkit-keyframes w-anim-spindots 
 {
   0%,
