@@ -243,6 +243,7 @@ class HtmlWidget
             case 'time':        $out = self::w_time($attr, $data); break;
             case 'timer':       $out = self::w_timer($attr, $data); break;
             case 'colorpicker':
+            case 'colorselector':
             case 'color':       $out = self::w_color($attr, $data); break;
             case 'map':
             case 'gmap':        $out = self::w_gmap($attr, $data); break;
@@ -289,8 +290,10 @@ class HtmlWidget
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         if ( !empty($attr['icon']) ) $wclass .= ' fa-'.$attr['icon'];
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<i class=\"$wclass\" $wstyle></i>";
+        return "<i class=\"$wclass\" $wstyle $wextra $wdata></i>";
     }
     
     public static function w_delayable( $attr, $data )
@@ -1065,6 +1068,7 @@ OUT;
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
+        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wformat = !empty($attr['format']) ? explode(":", $attr['format']) : array("h","m","s");
         if (isset($data['value'])) 
         {
@@ -1098,7 +1102,7 @@ OUT;
         foreach($wformat as $t)
         {
             $wnam = !empty($wname) ? 'name="'.$wname.'['.$t.']"' : '';
-            $wtimes[] = '<select class="w-time-component" id="'.$wid.'_'.$t.'" '.$wnam.'>'.implode('',$time_options[$t]).'</select>';
+            $wtimes[] = '<select class="w-time-component" id="'.$wid.'_'.$t.'" '.$wnam.' '.$wtitle.'>'.implode('',$time_options[$t]).'</select>';
         }
         $wtimes = implode('<span class="w-time-sep">:</span>', $wtimes);
         self::enqueue('styles', 'htmlwidgets.css');
@@ -1109,6 +1113,7 @@ OUT;
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
+        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wtype = !empty($attr['type']) ? $attr['type'] : 'down';
         $wformat = !empty($attr['format']) ? $attr['format'] : '%hh%:%mm%:%ss%';
         $wduration = isset($data['duration']) ? $data['duration'] : '10';
@@ -1119,7 +1124,7 @@ OUT;
         self::enqueue('scripts', 'timer');
         self::enqueue('scripts', 'htmlwidgets');
         //self::enqueue('scripts', "w-timer-{$wid}", array(self::htmlwidget_('timer', $wid)), array('timer','htmlwidgets'));
-        return "<span id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
+        return "<span id=\"{$wid}\" class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
     }
     
     public static function w_color( $attr, $data )

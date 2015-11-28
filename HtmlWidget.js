@@ -288,6 +288,7 @@ var HtmlWidget = self = {
             case 'time':        out = self.w_time(attr, data); break;
             case 'timer':       out = self.w_timer(attr, data); break;
             case 'colorpicker':
+            case 'colorselector':
             case 'color':       out = self.w_color(attr, data); break;
             case 'map':
             case 'gmap':        out = self.w_gmap(attr, data); break;
@@ -328,13 +329,15 @@ var HtmlWidget = self = {
     }
     
     ,w_icon: function( attr, data ) {
-        var wclass, wstyle;
+        var wclass, wstyle, wextra, wdata;
         wclass = 'fa'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         if ( !empty(attr,'icon') ) wclass += ' fa-'+attr['icon'];
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.attr_data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<i class="'+wclass+'" '+wstyle+'></i>';
+        return '<i class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></i>';
     }
     
     ,w_delayable: function( attr, data ) {
@@ -1134,10 +1137,11 @@ var HtmlWidget = self = {
     }
     
     ,w_time: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wnam, wformat, wtimes,
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wtitle, wname, wnam, wformat, wtimes,
             time_options, i, tt, t, p, f, selected;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? attr["name"] : '';
+        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wformat = !empty(attr,'format') ? attr['format'].split(':') : ["h","m","s"];
         if (isset(data,'value')) 
         {
@@ -1174,7 +1178,7 @@ var HtmlWidget = self = {
         {
             t = wformat[p];
             wnam = wname.length ? 'name="'+wname+'['+t+']"' : '';
-            wtimes.push('<select class="w-time-component" id="'+wid+'_'+t+'" '+wnam+'>'+time_options[t].join('')+'</select>');
+            wtimes.push('<select class="w-time-component" id="'+wid+'_'+t+'" '+wnam+' '+wtitle+'>'+time_options[t].join('')+'</select>');
         }
         wtimes = wtimes.join('<span class="w-time-sep">:</span>');
         self.enqueue('styles', 'htmlwidgets.css');
@@ -1182,9 +1186,10 @@ var HtmlWidget = self = {
     }
     
     ,w_timer: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wduration, wname, wformat, wtype;
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wduration, wname, wformat, wtype;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? attr["name"] : '';
+        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'down';
         wformat = !empty(attr,'format') ? attr['format'] : '%hh%:%mm%:%ss%';
         wduration = isset(data,'duration') ? data['duration'] : '10';
@@ -1196,7 +1201,7 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'timer');
         self.enqueue('scripts', 'htmlwidgets');
         //self.enqueue('scripts', "w-timer-"+wid, [htmlwidget_('timer', wid)], ['timer','htmlwidgets']);
-        return '<span id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
+        return '<span id="'+wid+'" class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
     ,w_color: function( attr, data ) {
