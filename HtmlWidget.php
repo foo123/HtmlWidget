@@ -3,8 +3,8 @@
 *  HtmlWidget
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
-*  @dependencies: FontAwesome, jQuery
-*  @version: 0.8.0
+*  @dependencies: FontAwesome, jQuery, SelectorListener
+*  @version: 0.8.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -15,18 +15,18 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.0";
+    const VERSION = "0.8.1";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
     
-    private static function htmlwidget_( $type, $id, $options=null, $before=null, $after=null )
+    /*private static function htmlwidget_( $type, $id, $options=null, $before=null, $after=null )
     {
         $options = !empty($options) ? json_encode($options) : 'null';
         $before = !empty($before) ? $before : 'null';
         $after = !empty($after) ? $after : 'null';
         return 'jQuery(function($){$("#'.$id.'").htmlwidget("'.$type.'"'.','.$options.','.$before.','.$after.');});';
-    }
+    }*/
     
     public static function enqueueAssets( $enqueuer=null )
     {
@@ -44,15 +44,17 @@ class HtmlWidget
     {
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
+        $asset_base = $base . 'assets/';
         $assets = array(
-         array('styles', 'htmlwidgets.css', $base.'htmlwidgets.min.css', array('responsive.css','fontawesome.css'))
-        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.min.js', array('htmlwidgets.css','jquery'))
+         array('styles', 'htmlwidgets.css', $base.'htmlwidgets.css')
+        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
+        //,array('scripts', 'jquery', $asset_base.'jquery.js')
+        ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
         //,array('styles', 'responsive.css', $asset_base.'responsive.css')
         //,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
         );
         if ( true === $full )
         {
-            $asset_base = $base . 'assets/';
             $assets = array_merge($assets, array(
             //  external APIS
              array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
@@ -112,9 +114,9 @@ class HtmlWidget
             // ModelView
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
-            // DataTables
-            ,array('styles', 'datatables.css', $asset_base.'datatables.css')
-            ,array('scripts', 'datatables', $asset_base.'datatables.js', array('datatables.css','jquery'))
+            // DataTable
+            ,array('styles', 'datatable.css', $asset_base.'datatable.css')
+            ,array('scripts', 'datatable', $asset_base.'datatable.js', array('datatable.css','jquery'))
             
             // MathJax
             ,array('scripts', 'mathjax', $asset_base.'mathajax/mathjax.js?config=TeX-AMS_HTML-full')
@@ -343,7 +345,7 @@ class HtmlWidget
         $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
         $wstyle .= implode(',',$wshow_selector) . '{display: block}';
         self::enqueue('scripts', 'htmlwidgets');
-        self::enqueue('styles', "w-morphable-$wid", array($wstyle), array());
+        self::enqueue('styles', "w-morphable-$wid", array($wstyle));
         return '';
     }
     
@@ -929,7 +931,8 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::attr_data($attr);
-        self::enqueue('scripts', "w-suggest-$wid", array(self::htmlwidget_('suggest', $wid)), array('htmlwidgets'));
+        self::enqueue('scripts', 'htmlwidgets');
+        //self::enqueue('scripts', "w-suggest-$wid", array(self::htmlwidget_('suggest', $wid)), array('htmlwidgets'));
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
     }
     
@@ -971,8 +974,9 @@ OUT;
         }
         else
         {
-            self::enqueue('scripts', "w-upload-$wid", array(self::htmlwidget_('upload', $wid)), array('htmlwidgets'));
-            return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata data-upload-base=\"$wupload_base\" data-upload-dimensions=\"$wdimensions\"><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$image_data</textarea><label class=\"widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
+            self::enqueue('scripts', 'htmlwidgets');
+            //self::enqueue('scripts', "w-upload-$wid", array(self::htmlwidget_('upload', $wid)), array('htmlwidgets'));
+            return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata data-upload-base=\"$wupload_base\" data-upload-dimensions=\"$wdimensions\"><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$image_data</textarea><label class=\"widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
     }
     
@@ -1001,7 +1005,7 @@ OUT;
             $wclass = 'widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
-            self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('htmlwidgets','codemirror-full'));
+            //self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('htmlwidgets','codemirror-full'));
             $wstyle = '';
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
@@ -1010,7 +1014,7 @@ OUT;
             $wclass = 'widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
-            self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('htmlwidgets','trumbowyg'));
+            //self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('htmlwidgets','trumbowyg'));
             $wstyle = '';
         }
         else
@@ -1051,8 +1055,10 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::attr_data($attr);
-        self::enqueue('scripts', "w-datetime-$wid", array(self::htmlwidget_('datetime', $wid)), array('pikaday','htmlwidgets'));
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datetime-format=\"$wformat\" $wdata />$wicon</span>";
+        self::enqueue('scripts', 'pikaday');
+        self::enqueue('scripts', 'htmlwidgets');
+        //self::enqueue('scripts', "w-datetime-$wid", array(self::htmlwidget_('datetime', $wid)), array('pikaday','htmlwidgets'));
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wdata />$wicon</span>";
     }
     
     public static function w_time( $attr, $data )
@@ -1110,7 +1116,9 @@ OUT;
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : ''; 
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
-        self::enqueue('scripts', "w-timer-{$wid}", array(self::htmlwidget_('timer', $wid)), array('timer','htmlwidgets'));
+        self::enqueue('scripts', 'timer');
+        self::enqueue('scripts', 'htmlwidgets');
+        //self::enqueue('scripts', "w-timer-{$wid}", array(self::htmlwidget_('timer', $wid)), array('timer','htmlwidgets'));
         return "<span id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
     }
     
@@ -1118,15 +1126,18 @@ OUT;
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
-        $wvalue = isset($data['value']) ? $data['value'] : "";
+        $wvalue = isset($data['color']) ? $data['color'] : "";
+        $wopacity = isset($data['opacity']) ? $data['opacity'] : "0.1";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wclass = 'w-colorselector'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wformat = !empty($attr["format"]) ? $attr["format"] : 'rgba';
         $wdata = self::attr_data($attr);
-        self::enqueue('scripts', "w-colorpicker-$wid", array(self::htmlwidget_('color', $wid)), array('colorpicker','htmlwidgets'));
-        return "<div id=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-color=\"$wvalue\" data-color-format=\"$wformat\" $wdata></div>";
+        self::enqueue('scripts', 'colorpicker');
+        self::enqueue('scripts', 'htmlwidgets');
+        //self::enqueue('scripts', "w-colorpicker-$wid", array(self::htmlwidget_('color', $wid)), array('colorpicker','htmlwidgets'));
+        return "<div id=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $wdata></div>";
     }
     
     public static function w_gmap( $attr, $data )
@@ -1135,9 +1146,13 @@ OUT;
         $wclass = 'widget w-map'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wcenter = !empty($attr["center"]) ? $attr["center"] : null;
+        $wzoom = !empty($attr["zoom"]) ? $attr["zoom"] : '6';
+        $wmarkers = !empty($data["markers"]) ? $data["markers"] : null;
         $wdata = self::attr_data($attr);
-        self.enqueue('scripts', "w-map-$wid", array(self::htmlwidget_('gmap', $wid, isset($attr['config'])?$attr['config']:null)), array('htmlwidgets'));
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata></div>";
+        self::enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', "w-map-$wid", array(self::htmlwidget_('gmap', $wid, isset($attr['config'])?$attr['config']:null)), array('htmlwidgets'));
+        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
     }
     
     public static function w_select( $attr, $data )
@@ -1180,9 +1195,12 @@ OUT;
         
         $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        if ( $wselect2 )
+        if ( $wselect2 && !$wdropdown )
         {
-            self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets','select2'));
+            $wclass .= ' w-select2';
+            self::enqueue('scripts', 'select2');
+            self::enqueue('scripts', 'htmlwidgets');
+            //self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets','select2'));
         }
         return $wdropdown
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
@@ -1243,20 +1261,23 @@ OUT;
         {
             $woptions = is_array($attr['dataTable']) ? $attr['dataTable'] : array();
             $wcontrols = array(
-            "\$('#{$wid}_filter').find('input').addClass('w-text');"
-            ,"\$('#{$wid}_length').find('select').addClass('w-select');"
+             'var $el = $(el), wid = $el.attr("id");'
+            ,'$el.dataTable('.json_encode($woptions).');'
+            ,'$el.closest(".dataTables_wrapper").addClass("w-table-wrapper");'
+            ,'$("#"+wid+"_filter").find("input").addClass("w-text");'
+            ,'$("#"+wid+"_length").find("select").addClass("w-select");'
             );
             if ( !empty($attr['controls']) ) 
             {
                 $ctrls = (array)$attr['controls'];
                 foreach($ctrls as $ctrl)
                 {
-                    $wcontrols[] = '$(".w-table-controls", "#'.$wid.'_wrapper").append($("'.str_replace('"','\\"',$ctrl).'"));';
+                    $wcontrols[] = '$(".w-table-controls","#"+wid+"_wrapper").append($("'.str_replace('"','\\"',$ctrl).'"));';
                 }
             }
-            self::enqueue('scripts', "w-datatable-$wid", array(self::htmlwidget_('datatable', $wid, $woptions, null, 'function($){'.implode("\n", $wcontrols).'}')), array('htmlwidgets','datatables'));
+            self::enqueue('scripts', "w-datatable-$wid", array('window["w-datatable-'.$wid.'"]=function($,el){'.implode("\n", $wcontrols).'};'), array('datatable','htmlwidgets'));
         }
-        return "<table id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
+        return "<table cb-widget=\"w-datatable-$wid\" id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
     
     public static function w_animation( $attr, $data )

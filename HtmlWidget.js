@@ -2,8 +2,8 @@
 *  HtmlWidget
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
-*  @dependencies: FontAwesome, jQuery
-*  @version: 0.8.0
+*  @dependencies: FontAwesome, jQuery, SelectorListener
+*  @version: 0.8.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -56,17 +56,17 @@ function merge( a, b )
     return c;
 }
 
-function htmlwidget_( type, id, options, before, after )
+/*function htmlwidget_( type, id, options, before, after )
 {
     options = !!options ? json_encode(options) : 'null';
     before = !!before ? before : 'null';
     after = !!after ? after : 'null';
     return 'jQuery(function($){$("#'+id+'").htmlwidget("'+type+'"'+','+options+','+before+','+after+');});';
-}
+}*/
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.0"
+    VERSION: "0.8.1"
     
     ,BASE: './'
     
@@ -88,15 +88,17 @@ var HtmlWidget = self = {
     ,assets: function( base, full ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
+        var asset_base = base + 'assets/';
         var assets = [
-         ['styles', 'htmlwidgets.css', base+'htmlwidgets.min.css', ['responsive.css','fontawesome.css']]
-        ,['scripts', 'htmlwidgets', base+'htmlwidgets.min.js', ['htmlwidgets.css','jquery']]
+         ['styles', 'htmlwidgets.css', base+'htmlwidgets.css']
+        ,['scripts', 'htmlwidgets', base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
+        //,['scripts', 'jquery', asset_base+'jquery.js']
+        ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
         //,['styles', 'responsive.css', asset_base+'responsive.css']
         //,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
         ];
         if ( arguments.length < 2 || true === full )
         {
-            var asset_base = base + 'assets/';
             assets = assets.concat([
             //  external APIS
              ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
@@ -156,9 +158,9 @@ var HtmlWidget = self = {
             // ModelView
             ,['scripts', 'modelview', asset_base+'modelview.js']
              
-            // DataTables
-            ,['styles', 'datatables.css', asset_base+'datatables.css']
-            ,['scripts', 'datatables', asset_base+'datatables.js', ['datatables.css','jquery']]
+            // DataTable
+            ,['styles', 'datatable.css', asset_base+'datatable.css']
+            ,['scripts', 'datatable', asset_base+'datatable.js', ['datatable.css','jquery']]
             
             // MathJax
             ,['scripts', 'mathjax', asset_base+'mathjax/mathjax.js?config=TeX-AMS_HTML-full']
@@ -407,6 +409,7 @@ var HtmlWidget = self = {
                 ]
             }
         };*/
+        self.enqueue('scripts', 'htmlwidgets');
         self.enqueue('styles', "w-morphable-"+wid, [wstyle], ['htmlwidgets']);
         return '';
     }
@@ -995,7 +998,8 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets']);
+        self.enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', 'w-suggest-'+wid, [htmlwidget_('suggest', wid)], ['htmlwidgets']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
     }
     
@@ -1038,8 +1042,9 @@ var HtmlWidget = self = {
         }
         else
         {
-            self.enqueue('scripts', "w-upload-"+wid, [htmlwidget_('upload', wid)], ['htmlwidgets']);
-            return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-upload-base="'+wupload_base+'" data-upload-dimensions="'+wdimensions+'"><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+image_data+'</textarea><label class="widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
+            self.enqueue('scripts', 'htmlwidgets');
+            //self.enqueue('scripts', "w-upload-"+wid, [htmlwidget_('upload', wid)], ['htmlwidgets']);
+            return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-upload-base="'+wupload_base+'" data-upload-dimensions="'+wdimensions+'"><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+image_data+'</textarea><label class="widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
         }
     }
     
@@ -1069,7 +1074,7 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : '';
             weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : defaults;
-            self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['htmlwidgets','codemirror-full']);
+            //self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['htmlwidgets','codemirror-full']);
             wstyle = '';
         }
         else if ( !empty(attr,'wysiwyg-editor') && true == attr['wysiwyg-editor'] ) 
@@ -1079,7 +1084,7 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : ''; 
             weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : null;
-            self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['htmlwidgets','trumbowyg']);
+            //self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['htmlwidgets','trumbowyg']);
             wstyle = '';
         }
         else
@@ -1122,8 +1127,10 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
-        self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['pikaday','htmlwidgets']);
-        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datetime-format="'+wformat+'" '+wdata+' />'+wicon+'</span>';
+        self.enqueue('scripts', 'pikaday');
+        self.enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', "w-datetime-"+wid, [htmlwidget_('datetime', wid)], ['pikaday','htmlwidgets']);
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datepicker-format="'+wformat+'" '+wdata+' />'+wicon+'</span>';
     }
     
     ,w_time: function( attr, data ) {
@@ -1186,15 +1193,18 @@ var HtmlWidget = self = {
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.attr_data(attr);
-        self.enqueue('scripts', "w-timer-"+wid, [htmlwidget_('timer', wid)], ['timer','htmlwidgets']);
+        self.enqueue('scripts', 'timer');
+        self.enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', "w-timer-"+wid, [htmlwidget_('timer', wid)], ['timer','htmlwidgets']);
         return '<span id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
     ,w_color: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wvalue, wname, wtitle, wformat;
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wopacity, wname, wtitle, wformat;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"color") ? data["color"] : ""; 
+        wopacity = isset(data,"opacity") ? data["opacity"] : "1.0"; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wclass = 'w-colorselector'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -1202,20 +1212,26 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wformat = !empty(attr,"format") ? attr["format"] : 'rgba';
         wdata = self.attr_data(attr);
-        self.enqueue('scripts', "w-colorpicker-"+wid, [htmlwidget_('color', wid)], ['colorpicker','htmlwidgets']);
-        return '<div id="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-color="'+wvalue+'"  data-color-format="'+wformat+'" '+wdata+'></div>';
+        self.enqueue('scripts', 'colorpicker');
+        self.enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', "w-colorpicker-"+wid, [htmlwidget_('color', wid)], ['colorpicker','htmlwidgets']);
+        return '<div id="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+wdata+'></div>';
     }
     
     ,w_gmap: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wvalue;
+        var wid, wclass, wstyle, wextra, wdata, wcenter, wzoom, wmarkers;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'widget w-map'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wcenter = !empty(attr,"center") ? attr["center"] : null;
+        wzoom = !empty(attr,"zoom") ? attr["zoom"] : '6';
+        wmarkers = !empty(data,"markers") ? data["markers"] : null;
         wdata = self.attr_data(attr);   
-        self.enqueue('scripts', 'w-map-'+wid, [htmlwidget_('gmap', wid, attr['config'])], ['htmlwidgets']);
-        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></div>';
+        self.enqueue('scripts', 'htmlwidgets');
+        //self.enqueue('scripts', 'w-map-'+wid, [htmlwidget_('gmap', wid, attr['config'])], ['htmlwidgets']);
+        return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
     }
     
     ,w_select: function( attr, data ) {
@@ -1261,9 +1277,12 @@ var HtmlWidget = self = {
         
         wdata = self.attr_data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
-        if ( wselect2 )
+        if ( wselect2 && !wdropdown )
         {
-            self.enqueue('scripts', 'w-select-'+wid, [htmlwidget_('select2', wid, attr['config'])], ['htmlwidgets','select2']);
+            wclass += ' w-select2';
+            self.enqueue('scripts', 'select2');
+            self.enqueue('scripts', 'htmlwidgets');
+            //self.enqueue('scripts', 'w-select-'+wid, [htmlwidget_('select2', wid, attr['config'])], ['htmlwidgets','select2']);
         }
         return wdropdown
         ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="w-dropdown-select w-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
@@ -1327,20 +1346,23 @@ var HtmlWidget = self = {
         {
             woptions = Object===attr['dataTable'].constructor ? attr['dataTable'] : {};
             wcontrols = [
-             "$('#"+wid+"_filter').find('input').addClass('w-text');"
-            ,"$('#"+wid+"_length').find('select').addClass('w-select');"
+             'var $el = $(el), wid = $el.attr("id");'
+            ,'$el.dataTable('+json_encode(woptions)+');'
+            ,'$el.closest(".dataTables_wrapper").addClass("w-table-wrapper");'
+            ,'$("#"+wid+"_filter").find("input").addClass("w-text");'
+            ,'$("#"+wid+"_length").find("select").addClass("w-select");'
             ];
             if ( !empty(attr,'controls') ) 
             {
                 ctrls = attr['controls'] instanceof Array ? attr['controls'] : [attr['controls']];
                 for(ctrl=0; ctrl<ctrls.length; ctrl++)
                 {
-                    wcontrols.push('$(".w-table-controls", "#'+wid+'_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
+                    wcontrols.push('$(".w-table-controls","#"+wid+"_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
                 }
             }
-            self.enqueue('scripts', "w-datatable-"+wid, [htmlwidget_('datatable', wid, woptions, null, 'function($){'+wcontrols.join("\n")+'}')], ['htmlwidgets','datatables']);
+            self.enqueue('scripts', "w-datatable-"+wid, ['window["w-datatable-'+wid+'"]=function($,el){'+wcontrols.join("\n")+'};'], ['datatable','htmlwidgets']);
         }
-        return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
+        return '<table cb-widget="w-datatable-'+wid+'" id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
     
     ,w_animation: function( attr, data )  {
