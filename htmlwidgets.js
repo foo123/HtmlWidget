@@ -47,7 +47,7 @@ function add_css( style, css )
     }
     return css;
 }
-function create_style( media, css )
+function create_style( document, media, css )
 {
     // Create the <style> tag
     var style = document.createElement("style");
@@ -61,7 +61,7 @@ function create_style( media, css )
     if ( css ) add_css( style, css );
     return style;
 }
-function dispose_style( style )
+function dispose_style( document, style )
 {
     if ( style ) document.head.removeChild( style );
 }
@@ -153,9 +153,9 @@ function widget2jquery( name, widget, spr )
 }
 
 // some useful widgets
-htmlwidget.stylable = function stylable( id, selector, css, media ) {
+htmlwidget.stylable = function stylable( document, id, selector, css, media ) {
     var self = this;
-    if ( !(self instanceof stylable) ) return new stylable(id, selector, css, media);
+    if ( !(self instanceof stylable) ) return new stylable(document, id, selector, css, media);
     
     var style = {id:{selector:selector,rules:null}};
     self.id = id;
@@ -163,7 +163,7 @@ htmlwidget.stylable = function stylable( id, selector, css, media ) {
     self.rules = [];
     for (var prop in css) css[HAS](prop) && self.rules.push( prop + ':' + css[prop] );
     style[id].rules = self.rules;
-    self.sheet = create_style( media||'all', style );
+    self.sheet = create_style( document, media||'all', style );
     self.sheet.setAttribute('id', self.id);
     self.style = style[id].css;
     
@@ -172,7 +172,7 @@ htmlwidget.stylable = function stylable( id, selector, css, media ) {
         self.selector = null;
         self.rules = null;
         self.style = null;
-        if ( self.sheet ) dispose_style( self.sheet );
+        if ( self.sheet ) dispose_style( document, self.sheet );
         self.sheet = null;
     };
 };
@@ -301,7 +301,7 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
                 ]
             }
         }
-        style_sheet = create_style( 'all', css_styles = cssStyles );
+        style_sheet = create_style( document, 'all', css_styles = cssStyles );
     },
     self.init = function( ) {
         if ( !$(el).hasClass('w-morphable') )
@@ -324,7 +324,7 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
     self.dispose = function( ) {
         $(el).removeClass('w-morphable');
         css_styles = null;
-        if ( style_sheet ) dispose_style( style_sheet );
+        if ( style_sheet ) dispose_style( document, style_sheet );
         style_sheet = null;
     };
 });
@@ -962,19 +962,20 @@ return RemoteList;
 $.fn.htmlwidget = function( type, opts ) {
     opts = opts || {};
     this.each(function( ) {
-        var el = this, $el, before, after, render;
-        $el = $(el);
-        render = (!!$el.attr('cb-widget') && 'function' === typeof window[$el.attr('cb-widget')]) ? window[$el.attr('cb-widget')] : false;
-        before = (!!$el.attr('cb-widget-before') && 'function' === typeof window[$el.attr('cb-widget-before')]) ? window[$el.attr('cb-widget-before')] : false;
-        after = (!!$el.attr('cb-widget-after') && 'function' === typeof window[$el.attr('cb-widget-after')]) ? window[$el.attr('cb-widget-after')] : false;
+        var el = this, $el = $(el), att_init = $el.attr('w-init'),
+            w_init = !!att_init && 'function' === typeof window[att_init]
+            ? window[att_init]
+            : false
+        ;
         
-        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+        if ( w_init )
+        {
+            $el.removeAttr('w-init');
+            w_init( el, opts );
+        }
+        else if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
         {
             htmlwidget.widget[type]( this, opts );
-        }
-        else if ( render )
-        {
-            render( $, el );
         }
         else
         {
@@ -989,24 +990,46 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'sortable':
         case 'uploadable':
         case 'upload':
-            if ( before ) before( $, el );
-            $el['upload'===type ? 'uploadable' : type](opts);
-            if ( after ) after( $, el );
+            $el['upload'===type?'uploadable':type](opts);
             break;
         
         case 'draggable':
             if ( 'undefined' !== typeof $.fn.tinyDraggable )
-            {
-                if ( before ) before( $, el );
                 $el.tinyDraggable(opts);
-                if ( after ) after( $, el );
-            }
+            break;
+        
+        case 'timer':
+            if ( 'undefined' !== typeof $.fn.Timer )
+                $el.Timer(opts);
+            break;
+        
+        case 'date':
+        case 'datetime':
+        case 'datepicker':
+            $el.datepicker(opts);
+            break;
+        
+        case 'color':
+        case 'colorselector':
+        case 'colorpicker':
+            $el.colorpicker(opts);
+            break;
+        
+        case 'map':
+        case 'gmap':
+        case 'gmap3':
+            $el.gmap3(opts);
+            break;
+        
+        case 'select':
+        case 'select2':
+            if ( 'undefined' !== typeof $.fn.select2 )
+                $el.select2(opts);
             break;
         
         case 'autocomplete':
         case 'autosuggest':
         case 'suggest':
-            if ( before ) before( $, el );
             var suggest = $el.parent( ),
                 ajaxurl = $el.attr('data-ajax'),
                 method = $el.attr('data-request-method') || "POST",
@@ -1029,110 +1052,49 @@ $.fn.htmlwidget = function( type, opts ) {
                 },
                 select: opts.select || function( ){ }
             });
-            if ( after ) after( $, el );
-            break;
-        
-        case 'timer':
-            if ( 'undefined' !== typeof $.fn.Timer )
-            {
-                if ( before ) before( $, el );
-                $el.Timer( opts );
-                if ( after ) after( $, el );
-            }
-            break;
-        
-        case 'datetime':
-        case 'date':
-        case 'datepicker':
-            if ( before ) before( $, el );
-            $el.datepicker(opts);
-            if ( after ) after( $, el );
-            break;
-        
-        case 'color':
-        case 'colorpicker':
-            if ( before ) before( $, el );
-            $el.colorpicker(opts);
-            if ( after ) after( $, el );
-            break;
-        
-        case 'select':
-        case 'select2':
-            if ( 'undefined' !== typeof $.fn.select2 )
-            {
-                if ( before ) before( $, el );
-                $el.select2( opts );
-                if ( after ) after( $, el );
-            }
             break;
         
         case 'table':
         case 'datatable':
             if ( 'undefined' !== typeof $.fn.dataTable )
             {
-                if ( before ) before( $, el );
-                $el.dataTable( opts ).on('change', 'input.select_row', function( ){ 
+                $el.dataTable(opts)/*.on('change', 'input.select_row', function( ){ 
                     if ( this.checked ) $(this).closest('tr').addClass('selected');
                     else $(this).closest('tr').removeClass('selected');
-                });
+                })*/;
                 $el.closest(".dataTables_wrapper").addClass("w-table-wrapper");
-                if ( after ) after( $, el );
             }
             break;
         
         case 'modal':
             if ( 'undefined' !== typeof $.fn.modal )
-            {
-                if ( before ) before( $, el );
-                $el.modal( opts );
-                if ( after ) after( $, el );
-            }
+                $el.modal(opts);
             break;
         
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
             {
                 ModelView.jquery( $ );
-                if ( before ) before( $, el );
-                $el.modelview( opts );
-                if ( after ) after( $, el );
-            }
-            break;
-        
-        case 'wysiwyg-editor':
-            if ( 'undefined' !== typeof $.fn.trumbowyg )
-            {
-                if ( before ) before( $, el );
-                $el.trumbowyg( opts.editor||{} );
-                $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box").attr("style", opts.style||'');
-                if ( after ) after( $, el );
-            }
-            break;
-        
-        case 'syntax-editor':
-            if ( 'undefined' !== typeof CodeMirror )
-            {
-                if ( before ) before( $, el );
-                CodeMirror.fromTextArea( el, opts.editor||{} );
-                if ( after ) after( $, el );
+                $el.modelview(opts);
             }
             break;
         
         case 'tag-editor':
             if ( 'undefined' !== typeof $.fn.tagEditor )
+                $el.tagEditor(opts);
+            break;
+        
+        case 'wysiwyg-editor':
+            if ( 'undefined' !== typeof $.fn.trumbowyg )
             {
-                if ( before ) before( $, el );
-                $el.tagEditor( opts );
-                if ( after ) after( $, el );
+                $el.trumbowyg(opts);
+                $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')*/;
             }
             break;
         
-        case 'map':
-        case 'gmap':
-        case 'gmap3':
-            if ( before ) before( $, el );
-            $el.gmap3( opts );
-            if ( after ) after( $, el );
+        case 'syntax-editor':
+            if ( 'undefined' !== typeof CodeMirror )
+                CodeMirror.fromTextArea($el[0], opts);
             break;
         
         default: 
@@ -1144,13 +1106,15 @@ $.fn.htmlwidget = function( type, opts ) {
 };
 
 htmlwidget.init = function( $node, current, recurse ) {
-    if ( false !== recurse )
+    if ( true === recurse )
     {
+        $node.find('[w-init]').htmlwidget('*');
         $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
         $node.find('.w-date').htmlwidget('datepicker');
         $node.find('.w-color,.w-colorselector').htmlwidget('colorpicker');
+        $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
         $node.find('.w-selectable').htmlwidget('selectable');
         $node.find('.w-removable').htmlwidget('removable');
@@ -1161,11 +1125,13 @@ htmlwidget.init = function( $node, current, recurse ) {
     }
     if ( false !== current )
     {
-        if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
+        if ( !!$node.attr('w-init') ) $node.htmlwidget('*');
+        else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
         else if ( $node.hasClass('w-date') ) $node.htmlwidget('datepicker');
         else if ( $node.hasClass('w-color') || $node.hasClass('w-colorselector') ) $node.htmlwidget('colorpicker');
+        else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
         if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
         if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
@@ -1212,17 +1178,17 @@ if ( 'function' === typeof $.fn.onSelector )
 {
     // dynamicaly added elements
     $(document.body).onSelector([
-    '.w-suggest::added','.w-select2::added','.w-upload::added',
-    '.w-timer::added','.w-date::added','.w-color::added','.w-colorselector::added',
+    '[w-init]::added','.w-suggest::added','.w-select2::added','.w-upload::added',
+    '.w-map::added','.w-timer::added','.w-date::added','.w-color::added','.w-colorselector::added',
     '.w-selectable::added','.w-removable::added','.w-morphable::added',
     '.w-delayable::added','.w-disabable::added','.w-sortable::added'
     ].join(','), function( ){
-        htmlwidget.init( $(this), true, false );
+        htmlwidget.init( $(this) );
     });
 }
 
 // already existing elements
-htmlwidget.init( $(document.body) );
+htmlwidget.init( $(document.body), true, true );
 
 if ( 'function' === typeof $.fn.tooltipster )
 {

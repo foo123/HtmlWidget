@@ -20,13 +20,16 @@ class HtmlWidget
     public static $enqueuer = null;
     public static $widgets = array( );
     
-    /*private static function htmlwidget_( $type, $id, $options=null, $before=null, $after=null )
+    /*private static function htmlwidget_( $type, $id, $options=null )
     {
         $options = !empty($options) ? json_encode($options) : 'null';
-        $before = !empty($before) ? $before : 'null';
-        $after = !empty($after) ? $after : 'null';
-        return 'jQuery(function($){$("#'.$id.'").htmlwidget("'.$type.'"'.','.$options.','.$before.','.$after.');});';
+        return 'jQuery(function($){$("#'.$id.'").htmlwidget("'.$type.'"'.','.$options.');});';
     }*/
+    
+    private static function htmlwidget_init( $id, $args, $fn, $root='window' )
+    {
+        return array($root.'["'.$id.'"]=function('.$args.'){var $=jQuery;'."\n".$fn.'};');
+    }
     
     public static function enqueueAssets( $enqueuer=null )
     {
@@ -1261,6 +1264,7 @@ OUT;
         }
         $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
+        $winit = '';
         $wdataTable = isset($attr['dataTable']);
         if ( $wdataTable )
         {
@@ -1280,9 +1284,11 @@ OUT;
                     $wcontrols[] = '$(".w-table-controls","#"+wid+"_wrapper").append($("'.str_replace('"','\\"',$ctrl).'"));';
                 }
             }
-            self::enqueue('scripts', "w-datatable-$wid", array('window["w-datatable-'.$wid.'"]=function($,el){'.implode("\n", $wcontrols).'};'), array('datatable','htmlwidgets'));
+            $uuid = self::uuid('w_init');
+            $winit = 'w-init="'.$uuid.'"';
+            self::enqueue('scripts', $uuid, self::htmlwidget_init($uuid,'el',implode("\n", $wcontrols)), array('datatable','htmlwidgets'));
         }
-        return "<table cb-widget=\"w-datatable-$wid\" id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
+        return "<table $winit id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
     
     public static function w_animation( $attr, $data )

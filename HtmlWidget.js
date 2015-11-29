@@ -56,13 +56,16 @@ function merge( a, b )
     return c;
 }
 
-/*function htmlwidget_( type, id, options, before, after )
+/*function htmlwidget_( type, id, options )
 {
     options = !!options ? json_encode(options) : 'null';
-    before = !!before ? before : 'null';
-    after = !!after ? after : 'null';
-    return 'jQuery(function($){$("#'+id+'").htmlwidget("'+type+'"'+','+options+','+before+','+after+');});';
+    return 'jQuery(function($){$("#'+id+'").htmlwidget("'+type+'"'+','+options+');});';
 }*/
+
+function htmlwidget_init( id, args, fn, root )
+{
+    return [(root||'window')+'["'+id+'"]=function('+args+'){var $=jQuery;'+"\n"+fn+'};'];
+}
 
 var HtmlWidget = self = {
     
@@ -77,10 +80,10 @@ var HtmlWidget = self = {
     ,enqueue: function( type, id, asset, deps ) {
         if ( enqueuer )
         {            
-            if ( isBrowser )
+            /*if ( isBrowser )
                 // add a small delay for browser to load asset after widget has been output
                 setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
-            else
+            else*/
                 enqueuer(type, id, asset||null, deps||[]);
         }
     }
@@ -1312,7 +1315,7 @@ var HtmlWidget = self = {
     
     ,w_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wdataTable, wcolumns, wrows, wheader, wfooter, woptions, wcontrols,
-            column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls;
+            column_values, column_keys, row, rowk, r, c, rl, cl, ctrl, ctrls, uuid, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'widget w-table'; 
         if ( !isset(attr,'stripped') || attr['stripped'] ) wclass += ' stripped';
@@ -1346,6 +1349,7 @@ var HtmlWidget = self = {
         }
         wdata = self.attr_data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
+        winit = '';
         wdataTable = isset(attr,'dataTable');
         if ( wdataTable )
         {
@@ -1365,9 +1369,11 @@ var HtmlWidget = self = {
                     wcontrols.push('$(".w-table-controls","#"+wid+"_wrapper").append($("'+ctrls[ctrl].split('"').join('\\"')+'"));');
                 }
             }
-            self.enqueue('scripts', "w-datatable-"+wid, ['window["w-datatable-'+wid+'"]=function($,el){'+wcontrols.join("\n")+'};'], ['datatable','htmlwidgets']);
+            uuid = self.uuid('w_init');
+            winit = 'w-init="'+uuid+'"';
+            self.enqueue('scripts', uuid, htmlwidget_init(uuid,'el',wcontrols.join("\n")), ['datatable','htmlwidgets']);
         }
-        return '<table cb-widget="w-datatable-'+wid+'" id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
+        return '<table '+winit+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
     
     ,w_animation: function( attr, data )  {
