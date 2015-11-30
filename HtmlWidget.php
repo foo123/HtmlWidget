@@ -28,7 +28,7 @@ class HtmlWidget
     
     private static function htmlwidget_init( $id, $args, $fn, $root='window' )
     {
-        return array($root.'["'.$id.'"]=function('.$args.'){var $=jQuery;'."\n".$fn.'};');
+        return $root.'["'.$id.'"]=function('.$args.'){var $=jQuery;'."\n".'('.$fn.')('.$args.');};';
     }
     
     public static function enqueueAssets( $enqueuer=null )
@@ -82,6 +82,10 @@ class HtmlWidget
              
             // LocationPicker
             ,array('scripts', 'locationpicker', $asset_base.'locationpicker.js', array('-external-google-maps-api','jquery'))
+             
+            // RangeSlider
+            ,array('styles', 'rangeslider.css', $asset_base.'rangeslider.css')
+            ,array('scripts', 'rangeslider', $asset_base.'rangeslider.js', array('rangeslider.css','jquery'))
              
             // Sortable
             ,array('scripts', 'sortable', $asset_base.'sortable.js')
@@ -1286,7 +1290,7 @@ OUT;
             }
             $uuid = self::uuid('w_init');
             $winit = 'w-init="'.$uuid.'"';
-            self::enqueue('scripts', $uuid, self::htmlwidget_init($uuid,'el',implode("\n", $wcontrols)), array('datatable','htmlwidgets'));
+            self::enqueue('scripts', $uuid, array(self::htmlwidget_init($uuid,'el','function(el){'.implode("\n",$wcontrols).'}')), array('datatable','htmlwidgets'));
         }
         return "<table $winit id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }

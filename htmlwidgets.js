@@ -962,18 +962,9 @@ return RemoteList;
 $.fn.htmlwidget = function( type, opts ) {
     opts = opts || {};
     this.each(function( ) {
-        var el = this, $el = $(el), att_init = $el.attr('w-init'),
-            w_init = !!att_init && 'function' === typeof window[att_init]
-            ? window[att_init]
-            : false
-        ;
+        var el = this, $el = $(el);
         
-        if ( w_init )
-        {
-            $el.removeAttr('w-init');
-            w_init( el, opts );
-        }
-        else if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
         {
             htmlwidget.widget[type]( this, opts );
         }
@@ -1025,6 +1016,40 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'select2':
             if ( 'undefined' !== typeof $.fn.select2 )
                 $el.select2(opts);
+            break;
+        
+        case 'rangeslider':
+        case 'range':
+            if ( 'undefined' !== typeof $.fn.rangeslider )
+                $el.rangeslider({
+                /*
+                // https://andreruffert.github.io/rangeslider.js/
+                // Feature detection the default is `true`.
+                // Set this to `false` if you want to use
+                // the polyfill also in Browsers which support
+                // the native <input type="range"> element.
+                polyfill: true,
+
+                // Default CSS classes
+                rangeClass: 'rangeslider',
+                disabledClass: 'rangeslider--disabled',
+                horizontalClass: 'rangeslider--horizontal',
+                verticalClass: 'rangeslider--vertical',
+                fillClass: 'rangeslider__fill',
+                handleClass: 'rangeslider__handle',
+
+                // Callback function
+                onInit: function() {},
+
+                // Callback function
+                onSlide: function(position, value) {},
+
+                // Callback function
+                onSlideEnd: function(position, value) {}
+                */
+                polyfill: false
+                ,orientation: $el.attr('data-range-orientation')||opts.orientation||"horizontal"
+                });
             break;
         
         case 'autocomplete':
@@ -1105,10 +1130,23 @@ $.fn.htmlwidget = function( type, opts ) {
     return this;
 };
 
+function widget_init( el )
+{
+    var $el = $(el), w_init = $el.attr('w-init');
+    if ( w_init && 'function' === typeof window[w_init] )
+    {
+        $el.removeAttr('w-init');
+        window[w_init]( el );
+    }
+}
+
 htmlwidget.init = function( $node, current, recurse ) {
     if ( true === recurse )
     {
-        $node.find('[w-init]').htmlwidget('*');
+        $node.find('[w-init]').each(function(){
+            widget_init( this );
+        });
+        $node.find('input[type=range].w-rangeslider').htmlwidget('range');
         $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
@@ -1125,7 +1163,8 @@ htmlwidget.init = function( $node, current, recurse ) {
     }
     if ( false !== current )
     {
-        if ( !!$node.attr('w-init') ) $node.htmlwidget('*');
+        if ( !!$node.attr('w-init') ) widget_init( $node[0] );
+        else if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
         else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
@@ -1177,9 +1216,15 @@ $(function(){
 if ( 'function' === typeof $.fn.onSelector )
 {
     // dynamicaly added elements
-    $(document.body).onSelector([
-    '[w-init]::added','.w-suggest::added','.w-select2::added','.w-upload::added',
-    '.w-map::added','.w-timer::added','.w-date::added','.w-color::added','.w-colorselector::added',
+    $(document.body)
+    .onSelector(
+    '[w-init]::added', function( ){
+        widget_init( this );
+    })
+    .onSelector([
+    '.w-suggest::added','.w-select2::added','.w-upload::added',
+    'input[type=range].w-rangeslider::added','.w-map::added',
+    '.w-timer::added','.w-date::added','.w-color::added','.w-colorselector::added',
     '.w-selectable::added','.w-removable::added','.w-morphable::added',
     '.w-delayable::added','.w-disabable::added','.w-sortable::added'
     ].join(','), function( ){

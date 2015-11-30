@@ -64,7 +64,7 @@ function merge( a, b )
 
 function htmlwidget_init( id, args, fn, root )
 {
-    return [(root||'window')+'["'+id+'"]=function('+args+'){var $=jQuery;'+"\n"+fn+'};'];
+    return (root||'window')+'["'+id+'"]=function('+args+'){var $=jQuery;'+"\n"+'('+fn+')('+args+');};';
 }
 
 var HtmlWidget = self = {
@@ -126,6 +126,10 @@ var HtmlWidget = self = {
              
             // LocationPicker
             ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['-external-google-maps-api','jquery']]
+             
+            // RangeSlider
+            ,['styles', 'rangeslider.css', asset_base+'rangeslider.css']
+            ,['scripts', 'rangeslider', asset_base+'rangeslider.js', ['rangeslider.css','jquery']]
              
             // Sortable
             ,['scripts', 'sortable', asset_base+'sortable.js']
@@ -1371,7 +1375,7 @@ var HtmlWidget = self = {
             }
             uuid = self.uuid('w_init');
             winit = 'w-init="'+uuid+'"';
-            self.enqueue('scripts', uuid, htmlwidget_init(uuid,'el',wcontrols.join("\n")), ['datatable','htmlwidgets']);
+            self.enqueue('scripts', uuid, [htmlwidget_init(uuid,'el','function(el){'+wcontrols.join("\n")+'}')], ['datatable','htmlwidgets']);
         }
         return '<table '+winit+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
