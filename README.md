@@ -1,6 +1,6 @@
 # HtmlWidget
 
-standalone and pluggable optimised and modular html widgets / components for PHP, Python (todo), Node/XPCOM/JS
+standalone and pluggable optimised, modular and dynamicaly initialised html widgets / components for PHP, Python (todo), Node/XPCOM/JS
 
 
 **related projects:**

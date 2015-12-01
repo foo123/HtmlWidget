@@ -4,18 +4,19 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.1
+*  @version: 0.8.2
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
 *  https://github.com/foo123/modelview-widgets
+*  https://github.com/foo123/SelectorListener
 *
 **/
 if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.1";
+    const VERSION = "0.8.2";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -306,6 +307,7 @@ class HtmlWidget
     public static function w_delayable( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wclass = 'w-delayable-overlay'; 
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -313,18 +315,19 @@ class HtmlWidget
         $wspinner = 'w-spinner';
         $wspinner .= !empty($attr['spinner']) ? " {$attr['spinner']}" : " w-spinner-dots";
         self::enqueue('scripts', 'htmlwidgets');
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra><div class=\"$wspinner\"></div></div>";
+        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra><div class=\"$wspinner\"></div></div>";
     }
     
     public static function w_disabable( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wclass = 'w-disabable-overlay'; 
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         self::enqueue('scripts', 'htmlwidgets');
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra></div>";
+        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra></div>";
     }
     
     public static function w_morphable( $attr, $data )
@@ -354,14 +357,14 @@ class HtmlWidget
         $wstyle = '';
         $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
         $wstyle .= implode(',',$wshow_selector) . '{display: block}';
-        self::enqueue('scripts', 'htmlwidgets');
-        self::enqueue('styles', "w-morphable-$wid", array($wstyle));
+        self::enqueue('styles', "w-morphable-$wid", array($wstyle), array('htmlwidgets'));
         return '';
     }
     
     public static function w_panel( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'w-panel'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wtitle = !empty($attr['title']) ? $attr['title'] : '&nbsp;';
@@ -369,7 +372,8 @@ class HtmlWidget
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
         
-        return "<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><input type=\"checkbox\" id=\"controller_{$wid}\" class=\"w-panel-controller\" value=\"1\" $wchecked/><div class=\"w-panel-header\">$wtitle<label class=\"w-panel-controller-button\" for=\"controller_{$wid}\" onclick=\"\"><i class=\"fa fa-2x\"></i></label></div><div class=\"w-panel-content\">";
+        if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
+        return "<div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><input type=\"checkbox\" id=\"controller_{$wid}\" class=\"w-panel-controller\" value=\"1\" $wchecked/><div class=\"w-panel-header\">$wtitle<label class=\"w-panel-controller-button\" for=\"controller_{$wid}\" onclick=\"\"><i class=\"fa fa-2x\"></i></label></div><div class=\"w-panel-content\">";
     }
     
     public static function w_panel_end( $attr, $data )
@@ -597,6 +601,7 @@ OUT;
     public static function w_dialog( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wtitle = isset($data['title']) ? $data['title'] : '';
         $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
         $wcontent = !empty($data['content']) ? $data['content'] : '';
@@ -614,12 +619,14 @@ OUT;
         }
         $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}</div><div class=\"w-dialog-content\">$wcontent</div><div class=\"w-dialog-buttons\">$wbuttons</div></div>";
+        if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
+        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}</div><div class=\"w-dialog-content\">$wcontent</div><div class=\"w-dialog-buttons\">$wbuttons</div></div>";
     }
     
     public static function w_modal( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'w-modal w-dialog'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
@@ -627,7 +634,8 @@ OUT;
         $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
         $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="w-modal-overlay" onclick=\"\"></label>' : '<div class="w-modal-overlay"></div>';
         $wdata = self::attr_data($attr);
-        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
+        if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
+        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
     }
     
     public static function w_modal_end( $attr, $data )
@@ -874,6 +882,7 @@ OUT;
     public static function w_text( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
@@ -908,14 +917,16 @@ OUT;
             $wautocomplete = '';
         }
         self::enqueue('styles', 'htmlwidgets.css');
+        if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return !empty($wicon)
-        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />$wicon</span>".$wautocomplete
-        : "<input type=\"$wtype\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />".$wautocomplete;
+        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />$wicon</span>".$wautocomplete
+        : "<input type=\"$wtype\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wdata />".$wautocomplete;
     }
     
     public static function w_suggest( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
@@ -942,13 +953,13 @@ OUT;
         }
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'htmlwidgets');
-        //self::enqueue('scripts', "w-suggest-$wid", array(self::htmlwidget_('suggest', $wid)), array('htmlwidgets'));
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
     }
     
     public static function w_upload( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr['name']) ? 'name="'.$attr['name'].'"' : '';
         $wclass = 'widget w-upload'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -985,14 +996,14 @@ OUT;
         else
         {
             self::enqueue('scripts', 'htmlwidgets');
-            //self::enqueue('scripts', "w-upload-$wid", array(self::htmlwidget_('upload', $wid)), array('htmlwidgets'));
-            return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata data-upload-base=\"$wupload_base\" data-upload-dimensions=\"$wdimensions\"><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$image_data</textarea><label class=\"widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
+            return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata data-upload-base=\"$wupload_base\" data-upload-dimensions=\"$wdimensions\"><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$image_data</textarea><label class=\"widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
     }
     
     public static function w_textarea( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
@@ -1012,20 +1023,26 @@ OUT;
             ,'foldGutter'       => true
             ,'gutters'          => array("CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter")
             );
+            if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass = 'widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
             //self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('htmlwidgets','codemirror-full'));
             $wstyle = '';
+            self::enqueue('scripts', 'codemirror-full');
+            self::enqueue('scripts', 'htmlwidgets');
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
         {
             $defaults = array( );
+            if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass = 'widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
             $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
             //self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('htmlwidgets','trumbowyg'));
             $wstyle = '';
+            self::enqueue('scripts', 'trumbowyg');
+            self::enqueue('scripts', 'htmlwidgets');
         }
         else
         {
@@ -1033,12 +1050,13 @@ OUT;
             $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
             self::enqueue('styles', 'htmlwidgets.css');
         }
-        return "<textarea id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" $wdata>$wvalue</textarea>";
+        return "<textarea id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" $wdata>$wvalue</textarea>";
     }
     
     public static function w_date( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
@@ -1067,13 +1085,13 @@ OUT;
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'pikaday');
         self::enqueue('scripts', 'htmlwidgets');
-        //self::enqueue('scripts', "w-datetime-$wid", array(self::htmlwidget_('datetime', $wid)), array('pikaday','htmlwidgets'));
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wdata />$wicon</span>";
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wdata />$wicon</span>";
     }
     
     public static function w_time( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wformat = !empty($attr['format']) ? explode(":", $attr['format']) : array("h","m","s");
@@ -1113,12 +1131,14 @@ OUT;
         }
         $wtimes = implode('<span class="w-time-sep">:</span>', $wtimes);
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<span class=\"$wclass\" $wstyle $wextra $wdata>$wtimes</span>";
+        if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
+        return "<span class=\"$wclass\" $winit $wstyle $wextra $wdata>$wtimes</span>";
     }
     
     public static function w_timer( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wtype = !empty($attr['type']) ? $attr['type'] : 'down';
@@ -1130,13 +1150,13 @@ OUT;
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'timer');
         self::enqueue('scripts', 'htmlwidgets');
-        //self::enqueue('scripts', "w-timer-{$wid}", array(self::htmlwidget_('timer', $wid)), array('timer','htmlwidgets'));
-        return "<span id=\"{$wid}\" class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
+        return "<span id=\"{$wid}\" {$winit} class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
     }
     
     public static function w_color( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['color']) ? $data['color'] : "";
         $wopacity = isset($data['opacity']) ? $data['opacity'] : "0.1";
@@ -1148,13 +1168,13 @@ OUT;
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'htmlwidgets');
-        //self::enqueue('scripts', "w-colorpicker-$wid", array(self::htmlwidget_('color', $wid)), array('colorpicker','htmlwidgets'));
-        return "<div id=\"$wid\" title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $wdata></div>";
+        return "<div id=\"$wid\" $winit title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $wdata></div>";
     }
     
     public static function w_gmap( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wclass = 'widget w-map'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
@@ -1163,17 +1183,17 @@ OUT;
         $wmarkers = !empty($data["markers"]) ? $data["markers"] : null;
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'htmlwidgets');
-        //self.enqueue('scripts', "w-map-$wid", array(self::htmlwidget_('gmap', $wid, isset($attr['config'])?$attr['config']:null)), array('htmlwidgets'));
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
+        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
     }
     
     public static function w_select( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wselect2 = !empty($attr['select2']);
         $wdropdown = !empty($attr['dropdown']);
-        $wclass = $wdropdown ? "widget w-dropdown w-state-default" : "widget w-select"; 
+        $wclass = $wdropdown ? "widget w-dropdown" : "widget w-select"; 
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
@@ -1209,24 +1229,25 @@ OUT;
         self::enqueue('styles', 'htmlwidgets.css');
         if ( $wselect2 && !$wdropdown )
         {
+            if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass .= ' w-select2';
             self::enqueue('scripts', 'select2');
             self::enqueue('scripts', 'htmlwidgets');
-            //self::enqueue('scripts', "w-select-$wid", array(self::htmlwidget_('select2', $wid, !empty($attr['config'])?(array)$attr['config']:null)), array('htmlwidgets','select2'));
         }
         return $wdropdown
-        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
-        : "<select id=\"$wid\" $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
+        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
+        : "<select id=\"$wid\" $winit $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
     }
     
     public static function w_menu( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'widget w-dropdown-menu'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::attr_data($attr);
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>";
+        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>";
     }
     
     public static function w_menu_end( $attr, $data )
@@ -1238,6 +1259,7 @@ OUT;
     public static function w_table( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'widget w-table'; 
         if ( !isset($attr['stripped']) || $attr['stripped'] ) $wclass .= ' stripped';
         if ( !isset($attr['responsive']) || $attr['responsive'] ) $wclass .= ' responsive';
@@ -1268,7 +1290,6 @@ OUT;
         }
         $wdata = self::attr_data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        $winit = '';
         $wdataTable = isset($attr['dataTable']);
         if ( $wdataTable )
         {
@@ -1288,11 +1309,19 @@ OUT;
                     $wcontrols[] = '$(".w-table-controls","#"+wid+"_wrapper").append($("'.str_replace('"','\\"',$ctrl).'"));';
                 }
             }
-            $uuid = self::uuid('w_init');
-            $winit = 'w-init="'.$uuid.'"';
-            self::enqueue('scripts', $uuid, array(self::htmlwidget_init($uuid,'el','function(el){'.implode("\n",$wcontrols).'}')), array('datatable','htmlwidgets'));
+            if ( empty($winit) )
+            {
+                $uuid = self::uuid('w_init');
+                $winit = 'w-init="'.$uuid.'"';
+                self::enqueue('scripts', $uuid, array(self::htmlwidget_init($uuid,'el','function(el){'.implode("\n",$wcontrols).'}')), array('datatable','htmlwidgets'));
+            }
+            else
+            {
+                self::enqueue('scripts', 'datatable');
+                self::enqueue('scripts', 'htmlwidgets');
+            }
         }
-        return "<table $winit id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
+        return "<table id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
     
     public static function w_animation( $attr, $data )

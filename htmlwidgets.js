@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.1
+*  @version: 0.8.2
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -14,7 +14,7 @@
 !function(window, $, undef){
 "use strict";
 
-var htmlwidget = {VERSION: "0.8.1", widget: {}},
+var htmlwidget = {VERSION: "0.8.2", widget: {}},
 HAS = 'hasOwnProperty', PROTO = 'prototype', ID = 0,
 slice = Array[PROTO].slice,
 json_decode = JSON.parse, json_encode = JSON.stringify,
@@ -152,6 +152,8 @@ function widget2jquery( name, widget, spr )
     };
 }
 
+htmlwidget.make = widget2jquery;
+
 // some useful widgets
 htmlwidget.stylable = function stylable( document, id, selector, css, media ) {
     var self = this;
@@ -176,6 +178,7 @@ htmlwidget.stylable = function stylable( document, id, selector, css, media ) {
         self.sheet = null;
     };
 };
+
 widget2jquery('selectable', htmlwidget.selectable=function selectable( el, options ){
     var self = this;
     if ( !(self instanceof selectable) ) return new selectable(el, options);
@@ -377,7 +380,7 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
     self.instance = null;
     
     self.init = function( ) {
-        if ( 'undefined' !== typeof Sortable )
+        if ( 'function' === typeof Sortable )
         {
             var $el = $(el);
             self.instance = Sortable.create( el, {
@@ -460,7 +463,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
 //datetime_locale = DateX.defaultLocale;
 function datetime_encoder( format, locale )
 {
-    if ( 'undefined' !== typeof DateX )
+    if ( 'function' === typeof DateX )
     {
         locale = locale || DateX.defaultLocale;
         return function( date/*, pikaday*/ ) {
@@ -477,7 +480,7 @@ function datetime_encoder( format, locale )
 }
 function datetime_decoder( format, locale )
 {
-    if ( 'undefined' !== typeof DateX )
+    if ( 'function' === typeof DateX )
     {
         locale = locale || DateX.defaultLocale;
         var date_parse = DateX.getParser( format, locale );
@@ -501,7 +504,7 @@ widget2jquery('datepicker', htmlwidget.datepicker=function datepicker( el, optio
     self.instance = null;
     
     self.init = function( ) {
-        if ( 'undefined' !== typeof Pikaday )
+        if ( 'function' === typeof Pikaday )
         {
             var $el = $(el);
             var format = $el.attr('data-datepicker-format')||options.format||'Y-m-d';
@@ -523,10 +526,10 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
     self.instance = null;
     
     self.init = function( ) {
-        if ( 'undefined' !== typeof $.ColorPicker )
+        if ( 'function' === typeof $.ColorPicker || 'function' === typeof ColorPicker )
         {
-            var $el = $(el);
-            self.instance = new $.ColorPicker(el, {
+            var $el = $(el), CPicker = 'function' === typeof $.ColorPicker ? $.ColorPicker : ColorPicker;
+            self.instance = new CPicker(el, {
                 changeEvent: $el.attr('data-colorpicker-change')||options.changeEvent||'change',
                 format: $el.attr('data-colorpicker-format')||options.format||'rgba',
                 color: $el.attr('data-colorpicker-color')||options.color,
@@ -959,18 +962,68 @@ RemoteList[PROTO] = {
 return RemoteList;
 })());
 
-$.fn.htmlwidget = function( type, opts ) {
-    opts = opts || {};
-    this.each(function( ) {
-        var el = this, $el = $(el);
-        
-        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+htmlwidget.widgetize = function( el ) {
+    var $node = $(el);
+    if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
+    if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
+    if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
+    if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
+    if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
+    if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
+    if ( $node.hasClass('w-resizable') ) $node.htmlwidget('resizable');
+    if ( $node.hasClass('w-sortable') ) $node.htmlwidget('sortable');
+};
+htmlwidget.initialisable = function( el, root ) {
+    root = root || window;
+    var $el = $(el), w_init = $el.attr('w-init');
+    if ( '1' === w_init || 'true' === w_init || 'on' === w_init ) w_init = "__htmlwidget_init__";
+    if ( !!w_init && 'function' === typeof root[w_init] )
+    {
+        $el.removeAttr('w-init');
+        root[w_init]( el );
+    }
+};
+htmlwidget.tooltip = function( ) {
+    var $el = $(this), content = '', hasTooltip = $el.hasClass('tooltipstered');
+    if ( !hasTooltip )
+    {
+        content = !!$el.attr('data-tooltip') ? $el.attr('data-tooltip') : $el.attr('title');
+        if ( content.length )
         {
-            htmlwidget.widget[type]( this, opts );
+            $el.tooltipster({
+                // http://iamceege.github.io/tooltipster/#options
+                onlyOne: true,
+                autoClose: true,
+                content: content,
+                position: $el.hasClass('tooltip-bottom') 
+                            ? 'bottom'
+                            : ($el.hasClass('tooltip-right')
+                            ? 'right'
+                            : ($el.hasClass('tooltip-left')
+                            ? 'left'
+                            : 'top'))
+            });
         }
         else
         {
+            $el.removeAttr('title');
+        }
+    }
+    if ( hasTooltip || content.length ) $el.tooltipster('show');
+};
+
+$.fn.htmlwidget = function( type, opts ) {
+    opts = opts || {};
+    this.each(function( ) {
+        var el = this, $el;
         
+        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+        {
+            htmlwidget.widget[type]( el, opts );
+            return;
+        }
+        
+        $el = $(el);
         switch( type )
         {
         case 'delayable':
@@ -985,12 +1038,17 @@ $.fn.htmlwidget = function( type, opts ) {
             break;
         
         case 'draggable':
-            if ( 'undefined' !== typeof $.fn.tinyDraggable )
+            if ( 'function' === typeof $.fn.tinyDraggable )
                 $el.tinyDraggable(opts);
             break;
         
+        case 'resisable':
+        case 'resizable':
+            /* TO BE ADDED */
+            break;
+        
         case 'timer':
-            if ( 'undefined' !== typeof $.fn.Timer )
+            if ( 'function' === typeof $.fn.Timer )
                 $el.Timer(opts);
             break;
         
@@ -1006,21 +1064,9 @@ $.fn.htmlwidget = function( type, opts ) {
             $el.colorpicker(opts);
             break;
         
-        case 'map':
-        case 'gmap':
-        case 'gmap3':
-            $el.gmap3(opts);
-            break;
-        
-        case 'select':
-        case 'select2':
-            if ( 'undefined' !== typeof $.fn.select2 )
-                $el.select2(opts);
-            break;
-        
         case 'rangeslider':
         case 'range':
-            if ( 'undefined' !== typeof $.fn.rangeslider )
+            if ( 'function' === typeof $.fn.rangeslider )
                 $el.rangeslider({
                 /*
                 // https://andreruffert.github.io/rangeslider.js/
@@ -1029,27 +1075,31 @@ $.fn.htmlwidget = function( type, opts ) {
                 // the polyfill also in Browsers which support
                 // the native <input type="range"> element.
                 polyfill: true,
-
-                // Default CSS classes
                 rangeClass: 'rangeslider',
                 disabledClass: 'rangeslider--disabled',
                 horizontalClass: 'rangeslider--horizontal',
                 verticalClass: 'rangeslider--vertical',
                 fillClass: 'rangeslider__fill',
                 handleClass: 'rangeslider__handle',
-
-                // Callback function
                 onInit: function() {},
-
-                // Callback function
                 onSlide: function(position, value) {},
-
-                // Callback function
                 onSlideEnd: function(position, value) {}
                 */
                 polyfill: false
                 ,orientation: $el.attr('data-range-orientation')||opts.orientation||"horizontal"
                 });
+            break;
+        
+        case 'map':
+        case 'gmap':
+        case 'gmap3':
+            $el.gmap3(opts);
+            break;
+        
+        case 'select':
+        case 'select2':
+            if ( 'function' === typeof $.fn.select2 )
+                $el.select2(opts);
             break;
         
         case 'autocomplete':
@@ -1081,7 +1131,7 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'table':
         case 'datatable':
-            if ( 'undefined' !== typeof $.fn.dataTable )
+            if ( 'function' === typeof $.fn.dataTable )
             {
                 $el.dataTable(opts)/*.on('change', 'input.select_row', function( ){ 
                     if ( this.checked ) $(this).closest('tr').addClass('selected');
@@ -1092,25 +1142,25 @@ $.fn.htmlwidget = function( type, opts ) {
             break;
         
         case 'modal':
-            if ( 'undefined' !== typeof $.fn.modal )
+            if ( 'function' === typeof $.fn.modal )
                 $el.modal(opts);
             break;
         
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
             {
-                ModelView.jquery( $ );
+                if ( ModelView.jquery ) ModelView.jquery( $ );
                 $el.modelview(opts);
             }
             break;
         
         case 'tag-editor':
-            if ( 'undefined' !== typeof $.fn.tagEditor )
+            if ( 'function' === typeof $.fn.tagEditor )
                 $el.tagEditor(opts);
             break;
         
         case 'wysiwyg-editor':
-            if ( 'undefined' !== typeof $.fn.trumbowyg )
+            if ( 'function' === typeof $.fn.trumbowyg )
             {
                 $el.trumbowyg(opts);
                 $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')*/;
@@ -1118,34 +1168,20 @@ $.fn.htmlwidget = function( type, opts ) {
             break;
         
         case 'syntax-editor':
-            if ( 'undefined' !== typeof CodeMirror )
+            if ( 'function' === typeof CodeMirror )
                 CodeMirror.fromTextArea($el[0], opts);
             break;
         
         default: 
             break;
         }
-        }
     });
     return this;
 };
-
-function widget_init( el )
-{
-    var $el = $(el), w_init = $el.attr('w-init');
-    if ( w_init && 'function' === typeof window[w_init] )
+htmlwidget.init = function( node, current, deep ) {
+    var $node = $(node);
+    if ( true === deep )
     {
-        $el.removeAttr('w-init');
-        window[w_init]( el );
-    }
-}
-
-htmlwidget.init = function( $node, current, recurse ) {
-    if ( true === recurse )
-    {
-        $node.find('[w-init]').each(function(){
-            widget_init( this );
-        });
         $node.find('input[type=range].w-rangeslider').htmlwidget('range');
         $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
@@ -1154,17 +1190,10 @@ htmlwidget.init = function( $node, current, recurse ) {
         $node.find('.w-color,.w-colorselector').htmlwidget('colorpicker');
         $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
-        $node.find('.w-selectable').htmlwidget('selectable');
-        $node.find('.w-removable').htmlwidget('removable');
-        $node.find('.w-morphable').htmlwidget('morphable');
-        $node.find('.w-delayable').htmlwidget('delayable');
-        $node.find('.w-disabable').htmlwidget('disabable');
-        $node.find('.w-sortable').htmlwidget('sortable');
     }
     if ( false !== current )
     {
-        if ( !!$node.attr('w-init') ) widget_init( $node[0] );
-        else if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
+        if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
         else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
@@ -1172,76 +1201,40 @@ htmlwidget.init = function( $node, current, recurse ) {
         else if ( $node.hasClass('w-color') || $node.hasClass('w-colorselector') ) $node.htmlwidget('colorpicker');
         else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
-        if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
-        if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
-        if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
-        if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
-        if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
-        if ( $node.hasClass('w-sortable') ) $node.htmlwidget('sortable');
     }
 };
 
-htmlwidget.tooltip = function( ) {
-    var $el = $(this), content = '', hasTooltip = $el.hasClass('tooltipstered');
-    if ( !hasTooltip )
-    {
-        content = !!$el.attr('data-tooltip') ? $el.attr('data-tooltip') : $el.attr('title');
-        if ( content.length )
-        {
-            $el.tooltipster({
-                // http://iamceege.github.io/tooltipster/#options
-                onlyOne: true,
-                autoClose: true,
-                content: content,
-                position: $el.hasClass('tooltip-bottom') 
-                            ? 'bottom'
-                            : ($el.hasClass('tooltip-right')
-                            ? 'right'
-                            : ($el.hasClass('tooltip-left')
-                            ? 'left'
-                            : 'top'))
-            });
-        }
-        else
-        {
-            $el.removeAttr('title');
-        }
-    }
-    if ( hasTooltip || content.length ) $el.tooltipster('show');
+// dynamic widget init hook
+window["__htmlwidget_init__"] = function( e ){
+    htmlwidget.init( e );
 };
 
-if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
 $(function(){
 
+if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
+var $body = $(document.body),
+    widget_init = function( ){ htmlwidget.initialisable( this ); },
+    widget_able = function( ){ htmlwidget.widgetize( this ); };
+
+// dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
-    // dynamicaly added elements
-    $(document.body)
-    .onSelector(
-    '[w-init]::added', function( ){
-        widget_init( this );
-    })
-    .onSelector([
-    '.w-suggest::added','.w-select2::added','.w-upload::added',
-    'input[type=range].w-rangeslider::added','.w-map::added',
-    '.w-timer::added','.w-date::added','.w-color::added','.w-colorselector::added',
-    '.w-selectable::added','.w-removable::added','.w-morphable::added',
-    '.w-delayable::added','.w-disabable::added','.w-sortable::added'
-    ].join(','), function( ){
-        htmlwidget.init( $(this) );
-    });
+    $body
+        .onSelector('[w-init]::added', widget_init)
+        .onSelector('.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added', widget_able)
+    ;
 }
-
 // already existing elements
-htmlwidget.init( $(document.body), true, true );
+$('[w-init]').each( widget_init );
+$('.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable').each( widget_able );
 
+// dynamic tooltips
 if ( 'function' === typeof $.fn.tooltipster )
 {
-    // add dynamic tooltips
     if ( 'function' === typeof $.fn.onSelector )
-        $(document.body).onSelector('[data-tooltip]:hover,[title]:hover', htmlwidget.tooltip);
+        $body.onSelector('[data-tooltip]:hover,[title]:hover', htmlwidget.tooltip);
     else
-        $(document.body).on('mouseover', '[data-tooltip],[title]', htmlwidget.tooltip);
+        $body.on('mouseover', '[data-tooltip],[title]', htmlwidget.tooltip);
 }
 
 });
