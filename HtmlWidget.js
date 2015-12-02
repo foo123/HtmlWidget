@@ -1019,6 +1019,7 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.attr_data(attr);
+        self.enqueue('scripts', 'autocomplete');
         self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
     }
@@ -1059,7 +1060,7 @@ var HtmlWidget = self = {
         }
         if ( !empty(attr,'readonly') )
         {
-            return '<div data-upload-base="'+upload_base+'" data-upload-image="'+image+'" class="'+wclass+'"><img class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" onclick="window.open(this.parentNode.getAttribute(\'data-upload-image\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();"/></div>';
+            return '<div data-upload-base="'+wupload_base+'" data-upload-image="'+image+'" class="'+wclass+'"><img class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" onclick="window.open(this.parentNode.getAttribute(\'data-upload-image\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();"/></div>';
         }
         else
         {

@@ -2811,6 +2811,28 @@ table.w-table th
 {
     padding: 2px;
 }
+.w-select.select2-container:after
+{
+    position: absolute; display: block;
+    z-index: 10; pointer-events: none;
+    right: 2%; top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    font-family: FontAwesome;
+    font-size: .9em; color: inherit;
+    opacity: 0.6;
+    content: "\f0dd"; /*sort-desc*//* \f0dc sort*/
+}
+.w-select.select2-container-active:after,
+.w-select.select2-container:active:after,
+.w-select.select2-container:focus:after,
+.w-select.select2-container:hover:after
+{
+    opacity: 1;
+}
 .w-select.select2-container > .select2-choices
 {
     border: none !important;
@@ -2867,7 +2889,7 @@ table.w-table th
 .w-select.select2-container > .select2-choices > .select2-search-choice:hover  > .select2-search-choice-close:before,
 .w-select.select2-container > .select2-choices > .select2-search-choice  > .select2-search-choice-close:hover:before
 {
-    color: #1190d1;
+    color: #33aaff;
     -webkit-transition: color 0.2s ease;
     -moz-transition: color 0.2s ease;
     -ms-transition: color 0.2s ease;
@@ -2880,8 +2902,13 @@ table.w-table th
 }
 .select2-drop.select2-drop-active  .select2-results  .select2-result.select2-result-selectable.select2-highlighted
 {
-    background-color: #1190d1;
+    background-color: #33aaff;
     color: #efefef;
+}
+.select2-drop.select2-drop-active  .select2-results  .select2-result.w-option-placeholder,
+.select2-drop.select2-drop-active  .select2-results  .select2-result.select2-result-unselectable
+{
+    opacity: 0.5;
 }
 .w-rangeslider + .rangeslider
 {
@@ -2899,7 +2926,7 @@ table.w-table th
 }
 .w-rangeslider + .rangeslider > .rangeslider__fill
 {
-    background-color: #fda762;
+    background-color: #33aaff/*#fda762*/;
 }
 .w-rangeslider + .rangeslider.rangeslider--horizontal > .rangeslider__handle
 {
