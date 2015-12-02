@@ -63,6 +63,9 @@ class HtmlWidget
             //  external APIS
              array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
             
+            // Cookie
+            ,array('scripts', 'cookie', $asset_base.'jscookie.js')
+            
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer.js')
             

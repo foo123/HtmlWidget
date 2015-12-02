@@ -2811,7 +2811,7 @@ table.w-table th
 {
     padding: 2px;
 }
-.w-select.select2-container:after
+.w-select.select2-container.select2-container-multi:after
 {
     position: absolute; display: block;
     z-index: 10; pointer-events: none;
@@ -2826,10 +2826,10 @@ table.w-table th
     opacity: 0.6;
     content: "\f0dd"; /*sort-desc*//* \f0dc sort*/
 }
-.w-select.select2-container-active:after,
-.w-select.select2-container:active:after,
-.w-select.select2-container:focus:after,
-.w-select.select2-container:hover:after
+.w-select.select2-container-active.select2-container-multi:after,
+.w-select.select2-container.select2-container-multi:active:after,
+.w-select.select2-container.select2-container-multi:focus:after,
+.w-select.select2-container.select2-container-multi:hover:after
 {
     opacity: 1;
 }
@@ -2845,16 +2845,34 @@ table.w-table th
     -o-box-sizing: border-box;
     box-sizing: border-box;
 }
+.w-select.select2-container > .select2-choice,
 .w-select.select2-container > .select2-choices > .select2-search-choice
 {
     position: relative;
     border-radius: 1em;
     padding: .6em 1em .6em 1.4em;
 }
+.w-select.select2-container > .select2-choice,
 .w-select.w-large.select2-container > .select2-choices > .select2-search-choice
 {
     border-radius: 1.4em;
     padding: .8em 1.4em .8em 1.4em;
+}
+.w-select.select2-container > .select2-choice
+{
+    border: none;
+}
+.w-select.select2-container:focus .select2-choice > .select2-chosen,
+.w-select.select2-container .select2-choice:focus > .select2-chosen,
+.w-select.select2-container .select2-choice > .select2-chosen:focus,
+.w-select.select2-container:active .select2-choice > .select2-chosen,
+.w-select.select2-container .select2-choice:active > .select2-chosen,
+.w-select.select2-container .select2-choice > .select2-chosen:active,
+.w-select.select2-container:hover .select2-choice > .select2-chosen,
+.w-select.select2-container .select2-choice:hover > .select2-chosen,
+.w-select.select2-container .select2-choice > .select2-chosen:hover
+{
+    color: inherit;
 }
 .w-select.select2-container > .select2-choices > .select2-search-choice  > .select2-search-choice-close
 {

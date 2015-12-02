@@ -107,6 +107,9 @@ var HtmlWidget = self = {
             //  external APIS
              ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
             
+            // Cookie
+            ,['scripts', 'cookie', asset_base+'jscookie.js']
+            
             // Timer
             ,['scripts', 'timer', asset_base+'timer.js']
             
@@ -148,7 +151,7 @@ var HtmlWidget = self = {
              
             // Autocomplete
             ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
-            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css','jquery']]
+            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css']]
              
             // TagEditor
             ,['scripts', 'caret', asset_base+'caret.js']

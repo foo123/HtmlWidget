@@ -11,10 +11,20 @@
 *  https://github.com/foo123/SelectorListener
 *
 **/
-!function(window, $, undef){
+!function( root, name, factory ) {
+"use strict";
+if ( 'object' === typeof exports )
+    // CommonJS module
+    module.exports = factory( );
+else if ( 'function' === typeof define && define.amd )
+    // AMD. Register as an anonymous module.
+    define(function( req ) { return factory( ); });
+else
+    root[name] = factory( );
+}(this, 'htmlwidget', function( undef ) {
 "use strict";
 
-var htmlwidget = {VERSION: "0.8.2", widget: {}},
+var $ = jQuery, htmlwidget = {VERSION: "0.8.2", widget: {}},
 HAS = 'hasOwnProperty', PROTO = 'prototype', ID = 0,
 slice = Array[PROTO].slice,
 json_decode = JSON.parse, json_encode = JSON.stringify,
@@ -151,7 +161,6 @@ function widget2jquery( name, widget, spr )
         return return_value;
     };
 }
-
 htmlwidget.make = widget2jquery;
 
 // some useful widgets
@@ -394,6 +403,98 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
         }
     };
     self.dispose = function( ) {
+        self.instance = null;
+    };
+});
+widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
+    var self = this;
+    if ( !(self instanceof suggest) ) return new suggest(el, options);
+    
+    self.instance = null;
+    
+    self.init = function( ) {
+        if ( 'function' === typeof autoComplete )
+        {
+            var $el = $(el),
+                ajaxurl = $el.attr('data-suggest-ajax') || options.ajax || $el.attr('data-ajax') || null,
+                dataType = $el.attr('data-suggest-data') || options.dataType || 'json',
+                method = $el.attr('data-suggest-method') || options.method || 'GET',
+                key = $el.attr('data-suggest-key') || options.key || 'key',
+                val = $el.attr('data-suggest-value') || options.value || 'value',
+                q = $el.attr('data-suggest-param') || options.param || 'suggest',
+                cache = 'no' !== $el.attr('data-suggest-cache'),
+                xhr = null
+            ;
+            self.instance = new autoComplete({
+                // https://goodies.pixabay.com/javascript/auto-complete/demo.html
+                selector: el,
+                minChars: parseInt($el.attr('data-suggest-min') || options.minChars, 10) || 3,
+                delay: parseInt($el.attr('data-suggest-delay') || options.delay, 10) || 150,
+                cache: cache,
+                menuClass: $el.attr('data-suggest-class') || options.menuClass || 'w-suggestions',
+                source: function( term, response ) {
+                    var wrapper = $el.closest('.w-wrapper'),
+                        data = {
+                            method: method,
+                            dataType: dataType,
+                            ajax: ajaxurl,
+                            list: null,
+                            suggest: { }
+                        }
+                    ;
+                    data.suggest[q] = term;
+                    //var evt = $.Event( "suggest" );
+                    // allow to dynamicaly add suggest parameters
+                    $el.trigger("suggest", data);
+                    if ( !!data.list ) response( data.list );
+                    else if ( !!data.ajax )
+                    {
+                        wrapper.addClass('ajax');
+                        // optimise multiple xhr requests
+                        try { xhr && xhr.abort(); } catch(e){ }
+                        xhr = $.ajax({
+                            url:  data.ajax,
+                            type: data.method,
+                            method: data.method,
+                            dataType: data.dataType,
+                            data: data.suggest,
+                            success: function( data ) {
+                                wrapper.removeClass('ajax');
+                                response( data );
+                            },
+                            error: function( ) {
+                                wrapper.removeClass('ajax');
+                                response( [] );
+                            }
+                        });
+                    }
+                    else
+                    {
+                        response( [] );
+                    }
+                },
+                renderItem: function( item, search ) {
+                    var current = cache ? el.cache[search] : [];
+                    search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+                    return '<div class="autocomplete-suggestion" data-index="'+current.indexOf(item)+'" data-key="'+item[key]+'" data-val="'+item[val]+'">' + item[val].replace(re,"<strong>$1</strong>") + '</div>';
+                },
+                onSelect: function( event, term, item ) {
+                    var current = cache ? el.cache[term] : [];
+                    var data_item = current[ item.getAttribute('data-index') ];
+                    $el.trigger('suggest-select', {
+                        term: term,
+                        text: $el.val(),
+                        item: data_item,
+                        key: data_item[key],
+                        value: data_item[val]
+                    });
+                }
+            });
+        }
+    };
+    self.dispose = function( ) {
+        if ( self.instance ) self.instance.destroy( );
         self.instance = null;
     };
 });
@@ -833,17 +934,26 @@ $.fn.htmlwidget = function( type, opts ) {
             $el.colorpicker(opts);
             break;
         
+        case 'map':
+        case 'gmap':
+        case 'gmap3':
+            $el.gmap3(opts);
+            break;
+        
+        case 'autocomplete':
+        case 'autosuggest':
+        case 'suggest':
+            $el.suggest(opts);
+            break;
+        
         case 'rangeslider':
         case 'range':
             if ( 'function' === typeof $.fn.rangeslider )
                 $el.rangeslider({
                 /*
                 // https://andreruffert.github.io/rangeslider.js/
-                // Feature detection the default is `true`.
                 // Set this to `false` if you want to use
-                // the polyfill also in Browsers which support
-                // the native <input type="range"> element.
-                polyfill: true,
+                // the polyfill also in Browsers which support the native <input type="range"> element.
                 rangeClass: 'rangeslider',
                 disabledClass: 'rangeslider--disabled',
                 horizontalClass: 'rangeslider--horizontal',
@@ -854,15 +964,9 @@ $.fn.htmlwidget = function( type, opts ) {
                 onSlide: function(position, value) {},
                 onSlideEnd: function(position, value) {}
                 */
-                polyfill: false
+                 polyfill: false
                 ,orientation: $el.attr('data-range-orientation')||opts.orientation||"horizontal"
                 });
-            break;
-        
-        case 'map':
-        case 'gmap':
-        case 'gmap3':
-            $el.gmap3(opts);
             break;
         
         case 'select':
@@ -874,55 +978,6 @@ $.fn.htmlwidget = function( type, opts ) {
                     .attr('title',$el.attr('title'))
                     .attr('data-tooltip',$el.attr('data-tooltip'))
                 ;
-            }
-            break;
-        
-        case 'autocomplete':
-        case 'autosuggest':
-        case 'suggest':
-            if ( 'function' === typeof $.fn.autocomplete )
-            {
-            var suggest = $el.parent( ),
-                method = $el.attr('data-request-method') || opts.method || "POST",
-                key = $el.attr('data-key') || opts.key || 'key',
-                val = $el.attr('data-val') || opts.val || 'val'
-            ;
-            $el.autocomplete({
-                minLength: 0,
-                valueKey: key,
-                titleKey: val,
-                highlight: true,
-                showHint: true,
-                dropdownWidth: '100%',
-                openOnFocus: false,
-                closeOnBlur: true,
-                appendMethod: 'replace', // supported merge and concat 
-                source:[{
-                    type:'remote',
-                    url: $el.attr('data-ajax') || opts.ajax,
-                    /*getValueFromItem: function( item ) {
-                        return item[ val ];
-                    },*/
-                    ajax:{
-                        type: method,
-                        method: method,
-                        dataType: $el.attr('data-response-type') || opts.dataType || "json"
-                    }
-                }]
-                /*function( value, response ){
-                    suggest.addClass("ajax");
-                    $.ajax({
-                        url: ajaxurl,
-                        type: method,
-                        dataType: dataType,
-                        data: {suggest: value},
-                        success: function( data ){
-                            suggest.removeClass("ajax");
-                            response( data );
-                        }
-                    });
-                }*/
-            });
             }
             break;
         
@@ -945,10 +1000,7 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
-            {
-                if ( ModelView.jquery ) ModelView.jquery( $ );
                 $el.modelview(opts);
-            }
             break;
         
         case 'tag-editor':
@@ -966,7 +1018,7 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'syntax-editor':
             if ( 'function' === typeof CodeMirror )
-                CodeMirror.fromTextArea($el[0], opts);
+                CodeMirror.fromTextArea(el, opts);
             break;
         
         default: 
@@ -1009,6 +1061,8 @@ window["__htmlwidget_init__"] = function( e ){
 $(function(){
 
 if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
+if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
+
 var $body = $(document.body),
     widget_init = function( ){ htmlwidget.initialisable( this ); },
     widget_able = function( ){ htmlwidget.widgetize( this ); };
@@ -1036,4 +1090,5 @@ if ( 'function' === typeof $.fn.tooltipster )
 
 });
 
-}(window, jQuery);
+return htmlwidget;
+});
