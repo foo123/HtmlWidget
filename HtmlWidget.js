@@ -98,8 +98,8 @@ var HtmlWidget = self = {
         ,['scripts', 'htmlwidgets', base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         //,['scripts', 'jquery', asset_base+'jquery.js']
         ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
-        //,['styles', 'responsive.css', asset_base+'responsive.css']
-        //,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
+        ,['styles', 'responsive.css', asset_base+'responsive.css']
+        ,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
         ];
         if ( arguments.length < 2 || true === full )
         {

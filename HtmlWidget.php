@@ -54,8 +54,8 @@ class HtmlWidget
         ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         //,array('scripts', 'jquery', $asset_base.'jquery.js')
         ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
-        //,array('styles', 'responsive.css', $asset_base.'responsive.css')
-        //,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
+        ,array('styles', 'responsive.css', $asset_base.'responsive.css')
+        ,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
         );
         if ( true === $full )
         {
