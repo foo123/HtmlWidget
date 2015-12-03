@@ -84,7 +84,7 @@ function dispose_style( document, style )
     };
 }*/
 
-$.htmlwidget = htmlwidget;
+//$.htmlwidget = htmlwidget;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
@@ -197,10 +197,25 @@ widget2jquery('selectable', htmlwidget.selectable=function selectable( el, optio
             item = options.selector||options.item
         ;
         if ( !$el.hasClass('w-selectable') ) $el.addClass('w-selectable');
-        $el.on('click.selectable', handle, function( evt ){
-            if ( evt.shiftKey )
+        $el.on('click.selectable change.selectable', handle, function( evt ){
+            var el = this, $el = $(this), type = (el.type||'').toLowerCase();
+            if ( 'checkbox' === type || 'radio' === type )
             {
-                var $el = $(this);
+                if ( !!item ) $el = $el.closest( item );
+                if ( el.checked )
+                {
+                    $el.addClass('w-selected');
+                    $el.trigger('selected');
+                }
+                else
+                {
+                    $el.removeClass('w-selected');
+                    $el.trigger('deselected');
+                }
+            }
+            else if ( 'click' === evt.type )
+            {
+                if ( !evt.shiftKey ) self.clear( );
                 if ( !!item ) $el = $el.closest( item );
                 if ( $el.hasClass('w-selected') )
                 {
@@ -214,6 +229,9 @@ widget2jquery('selectable', htmlwidget.selectable=function selectable( el, optio
                 }
             }
         });
+    };
+    self.selected = function( ) {
+        return $(el).find('.w-selected');
     };
     self.clear = function( ) {
         $(el).find('.w-selected').removeClass('w-selected');
@@ -419,34 +437,35 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                 ajaxurl = $el.attr('data-suggest-ajax') || options.ajax || $el.attr('data-ajax') || null,
                 dataType = $el.attr('data-suggest-data') || options.dataType || 'json',
                 method = $el.attr('data-suggest-method') || options.method || 'GET',
-                key = $el.attr('data-suggest-key') || options.key || 'key',
-                val = $el.attr('data-suggest-value') || options.value || 'value',
-                q = $el.attr('data-suggest-param') || options.param || 'suggest',
-                cache = 'no' !== $el.attr('data-suggest-cache'),
+                q = $el.attr('data-suggest-q') || $el.attr('data-suggest-param') || options.q || options.param || 'suggest',
                 xhr = null
             ;
-            self.instance = new autoComplete({
-                // https://goodies.pixabay.com/javascript/auto-complete/demo.html
-                selector: el,
-                minChars: parseInt($el.attr('data-suggest-min') || options.minChars, 10) || 3,
-                delay: parseInt($el.attr('data-suggest-delay') || options.delay, 10) || 150,
-                cache: cache,
+            self.instance = new autoComplete(el, {
+                minChars: $el.attr('data-suggest-min') || options.minChars || 3,
+                key: $el.attr('data-suggest-key') || options.key || null,
+                value: $el.attr('data-suggest-value') || options.value || null,
+                delay: $el.attr('data-suggest-delay') || options.delay || 150,
+                cache: $el.attr('data-suggest-cache') || 5000,
                 menuClass: $el.attr('data-suggest-class') || options.menuClass || 'w-suggestions',
-                source: function( term, response ) {
+                source: function( term, suggest ) {
                     var wrapper = $el.closest('.w-wrapper'),
                         data = {
                             method: method,
                             dataType: dataType,
                             ajax: ajaxurl,
-                            list: null,
                             suggest: { }
                         }
                     ;
                     data.suggest[q] = term;
                     //var evt = $.Event( "suggest" );
+                    
                     // allow to dynamicaly add suggest parameters
                     $el.trigger("suggest", data);
-                    if ( !!data.list ) response( data.list );
+                    
+                    if ( !!data.suggestions || !!data.list )
+                    {
+                        suggest( data.suggestions || data.list );
+                    }
                     else if ( !!data.ajax )
                     {
                         wrapper.addClass('ajax');
@@ -460,41 +479,35 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                             data: data.suggest,
                             success: function( data ) {
                                 wrapper.removeClass('ajax');
-                                response( data );
+                                suggest( data );
                             },
                             error: function( ) {
                                 wrapper.removeClass('ajax');
-                                response( [] );
+                                suggest( [] );
                             }
                         });
                     }
                     else
                     {
-                        response( [] );
+                        suggest( [] );
                     }
                 },
-                renderItem: function( item, search ) {
-                    var current = cache ? el.cache[search] : [];
-                    search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                    var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                    return '<div class="autocomplete-suggestion" data-index="'+current.indexOf(item)+'" data-key="'+item[key]+'" data-val="'+item[val]+'">' + item[val].replace(re,"<strong>$1</strong>") + '</div>';
-                },
-                onSelect: function( event, term, item ) {
-                    var current = cache ? el.cache[term] : [];
-                    var data_item = current[ item.getAttribute('data-index') ];
+                onSelect: function( evt, term, item, selected, key, value ) {
                     $el.trigger('suggest-select', {
-                        term: term,
-                        text: $el.val(),
-                        item: data_item,
-                        key: data_item[key],
-                        value: data_item[val]
+                        q: term,
+                        item: item,
+                        key: key,
+                        value: value
                     });
                 }
             });
         }
     };
+    self.suggestions = function( list ) {
+        if ( self.instance ) self.instance.suggestions = list;
+    };
     self.dispose = function( ) {
-        if ( self.instance ) self.instance.destroy( );
+        if ( self.instance ) self.instance.dispose( );
         self.instance = null;
     };
 });
@@ -574,8 +587,8 @@ function datetime_encoder( format, locale )
     }
     else
     {
-        return function( date ) {
-            return date.toDateString( );
+        return function( date, pikaday ) {
+            return pikaday._o.showTime ? date.toString() : date.toDateString();
         };
     }
 }
@@ -607,16 +620,20 @@ widget2jquery('datepicker', htmlwidget.datepicker=function datepicker( el, optio
     self.init = function( ) {
         if ( 'function' === typeof Pikaday )
         {
-            var $el = $(el);
-            var format = $el.attr('data-datepicker-format')||options.format||'Y-m-d';
+            var $el = $(el),
+                format = $el.attr('data-datepicker-format')||options.format||'Y-m-d H:i:s',
+                time_attr = $el.attr('data-datepicker-time')
+            ;
             self.instance = new Pikaday({
                 field  : el,
+                showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr: options.showTime,
                 encoder: datetime_encoder( format ),
                 decoder: datetime_decoder( format )
             });
         }
     };
     self.dispose = function( ) {
+        if ( self.instance ) self.instance.destroy( );
         self.instance = null;
     };
 });
@@ -841,7 +858,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
     if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
     if ( $node.hasClass('w-resizable') ) $node.htmlwidget('resizable');
-    if ( $node.hasClass('w-sortable') ) $node.htmlwidget('sortable');
+    if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
 };
 htmlwidget.initialisable = function( el, root ) {
     root = root || window;
@@ -901,10 +918,11 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'morphable':
         case 'selectable':
         case 'removable':
+        case 'rearrangeable':
         case 'sortable':
         case 'uploadable':
         case 'upload':
-            $el['upload'===type?'uploadable':type](opts);
+            $el['upload'===type?'uploadable':('rearrangeable'===type?'sortable':type)](opts);
             break;
         
         case 'draggable':
@@ -925,6 +943,7 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'date':
         case 'datetime':
         case 'datepicker':
+        case 'datetimepicker':
             $el.datepicker(opts);
             break;
         

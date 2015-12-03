@@ -200,6 +200,7 @@ class HtmlWidget
             elseif ( "radio-image" === $widget ) $attr["type"] = "radio";
             elseif ( "checkbox" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radio" === $widget ) $attr["type"] = "radio";
+            elseif ( "datetime" === $widget || 'datetimepicker' === $widget ) $attr["time"] = true;
             elseif ( "select2" === $widget ) $attr["select2"] = true;
             elseif ( "dropdown" === $widget ) $attr["dropdown"] = true;
             elseif ( "syntax-editor" === $widget || "source-editor" === $widget || "syntax" === $widget || "source" === $widget || "highlight-editor" === $widget || "highlighter" === $widget ) $attr["syntax-editor"] = true;
@@ -248,6 +249,7 @@ class HtmlWidget
             case 'highlighter':
             case 'upload':      $out = self::w_upload($attr, $data); break;
             case 'textarea':    $out = self::w_textarea($attr, $data); break;
+            case 'datetimepicker':
             case 'datepicker':
             case 'datetime':
             case 'date':        $out = self::w_date($attr, $data); break;
@@ -1064,11 +1066,12 @@ OUT;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
+        $wtime = !empty($attr["time"]) ? 'data-datepicker-time="1"' : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
         $wclass = 'widget w-text w-date'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
-        $wformat = !empty($attr["format"]) ? $attr["format"] : 'Y-m-d';
+        $wformat = !empty($attr["format"]) ? $attr["format"] : (!empty($wtime) ? 'Y-m-d H:i:s' : 'Y-m-d');
         $wicon = '';
         $wrapper_class = 'w-wrapper';
         if ( !empty($attr['icon']) )
@@ -1089,7 +1092,7 @@ OUT;
         $wdata = self::attr_data($attr);
         self::enqueue('scripts', 'pikaday');
         self::enqueue('scripts', 'htmlwidgets');
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wdata />$wicon</span>";
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wtime $wdata />$wicon</span>";
     }
     
     public static function w_time( $attr, $data )
