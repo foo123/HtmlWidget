@@ -431,7 +431,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     self.instance = null;
     
     self.init = function( ) {
-        if ( 'function' === typeof autoComplete )
+        if ( 'function' === typeof AutoComplete )
         {
             var $el = $(el),
                 ajaxurl = $el.attr('data-suggest-ajax') || options.ajax || $el.attr('data-ajax') || null,
@@ -440,12 +440,12 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                 q = $el.attr('data-suggest-q') || $el.attr('data-suggest-param') || options.q || options.param || 'suggest',
                 xhr = null
             ;
-            self.instance = new autoComplete(el, {
+            self.instance = new AutoComplete(el, {
                 minChars: $el.attr('data-suggest-min') || options.minChars || 3,
                 key: $el.attr('data-suggest-key') || options.key || null,
                 value: $el.attr('data-suggest-value') || options.value || null,
                 delay: $el.attr('data-suggest-delay') || options.delay || 150,
-                cache: $el.attr('data-suggest-cache') || 5000,
+                cache: $el.attr('data-suggest-cache') || 5*60*1000,
                 menuClass: $el.attr('data-suggest-class') || options.menuClass || 'w-suggestions',
                 source: function( term, suggest ) {
                     var wrapper = $el.closest('.w-wrapper'),
@@ -573,9 +573,35 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
         ;
     };
 });
+widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicker( el, options ){
+    var self = this;
+    if ( !(self instanceof datetimepicker) ) return new datetimepicker(el, options);
+    
+    self.instance = null;
+    
+    self.init = function( ) {
+        if ( 'function' === typeof Pikadaytime )
+        {
+            var $el = $(el),
+                format = $el.attr('data-datepicker-format')||options.format||'Y-m-d H:i:s',
+                time_attr = ($el.attr('data-datepicker-time')||'').toLowerCase()
+            ;
+            self.instance = new Pikadaytime({
+                field  : el,
+                showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr: !!options.showTime,
+                encoder: datetimepicker.encoder( format ),
+                decoder: datetimepicker.decoder( format )
+            });
+        }
+    };
+    self.dispose = function( ) {
+        if ( self.instance ) self.instance.dispose( );
+        self.instance = null;
+    };
+});
 // custom date codecs and locale
-//datetime_locale = DateX.defaultLocale;
-function datetime_encoder( format, locale )
+//htmlwidget.datetimepicker.locale = DateX.defaultLocale;
+htmlwidget.datetimepicker.encoder = function datetime_encoder( format, locale )
 {
     if ( 'function' === typeof DateX )
     {
@@ -591,8 +617,8 @@ function datetime_encoder( format, locale )
             return pikaday._o.showTime ? date.toString() : date.toDateString();
         };
     }
-}
-function datetime_decoder( format, locale )
+};
+htmlwidget.datetimepicker.decoder = function datetime_decoder( format, locale )
 {
     if ( 'function' === typeof DateX )
     {
@@ -610,33 +636,7 @@ function datetime_decoder( format, locale )
             return new Date( Date.parse( date ) );
         };
     }
-}
-widget2jquery('datepicker', htmlwidget.datepicker=function datepicker( el, options ){
-    var self = this;
-    if ( !(self instanceof datepicker) ) return new datepicker(el, options);
-    
-    self.instance = null;
-    
-    self.init = function( ) {
-        if ( 'function' === typeof Pikaday )
-        {
-            var $el = $(el),
-                format = $el.attr('data-datepicker-format')||options.format||'Y-m-d H:i:s',
-                time_attr = $el.attr('data-datepicker-time')
-            ;
-            self.instance = new Pikaday({
-                field  : el,
-                showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr: options.showTime,
-                encoder: datetime_encoder( format ),
-                decoder: datetime_decoder( format )
-            });
-        }
-    };
-    self.dispose = function( ) {
-        if ( self.instance ) self.instance.destroy( );
-        self.instance = null;
-    };
-});
+};
 widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, options ){
     var self = this;
     if ( !(self instanceof colorpicker) ) return new colorpicker(el, options);
@@ -644,11 +644,12 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
     self.instance = null;
     
     self.init = function( ) {
-        if ( 'function' === typeof $.ColorPicker || 'function' === typeof ColorPicker )
+        if ( 'function' === typeof ColorPicker )
         {
-            var $el = $(el), CPicker = 'function' === typeof $.ColorPicker ? $.ColorPicker : ColorPicker;
-            self.instance = new CPicker(el, {
+            var $el = $(el);
+            self.instance = new ColorPicker(el, {
                 changeEvent: $el.attr('data-colorpicker-change')||options.changeEvent||'change',
+                input: !!$el.attr('data-colorpicker-input') ? $($el.attr('data-colorpicker-input'))[0] : (!!options.input ? $(options.input)[0] : null),
                 format: $el.attr('data-colorpicker-format')||options.format||'rgba',
                 color: $el.attr('data-colorpicker-color')||options.color,
                 opacity: $el.attr('data-colorpicker-opacity')||options.opacity
@@ -849,56 +850,6 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-htmlwidget.widgetize = function( el ) {
-    var $node = $(el);
-    if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
-    if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
-    if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
-    if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
-    if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
-    if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
-    if ( $node.hasClass('w-resizable') ) $node.htmlwidget('resizable');
-    if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
-};
-htmlwidget.initialisable = function( el, root ) {
-    root = root || window;
-    var $el = $(el), w_init = $el.attr('w-init');
-    if ( '1' === w_init || 'true' === w_init || 'on' === w_init ) w_init = "__htmlwidget_init__";
-    if ( !!w_init && 'function' === typeof root[w_init] )
-    {
-        $el.removeAttr('w-init');
-        root[w_init]( el );
-    }
-};
-htmlwidget.tooltip = function( ) {
-    var $el = $(this), content = '', hasTooltip = $el.hasClass('tooltipstered');
-    if ( !hasTooltip )
-    {
-        content = !!$el.attr('data-tooltip') ? $el.attr('data-tooltip') : $el.attr('title');
-        if ( content.length )
-        {
-            $el.tooltipster({
-                // http://iamceege.github.io/tooltipster/#options
-                onlyOne: true,
-                autoClose: true,
-                content: content,
-                position: $el.hasClass('tooltip-bottom') 
-                            ? 'bottom'
-                            : ($el.hasClass('tooltip-right')
-                            ? 'right'
-                            : ($el.hasClass('tooltip-left')
-                            ? 'left'
-                            : 'top'))
-            });
-        }
-        else
-        {
-            $el.removeAttr('title');
-        }
-    }
-    if ( hasTooltip || content.length ) $el.tooltipster('show');
-};
-
 $.fn.htmlwidget = function( type, opts ) {
     opts = opts || {};
     this.each(function( ) {
@@ -944,7 +895,7 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'datetime':
         case 'datepicker':
         case 'datetimepicker':
-            $el.datepicker(opts);
+            $el.datetimepicker(opts);
             break;
         
         case 'color':
@@ -1004,10 +955,7 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'datatable':
             if ( 'function' === typeof $.fn.dataTable )
             {
-                $el.dataTable(opts)/*.on('change', 'input.select_row', function( ){ 
-                    if ( this.checked ) $(this).closest('tr').addClass('selected');
-                    else $(this).closest('tr').removeClass('selected');
-                })*/;
+                $el.dataTable(opts);
                 $el.closest(".dataTables_wrapper").addClass("w-table-wrapper");
             }
             break;
@@ -1054,7 +1002,7 @@ htmlwidget.init = function( node, current, deep ) {
         $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
-        $node.find('.w-date').htmlwidget('datepicker');
+        $node.find('.w-date').htmlwidget('datetimepicker');
         $node.find('.w-color,.w-colorselector').htmlwidget('colorpicker');
         $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
@@ -1065,11 +1013,60 @@ htmlwidget.init = function( node, current, deep ) {
         else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
-        else if ( $node.hasClass('w-date') ) $node.htmlwidget('datepicker');
+        else if ( $node.hasClass('w-date') ) $node.htmlwidget('datetimepicker');
         else if ( $node.hasClass('w-color') || $node.hasClass('w-colorselector') ) $node.htmlwidget('colorpicker');
         else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
     }
+};
+htmlwidget.initialisable = function( el, root ) {
+    root = root || window;
+    var $el = $(el), w_init = ($el.attr('w-init')||'').toLowerCase();
+    if ( '1' === w_init || 'true' === w_init || 'on' === w_init || 'yes' === w_init ) w_init = "__htmlwidget_init__";
+    if ( !!w_init && 'function' === typeof root[w_init] )
+    {
+        $el.removeAttr('w-init');
+        root[w_init]( el );
+    }
+};
+htmlwidget.widgetize = function( el ) {
+    var $node = $(el);
+    if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
+    if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
+    if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
+    if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
+    if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
+    if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
+    if ( $node.hasClass('w-resizable') ) $node.htmlwidget('resizable');
+    if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
+};
+htmlwidget.tooltip = function( el ) {
+    var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
+    if ( !hasTooltip )
+    {
+        content = !!$el.attr('data-tooltip') ? $el.attr('data-tooltip') : $el.attr('title');
+        if ( content.length )
+        {
+            $el.tooltipster({
+                // http://iamceege.github.io/tooltipster/#options
+                onlyOne: true,
+                autoClose: true,
+                content: content,
+                position: $el.hasClass('tooltip-bottom') 
+                            ? 'bottom'
+                            : ($el.hasClass('tooltip-right')
+                            ? 'right'
+                            : ($el.hasClass('tooltip-left')
+                            ? 'left'
+                            : 'top'))
+            });
+        }
+        else
+        {
+            $el.removeAttr('title');
+        }
+    }
+    if ( hasTooltip || content.length ) $el.tooltipster('show');
 };
 
 // dynamic widget init hook
@@ -1086,17 +1083,18 @@ var $body = $(document.body),
     widget_init = function( ){ htmlwidget.initialisable( this ); },
     widget_able = function( ){ htmlwidget.widgetize( this ); };
 
+// already existing elements
+$body.find('[w-init]').each( widget_init );
+$body.find('.w-rearrangeable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
+
 // dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added', widget_able)
+        .onSelector('.w-rearrangeable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
     ;
 }
-// already existing elements
-$('[w-init]').each( widget_init );
-$('.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable').each( widget_able );
 
 // dynamic tooltips
 if ( 'function' === typeof $.fn.tooltipster )

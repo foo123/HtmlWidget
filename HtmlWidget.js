@@ -120,13 +120,13 @@ var HtmlWidget = self = {
             ,['styles', 'sundial.css', asset_base+'sundial.css']
             ,['scripts', 'sundial', asset_base+'sundial.js', ['sundial.css','datex']]
              
-            // Pikaday
-            ,['styles', 'pikaday.css', asset_base+'pikaday.css']
-            ,['scripts', 'pikaday', asset_base+'pikaday.js', ['pikaday.css','datex']]
+            // Pikadaytime
+            ,['styles', 'pikadaytime.css', asset_base+'pikadaytime.css']
+            ,['scripts', 'pikadaytime', asset_base+'pikadaytime.js', ['pikadaytime.css','datex']]
              
             // ColorPicker
             ,['styles', 'colorpicker.css', asset_base+'colorpicker.css']
-            ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css','jquery']]
+            ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css']]
              
             // LocationPicker
             ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['-external-google-maps-api','jquery']]
@@ -149,7 +149,7 @@ var HtmlWidget = self = {
             ,['styles', 'awesomplete.css', asset_base+'awesomplete.css']
             ,['scripts', 'awesomplete', asset_base+'awesomplete.js', ['awesomplete.css']]
              
-            // Autocomplete
+            // AutoComplete
             ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
             ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css']]
              
@@ -210,7 +210,7 @@ var HtmlWidget = self = {
         return [prefix, new Date().getTime(), ++GID, ~~(1000*Math.random()), suffix].join("_");
     }
     
-    ,attr_data: function( attr ) {
+    ,data: function( attr ) {
         var data_attr = '';
         if ( attr[HAS]('data') )
         {
@@ -224,6 +224,10 @@ var HtmlWidget = self = {
             }
         }
         return data_attr;
+    }
+    
+    ,options: function( opts ) {
+        return [].concat(opts||[]);
     }
     
     ,addWidget: function( widget, renderer ) {
@@ -348,7 +352,7 @@ var HtmlWidget = self = {
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         if ( !empty(attr,'icon') ) wclass += ' fa-'+attr['icon'];
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         return '<i class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></i>';
     }
@@ -441,7 +445,7 @@ var HtmlWidget = self = {
         wtitle = !empty(attr,'title') ? attr['title'] : '&nbsp;';
         wchecked = !empty(attr,'closed') ? 'checked' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button" for="controller_'+wid+'" onclick=""><i class="fa fa-2x"></i></label></div><div class="w-panel-content">';
@@ -681,7 +685,7 @@ var HtmlWidget = self = {
         {
             wcontent = '<form id="'+wid+'_form">'+wcontent+'</form>';
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'</div><div class="w-dialog-content">'+wcontent+'</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
@@ -698,7 +702,7 @@ var HtmlWidget = self = {
         wtitle = isset(data,'title') ? data['title'] : ''; 
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
         woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick=""></label>' : '<div class="w-modal-overlay"></div>';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
@@ -742,7 +746,7 @@ var HtmlWidget = self = {
         {
             warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+warrow+'</div>';
     }
@@ -767,7 +771,7 @@ var HtmlWidget = self = {
             wclass += ' w-icon-right';
             wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         // iOS needs an onlick attribute to handle lable update if used as controller
         return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+' '+wdata+'>'+wtext+'</label>';
@@ -792,7 +796,7 @@ var HtmlWidget = self = {
             wclass += ' w-icon-right';
             wtext = wtext + "<i class=\"fa fa-" + attr['iconr'] + " right-fa\"></i>";
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         if ( isset(attr,'for') )
         {
@@ -827,7 +831,7 @@ var HtmlWidget = self = {
             else wclass += ' w-icon-right';
             wtext = wtext + "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         if ( isset(attr,'for') )
         {
@@ -871,7 +875,7 @@ var HtmlWidget = self = {
         wstate = '';
         if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
         if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" '+wextra+' value="'+wvalue+'" '+wdata+' '+wchecked+' /><label for="'+wid+'" title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wimg+'</label>';
     }
@@ -907,7 +911,7 @@ var HtmlWidget = self = {
             wiconon = '<i class="fa fa-'+attr.iconon+'"></i>';
             wiconoff = '<i class="fa fa-'+attr.iconoff+'"></i>';
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         if ( wdual )
         {
             // dual switch with separate on/off states
@@ -975,7 +979,7 @@ var HtmlWidget = self = {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' w-icon-right';
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         if ( !empty(attr,'autocomplete') )
         {
             wclass += ' awesomplete';
@@ -1023,7 +1027,7 @@ var HtmlWidget = self = {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' w-icon-right';
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('scripts', 'autocomplete');
         self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
@@ -1038,7 +1042,7 @@ var HtmlWidget = self = {
         wclass = 'widget w-upload'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         wupload_base = !empty(attr,"upload-base") ? attr["upload-base"] : '';
         wdimensions = !empty(attr,"dimensions") ? attr["dimensions"] : '600x400';
         msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
@@ -1083,7 +1087,7 @@ var HtmlWidget = self = {
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : wtitle;
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         if ( !empty(attr,'syntax-editor') && true == attr['syntax-editor'] ) 
         {
             defaults = {
@@ -1161,8 +1165,8 @@ var HtmlWidget = self = {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-calendar\"></i></span>";
             wrapper_class += ' w-icon-right';
         }
-        wdata = self.attr_data(attr);
-        self.enqueue('scripts', 'pikaday');
+        wdata = self.data(attr);
+        self.enqueue('scripts', 'pikadaytime');
         self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datepicker-format="'+wformat+'" '+wtime+' '+wdata+' />'+wicon+'</span>';
     }
@@ -1188,7 +1192,7 @@ var HtmlWidget = self = {
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         time_options = {
             'h':[],
             'm':[],
@@ -1231,29 +1235,39 @@ var HtmlWidget = self = {
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('scripts', 'timer');
         self.enqueue('scripts', 'htmlwidgets');
         return '<span id="'+wid+'" '+winit+' class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
     ,w_color: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wvalue, wopacity, wname, wtitle, wformat, winit;
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wopacity, winput, winputref, wname, wtitle, wformat, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
+        if ( !empty(attr,'input') )
+        {
+            winput = '<input id="'+wid+'_input" type="hidden" '+wname+' value="" style="display:none" />';
+            winputref = 'data-colorpicker-input="'+wid+'_input"';
+        }
+        else
+        {
+            winput = '';
+            winputref = '';
+        }
         wvalue = isset(data,"color") ? data["color"] : ""; 
         wopacity = isset(data,"opacity") ? data["opacity"] : "1.0"; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
-        wclass = 'w-colorselector'; 
+        wclass = 'colorpicker-selector w-colorselector'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wformat = !empty(attr,"format") ? attr["format"] : 'rgba';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('scripts', 'colorpicker');
         self.enqueue('scripts', 'htmlwidgets');
-        return '<div id="'+wid+'" '+winit+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+wdata+'></div>';
+        return winput+'<div id="'+wid+'" '+winit+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wdata+'></div>';
     }
     
     ,w_gmap: function( attr, data ) {
@@ -1267,7 +1281,7 @@ var HtmlWidget = self = {
         wcenter = !empty(attr,"center") ? attr["center"] : null;
         wzoom = !empty(attr,"zoom") ? attr["zoom"] : '6';
         wmarkers = !empty(data,"markers") ? data["markers"] : null;
-        wdata = self.attr_data(attr);   
+        wdata = self.data(attr);   
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
     }
@@ -1314,7 +1328,7 @@ var HtmlWidget = self = {
             wextra += ' data-placeholder="'+attr['placeholder']+'"';
         }
         
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         if ( wselect2 && !wdropdown )
         {
@@ -1336,7 +1350,7 @@ var HtmlWidget = self = {
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>';
     }
     
@@ -1380,7 +1394,7 @@ var HtmlWidget = self = {
             }
             wrows += "</tr>";
         }
-        wdata = self.attr_data(attr);
+        wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
         wdataTable = isset(attr,'dataTable');
         if ( wdataTable )
