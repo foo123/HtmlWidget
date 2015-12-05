@@ -455,6 +455,11 @@ widget2jquery('template', htmlwidget.template=function template( el, options ){
     };
 });
 htmlwidget.template.key = /\$\(([^\(\)]+)\)/;
+htmlwidget.Template = function Template( str, key, revivable ) {
+    if ( 'function' === typeof Tao )
+        return Tao( str, key || Template.key, revivable );
+};
+htmlwidget.Template.key = /\$\(([^\(\)]+)\)/g;
 widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     var self = this;
     if ( !(self instanceof suggest) ) return new suggest(el, options);
@@ -1159,5 +1164,5 @@ if ( 'function' === typeof $.fn.tooltipster )
 
 });
 
-return htmlwidget;
+return $.htmlwidget = htmlwidget;
 });
