@@ -965,6 +965,21 @@ $.fn.htmlwidget = function( type, opts ) {
                 $el.modal(opts);
             break;
         
+        case 'packery':
+            if ( 'undefined' !== typeof Packery )
+                new Packery( el, opts );
+            break;
+        
+        case 'isotope':
+            if ( 'undefined' !== typeof Isotope )
+                new Isotope( el, opts );
+            break;
+        
+        case 'masonry':
+            if ( 'undefined' !== typeof Masonry )
+                new Masonry( el, opts );
+            break;
+        
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
                 $el.modelview(opts);

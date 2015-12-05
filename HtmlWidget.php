@@ -73,8 +73,8 @@ class HtmlWidget
             ,array('scripts', 'datex', $asset_base.'datex.js')
             
             // SunDial
-            ,array('styles', 'sundial.css', $asset_base.'sundial.css')
-            ,array('scripts', 'sundial', $asset_base.'sundial.js', array('sundial.css','datex'))
+            //,array('styles', 'sundial.css', $asset_base.'sundial.css')
+            //,array('scripts', 'sundial', $asset_base.'sundial.js', array('sundial.css','datex'))
              
             // Pikadaytime
             ,array('styles', 'pikadaytime.css', $asset_base.'pikadaytime.css')
@@ -125,6 +125,15 @@ class HtmlWidget
             // ModelView
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
+            // Packery
+            ,array('scripts', 'packery', $asset_base.'packery.js')
+             
+            // Isotope
+            ,array('scripts', 'isotope', $asset_base.'isotope.js')
+             
+            // Masonry
+            ,array('scripts', 'masonry', $asset_base.'masonry.js')
+             
             // DataTable
             ,array('styles', 'datatable.css', $asset_base.'datatable.css')
             ,array('scripts', 'datatable', $asset_base.'datatable.js', array('datatable.css','jquery'))

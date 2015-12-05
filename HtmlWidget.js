@@ -117,8 +117,8 @@ var HtmlWidget = self = {
             ,['scripts', 'datex', asset_base+'datex.js']
             
             // SunDial
-            ,['styles', 'sundial.css', asset_base+'sundial.css']
-            ,['scripts', 'sundial', asset_base+'sundial.js', ['sundial.css','datex']]
+            //,['styles', 'sundial.css', asset_base+'sundial.css']
+            //,['scripts', 'sundial', asset_base+'sundial.js', ['sundial.css','datex']]
              
             // Pikadaytime
             ,['styles', 'pikadaytime.css', asset_base+'pikadaytime.css']
@@ -168,6 +168,15 @@ var HtmlWidget = self = {
              
             // ModelView
             ,['scripts', 'modelview', asset_base+'modelview.js']
+             
+            // Packery
+            ,['scripts', 'packery', asset_base+'packery.js']
+             
+            // Isotope
+            ,['scripts', 'isotope', asset_base+'isotope.js']
+             
+            // Masonry
+            ,['scripts', 'masonry', asset_base+'masonry.js']
              
             // DataTable
             ,['styles', 'datatable.css', asset_base+'datatable.css']
