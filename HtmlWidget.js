@@ -107,6 +107,10 @@ var HtmlWidget = self = {
             //  external APIS
              ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
             
+            // Humane
+            ,['styles', 'humane.css', asset_base+'humane.css']
+            ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
+            
             // Cookie
             ,['scripts', 'cookie', asset_base+'jscookie.js']
             

@@ -63,6 +63,10 @@ class HtmlWidget
             //  external APIS
              array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
             
+            // Humane
+            ,array('styles', 'humane.css', $asset_base.'humane.css')
+            ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
+            
             // Cookie
             ,array('scripts', 'cookie', $asset_base.'jscookie.js')
             
