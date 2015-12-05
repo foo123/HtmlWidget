@@ -67,6 +67,9 @@ class HtmlWidget
             ,array('styles', 'humane.css', $asset_base.'humane.css')
             ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
             
+            // Tao
+            ,array('scripts', 'tao', $asset_base.'Tao.js')
+            
             // Cookie
             ,array('scripts', 'cookie', $asset_base.'jscookie.js')
             

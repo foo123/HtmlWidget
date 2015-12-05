@@ -424,6 +424,37 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
         self.instance = null;
     };
 });
+htmlwidget.template_key = 
+widget2jquery('template', htmlwidget.template=function template( el, options ){
+    var self = this;
+    if ( !(self instanceof template) ) return new template(el, options);
+    
+    self.instance = null;
+    
+    self.init = function( ) {
+        if ( 'function' === typeof Tao )
+        {
+            var $el = $(el);
+            self.instance = Tao( 
+                el,
+                !!$el.attr('data-tpl-key') ? new RegExp($el.attr('data-tpl-key')) : (options.key || template.key),
+                !!($el.attr('data-tpl-revivable') || options.revivable)
+            );
+        }
+    };
+    self.render = function( data, trigger ) {
+        if ( self.instance )
+        {
+            self.instance( data );
+            if ( true === trigger ) $(el).trigger('render');
+        }
+    };
+    self.dispose = function( ) {
+        if ( self.instance ) self.instance.dispose( );
+        self.instance = null;
+    };
+});
+htmlwidget.template.key = /\$\(([^\(\)]+)\)/;
 widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     var self = this;
     if ( !(self instanceof suggest) ) return new suggest(el, options);
@@ -876,6 +907,11 @@ $.fn.htmlwidget = function( type, opts ) {
             $el['upload'===type?'uploadable':('rearrangeable'===type?'sortable':type)](opts);
             break;
         
+        case 'templateable':
+        case 'template':
+            $el.template(opts);
+            break;
+        
         case 'draggable':
             if ( 'function' === typeof $.fn.tinyDraggable )
                 $el.tinyDraggable(opts);
@@ -1052,8 +1088,9 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
     if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
     if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
-    if ( $node.hasClass('w-resizable') ) $node.htmlwidget('resizable');
+    if ( $node.hasClass('w-resizable') || $node.hasClass('w-resisable') ) $node.htmlwidget('resizable');
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
+    if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -1100,14 +1137,14 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-rearrangeable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
+$body.find('.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
 
 // dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-rearrangeable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
+        .onSelector('.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable:::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
     ;
 }
 

@@ -111,6 +111,9 @@ var HtmlWidget = self = {
             ,['styles', 'humane.css', asset_base+'humane.css']
             ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
             
+            // Tao
+            ,['scripts', 'tao', asset_base+'Tao.js']
+            
             // Cookie
             ,['scripts', 'cookie', asset_base+'jscookie.js']
             
