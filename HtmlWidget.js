@@ -89,18 +89,22 @@ var HtmlWidget = self = {
         }
     }
     
-    ,assets: function( base, full ) {
+    ,assets: function( base, full, jquery ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
         var assets = [
          ['styles', 'htmlwidgets.css', base+'htmlwidgets.css']
-        ,['scripts', 'htmlwidgets', base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
-        //,['scripts', 'jquery', asset_base+'jquery.js']
-        ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
         ,['styles', 'responsive.css', asset_base+'responsive.css']
         ,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
+        ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
+        ,['scripts', 'htmlwidgets', base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         ];
+        if ( true === jquery )
+        {
+            assets.push(['scripts', 'jquery', asset_base+'jquery.js']);
+            assets.push(['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]);
+        }
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
@@ -113,6 +117,9 @@ var HtmlWidget = self = {
             
             // Tao
             ,['scripts', 'tao', asset_base+'Tao.js']
+            
+            // Serialiser
+            ,['scripts', 'serialiser', asset_base+'serialiser.js']
             
             // Cookie
             ,['scripts', 'cookie', asset_base+'jscookie.js']

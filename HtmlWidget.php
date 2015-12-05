@@ -44,19 +44,23 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='', $full=true )
+    public static function assets( $base='', $full=true, $jquery=false )
     {
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
         $asset_base = $base . 'assets/';
         $assets = array(
          array('styles', 'htmlwidgets.css', $base.'htmlwidgets.css')
-        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
-        //,array('scripts', 'jquery', $asset_base.'jquery.js')
-        ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
         ,array('styles', 'responsive.css', $asset_base.'responsive.css')
         ,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
+        ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
+        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         );
+        if ( true === $jquery )
+        {
+            $assets[] = array('scripts', 'jquery', $asset_base.'jquery.js');
+            $assets[] = array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'));
+        }
         if ( true === $full )
         {
             $assets = array_merge($assets, array(
@@ -69,6 +73,9 @@ class HtmlWidget
             
             // Tao
             ,array('scripts', 'tao', $asset_base.'Tao.js')
+            
+            // Serialiser
+            ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
             
             // Cookie
             ,array('scripts', 'cookie', $asset_base.'jscookie.js')
