@@ -1264,8 +1264,8 @@ var HtmlWidget = self = {
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         if ( !empty(attr,'input') )
         {
-            winput = '<input id="'+wid+'_input" type="hidden" '+wname+' value="" style="display:none" />';
-            winputref = 'data-colorpicker-input="'+wid+'_input"';
+            winput = '<input id="'+attr['input']+'" type="hidden" '+wname+' value="" style="display:none" />';
+            winputref = 'data-colorpicker-input="'+attr['input']+'"';
         }
         else
         {

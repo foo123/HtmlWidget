@@ -25,7 +25,9 @@ else
 "use strict";
 
 var $ = jQuery, htmlwidget = {VERSION: "0.8.2", widget: {}},
-HAS = 'hasOwnProperty', PROTO = 'prototype', ID = 0,
+HAS = 'hasOwnProperty',
+ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
+PROTO = 'prototype', ID = 0,
 slice = Array[PROTO].slice,
 json_decode = JSON.parse, json_encode = JSON.stringify,
 toString = Object[PROTO].toString;
@@ -193,7 +195,7 @@ widget2jquery('selectable', htmlwidget.selectable=function selectable( el, optio
     if ( !(self instanceof selectable) ) return new selectable(el, options);
     self.init = function( ) {
         var $el = $(el),
-            handle = $el.attr('data-selectable-handle')||options.handle||'.w-selectable-handle',
+            handle = el[ATTR]('data-selectable-handle')||options.handle||'.w-selectable-handle',
             item = options.selector||options.item
         ;
         if ( !$el.hasClass('w-selectable') ) $el.addClass('w-selectable');
@@ -245,9 +247,9 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
     if ( !(self instanceof removable) ) return new removable(el, options);
     self.init = function( ) {
         var $el = $(el),
-            handle = $el.attr('data-removable-handle')||options.handle||'.w-removable-handle',
-            item = $el.attr('data-removable-item')||options.selector||options.item,
-            animation = parseInt($el.attr('data-removable-animation')||options.animation||400,10)
+            handle = el[ATTR]('data-removable-handle')||options.handle||'.w-removable-handle',
+            item = el[ATTR]('data-removable-item')||options.selector||options.item,
+            animation = parseInt(el[ATTR]('data-removable-animation')||options.animation||400,10)
         ;
         if ( !$el.hasClass('w-removable') ) $el.addClass('w-removable');
         $el.on('click.removable', handle, function( ){
@@ -341,7 +343,7 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
         if ( mode != cur_mode )
         {
             var $el = $(el),
-                mode_class = $el.attr('data-morphable-mode')||options.modeClass
+                mode_class = el[ATTR]('data-morphable-mode')||options.modeClass
             ;
             if ( cur_mode ) $el.removeClass( mode_class.split('${MODE}').join(cur_mode) );
             cur_mode = mode;
@@ -409,14 +411,13 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
     self.init = function( ) {
         if ( 'function' === typeof Sortable )
         {
-            var $el = $(el);
             self.instance = Sortable.create( el, {
                 sort: true,
                 disabled: false,
-                delay: parseInt($el.attr('data-sortable-delay')||options.delay||0, 10),
-                animation: parseInt($el.attr('data-sortable-animation')||options.animation||400, 10),
-                draggable: $el.attr('data-sortable-item')||options.draggable||options.item||".w-sortable-item",
-                handle: $el.attr('data-sortable-handle')|| options.handle||".w-sortable-handle"
+                delay: parseInt(el[ATTR]('data-sortable-delay')||options.delay||0, 10),
+                animation: parseInt(el[ATTR]('data-sortable-animation')||options.animation||400, 10),
+                draggable: el[ATTR]('data-sortable-item')||options.draggable||options.item||".w-sortable-item",
+                handle: el[ATTR]('data-sortable-handle')|| options.handle||".w-sortable-handle"
             });
         }
     };
@@ -434,11 +435,11 @@ widget2jquery('template', htmlwidget.template=function template( el, options ){
     self.init = function( ) {
         if ( 'function' === typeof Tao )
         {
-            var $el = $(el);
             self.instance = Tao( 
                 el,
-                !!$el.attr('data-tpl-key') ? new RegExp($el.attr('data-tpl-key')) : (options.key || template.key),
-                !!($el.attr('data-tpl-revivable') || options.revivable)
+                el[HAS_ATTR]('data-tpl-key') ? new RegExp(el[ATTR]('data-tpl-key')) : (options.key || template.key),
+                !!(el[ATTR]('data-tpl-revivable') || options.revivable),
+                el[ATTR]('data-tpl-keyseparator') || options.keySeparator
             );
         }
     };
@@ -455,9 +456,9 @@ widget2jquery('template', htmlwidget.template=function template( el, options ){
     };
 });
 htmlwidget.template.key = /\$\(([^\(\)]+)\)/;
-htmlwidget.Template = function Template( str, key, revivable ) {
+htmlwidget.Tpl = htmlwidget.Template = function Template( str, key, revivable, key_separator ) {
     if ( 'function' === typeof Tao )
-        return Tao( str, key || Template.key, revivable );
+        return Tao( str, key || Template.key, revivable, key_separator );
 };
 htmlwidget.Template.key = /\$\(([^\(\)]+)\)/g;
 widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
@@ -469,22 +470,21 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     self.init = function( ) {
         if ( 'function' === typeof AutoComplete )
         {
-            var $el = $(el),
-                ajaxurl = $el.attr('data-suggest-ajax') || options.ajax || $el.attr('data-ajax') || null,
-                dataType = $el.attr('data-suggest-data') || options.dataType || 'json',
-                method = $el.attr('data-suggest-method') || options.method || 'GET',
-                q = $el.attr('data-suggest-q') || $el.attr('data-suggest-param') || options.q || options.param || 'suggest',
+            var ajaxurl = el[ATTR]('data-suggest-ajax') || options.ajax || el[ATTR]('data-ajax') || null,
+                dataType = el[ATTR]('data-suggest-data') || options.dataType || 'json',
+                method = el[ATTR]('data-suggest-method') || options.method || 'GET',
+                q = el[ATTR]('data-suggest-q') || el[ATTR]('data-suggest-param') || options.q || options.param || 'suggest',
                 xhr = null
             ;
             self.instance = new AutoComplete(el, {
-                minChars: $el.attr('data-suggest-min') || options.minChars || 3,
-                key: $el.attr('data-suggest-key') || options.key || null,
-                value: $el.attr('data-suggest-value') || options.value || null,
-                delay: $el.attr('data-suggest-delay') || options.delay || 150,
-                cache: $el.attr('data-suggest-cache') || 5*60*1000,
-                menuClass: $el.attr('data-suggest-class') || options.menuClass || 'w-suggestions',
+                minChars: el[ATTR]('data-suggest-min') || options.minChars || 3,
+                key: el[ATTR]('data-suggest-key') || options.key || null,
+                value: el[ATTR]('data-suggest-value') || options.value || null,
+                delay: el[ATTR]('data-suggest-delay') || options.delay || 150,
+                cache: el[ATTR]('data-suggest-cache') || 5*60*1000,
+                menuClass: el[ATTR]('data-suggest-class') || options.menuClass || 'w-suggestions',
                 source: function( term, suggest ) {
-                    var wrapper = $el.closest('.w-wrapper'),
+                    var $el = $(el), wrapper = $el.closest('.w-wrapper'),
                         data = {
                             method: method,
                             dataType: dataType,
@@ -529,7 +529,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                     }
                 },
                 onSelect: function( evt, term, item, selected, key, value ) {
-                    $el.trigger('suggest-select', {
+                    $(el).trigger('suggest-select', {
                         q: term,
                         item: item,
                         key: key,
@@ -618,9 +618,8 @@ widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicke
     self.init = function( ) {
         if ( 'function' === typeof Pikadaytime )
         {
-            var $el = $(el),
-                format = $el.attr('data-datepicker-format')||options.format||'Y-m-d H:i:s',
-                time_attr = ($el.attr('data-datepicker-time')||'').toLowerCase()
+            var format = el[ATTR]('data-datepicker-format')||options.format||'Y-m-d H:i:s',
+                time_attr = (el[ATTR]('data-datepicker-time')||'').toLowerCase()
             ;
             self.instance = new Pikadaytime({
                 field  : el,
@@ -682,13 +681,12 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
     self.init = function( ) {
         if ( 'function' === typeof ColorPicker )
         {
-            var $el = $(el);
             self.instance = new ColorPicker(el, {
-                changeEvent: $el.attr('data-colorpicker-change')||options.changeEvent||'change',
-                input: !!$el.attr('data-colorpicker-input') ? $($el.attr('data-colorpicker-input'))[0] : (!!options.input ? $(options.input)[0] : null),
-                format: $el.attr('data-colorpicker-format')||options.format||'rgba',
-                color: $el.attr('data-colorpicker-color')||options.color,
-                opacity: $el.attr('data-colorpicker-opacity')||options.opacity
+                changeEvent: el[ATTR]('data-colorpicker-change')||options.changeEvent||'change',
+                input: el[HAS_ATTR]('data-colorpicker-input') ? $(el[ATTR]('data-colorpicker-input'))[0] : (!!options.input ? $(options.input)[0] : null),
+                format: el[ATTR]('data-colorpicker-format')||options.format||'rgba',
+                color: el[ATTR]('data-colorpicker-color')||options.color,
+                opacity: el[ATTR]('data-colorpicker-opacity')||options.opacity
             });
         }
     };
@@ -775,9 +773,9 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
     self.init = function( ) {
         var $el = $(el),
-            center = !!$el.attr('data-map-center') ? $el.attr('data-map-center').split(',') : options.center || [0,0],
-            zoom = parseInt($el.attr('data-map-zoom')||options.zoom||6, 10),
-            type = $el.attr('data-map-type')||options.type||"ROADMAP";
+            center = el[HAS_ATTR]('data-map-center') ? el[ATTR]('data-map-center').split(',') : options.center || [0,0],
+            zoom = parseInt(el[ATTR]('data-map-zoom')||options.zoom||6, 10),
+            type = el[ATTR]('data-map-type')||options.type||"ROADMAP";
         ;
             c_lat = parseFloat(center[0]||0, 10); c_lng = parseFloat(center[1]||0, 10);
             gmap = new google.maps.Map(el, {
@@ -976,7 +974,7 @@ $.fn.htmlwidget = function( type, opts ) {
                 onSlideEnd: function(position, value) {}
                 */
                  polyfill: false
-                ,orientation: $el.attr('data-range-orientation')||opts.orientation||"horizontal"
+                ,orientation: el[ATTR]('data-range-orientation')||opts.orientation||"horizontal"
                 });
             break;
         
@@ -985,10 +983,9 @@ $.fn.htmlwidget = function( type, opts ) {
             if ( 'function' === typeof $.fn.select2 )
             {
                 $el.select2(opts);
-                $el.prev('.select2-container')
-                    .attr('title',$el.attr('title'))
-                    .attr('data-tooltip',$el.attr('data-tooltip'))
-                ;
+                if ( el[HAS_ATTR]('w-tooltip') ) $el.prev('.select2-container').attr('w-tooltip',el[ATTR]('w-tooltip'));
+                else if ( el[HAS_ATTR]('data-tooltip') ) $el.prev('.select2-container').attr('data-tooltip',el[ATTR]('data-tooltip'));
+                else if ( el[HAS_ATTR]('title') ) $el.prev('.select2-container').attr('title',el[ATTR]('title'));
             }
             break;
         
@@ -1101,7 +1098,14 @@ htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
     if ( !hasTooltip )
     {
-        content = !!$el.attr('data-tooltip') ? $el.attr('data-tooltip') : $el.attr('title');
+        content = el[HAS_ATTR]('w-tooltip')
+        ? el[ATTR]('w-tooltip')
+        : (el[HAS_ATTR]('data-tooltip')
+        ? el[ATTR]('data-tooltip')
+        : (el[HAS_ATTR]('title')
+        ? el[ATTR]('title')
+        : ''));
+        
         if ( content.length )
         {
             $el.tooltipster({
@@ -1118,9 +1122,9 @@ htmlwidget.tooltip = function( el ) {
                             : 'top'))
             });
         }
-        else
+        else if ( el[HAS_ATTR]('title') )
         {
-            $el.removeAttr('title');
+            el[DEL_ATTR]('title');
         }
     }
     if ( hasTooltip || content.length ) $el.tooltipster('show');
@@ -1138,7 +1142,9 @@ if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
 
 var $body = $(document.body),
     widget_init = function( ){ htmlwidget.initialisable( this ); },
-    widget_able = function( ){ htmlwidget.widgetize( this ); };
+    widget_able = function( ){ htmlwidget.widgetize( this ); },
+    widget_tooltip = function( ){ htmlwidget.tooltip( this ); }
+;
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
@@ -1149,7 +1155,7 @@ if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable:::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
+        .onSelector('.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
     ;
 }
 
@@ -1157,9 +1163,9 @@ if ( 'function' === typeof $.fn.onSelector )
 if ( 'function' === typeof $.fn.tooltipster )
 {
     if ( 'function' === typeof $.fn.onSelector )
-        $body.onSelector('[data-tooltip]:hover,[title]:hover', htmlwidget.tooltip);
+        $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover', widget_tooltip);
     else
-        $body.on('mouseover', '[data-tooltip],[title]', htmlwidget.tooltip);
+        $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
 
 });
