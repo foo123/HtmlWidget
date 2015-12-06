@@ -249,8 +249,73 @@ var HtmlWidget = self = {
         return data_attr;
     }
     
-    ,options: function( opts ) {
-        return [].concat(opts||[]);
+    ,options: function( opts, key, value ) {
+        var options = [], o_key, o_val, k, v, l;
+        opts = opts || {};
+        if ( 'function' === opts.concat  )
+        {
+            for (k=0,l=opts.length; k<l; k++)
+            {
+                v = opts[k];
+                
+                o_key = null;
+                if ( -1 === key )
+                {
+                    o_key = k;
+                }
+                else if ( null != key )
+                {
+                    if ( isset(v, key) )
+                        o_key = v[key];
+                }
+                
+                o_val = null;
+                if ( null != value )
+                {
+                    if ( isset(v,value) )
+                        o_val = v[value];
+                }
+                else
+                {
+                    o_val = v;
+                }
+                if ( null === o_key ) o_key = o_val;
+                options.push([o_key, o_val]);
+            }
+        }
+        else
+        {
+            for (k in opts)
+            {
+                if ( !opts[HAS](k) ) continue;
+                v = opts[k];
+                
+                o_key = null;
+                if ( -1 === key )
+                {
+                    o_key = k;
+                }
+                else if ( null != key )
+                {
+                    if ( isset(v, key) )
+                        o_key = v[key];
+                }
+                
+                o_val = null;
+                if ( null != value )
+                {
+                    if ( isset(v,value) )
+                        o_val = v[value];
+                }
+                else
+                {
+                    o_val = v;
+                }
+                if ( null === o_key ) o_key = o_val;
+                options.push([o_key, o_val]);
+            }
+        }
+        return options;
     }
     
     ,addWidget: function( widget, renderer ) {
@@ -1317,7 +1382,7 @@ var HtmlWidget = self = {
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wselect2 = !empty(attr,'select2') && true==attr['select2'];
         wdropdown = !empty(attr,'dropdown') && true==attr['dropdown'];
-        wclass = wdropdown ? 'widget w-dropdown w-state-default' : 'widget w-select';
+        wclass = wdropdown ? 'widget w-dropdown' : 'widget w-select';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
@@ -1328,17 +1393,8 @@ var HtmlWidget = self = {
         has_selected = false;
         for(o=0; o<l; o++)
         {
-            opt = opts[o];
-            if ( Object === opt.constructor )
-            {
-                key = KEYS(opt).shift();
-                val = opt[key];
-            }
-            else
-            {
-                key = opt;
-                val = opt;
-            }
+            // NOTE: use HtmlWidget.options() to format options accordingly to be used here
+            opt = opts[o]; key = opt[0]; val = opt[1];
             selected = -1 < wselected.indexOf(key) ? ' selected="selected"' : '';
             if ( selected.length ) has_selected = true;
             woptions += "<option value=\""+key+"\""+selected+">"+val+"</option>";
@@ -1361,7 +1417,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'htmlwidgets');
         }
         return wdropdown
-        ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+winit+' '+wname+' class="w-dropdown-select w-state-default" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
+        ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+winit+' '+wname+' class="w-dropdown-select" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
         : '<select id="'+wid+'" '+winit+' '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';
     }
     

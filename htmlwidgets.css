@@ -2849,14 +2849,13 @@ table.w-table th
 .w-select.select2-container > .select2-choices > .select2-search-choice
 {
     position: relative;
-    border-radius: 1em;
-    padding: .6em 1em .6em 1.4em;
+    border-radius: 3px;
+    padding: .5em 1em .5em 1.2em;
 }
 .w-select.select2-container > .select2-choice,
 .w-select.w-large.select2-container > .select2-choices > .select2-search-choice
 {
-    border-radius: 1.4em;
-    padding: .8em 1.4em .8em 1.4em;
+    padding: .6em 1.2em .6em 1.2em;
 }
 .w-select.select2-container > .select2-choice
 {
@@ -2882,7 +2881,7 @@ table.w-table th
     font-family: FontAwesome;
     font-style: normal;
     font-weight: normal;
-    font-size: 1em;
+    font-size: .8em;
     /*line-height: 1;*/
     color: inherit;
     left: .2em; top: 50%;

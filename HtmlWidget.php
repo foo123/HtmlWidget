@@ -203,9 +203,39 @@ class HtmlWidget
         return $data_attr;
     }
     
-    public static function options( $opts )
+    public static function options( $opts, $key=null, $value=null )
     {
-        return (array)$opts;
+        $options = array( );
+        foreach((array)$opts as $k=>$v)
+        {
+            $vv = (array)$v;
+            $o_key = null;
+            if ( -1 === $key )
+            {
+                $o_key = $k;
+            }
+            elseif ( null !== $key )
+            {
+                if ( isset($vv[$key]) )
+                    $o_key = $vv[$key];
+            }
+            
+            $o_val = null;
+            if ( null !== $value )
+            {
+                if ( isset($vv[$value]) )
+                    $o_val = $vv[$value];
+            }
+            else
+            {
+                $o_val = $v;
+            }
+            
+            if ( null === $o_key ) $o_key = $o_val;
+            
+            $options[] = array($o_key, $o_val);
+        }
+        return $options;
     }
     
     public static function addWidget( $widget, $renderer )
@@ -1247,17 +1277,8 @@ OUT;
         $has_selected = false;
         foreach((array)$data['options'] as $opt)
         {
-            if (is_array($opt))
-            {
-                $keys = array_keys($opt);
-                $key = array_shift($keys);
-                $val = $opt[$key];
-            }
-            else
-            {
-                $key = $opt;
-                $val = $opt;
-            }
+            // NOTE: use HtmlWidget::options() to format options accordingly to be used here
+            $key = $opt[0]; $val = $opt[1];
             $selected = in_array($key, $wselected) ? ' selected="selected"' : '';
             if ( !empty($selected) ) $has_selected = true;
             $woptions .= "<option value=\"$key\"$selected>$val</option>";
@@ -1280,7 +1301,7 @@ OUT;
             self::enqueue('scripts', 'htmlwidgets');
         }
         return $wdropdown
-        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wname class=\"w-dropdown-select w-state-default\" $wextra $wdata>$woptions</select></span>"
+        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wname class=\"w-dropdown-select\" $wextra $wdata>$woptions</select></span>"
         : "<select id=\"$wid\" $winit $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
     }
     
