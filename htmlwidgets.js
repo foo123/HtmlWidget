@@ -29,6 +29,7 @@ HAS = 'hasOwnProperty',
 ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
 PROTO = 'prototype', ID = 0,
 slice = Array[PROTO].slice,
+int = function( x ) { return parseInt(x||0,10)||0; },
 json_decode = JSON.parse, json_encode = JSON.stringify,
 toString = Object[PROTO].toString;
 
@@ -166,30 +167,6 @@ function widget2jquery( name, widget, spr )
 htmlwidget.make = widget2jquery;
 
 // some useful widgets
-htmlwidget.stylable = function stylable( document, id, selector, css, media ) {
-    var self = this;
-    if ( !(self instanceof stylable) ) return new stylable(document, id, selector, css, media);
-    
-    var style = {id:{selector:selector,rules:null}};
-    self.id = id;
-    self.selector = selector;
-    self.rules = [];
-    for (var prop in css) css[HAS](prop) && self.rules.push( prop + ':' + css[prop] );
-    style[id].rules = self.rules;
-    self.sheet = create_style( document, media||'all', style );
-    self.sheet.setAttribute('id', self.id);
-    self.style = style[id].css;
-    
-    self.dispose = function( ) {
-        self.id = null;
-        self.selector = null;
-        self.rules = null;
-        self.style = null;
-        if ( self.sheet ) dispose_style( document, self.sheet );
-        self.sheet = null;
-    };
-};
-
 widget2jquery('selectable', htmlwidget.selectable=function selectable( el, options ){
     var self = this;
     if ( !(self instanceof selectable) ) return new selectable(el, options);
@@ -425,7 +402,6 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
         self.instance = null;
     };
 });
-htmlwidget.template_key = 
 widget2jquery('template', htmlwidget.template=function template( el, options ){
     var self = this;
     if ( !(self instanceof template) ) return new template(el, options);
@@ -548,7 +524,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     };
 });
 widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
-    var self = this, thumbnail_size = 120;
+    var self = this;
     if ( !(self instanceof uploadable) ) return new uploadable(el, options);
     
     self.dispose = function( ) {
@@ -557,54 +533,127 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
         control = null;
     };
     self.init = function( ) {
-        var control = $(el);
+        var control = $(el),
+        
+            fileSizeMax = (el[HAS_ATTR]('data-upload-size')
+                ? int(el[ATTR]('data-upload-size'))
+                : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB*/,
+                
+            fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')*/,
+            
+            fileDimensions = el[HAS_ATTR]('data-upload-dimensions')
+                ? el[ATTR]('data-upload-dimensions').split('x').map(int)
+                : (!!options.dimensions ? options.dimensions.map(int) : null),
+                
+            thumbnail_size = (el[HAS_ATTR]('data-upload-thumbnail')
+                ? int(el[ATTR]('data-upload-thumbnail'))
+                : int(options.thumbnail || 120)) || 120,
+                
+            msgFileSize = el[HAS_ATTR]('data-upload-size-msg')
+                ? el[ATTR]('data-upload-size-msg')
+                : (options.maxFileSizeMsg || 'File size exceeds maximum size limit!'),
+                
+            msgFileType = el[HAS_ATTR]('data-upload-type-msg')
+                ? el[ATTR]('data-upload-type-msg')
+                : (options.fileTypeMsg || 'File type not allowed!'),
+                
+            msgFileDimensions = el[HAS_ATTR]('data-upload-dimensions-msg')
+                ? el[ATTR]('data-upload-dimensions-msg')
+                : (options.dimensionsMsg || 'File dimensions exceed allowed dimensions!')
+        ;
         control
         .on('click.uploadable', '.w-upload-thumbnail', function( evt ){
-            var $imdata = control.find('._w-data'),
-                imdata = control[0].imdata || (!!$imdata.val() ? json_decode($imdata.val()) : null);
+            var $upload_data = control.find('._w-data'),
+                upload_data = control[0].upload_data || (!!$upload_data.val() ? json_decode($upload_data.val()) : null);
                 
-            if ( !!imdata )
+            if ( !!upload_data && upload_data.type.match('image') )
             {
-                if ( !control[0].imdata ) control[0].imdata = imdata;
+                if ( !control[0].upload_data ) control[0].upload_data = upload_data;
                 window.open(
-                    !!imdata.original ? imdata.original : imdata.image,
-                    'preview_'+control.attr('id'),
-                    'scrollbars=yes,resizable=yes,width='+imdata.width+',height='+imdata.height
+                    !!upload_data.original ? upload_data.original : upload_data.file,
+                    'preview_'+control[0].id,
+                    'scrollbars=yes,resizable=yes,width='+upload_data.width+',height='+upload_data.height
                 ).focus( );
             }
             return false;
         })
         .on('click.uploadable', '.w-upload-delete', function( evt ){
-            control[0].imdata = null;
+            control[0].upload_data = null;
+            control.find('input._w-uploader[type=file]')[0].value = '';
             control.find('img').attr('src','');
             control.find('._w-data').val('').trigger('change');
             return false;
         })
         .on('change.uploadable', 'input._w-uploader[type=file]', function( evt ){
-            var $el = $(this), img_reader,
-                file = evt.target.files[0] || null;
-            if ( !file || !file.type.match('image') ) return false;
-            img_reader = new FileReader( );
-            img_reader.addEventListener("load", function( evt ){
-                var img_src = evt.target.result, img = new Image( );
-                img.addEventListener("load", function( ) {
+            var input = evt.target, file = input.files[0] || null, file_reader;
+            if ( !file ) return false;
+            if ( !file.type.match( fileType ) )
+            {
+                input.value = '';
+                setTimeout(function( ){
+                    alert(msgFileType);
+                }, 10);
+                return false;
+            }
+            if ( file.size > fileSizeMax )
+            {
+                input.value = '';
+                setTimeout(function( ){
+                    alert(msgFileSize);
+                }, 10);
+                return false;
+            }
+            file_reader = new FileReader( );
+            file_reader.addEventListener("load", function( evt ){
+                var base64_data = evt.target.result;
+                if ( 'image' == fileType )
+                {
+                    var img = new Image( );
+                    img.addEventListener("load", function( ) {
+                        // add a small delay
+                        setTimeout(function( ){
+                            var w = img.width, h = img.height,
+                                tw, th, canvas, ctx, img_thumb;
+                            if ( !!fileDimensions )
+                            {
+                                if ( w > fileDimensions[0] || h > fileDimensions[1] )
+                                {
+                                    input.value = '';
+                                    control.trigger('upload-end');
+                                    setTimeout(function( ){
+                                        alert(msgFileDimensions);
+                                    }, 10);
+                                    return false;
+                                }
+                            }
+                            tw = thumbnail_size; th = Math.round(thumbnail_size*h/w);
+                            canvas = document.createElement('canvas'); ctx = canvas.getContext('2d');
+                            canvas.width = tw; canvas.height = th;
+                            ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
+                            img_thumb = canvas.toDataURL("image/png");
+                            control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:img_thumb, width:w, height:h};
+                            control.find('img').attr('src', img_thumb);
+                            control.find('._w-data').val( json_encode( control[0].upload_data ) ).trigger('change');
+                            control.trigger('upload-end');
+                        }, 10);
+                    });
+                    img.src = base64_data;
+                }
+                else
+                {
                     // add a small delay
                     setTimeout(function( ){
-                        var w = img.width, h = img.height,
-                            tw = thumbnail_size, th = Math.round(thumbnail_size*h/w),
-                            canvas = document.createElement('canvas'),
-                            ctx = canvas.getContext('2d'), img_thumb;
-                        canvas.width = tw; canvas.height = th;
-                        ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
-                        img_thumb = canvas.toDataURL("image/png");
-                        control[0].imdata = {name:file.name, width:w, height:h, image:img_src, thumb:img_thumb};
-                        control.find('img').attr('src', img_thumb);
-                        control.find('._w-data').val( json_encode( control[0].imdata ) ).trigger('change');
+                        control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:'', width:0, height:0};
+                        control.find('img').attr('src', '');
+                        control.find('._w-data').val( json_encode( control[0].upload_data ) ).trigger('change');
+                        control.trigger('upload-end');
                     }, 10);
-                });
-                img.src = img_src;
+                }
+                // clear input control
+                input.value = '';
             });
-            img_reader.readAsDataURL( file );
+            control.trigger('upload-start');
+            file_reader.readAsDataURL( file );
         })
         ;
     };
@@ -711,6 +760,31 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
 });
 // http://nikos-web-development.netai.net
 // http://maps.googleapis.com/maps/api/js?sensor=false
+function map_geocode( location, cb, reverse_geocode )
+{
+    // https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
+    if ( 'undefined' !== typeof google.maps.Geocoder )
+    {
+        geocoder = new google.maps.Geocoder( );
+        var query = reverse_geocode ? {'location':location} : {'address':location};
+        geocoder.geocode(query, function(data, status) {
+            cb(google.maps.GeocoderStatus.OK == status
+            ? {
+                location: data[0].geometry.location,
+                address: data[0].formatted_address,
+                address_components: data[0].address_components,
+                /*{short_name:string, long_name:string, postcode_localities[]:string, types[]:string, ...}*/
+                partial_match: data[0].partial_match
+            }
+            : null,
+            status, data);
+        });
+    }
+    else
+    {
+        cb( null );
+    }
+}
 function add_map_marker( map, lat, lng, title, info, opts ) 
 { 
     // https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions
@@ -729,7 +803,6 @@ function add_map_marker( map, lat, lng, title, info, opts )
     if ( 'undefined' !== opts.shape ) marker_options.shape = opts.shape;
     
     marker = new google.maps.Marker( marker_options );
-    
     if ( !!info )
     {
         marker_popup = new google.maps.InfoWindow({content: info});
@@ -737,11 +810,17 @@ function add_map_marker( map, lat, lng, title, info, opts )
             marker_popup.open( map, marker );
         });
     }
+    if ( !!opts.address )
+    {
+        map_geocode(opts.address, function( data ){
+            if ( data ) marker.setPosition( data.location );
+        });
+    }
     
     return marker;
 }
 widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
-    var self = this, gmap, zoom, c_lat, c_lng, responsive;
+    var self = this, gmap, zoom, c_lat, c_lng, center_marker, responsive;
     if ( !(self instanceof gmap3) ) return new gmap3(el, options);
     
     gmap = null;
@@ -751,6 +830,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
         type: "ROADMAP",
         markers: null,
         center: null,
+        address: null,
         kml: null,
         responsive: false
     }, options||{});
@@ -761,7 +841,9 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
         {
             google.maps.event.addListenerOnce( gmap, 'idle', function( ){
                 google.maps.event.trigger( gmap, 'resize' );
-                gmap.setCenter( new google.maps.LatLng( c_lat, c_lng ) );
+                var pos = new google.maps.LatLng( c_lat, c_lng );
+                gmap.setCenter( pos );
+                if ( center_marker ) center_marker.setPosition( pos );
             });
         }
     }
@@ -773,47 +855,73 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
     self.init = function( ) {
         var $el = $(el),
+            address = !!el[ATTR]('data-map-address') ? el[ATTR]('data-map-address') : null,
             center = el[HAS_ATTR]('data-map-center') ? el[ATTR]('data-map-center').split(',') : options.center || [0,0],
-            zoom = parseInt(el[ATTR]('data-map-zoom')||options.zoom||6, 10),
+            has_center_marker = !!el[HAS_ATTR]('data-map-center-marker') || !!options.centerMarker,
+            zoom = int(el[ATTR]('data-map-zoom')||options.zoom||6),
             type = el[ATTR]('data-map-type')||options.type||"ROADMAP";
         ;
-            c_lat = parseFloat(center[0]||0, 10); c_lng = parseFloat(center[1]||0, 10);
-            gmap = new google.maps.Map(el, {
-                zoom: zoom,
-                center: new google.maps.LatLng( c_lat, c_lng ),
-                mapTypeId: google.maps.MapTypeId[ type ]
-            })
-        ;
+        c_lat = parseFloat(center[0]||0, 10);
+        c_lng = parseFloat(center[1]||0, 10);
+        gmap = new google.maps.Map(el, {
+            zoom: zoom,
+            center: new google.maps.LatLng( c_lat, c_lng ),
+            mapTypeId: google.maps.MapTypeId[ type ]
+        });
+        if ( has_center_marker )
+        {
+            var marker = {
+                lat: c_lat,
+                lng: c_lng,
+                title: el[ATTR]('title'),
+                info: null
+            };
+            center_marker = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+        }
+        if ( !!address )
+        {
+            map_geocode(address, function( data ){
+                if ( data )
+                {
+                    c_lat = data.location.lat( ); c_lng = data.location.lng( );
+                    gmap.setCenter( data.location );
+                    if ( center_marker ) center_marker.setPosition( data.location );
+                }
+            });
+        }
+        
         // declarative markers
         $el.children('.marker,.map-marker').each(function( ){
-            var m = $(this),
-                position = !!m.attr('data-marker-position') ? m.attr('data-marker-position').split(',') : [0,0],
+            var m = this,
+                position = !!m[ATTR]('data-marker-position') ? m[ATTR]('data-marker-position').split(',') : [0,0],
                 marker = {
-                lat: parseFloat(position[0]||0, 10),
-                lng: parseFloat(position[1]||0, 10),
-                title: m.attr('title'),
-                info: m.html(),
-                clickable: !!m.attr('data-marker-clickable'),
-                draggable: !!m.attr('data-marker-draggable'),
-                visible: !!m.attr('data-marker-visible')
+                address: !!m[ATTR]('data-marker-address') ? m[ATTR]('data-marker-address') : null,
+                lat: parseFloat(position[0]||0, 10)||0,
+                lng: parseFloat(position[1]||0, 10)||0,
+                title: m[ATTR]('title'),
+                info: m.innerHTML,
+                clickable: !!m[ATTR]('data-marker-clickable'),
+                draggable: !!m[ATTR]('data-marker-draggable'),
+                visible: !!m[ATTR]('data-marker-visible')
             };
             add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
         });
         $el.empty( );
         // markers reference
-        if ( !!$el.attr('data-map-markers') )
+        if ( !!el[ATTR]('data-map-markers') )
         {
-            $($el.attr('data-map-markers')).each(function( ){
-                var m = $(this),
-                    position = !!m.attr('data-marker-position') ? m.attr('data-marker-position').split(',') : [0,0],
+            $(el[ATTR]('data-map-markers')).each(function( ){
+                var m = this,
+                    position = !!m[ATTR]('data-marker-position') ? m[ATTR]('data-marker-position').split(',') : [0,0],
                     marker = {
-                    lat: parseFloat(position[0]||0, 10),
-                    lng: parseFloat(position[1]||0, 10),
-                    title: m.attr('title'),
-                    info: m.html(),
-                    clickable: !!m.attr('data-marker-clickable'),
-                    draggable: !!m.attr('data-marker-draggable'),
-                    visible: !!m.attr('data-marker-visible')
+                    address: !!m[ATTR]('data-marker-address') ? m[ATTR]('data-marker-address') : null,
+                    lat: parseFloat(position[0]||0, 10)||0,
+                    lng: parseFloat(position[1]||0, 10)||0,
+                    title: m[ATTR]('title'),
+                    info: m.innerHTML,
+                    clickable: !!m[ATTR]('data-marker-clickable'),
+                    draggable: !!m[ATTR]('data-marker-draggable'),
+                    visible: !!m[ATTR]('data-marker-visible')
                 };
                 add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
             });
@@ -831,7 +939,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
             var geoRssLayer = new google.maps.KmlLayer( options.kml );
             geoRssLayer.setMap( gmap );
         }
-        responsive = !!($el.attr('data-map-responsive')||options.responsive);
+        responsive = !!(el[ATTR]('data-map-responsive')||options.responsive);
         if ( responsive ) $(el.parentNode||document.body).on( 'resize', on_resize );
     };
     self.map = function( ) {
@@ -843,7 +951,9 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
             if ( gmap )
             {
                 c_lat = parseFloat(c[0],10); c_lng = parseFloat(c[1],10);
-                gmap.setCenter( new google.maps.LatLng( c_lat, c_lng ) );
+                var pos = new google.maps.LatLng( c_lat, c_lng );
+                gmap.setCenter( pos );
+                if ( center_marker ) center_marker.setPosition( pos );
             }
         }
         else
@@ -1162,10 +1272,7 @@ if ( 'function' === typeof $.fn.onSelector )
 // dynamic tooltips
 if ( 'function' === typeof $.fn.tooltipster )
 {
-    if ( 'function' === typeof $.fn.onSelector )
-        $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover', widget_tooltip);
-    else
-        $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
+    $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
 
 });

@@ -368,6 +368,8 @@ var HtmlWidget = self = {
             case 'link':        out = self.w_link(attr, data); break;
             case 'button':      out = self.w_button(attr, data); break;
             case 'label':       out = self.w_label(attr, data); break;
+            case 'uploader':
+            case 'upload':      out = self.w_upload(attr, data); break;
             case 'suggestbox':
             case 'suggest':     out = self.w_suggest(attr, data); break;
             case 'textbox':
@@ -384,7 +386,6 @@ var HtmlWidget = self = {
             case 'syntax':
             case 'highlight-editor':
             case 'highlighter':
-            case 'upload':      out = self.w_upload(attr, data); break;
             case 'textarea':    out = self.w_textarea(attr, data); break;
             case 'datetimepicker':
             case 'datepicker':
@@ -1122,8 +1123,8 @@ var HtmlWidget = self = {
     }
     
     ,w_upload: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wupload_base, wdimensions, wvalue, wname,
-            msg_upload, msg_delete, msg_full, image, thumb, image_data, winit;
+        var wid, wclass, wstyle, wextra, wdata, wupload_base, wvalue, wname,
+            msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
@@ -1132,19 +1133,19 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
         wupload_base = !empty(attr,"upload-base") ? attr["upload-base"] : '';
-        wdimensions = !empty(attr,"dimensions") ? attr["dimensions"] : '600x400';
         msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
         msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
         msg_full = !empty(attr,"msg-full-size") ? attr["msg-full-size"] : 'Click to view full-size image';
         wvalue = !empty(data,"value") ? data["value"] : null;
         if ( !!wvalue )
         {
-            image = wupload_base + wvalue['image'];
-            thumb = wupload_base + wvalue['thumb'];
-            image_data = json_encode({
+            image = wupload_base + wvalue['file'];
+            thumb = !empty(wvalue,'thumb') ? wupload_base + wvalue['thumb'] : '';
+            upload_data = json_encode({
                 'original' : image,
-                'image' : wvalue['image'],
-                'thumb' : wvalue['thumb'],
+                'type' : !empty(wvalue,'type') ? wvalue['type'] : 'image',
+                'file' : wvalue['file'],
+                'thumb' : !empty(wvalue,'thumb') ? wvalue['thumb'] : '',
                 'width' : !empty(wvalue,'width') ? wvalue['width'] : 600,
                 'height' : !empty(wvalue,'height') ? wvalue['height'] : 400
             });
@@ -1153,7 +1154,7 @@ var HtmlWidget = self = {
         {
             image = '';
             thumb = '';
-            image_data = '';
+            upload_data = '';
         }
         if ( !empty(attr,'readonly') )
         {
@@ -1162,7 +1163,7 @@ var HtmlWidget = self = {
         else
         {
             self.enqueue('scripts', 'htmlwidgets');
-            return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+' data-upload-base="'+wupload_base+'" data-upload-dimensions="'+wdimensions+'"><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+image_data+'</textarea><label class="widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
+            return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' data-upload-base="'+wupload_base+'" '+wdata+'><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+upload_data+'</textarea><label class="widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
         }
     }
     
