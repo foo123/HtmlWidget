@@ -67,18 +67,21 @@ class HtmlWidget
             //  external APIS
              array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
             
+            // Tao
+            ,array('scripts', 'tao', $asset_base.'tao.js')
+            
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane.css')
             ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
             
-            // Tao
-            ,array('scripts', 'tao', $asset_base.'Tao.js')
+            // History
+            ,array('scripts', 'history', $asset_base.'history.js')
+            
+            // Cookie
+            ,array('scripts', 'cookie', $asset_base.'cookie.js')
             
             // Serialiser
             ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
-            
-            // Cookie
-            ,array('scripts', 'cookie', $asset_base.'jscookie.js')
             
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer.js')
@@ -139,6 +142,9 @@ class HtmlWidget
             // ModelView
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
+            // ModelViewForm
+            ,array('scripts', 'modelviewform', $asset_base.'modelviewform.js', array('jquery','modelview'))
+             
             // Packery
             ,array('scripts', 'packery', $asset_base.'packery.js')
              
@@ -155,6 +161,9 @@ class HtmlWidget
             // MathJax
             ,array('scripts', 'mathjax', $asset_base.'mathajax/mathjax.js?config=TeX-AMS_HTML-full')
             
+            // Tinymce
+            ,array('scripts', 'tinymce', $asset_base.'tinymce/tinymce.js')
+             
             // Trumbowyg
             ,array('styles', 'trumbowyg.css', $asset_base.'trumbowyg.css')
             ,array('scripts', 'trumbowyg', $asset_base.'trumbowyg.js', array('trumbowyg.css','jquery'))
