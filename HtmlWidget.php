@@ -1135,6 +1135,7 @@ OUT;
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wtime = !empty($attr["time"]) ? 'data-datepicker-time="1"' : '';
+        $wtime .= isset($attr["seconds"]) && (false === (bool)$attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
         $wclass = 'widget w-text w-date'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
