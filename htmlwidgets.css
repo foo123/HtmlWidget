@@ -2963,6 +2963,25 @@ table.w-table th
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
 }
+.w-scrolltable
+{
+    position:relative; display: block;
+    margin: 0; padding: 0; width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 500px;
+}
+.w-scrolltable  > table.w-table,
+.w-scrolltable  > table
+{
+    position: relative;
+    padding: 0; margin: 0;
+}
 
 @-webkit-keyframes w-anim-spindots 
 {
