@@ -343,7 +343,7 @@ widget2jquery('delayable', htmlwidget.delayable=function delayable( el, options 
     self.init = function( ) {
         var $el = $(el);
         //if ( $el.hasClass('w-delayed') )  $el.removeClass('w-delayed');
-        //if ( !$el.hasClass('w-undelayed') ) $el.addClass('w-undelayed');
+        if ( !$el.hasClass('w-delayed') ) $el.addClass('w-undelayed');
         if ( !$el.children('.w-delayable-overlay').length )
             $el.append('<div class="w-delayable-overlay"><div class="w-spinner w-spinner-dots"></div></div>');
     };
@@ -364,7 +364,7 @@ widget2jquery('disabable', htmlwidget.disabable=function disabable( el, options 
     self.init = function( ) {
         var $el = $(el);
         //if ( $el.hasClass('w-disabled') ) $el.removeClass('w-disabled');
-        //if ( !$el.hasClass('w-undisabled') ) $el.addClass('w-undisabled');
+        if ( !$el.hasClass('w-disabled') ) $el.addClass('w-undisabled');
         if ( !$el.children('.w-disabable-overlay').length )
             $el.append('<div class="w-disabable-overlay"></div>');
     };
@@ -1220,6 +1220,7 @@ htmlwidget.tooltip = function( el ) {
         
         if ( content.length )
         {
+            hasTooltip = true;
             $el.tooltipster({
                 // http://iamceege.github.io/tooltipster/#options
                 onlyOne: true,
@@ -1239,7 +1240,10 @@ htmlwidget.tooltip = function( el ) {
             el[DEL_ATTR]('title');
         }
     }
-    if ( hasTooltip || content.length ) $el.tooltipster('show');
+    if ( hasTooltip )
+    {
+        $el.tooltipster('content', content).tooltipster('show');
+    }
 };
 
 // dynamic widget init hook
