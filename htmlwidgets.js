@@ -342,8 +342,8 @@ widget2jquery('delayable', htmlwidget.delayable=function delayable( el, options 
     if ( !(self instanceof delayable) ) return new delayable(el, options);
     self.init = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('w-delayed') )  $el.removeClass('w-delayed');
-        if ( !$el.hasClass('w-undelayed') ) $el.addClass('w-undelayed');
+        //if ( $el.hasClass('w-delayed') )  $el.removeClass('w-delayed');
+        //if ( !$el.hasClass('w-undelayed') ) $el.addClass('w-undelayed');
         if ( !$el.children('.w-delayable-overlay').length )
             $el.append('<div class="w-delayable-overlay"><div class="w-spinner w-spinner-dots"></div></div>');
     };
@@ -363,8 +363,8 @@ widget2jquery('disabable', htmlwidget.disabable=function disabable( el, options 
     if ( !(self instanceof disabable) ) return new disabable(el, options);
     self.init = function( ) {
         var $el = $(el);
-        if ( $el.hasClass('w-delayed') ) $el.removeClass('w-delayed');
-        if ( !$el.hasClass('w-undelayed') ) $el.addClass('w-undelayed');
+        //if ( $el.hasClass('w-disabled') ) $el.removeClass('w-disabled');
+        //if ( !$el.hasClass('w-undisabled') ) $el.addClass('w-undisabled');
         if ( !$el.children('.w-disabable-overlay').length )
             $el.append('<div class="w-disabable-overlay"></div>');
     };
