@@ -145,6 +145,9 @@ class HtmlWidget
             // ModelViewForm
             ,array('scripts', 'modelviewform', $asset_base.'modelviewform.js', array('jquery','modelview'))
              
+            // smoothState
+            ,array('scripts', 'smoothstate', $asset_base.'smoothState.js', array('jquery'))
+             
             // Packery
             ,array('scripts', 'packery', $asset_base.'packery.js')
              

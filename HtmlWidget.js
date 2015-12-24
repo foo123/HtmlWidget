@@ -189,6 +189,9 @@ var HtmlWidget = self = {
             // ModelViewForm
             ,['scripts', 'modelviewform', asset_base+'modelviewform.js', ['jquery','modelview']]
              
+            // smoothState
+            ,['scripts', 'smoothstate', asset_base+'smoothState.js', ['jquery']]
+             
             // Packery
             ,['scripts', 'packery', asset_base+'packery.js']
              
