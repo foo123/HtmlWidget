@@ -1220,7 +1220,6 @@ htmlwidget.tooltip = function( el ) {
         
         if ( content.length )
         {
-            hasTooltip = true;
             $el.tooltipster({
                 // http://iamceege.github.io/tooltipster/#options
                 onlyOne: true,
@@ -1233,16 +1232,22 @@ htmlwidget.tooltip = function( el ) {
                             : ($el.hasClass('tooltip-left')
                             ? 'left'
                             : 'top'))
-            });
+            }).tooltipster('show');
         }
         else if ( el[HAS_ATTR]('title') )
         {
             el[DEL_ATTR]('title');
         }
     }
-    if ( hasTooltip )
+    else
     {
-        $el.tooltipster('content', content).tooltipster('show');
+        $el.tooltipster('content', el[HAS_ATTR]('w-tooltip')
+        ? el[ATTR]('w-tooltip')
+        : (el[HAS_ATTR]('data-tooltip')
+        ? el[ATTR]('data-tooltip')
+        : (el[HAS_ATTR]('title')
+        ? el[ATTR]('title')
+        : ''))).tooltipster('show');
     }
 };
 
