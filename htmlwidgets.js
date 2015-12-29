@@ -1144,7 +1144,7 @@ $.fn.htmlwidget = function( type, opts ) {
             if ( 'function' === typeof $.fn.trumbowyg )
             {
                 $el.trumbowyg(opts);
-                $el.closest(".trumbowyg-box").addClass("widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')*/;
+                $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')*/;
             }
             break;
         
