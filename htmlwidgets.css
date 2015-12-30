@@ -1928,6 +1928,77 @@ transform-style: preserve-3d;*/
     /*cursor: not-allowed !important;*/
     opacity: 0.6 !important;
 }
+.w-scrolltable
+{
+    position:relative; display: block;
+    margin: 0; padding: 0; width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 500px;
+}
+.w-scrolltable  > table.w-table,
+.w-scrolltable  > table
+{
+    position: relative;
+    padding: 0; margin: 0;
+}
+.w-ribbon
+{
+    position: absolute; display: block; z-index: 1000;
+    overflow: hidden; white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.w-ribbon.w-ribbon-top-left
+{
+    /* top left corner */
+    left: -40px; top: 10px;
+    /* 45 deg ccw rotation */
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+.w-ribbon.w-ribbon-top-right
+{
+    /* top right corner */
+    left: auto;
+    right: -40px;
+    /* 45 deg cw rotation */
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.w-ribbon > span
+{
+    position: relative; display: inline-block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    text-align: center;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    text-decoration: none;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 /* w-widget FX and auxiliaries */
 /*timing-function cubic-bezier(0, 1, 0.5, 1);*/
 /*.w-fx-blur
@@ -2358,6 +2429,16 @@ input.w-checkbox + label.w-xlarge
 .w-error-msg::before
 {
     margin-right: 5px;
+}
+.w-ribbon > span
+{
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    font-weight: bold;
+    font-size: 81.25%;
+    margin: 1px 0;
+    padding: 10px 50px;
 }
 
 
@@ -2807,6 +2888,49 @@ table.w-table th
     border-color: #f77c05 !important;
     background-color: #f77c05 !important;
 }
+.w-ribbon
+{
+    -webkit-box-shadow: 0 0 10px #888;
+    -moz-box-shadow: 0 0 10px #888;
+    box-shadow: 0 0 10px #888;
+    background-color: #efefef;
+    color: #121212;
+}
+.w-ribbon.red
+{
+    background-color: #a00;
+    color: #efefef;
+}
+.w-ribbon.green
+{
+    background-color: #0a0;
+    color: #efefef;
+}
+.w-ribbon.blue
+{
+    background-color: #00a;
+    color: #efefef;
+}
+.w-ribbon > span
+{
+    color: inherit;
+    text-shadow: 0 0 5px #444;
+    border-color: #fff;
+}
+.w-ribbon.red > span
+{
+    border-color: #faa;
+}
+.w-ribbon.green > span
+{
+    border-color: #afa;
+}
+.w-ribbon.blue > span
+{
+    border-color: #aaf;
+}
+
+
 .w-select.select2-container
 {
     padding: 2px;
@@ -2962,25 +3086,6 @@ table.w-table th
     -ms-transform: translateX(-50%);
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
-}
-.w-scrolltable
-{
-    position:relative; display: block;
-    margin: 0; padding: 0; width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    box-sizing: border-box;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 500px;
-}
-.w-scrolltable  > table.w-table,
-.w-scrolltable  > table
-{
-    position: relative;
-    padding: 0; margin: 0;
 }
 
 @-webkit-keyframes w-anim-spindots 
