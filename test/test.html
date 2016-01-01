@@ -14,23 +14,48 @@
             background: #EEE;
             margin-left: 100px;
         }
+        .w-option-placeholder[selected]{
+            font-style: italic;
+            opacity: 0.5;
+        }
         </style>
         <title>HtmlWidgets Test page</title>
     </head>
     <body>
-        <h1>HtmlWidgets Test page</h1>
+        <h1>HtmlWidgets Test page (pure css widgets)</h1>
         <hr />
-        <button class="w-widget w-button"><i class="fa fa-plus"></i> Button</button>
-        <button class="w-widget w-button w-large"><i class="fa fa-times-circle"></i> Large Button</button>
-        <button class="w-widget w-button w-xlarge"><i class="fa fa-info-circle"></i> X-Large Button</button>
+        <button class="w-widget w-button w-small"><i class="fa fa-plus"></i> small</button>
+        <button class="w-widget w-button"><i class="fa fa-plus"></i> button</button>
+        <button class="w-widget w-button w-large"><i class="fa fa-times-circle"></i> large</button>
+        <button class="w-widget w-button w-xlarge"><i class="fa fa-info-circle"></i> xlarge</button>
+        <button class="w-widget w-button w-icon-only"><span class="fa-wrapper"><i class="fa fa-plus"></i></span></button>
+        <button class="w-widget w-button w-large w-icon-only"><span class="fa-wrapper"><i class="fa fa-times-circle"></i></span></button>
+        <button class="w-widget w-button w-xlarge w-icon-only"><span class="fa-wrapper"><i class="fa fa-info-circle"></i></span></button>
+        <div class="colorpicker-selector w-colorselector" style="background-color:rgba(210,0,0,0.7)"></div>
         <hr />
-        <input type="text" class="w-widget w-text" placeholder="Text input.." value=""/>
-        <input type="text" class="w-widget w-text w-large" placeholder="Text large input.." value=""/>
-        <input type="text" class="w-widget w-text w-xlarge" placeholder="Text x-large input.." value=""/>
+        <span class="w-dropdown"><select>
+        <option class="w-option-placeholder" selected disabled value="">select..</option>
+        <option value="1">option 1</option>
+        <option value="2">option 2</option>
+        </select></span>
+        <span class="w-dropdown w-large"><select>
+        <option class="w-option-placeholder" selected disabled value="">large..</option>
+        <option value="1">option 1</option>
+        <option value="2">option 2</option>
+        </select></span>
+        <span class="w-dropdown w-xlarge"><select>
+        <option class="w-option-placeholder" selected disabled value="">xlarge..</option>
+        <option value="1">option 1</option>
+        <option value="2">option 2</option>
+        </select></span>
         <hr />
-        <textarea class="w-widget w-textarea" placeholder="Textarea input.."></textarea>
-        <textarea class="w-widget w-textarea w-large" placeholder="Textarea large.."></textarea>
-        <textarea class="w-widget w-textarea w-xlarge" placeholder="Textarea x-large.."></textarea>
+        <input type="text" class="w-widget w-text" placeholder="text.." value=""/>
+        <input type="text" class="w-widget w-text w-large" placeholder="large.." value=""/>
+        <input type="text" class="w-widget w-text w-xlarge" placeholder="x-large.." value=""/>
+        <hr />
+        <textarea class="w-widget w-textarea" placeholder="textarea.."></textarea>
+        <textarea class="w-widget w-textarea w-large" placeholder="large.."></textarea>
+        <textarea class="w-widget w-textarea w-xlarge" placeholder="x-large.."></textarea>
         <hr />
         <input type="checkbox" id="checkbox" class="w-widget w-checkbox" value="1"/> <label for="checkbox" class="w-widget w-checkbox"></label>
         <input type="radio" name="radio" id="radio1" class="w-widget w-radio" value="1"/> <label for="radio1" class="w-widget w-radio"></label>
@@ -48,10 +73,35 @@
         <hr />
         <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
         <hr /><br /><br />
+        <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Bottom <span class="w-tooltip-arrow w-arrow-bottom"></span></div>
+        <hr /><br /><br />
+        <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Left <span class="w-tooltip-arrow w-arrow-left"></span></div>
+        <hr /><br /><br />
+        <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
+        <hr /><br /><br />
+        <div class="box w-delayable w-delayed"></div>
+        <hr />
         <div class="box">
            <div class="w-ribbon-dtl w-red w-ribbon-fold"><span>Ribbon</span></div>
-           <div class="w-ribbon-dtr w-orange"><span>Ribbon</span></div>
+           <div class="w-ribbon-dtr w-blue"><span>Ribbon</span></div>
            <!--<div class="w-ribbon w-ribbon-fold"><span>Pure CSS Ribbon</span></div>-->
+        </div>
+        <hr />
+        <div class="w-msg w-msg-ok">
+            <i class="fa fa-check"></i> <strong>Success!</strong>
+            This msg indicates a successful or positive action.
+        </div>
+        <div class="w-msg w-msg-info">
+            <i class="fa fa-info"></i> <strong>Info!</strong>
+            This msg indicates a neutral informative change or action. 
+        </div>
+        <div class="w-msg w-msg-warn">
+            <i class="fa fa-exclamation-circle"></i> <strong>Warning!</strong>
+            This msg indicates a warning that might need attention.
+        </div>
+        <div class="w-msg w-msg-err">
+            <i class="fa fa-exclamation-triangle"></i> <strong>Error!</strong>
+            This msg indicates a dangerous or potentially negative action. 
         </div>
     </body>
 </html>
