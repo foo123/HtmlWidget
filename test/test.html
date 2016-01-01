@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="../assets/fontawesome.css" />
+        <link rel="stylesheet" href="../htmlwidgets.css" />
+        <script src="../assets/jquery.js"></script>
+        <script src="../assets/selectorlistener.js"></script>
+        <script src="../htmlwidgets.js"></script>
+        <style type="text/css">
+        .box {
+            width: 600px; height: 200px;
+            position: relative;
+            border: 1px solid #BBB;
+            background: #EEE;
+            margin-left: 100px;
+        }
+        </style>
+        <title>HtmlWidgets Test page</title>
+    </head>
+    <body>
+        <h1>HtmlWidgets Test page</h1>
+        <hr />
+        <button class="w-widget w-button"><i class="fa fa-plus"></i> Button</button>
+        <button class="w-widget w-button w-large"><i class="fa fa-times-circle"></i> Large Button</button>
+        <button class="w-widget w-button w-xlarge"><i class="fa fa-info-circle"></i> X-Large Button</button>
+        <hr />
+        <input type="text" class="w-widget w-text" placeholder="Text input.." value=""/>
+        <input type="text" class="w-widget w-text w-large" placeholder="Text large input.." value=""/>
+        <input type="text" class="w-widget w-text w-xlarge" placeholder="Text x-large input.." value=""/>
+        <hr />
+        <textarea class="w-widget w-textarea" placeholder="Textarea input.."></textarea>
+        <textarea class="w-widget w-textarea w-large" placeholder="Textarea large.."></textarea>
+        <textarea class="w-widget w-textarea w-xlarge" placeholder="Textarea x-large.."></textarea>
+        <hr />
+        <input type="checkbox" id="checkbox" class="w-widget w-checkbox" value="1"/> <label for="checkbox" class="w-widget w-checkbox"></label>
+        <input type="radio" name="radio" id="radio1" class="w-widget w-radio" value="1"/> <label for="radio1" class="w-widget w-radio"></label>
+        <input type="radio" name="radio" id="radio2" checked class="w-widget w-radio" value="2"/> <label for="radio2" class="w-widget w-radio"></label>
+        <input type="checkbox" id="checkboxl" class="w-widget w-checkbox" value="1"/> <label for="checkboxl" class="w-widget w-checkbox w-large"></label>
+        <input type="radio" name="radiol" id="radio1l" class="w-widget w-radio" value="1"/> <label for="radio1l" class="w-widget w-radio w-large"></label>
+        <input type="radio" name="radiol" id="radio2l" checked class="w-widget w-radio" value="2"/> <label for="radio2l" class="w-widget w-radio w-large"></label>
+        <input type="checkbox" id="checkboxx" class="w-widget w-checkbox" value="1"/> <label for="checkboxx" class="w-widget w-checkbox w-xlarge"></label>
+        <input type="radio" name="radiox" id="radio1x" class="w-widget w-radio" value="1"/> <label for="radio1x" class="w-widget w-radio w-xlarge"></label>
+        <input type="radio" name="radiox" id="radio2x" checked class="w-widget w-radio" value="2"/> <label for="radio2x" class="w-widget w-radio w-xlarge"></label>
+        <hr />
+        <span class="w-widget w-switch" title="Switch"><input type="checkbox" id="switch" class="w-switch-state" value="1"  /><label for="switch" class="w-switch-on" onclick=""></label><label for="switch" class="w-switch-off" onclick=""></label><span class="w-switch-handle"></span></span>
+        <span class="w-widget w-switch w-large" title="Switch"><input type="checkbox" id="switchl" class="w-switch-state" value="1"  /><label for="switchl" class="w-switch-on" onclick=""><i class="fa fa-check-circle"></i></label><label for="switchl" class="w-switch-off" onclick=""><i class="fa fa-check"></i></label><span class="w-switch-handle"></span></span>
+        <span class="w-widget w-switch w-xlarge" title="Switch"><input type="checkbox" id="switchx" class="w-switch-state" value="1"  /><label for="switchx" class="w-switch-on" onclick=""><i class="fa fa-check-circle"></i></label><label for="switchx" class="w-switch-off" onclick=""><i class="fa fa-check"></i></label><span class="w-switch-handle"></span></span>
+        <hr />
+        <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
+        <hr /><br /><br />
+        <div class="box">
+           <div class="w-ribbon-dtl w-red w-ribbon-fold"><span>Ribbon</span></div>
+           <div class="w-ribbon-dtr w-orange"><span>Ribbon</span></div>
+           <!--<div class="w-ribbon w-ribbon-fold"><span>Pure CSS Ribbon</span></div>-->
+        </div>
+    </body>
+</html>
