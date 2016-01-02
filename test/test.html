@@ -2,9 +2,14 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" href="../assets/fontawesome.css" />
+        <link rel="stylesheet" href="../assets/pikadaytime.css" />
+        <link rel="stylesheet" href="../assets/colorpicker.css" />
         <link rel="stylesheet" href="../htmlwidgets.css" />
         <script src="../assets/jquery.js"></script>
         <script src="../assets/selectorlistener.js"></script>
+        <script src="../assets/datex.js"></script>
+        <script src="../assets/pikadaytime.js"></script>
+        <script src="../assets/colorpicker.js"></script>
         <script src="../htmlwidgets.js"></script>
         <style type="text/css">
         .box {
@@ -14,15 +19,11 @@
             background: #EEE;
             margin-left: 100px;
         }
-        .w-option-placeholder[selected]{
-            font-style: italic;
-            opacity: 0.5;
-        }
         </style>
         <title>HtmlWidgets Test page</title>
     </head>
     <body>
-        <h1>HtmlWidgets Test page (pure css widgets)</h1>
+        <h1>HtmlWidgets Test page</h1>
         <hr />
         <button class="w-widget w-button w-small"><i class="fa fa-plus"></i> small</button>
         <button class="w-widget w-button"><i class="fa fa-plus"></i> button</button>
@@ -31,7 +32,10 @@
         <button class="w-widget w-button w-icon-only"><span class="fa-wrapper"><i class="fa fa-plus"></i></span></button>
         <button class="w-widget w-button w-large w-icon-only"><span class="fa-wrapper"><i class="fa fa-times-circle"></i></span></button>
         <button class="w-widget w-button w-xlarge w-icon-only"><span class="fa-wrapper"><i class="fa fa-info-circle"></i></span></button>
-        <div class="colorpicker-selector w-colorselector" style="background-color:rgba(210,0,0,0.7)"></div>
+        <button class="w-widget w-button w-primary"><i class="fa fa-plus"></i> button</button>
+        <button class="w-widget w-button w-green"><i class="fa fa-plus"></i> button</button>
+        <button class="w-widget w-button w-large w-orange"><i class="fa fa-times-circle"></i> large</button>
+        <button class="w-widget w-button w-xlarge w-red"><i class="fa fa-info-circle"></i> xlarge</button>
         <hr />
         <span class="w-dropdown"><select>
         <option class="w-option-placeholder" selected disabled value="">select..</option>
@@ -48,9 +52,11 @@
         <option value="1">option 1</option>
         <option value="2">option 2</option>
         </select></span>
+        <div w-init="1" class="colorpicker-selector w-colorselector" data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-format="rgba" style="background-color:rgba(210,0,0,0.7)"></div>
+        <div w-init="1" class="colorpicker-selector w-colorselector w-large" data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-format="rgba" style="background-color:rgba(210,0,0,0.7)"></div>
         <hr />
         <input type="text" class="w-widget w-text" placeholder="text.." value=""/>
-        <input type="text" class="w-widget w-text w-large" placeholder="large.." value=""/>
+        <input w-init="1" type="text" class="w-widget w-text w-date w-large" data-datepicker-time="1" formatdata-datepicker-format="Y-m-d H:i:s" placeholder="large.." value=""/>
         <input type="text" class="w-widget w-text w-xlarge" placeholder="x-large.." value=""/>
         <hr />
         <textarea class="w-widget w-textarea" placeholder="textarea.."></textarea>
@@ -80,6 +86,9 @@
         <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
         <hr /><br /><br />
         <div class="box w-delayable w-delayed"></div>
+        <div class="box">
+        <div class="w-spinner w-spinner-dots2 active"></div>
+        </div>
         <hr />
         <div class="box">
            <div class="w-ribbon-dtl w-red w-ribbon-fold"><span>Ribbon</span></div>
