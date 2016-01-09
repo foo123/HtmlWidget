@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.2
+*  @version: 0.8.3
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -70,7 +70,7 @@ function merge( a, b )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.2"
+    VERSION: "0.8.3"
     
     ,BASE: './'
     
@@ -209,7 +209,8 @@ var HtmlWidget = self = {
             ,['scripts', 'mathjax', asset_base+'mathjax/mathjax.js?config=TeX-AMS_HTML-full']
             
             // Tinymce
-            ,['scripts', 'tinymce', asset_base+'tinymce/tinymce.js']
+            ,['scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js']
+            ,['scripts', 'tinymce', asset_base+'tinymce/tinymce.min.js']
              
             // Trumbowyg
             ,['styles', 'trumbowyg.css', asset_base+'trumbowyg.css']
@@ -1191,38 +1192,24 @@ var HtmlWidget = self = {
         wdata = self.data(attr);
         if ( !empty(attr,'syntax-editor') && true == attr['syntax-editor'] ) 
         {
-            defaults = {
-             'mode'             : 'text/html'
-            ,'theme'            : 'default'
-            ,'lineWrapping'     : false
-            ,'lineNumbers'      : true
-            ,'indentUnit'       : 4
-            ,'indentWithTabs'   : false
-            ,'lint'             : false
-            ,'foldGutter'       : true
-            ,'gutters'          : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
-            };
             if ( !winit ) winit = 'w-init="1"';
             wclass = 'w-widget w-syntax-editor';
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : '';
-            weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : defaults;
-            //self.enqueue('scripts', "w-syntax-editor-"+wid, [htmlwidget_('syntax-editor', wid, weditor)], ['htmlwidgets','codemirror-full']);
-            wstyle = '';
+            //weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : defaults;
+            //wstyle = '';
             self.enqueue('scripts', 'codemirror-full');
             self.enqueue('scripts', 'htmlwidgets');
         }
         else if ( !empty(attr,'wysiwyg-editor') && true == attr['wysiwyg-editor'] ) 
         {
-            defaults = { };
             if ( !winit ) winit = 'w-init="1"';
             wclass = 'w-widget w-wysiwyg-editor'; 
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             wstyle = !empty(attr,"style") ? attr["style"] : ''; 
-            weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : null;
-            //self.enqueue('scripts', "w-wysiwyg-editor-"+wid, [htmlwidget_('wysiwyg-editor', wid, {editor:weditor,style:wstyle})], ['htmlwidgets','trumbowyg']);
-            wstyle = '';
-            self.enqueue('scripts', 'trumbowyg');
+            //weditor = !empty(attr,'config') ? merge(defaults,attr['config']) : null;
+            //wstyle = '';
+            self.enqueue('scripts', 'tinymce');
             self.enqueue('scripts', 'htmlwidgets');
         }
         else
@@ -1243,7 +1230,8 @@ var HtmlWidget = self = {
         wvalue = isset(data,"value") ? data["value"] : ""; 
         wtitle = isset(attr,'title') ? attr['title'] : "";
         wtime = !empty(attr,"time") ? 'data-datepicker-time="1"' : '';
-        wtime += isset(attr,"seconds") && (false === !!attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
+        if ( !!wtime )
+            wtime += isset(attr,"seconds") && (false === !!attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : wtitle;
         wclass = 'w-widget w-text w-date'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];

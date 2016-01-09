@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.2
+*  @version: 0.8.3
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -16,7 +16,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.2";
+    const VERSION = "0.8.3";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -165,7 +165,8 @@ class HtmlWidget
             ,array('scripts', 'mathjax', $asset_base.'mathajax/mathjax.js?config=TeX-AMS_HTML-full')
             
             // Tinymce
-            ,array('scripts', 'tinymce', $asset_base.'tinymce/tinymce.js')
+            ,array('scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js')
+            ,array('scripts', 'tinymce', $asset_base.'tinymce/tinymce.min.js')
              
             // Trumbowyg
             ,array('styles', 'trumbowyg.css', $asset_base.'trumbowyg.css')
@@ -1089,36 +1090,22 @@ OUT;
         $wdata = self::data($attr);
         if ( !empty($attr['syntax-editor']) ) 
         {
-            $defaults = array(
-             'mode'             => 'text/html'
-            ,'theme'            => 'default'
-            ,'lineWrapping'     => false
-            ,'lineNumbers'      => true
-            ,'indentUnit'       => 4
-            ,'indentWithTabs'   => false
-            ,'lint'             => false
-            ,'foldGutter'       => true
-            ,'gutters'          => array("CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter")
-            );
             if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass = 'w-widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
-            $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
-            //self::enqueue('scripts', "w-syntax-editor-$wid", array(self::htmlwidget_('syntax-editor', $wid, array('editor'=>$weditor))), array('htmlwidgets','codemirror-full'));
-            $wstyle = '';
+            //$weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
+            //$wstyle = '';
             self::enqueue('scripts', 'codemirror-full');
             self::enqueue('scripts', 'htmlwidgets');
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
         {
-            $defaults = array( );
             if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass = 'w-widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
-            $weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
-            //self::enqueue('scripts', "w-wysiwyg-editor-$wid", array(self::htmlwidget_('wysiwyg-editor', $wid, array('editor'=>$weditor,'style'=>$wstyle))), array('htmlwidgets','trumbowyg'));
-            $wstyle = '';
-            self::enqueue('scripts', 'trumbowyg');
+            //$weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
+            //$wstyle = '';
+            self::enqueue('scripts', 'tinymce');
             self::enqueue('scripts', 'htmlwidgets');
         }
         else
@@ -1138,7 +1125,8 @@ OUT;
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wtime = !empty($attr["time"]) ? 'data-datepicker-time="1"' : '';
-        $wtime .= isset($attr["seconds"]) && (false === (bool)$attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
+        if ( !empty($wtime) )
+            $wtime .= isset($attr["seconds"]) && (false === (bool)$attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
         $wclass = 'w-widget w-text w-date'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';

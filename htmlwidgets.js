@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.2
+*  @version: 0.8.3
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -24,7 +24,7 @@ else
 }(this, 'htmlwidget', function( undef ) {
 "use strict";
 
-var $ = jQuery, htmlwidget = {VERSION: "0.8.2", widget: {}},
+var $ = jQuery, htmlwidget = {VERSION: "0.8.3", widget: {}},
 HAS = 'hasOwnProperty',
 ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
 PROTO = 'prototype', ID = 0,
@@ -1141,16 +1141,65 @@ $.fn.htmlwidget = function( type, opts ) {
             break;
         
         case 'wysiwyg-editor':
-            if ( 'function' === typeof $.fn.trumbowyg )
+            /*if ( 'function' === typeof $.fn.trumbowyg )
             {
                 $el.trumbowyg(opts);
-                $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')*/;
+                $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')* /;
+            }*/
+            if ( 'undefined' !== typeof tinymce )
+            {
+                tinymce.init({
+                    selector: '#'+el.id,
+                    theme: opts.theme || 'modern',
+                    language: el[HAS_ATTR]('data-tinymce-lang') ? el[ATTR]('data-tinymce-lang') : (opts.language || null),
+                    directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
+                    height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
+                    plugins: el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
+                    'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                    'searchreplace wordcount visualblocks visualchars code fullscreen',
+                    'insertdatetime media nonbreaking save table contextmenu directionality',
+                    'emoticons template paste textcolor colorpicker textpattern imagetools placeholder'
+                    ]),
+                    toolbar: el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
+                    'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                    'print preview media | forecolor backcolor emoticons'
+                    ]),
+                    menubar: el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools'),
+                    /*menu: {
+                        file: {title: 'File', items: 'newdocument'},
+                        edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+                        insert: {title: 'Insert', items: 'link media | template hr'},
+                        view: {title: 'View', items: 'visualaid'},
+                        format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+                        table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+                        tools: {title: 'Tools', items: 'spellchecker code'}
+                    },*/
+                    placeholder: el[HAS_ATTR]('placeholder') ? el[ATTR]('placeholder') : (opts.placeholder||''),
+                    automatic_uploads: true,
+                    image_advtab: true,
+                    paste_data_images: true,
+                    browser_spellcheck: true,
+                    templates: [],
+                    body_class: el[HAS_ATTR]('data-tinymce-body-class') ? el[ATTR]('data-tinymce-body-class') : (opts.body_class || null),
+                    content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
+                    content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
+                });
             }
             break;
         
         case 'syntax-editor':
             if ( 'function' === typeof CodeMirror )
-                CodeMirror.fromTextArea(el, opts);
+                CodeMirror.fromTextArea(el, {
+                 mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
+                ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
+                ,lineWrapping     : false
+                ,lineNumbers      : true
+                ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
+                ,indentWithTabs   : false
+                ,lint             : false
+                ,foldGutter       : true
+                ,gutters          : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
+                });
             break;
         
         default: 
@@ -1171,6 +1220,8 @@ htmlwidget.init = function( node, current, deep ) {
         $node.find('.w-color,.w-colorselector').htmlwidget('colorpicker');
         $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
+        $node.find('.w-syntax-editor').htmlwidget('syntax-editor');
+        $node.find('.w-wysiwyg-editor').htmlwidget('wysiwyg-editor');
     }
     if ( false !== current )
     {
@@ -1182,6 +1233,8 @@ htmlwidget.init = function( node, current, deep ) {
         else if ( $node.hasClass('w-color') || $node.hasClass('w-colorselector') ) $node.htmlwidget('colorpicker');
         else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
+        else if ( $node.hasClass('w-syntax-editor') ) $node.htmlwidget('syntax-editor');
+        else if ( $node.hasClass('w-wysiwyg-editor') ) $node.htmlwidget('wysiwyg-editor');
     }
 };
 htmlwidget.initialisable = function( el, root ) {
