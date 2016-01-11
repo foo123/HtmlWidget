@@ -24,7 +24,7 @@ else
 }(this, 'htmlwidget', function( undef ) {
 "use strict";
 
-var $ = jQuery, htmlwidget = {VERSION: "0.8.3", widget: {}},
+var $ = jQuery, htmlwidget = {VERSION: "0.8.3", widget: {}, locale: {}},
 HAS = 'hasOwnProperty',
 ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
 PROTO = 'prototype', ID = 0,
@@ -672,11 +672,12 @@ widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicke
                 seconds_attr = (el[ATTR]('data-datepicker-seconds')||'').toLowerCase()
             ;
             self.instance = new Pikadaytime({
-                field  : el,
+                field   : el,
+                i18n    : options.i18n || null,
                 showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr : !!options.showTime,
                 showSeconds: !!seconds_attr ? !('0' === seconds_attr || 'false' === seconds_attr || 'off' === seconds_attr || 'no' === seconds_attr) : (false !== options.showSeconds),
-                encoder: datetimepicker.encoder( format ),
-                decoder: datetimepicker.decoder( format )
+                encoder : datetimepicker.encoder( format ),
+                decoder : datetimepicker.decoder( format )
             });
         }
     };
@@ -691,7 +692,7 @@ htmlwidget.datetimepicker.encoder = function datetime_encoder( format, locale )
 {
     if ( 'function' === typeof DateX )
     {
-        locale = locale || DateX.defaultLocale;
+        locale = locale || htmlwidget.locale['DateX'] || DateX.defaultLocale;
         return function( date/*, pikaday*/ ) {
             //var opts = pikaday._o;
             return DateX.format( date, format, locale );
@@ -708,7 +709,7 @@ htmlwidget.datetimepicker.decoder = function datetime_decoder( format, locale )
 {
     if ( 'function' === typeof DateX )
     {
-        locale = locale || DateX.defaultLocale;
+        locale = locale || htmlwidget.locale['DateX'] || DateX.defaultLocale;
         var date_parse = DateX.getParser( format, locale );
         return function( date/*, pikaday*/ ) {
             //var opts = pikaday._o;
@@ -999,7 +1000,12 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
 $.fn.htmlwidget = function( type, opts ) {
     opts = opts || {};
     this.each(function( ) {
-        var el = this, $el;
+        var el = this, $el, locale, i18n;
+        
+        if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
+        {
+            opts = window[el[ATTR]('w-opts')];
+        }
         
         if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
         {
@@ -1019,17 +1025,17 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'sortable':
         case 'uploadable':
         case 'upload':
-            $el['upload'===type?'uploadable':('rearrangeable'===type?'sortable':type)](opts);
+            $el['upload'===type?'uploadable':('rearrangeable'===type?'sortable':type)]( opts );
             break;
         
         case 'templateable':
         case 'template':
-            $el.template(opts);
+            $el.template( opts );
             break;
         
         case 'draggable':
             if ( 'function' === typeof $.fn.tinyDraggable )
-                $el.tinyDraggable(opts);
+                $el.tinyDraggable( opts );
             break;
         
         case 'resisable':
@@ -1039,32 +1045,36 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'timer':
             if ( 'function' === typeof $.fn.Timer )
-                $el.Timer(opts);
+                $el.Timer( opts );
             break;
         
         case 'date':
         case 'datetime':
         case 'datepicker':
         case 'datetimepicker':
-            $el.datetimepicker(opts);
+            if ( !opts["i18n"] && (htmlwidget.locale['Pikadaytime']||htmlwidget.locale['Pikaday']) )
+            {
+                opts["i18n"] = htmlwidget.locale['Pikadaytime'] || htmlwidget.locale['Pikaday'];
+            }
+            $el.datetimepicker( opts );
             break;
         
         case 'color':
         case 'colorselector':
         case 'colorpicker':
-            $el.colorpicker(opts);
+            $el.colorpicker( opts );
             break;
         
         case 'map':
         case 'gmap':
         case 'gmap3':
-            $el.gmap3(opts);
+            $el.gmap3( opts );
             break;
         
         case 'autocomplete':
         case 'autosuggest':
         case 'suggest':
-            $el.suggest(opts);
+            $el.suggest( opts );
             break;
         
         case 'rangeslider':
@@ -1090,11 +1100,22 @@ $.fn.htmlwidget = function( type, opts ) {
                 });
             break;
         
+        case 'dropdown':
+            if ( $el.is('select') && !$el.parent().hasClass('w-dropdown') )
+            {
+                if ( $el.hasClass('w-widget') ) $el.removeClass('w-widget');
+                if ( $el.hasClass('w-select') ) $el.removeClass('w-select');
+                var el_class = "w-widget w-dropdown " + (el.className||''),
+                    el_style = $el.attr('style')||'';
+                $el.attr('class','w-dropdown-select').attr('style','').wrap('<span class="'+el_class+'" style="'+el_style+'"></span>');
+            }
+            break;
+        
         case 'select':
         case 'select2':
             if ( 'function' === typeof $.fn.select2 )
             {
-                $el.select2(opts);
+                $el.select2( opts );
                 if ( el[HAS_ATTR]('w-tooltip') ) $el.prev('.select2-container').attr('w-tooltip',el[ATTR]('w-tooltip'));
                 else if ( el[HAS_ATTR]('data-tooltip') ) $el.prev('.select2-container').attr('data-tooltip',el[ATTR]('data-tooltip'));
                 else if ( el[HAS_ATTR]('title') ) $el.prev('.select2-container').attr('title',el[ATTR]('title'));
@@ -1105,14 +1126,29 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'datatable':
             if ( 'function' === typeof $.fn.dataTable )
             {
-                $el.dataTable(opts);
-                $el.closest(".dataTables_wrapper").addClass("w-table-wrapper");
+                if ( !opts["language"] && htmlwidget.locale['DataTables'] )
+                {
+					opts["language"] =  htmlwidget.locale['DataTables'];
+                }
+                $el.dataTable( opts );
+                var dt_wrapper = $el.closest(".dataTables_wrapper");
+                dt_wrapper.addClass("w-table-wrapper");
+                dt_wrapper.find(".dataTables_filter input").addClass("w-widget w-text");
+                dt_wrapper.find(".dataTables_length select").htmlwidget("dropdown");
+                if ( el[HAS_ATTR]('data-table-controls') )
+                {
+                    dt_wrapper.find(".w-table-controls").eq(0).append($(el[ATTR]('data-table-controls')));
+                }
+                else if ( opts.controls )
+                {
+                    dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
+                }
             }
             break;
         
         case 'modal':
             if ( 'function' === typeof $.fn.modal )
-                $el.modal(opts);
+                $el.modal( opts );
             break;
         
         case 'packery':
@@ -1132,37 +1168,54 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
-                $el.modelview(opts);
+                $el.modelview( opts );
             break;
         
         case 'tag-editor':
             if ( 'function' === typeof $.fn.tagEditor )
-                $el.tagEditor(opts);
+                $el.tagEditor( opts );
             break;
         
         case 'wysiwyg-editor':
             /*if ( 'function' === typeof $.fn.trumbowyg )
             {
-                $el.trumbowyg(opts);
+                $el.trumbowyg( opts );
                 $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')* /;
             }*/
             if ( 'undefined' !== typeof tinymce )
             {
+                locale = 'en';
+                if ( htmlwidget.locale['tinymce'] )
+                {
+					if ( ('object' === typeof htmlwidget.locale['tinymce']) && !opts["i18n"] )
+                    {
+                        opts["i18n"] = htmlwidget.locale['tinymce'];
+                    }
+                    else if ( 'string' === typeof htmlwidget.locale['tinymce'] )
+                    {
+                        locale = htmlwidget.locale['tinymce'];
+                    }
+                }
+                if ( opts["i18n"] )
+                {
+                    locale = 'custom_locale';
+                    tinymce.util.I18n.add('custom_locale', opts["i18n"]);
+                }
                 tinymce.init({
                     selector: '#'+el.id,
-                    theme: opts.theme || 'modern',
-                    language: el[HAS_ATTR]('data-tinymce-lang') ? el[ATTR]('data-tinymce-lang') : (opts.language || null),
+                    theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
+                    skin: el[HAS_ATTR]('data-tinymce-skin') ? el[ATTR]('data-tinymce-skin') : (opts.skin || 'lightgray'),
+                    language: el[HAS_ATTR]('data-tinymce-lang') ? el[ATTR]('data-tinymce-lang') : (opts.language || locale),
                     directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
                     height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
                     plugins: el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
-                    'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                    'advlist autolink lists link image charmap preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
                     'insertdatetime media nonbreaking save table contextmenu directionality',
-                    'emoticons template paste textcolor colorpicker textpattern imagetools placeholder'
+                    'paste textcolor colorpicker textpattern imagetools placeholderalt codemirror' /*jbimages*/
                     ]),
                     toolbar: el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
-                    'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
-                    'print preview media | forecolor backcolor emoticons'
+                    'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
                     ]),
                     menubar: el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools'),
                     /*menu: {
@@ -1174,12 +1227,13 @@ $.fn.htmlwidget = function( type, opts ) {
                         table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
                         tools: {title: 'Tools', items: 'spellchecker code'}
                     },*/
+                    codemirror: opts.codemirror || null,
                     placeholder: el[HAS_ATTR]('placeholder') ? el[ATTR]('placeholder') : (opts.placeholder||''),
-                    automatic_uploads: true,
-                    image_advtab: true,
-                    paste_data_images: true,
-                    browser_spellcheck: true,
-                    templates: [],
+                    automatic_uploads: null != opts.automatic_uploads ? opts.automatic_uploads : true,
+                    image_advtab: null != opts.image_advtab ? opts.image_advtab : true,
+                    paste_data_images: null != opts.paste_data_images ? opts.paste_data_images : true,
+                    browser_spellcheck: null != opts.browser_spellcheck ? opts.browser_spellcheck : true,
+                    templates: null != opts.templates ? opts.templates : [],
                     body_class: el[HAS_ATTR]('data-tinymce-body-class') ? el[ATTR]('data-tinymce-body-class') : (opts.body_class || null),
                     content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
                     content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
@@ -1192,13 +1246,13 @@ $.fn.htmlwidget = function( type, opts ) {
                 CodeMirror.fromTextArea(el, {
                  mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
                 ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
-                ,lineWrapping     : false
-                ,lineNumbers      : true
+                ,lineWrapping     : null != opts.lineWrapping ? opts.lineWrapping : false
+                ,lineNumbers      : null != opts.lineNumbers ? opts.lineNumbers : true
                 ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
-                ,indentWithTabs   : false
-                ,lint             : false
-                ,foldGutter       : true
-                ,gutters          : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
+                ,indentWithTabs   : null != opts.indentWithTabs ? opts.indentWithTabs : false
+                ,lint             : null != opts.lint ? opts.lint : false
+                ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
+                ,gutters          : null != opts.gutters ? opts.gutters : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
                 });
             break;
         
@@ -1220,6 +1274,7 @@ htmlwidget.init = function( node, current, deep ) {
         $node.find('.w-color,.w-colorselector').htmlwidget('colorpicker');
         $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
+        $node.find('.w-datatable').htmlwidget('datatable');
         $node.find('.w-syntax-editor').htmlwidget('syntax-editor');
         $node.find('.w-wysiwyg-editor').htmlwidget('wysiwyg-editor');
     }
@@ -1233,6 +1288,7 @@ htmlwidget.init = function( node, current, deep ) {
         else if ( $node.hasClass('w-color') || $node.hasClass('w-colorselector') ) $node.htmlwidget('colorpicker');
         else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
+        else if ( $node.hasClass('w-datatable') ) $node.htmlwidget('datatable');
         else if ( $node.hasClass('w-syntax-editor') ) $node.htmlwidget('syntax-editor');
         else if ( $node.hasClass('w-wysiwyg-editor') ) $node.htmlwidget('wysiwyg-editor');
     }

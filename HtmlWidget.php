@@ -162,7 +162,7 @@ class HtmlWidget
             ,array('scripts', 'datatable', $asset_base.'datatable.js', array('datatable.css','jquery'))
             
             // MathJax
-            ,array('scripts', 'mathjax', $asset_base.'mathajax/mathjax.js?config=TeX-AMS_HTML-full')
+            ,array('scripts', 'mathjax', $asset_base.'mathjax/MathJax.js?config=TeX-AMS_HTML-full')
             
             // Tinymce
             ,array('scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js')
@@ -173,27 +173,42 @@ class HtmlWidget
             ,array('scripts', 'trumbowyg', $asset_base.'trumbowyg.js', array('trumbowyg.css','jquery'))
             
             // CodeMirror
-            ,array('scripts', 'codemirror-mode-multiplex', $asset_base.'codemirror/addon/mode/multiplex.js')
-            ,array('scripts', 'codemirror-comment', $asset_base.'codemirror/addon/comment/comment.js')
-            
-            ,array('scripts', 'codemirror-mode-xml', $asset_base.'codemirror/mode/xml.js')
-            ,array('scripts', 'codemirror-mode-javascript', $asset_base.'codemirror/mode/javascript.js')
-            ,array('scripts', 'codemirror-mode-css', $asset_base.'codemirror/mode/css.js')
-            
-            ,array('styles', 'codemirror-fold.css', $asset_base.'codemirror/addon/fold/foldgutter.css')
-            ,array('scripts', 'codemirror-fold-gutter', $asset_base.'codemirror/addon/fold/foldgutter.js')
-            ,array('scripts', 'codemirror-fold-code', $asset_base.'codemirror/addon/fold/foldcode.js')
-            ,array('scripts', 'codemirror-fold-comment', $asset_base.'codemirror/addon/fold/comment-fold.js')
-            ,array('scripts', 'codemirror-fold-brace', $asset_base.'codemirror/addon/fold/brace-fold.js')
-            ,array('scripts', 'codemirror-fold-indent', $asset_base.'codemirror/addon/fold/indent-fold.js')
-            ,array('scripts', 'codemirror-fold-xml', $asset_base.'codemirror/addon/fold/xml-fold.js')
-            
-            ,array('styles', 'codemirror.css', $asset_base.'codemirror/codemirror.css')
-            ,array('scripts', 'codemirror', $asset_base.'codemirror/codemirror.js', array('codemirror.css'))
-            ,array('scripts', 'codemirror-full', $asset_base.'codemirror/mode/htmlmixed.js', array('codemirror','codemirror-fold.css','codemirror-mode-multiplex','codemirror-comment','codemirror-mode-xml','codemirror-mode-javascript','codemirror-mode-css','codemirror-fold-comment','codemirror-fold-brace','codemirror-fold-xml','codemirror-fold-indent'))
+            ,array('styles', 'codemirror.css', $asset_base.'codemirror/lib/codemirror.css')
+            ,array('styles', 'codemirror-fold.css', $asset_base.'codemirror/addon/fold/foldgutter.css', array('codemirror.css'))
+            ,array('scripts-composite', 'codemirror-fold', array(
+                $asset_base.'codemirror/addon/fold/foldgutter.js',
+                $asset_base.'codemirror/addon/fold/foldcode.js',
+                $asset_base.'codemirror/addon/fold/comment-fold.js',
+                $asset_base.'codemirror/addon/fold/brace-fold.js',
+                $asset_base.'codemirror/addon/fold/indent-fold.js',
+                $asset_base.'codemirror/addon/fold/xml-fold.js'
+            ), array('codemirror-fold.css','codemirror'))
+            ,array('scripts-composite', 'codemirror-htmlmixed', array(
+                $asset_base.'codemirror/mode/xml/xml.js',
+                $asset_base.'codemirror/mode/javascript/javascript.js',
+                $asset_base.'codemirror/mode/css/css.js',
+                $asset_base.'codemirror/mode/htmlmixed/htmlmixed.js'
+            ), array('codemirror'))
+            ,array('scripts-composite', 'codemirror', array(
+                $asset_base.'codemirror/lib/codemirror.js',
+                $asset_base.'codemirror/addon/mode/multiplex.js',
+                $asset_base.'codemirror/addon/comment/comment.js'
+            ), array('codemirror.css'))
             ));
         }
         return $assets;
+    }
+    
+    public static function i18n( $locale, $base='' )
+    {
+        if ( empty($locale) ) return array();
+        if ( empty($base) ) $base = '';
+        $base = $base . ('/' === substr($base, -1)  ? '' : '/');
+        $i18n_base = $base . 'i18n/';
+        return array(
+         array('DataTables', $i18n_base.'DataTables/'.$locale.'.json')
+        ,array('Pikadaytime', $i18n_base.'Pikadaytime/'.$locale.'.json')
+        );
     }
     
     public static function uuid( $prefix="widget", $suffix="static1" )
@@ -274,6 +289,7 @@ class HtmlWidget
             elseif ( "datetime" === $widget || 'datetimepicker' === $widget ) $attr["time"] = true;
             elseif ( "select2" === $widget ) $attr["select2"] = true;
             elseif ( "dropdown" === $widget ) $attr["dropdown"] = true;
+            elseif ( "datatable" === $widget ) $attr["datatable"] = true;
             elseif ( "syntax-editor" === $widget || "source-editor" === $widget || "syntax" === $widget || "source" === $widget || "highlight-editor" === $widget || "highlighter" === $widget ) $attr["syntax-editor"] = true;
             elseif ( "wysiwyg-editor" === $widget || "wysiwyg" === $widget || "rich-editor" === $widget || "rich" === $widget || "editor" === $widget ) $attr["wysiwyg-editor"] = true;
             
@@ -346,6 +362,7 @@ class HtmlWidget
             case 'endmenu':
             case 'end_menu':
             case 'menu_end':    $out = self::w_menu_end($attr, $data); break;
+            case 'datatable':
             case 'table':       $out = self::w_table($attr, $data); break;
             case 'animation':   $out = self::w_animation($attr, $data); break;
             default: $out = ''; break;
@@ -1086,32 +1103,28 @@ OUT;
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = isset($attr['title']) ? $attr['title'] : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $wtitle;
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
         if ( !empty($attr['syntax-editor']) ) 
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
+            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass = 'w-widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
-            //$weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : $defaults;
-            //$wstyle = '';
-            self::enqueue('scripts', 'codemirror-full');
-            self::enqueue('scripts', 'htmlwidgets');
+            $wopts = isset($attr['codemirror_options'])&&is_array($attr['codemirror_options']) ? $attr['codemirror_options'] : array();
+            self::enqueue('scripts', 'w-codemirror-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('codemirror','codemirror-fold','codemirror-htmlmixed','htmlwidgets'));
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
+            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass = 'w-widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
-            //$weditor = !empty($attr['config']) ? array_merge($defaults,(array)$attr['config']) : null;
-            //$wstyle = '';
-            self::enqueue('scripts', 'tinymce');
-            self::enqueue('scripts', 'htmlwidgets');
+            $wopts = isset($attr['tinymce_options'])&&is_array($attr['tinymce_options']) ? $attr['tinymce_options'] : array();
+            self::enqueue('scripts', 'w-tinymce-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('tinymce','htmlwidgets'));
         }
         else
         {
             $wclass = 'w-widget w-textarea'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
             self::enqueue('styles', 'htmlwidgets.css');
         }
         return "<textarea id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" $wdata>$wvalue</textarea>";
@@ -1268,7 +1281,6 @@ OUT;
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
-        $wselect2 = !empty($attr['select2']);
         $wdropdown = !empty($attr['dropdown']);
         $wclass = $wdropdown ? "w-widget w-dropdown" : "w-widget w-select"; 
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1295,12 +1307,13 @@ OUT;
         
         $wdata = self::data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        if ( $wselect2 && !$wdropdown )
+        if ( !empty($attr['select2']) && !$wdropdown )
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
+            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass .= ' w-select2';
-            self::enqueue('scripts', 'select2');
-            self::enqueue('scripts', 'htmlwidgets');
+            $wopts = isset($attr['select2_options'])&&is_array($attr['select2_options']) ? $attr['select2_options'] : array();
+            self::enqueue('scripts', 'w-select2-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('select2','htmlwidgets'));
         }
         return $wdropdown
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wname class=\"w-dropdown-select\" $wextra $wdata>$woptions</select></span>"
@@ -1329,8 +1342,8 @@ OUT;
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'w-widget w-table'; 
-        if ( !isset($attr['stripped']) || $attr['stripped'] ) $wclass .= ' stripped';
-        if ( !isset($attr['responsive']) || $attr['responsive'] ) $wclass .= ' responsive';
+        /*if ( !isset($attr['stripped']) || $attr['stripped'] ) $wclass .= ' stripped';
+        if ( !isset($attr['responsive']) || $attr['responsive'] ) $wclass .= ' responsive';*/
         if ( !empty($attr['class']) ) $wclass .= ' '.$attr['class'];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
@@ -1358,36 +1371,13 @@ OUT;
         }
         $wdata = self::data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        $wdataTable = isset($attr['dataTable']);
-        if ( $wdataTable )
+        if ( !empty($attr['datatable']) )
         {
-            $woptions = is_array($attr['dataTable']) ? $attr['dataTable'] : array();
-            $wcontrols = array(
-             'var $el = $(el), wid = $el.attr("id");'
-            ,'$el.dataTable('.json_encode($woptions).');'
-            ,'$el.closest(".dataTables_wrapper").addClass("w-table-wrapper");'
-            ,'$("#"+wid+"_filter").find("input").addClass("w-text");'
-            ,'$("#"+wid+"_length").find("select").addClass("w-select");'
-            );
-            if ( !empty($attr['controls']) ) 
-            {
-                $ctrls = (array)$attr['controls'];
-                foreach($ctrls as $ctrl)
-                {
-                    $wcontrols[] = '$(".w-table-controls","#"+wid+"_wrapper").append($("'.str_replace('"','\\"',$ctrl).'"));';
-                }
-            }
-            if ( empty($winit) )
-            {
-                $uuid = self::uuid('w_init');
-                $winit = 'w-init="'.$uuid.'"';
-                self::enqueue('scripts', $uuid, array(self::htmlwidget_init($uuid,'el','function(el){'.implode("\n",$wcontrols).'}')), array('datatable','htmlwidgets'));
-            }
-            else
-            {
-                self::enqueue('scripts', 'datatable');
-                self::enqueue('scripts', 'htmlwidgets');
-            }
+            if ( empty($winit) ) $winit = 'w-init="1"';
+            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
+            $wclass .= ' w-datatable';
+            $wopts = isset($attr['datatable_options'])&&is_array($attr['datatable_options']) ? $attr['datatable_options'] : array();
+            self::enqueue('scripts', 'w-datatable-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('datatable','htmlwidgets'));
         }
         return "<table id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }

@@ -1,0 +1,17 @@
+{
+	"processing": "Παρακαλώ περιμένετε...",
+	"lengthMenu": "Εμφάνισε _MENU_ εγγραφές",
+	"zeroRecords": "Δεν βρέθηκαν εγγραφές",
+	"info": "_START_ εως _END_ απο _TOTAL_ εγγραφές",
+	"infoEmpty": "0 εως 0 απο 0 εγγραφές",
+	"infoFiltered": "(φιλτράρισμα απο _MAX_  εγγραφές)",
+	"infoPostFix": "",
+	"search": "Αναζήτηση",
+	"url": "",
+	"paginate": {
+		"first":    "Πρώτο",
+		"previous": "Προηγούμενο",
+		"next":     "Επόμενο",
+		"last":     "Τελευταίο"
+	}
+}
