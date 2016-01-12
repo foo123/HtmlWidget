@@ -669,16 +669,17 @@ widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicke
         {
             var format = el[ATTR]('data-datepicker-format')||options.format||'Y-m-d H:i:s',
                 time_attr = (el[ATTR]('data-datepicker-time')||'').toLowerCase(),
-                seconds_attr = (el[ATTR]('data-datepicker-seconds')||'').toLowerCase()
+                seconds_attr = (el[ATTR]('data-datepicker-seconds')||'').toLowerCase(),
+                opts = {
+                    field   : el,
+                    showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr : !!options.showTime,
+                    showSeconds: !!seconds_attr ? !('0' === seconds_attr || 'false' === seconds_attr || 'off' === seconds_attr || 'no' === seconds_attr) : (false !== options.showSeconds),
+                    encoder : datetimepicker.encoder( format ),
+                    decoder : datetimepicker.decoder( format )
+                }
             ;
-            self.instance = new Pikadaytime({
-                field   : el,
-                i18n    : options.i18n || null,
-                showTime: !!time_attr ? '1' === time_attr || 'true' === time_attr || 'on' === time_attr || 'yes' === time_attr : !!options.showTime,
-                showSeconds: !!seconds_attr ? !('0' === seconds_attr || 'false' === seconds_attr || 'off' === seconds_attr || 'no' === seconds_attr) : (false !== options.showSeconds),
-                encoder : datetimepicker.encoder( format ),
-                decoder : datetimepicker.decoder( format )
-            });
+            if ( options.i18n ) opts.i18n = options.i18n;
+            self.instance = new Pikadaytime( opts );
         }
     };
     self.dispose = function( ) {

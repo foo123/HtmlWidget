@@ -183,6 +183,7 @@ input[type=checkbox].w-checkbox
 {
     display: none !important;
 }
+.w-menu-controller,
 .w-transition-controller,
 .w-page-controller
 {
@@ -1077,9 +1078,6 @@ select.w-select option.w-option-placeholder,
     }
 }
 
-/*
-*   adapted from: http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu
-*/
 .w-dropdown-menu
 {
     position: relative;
@@ -1088,127 +1086,300 @@ select.w-select option.w-option-placeholder,
     -ms-box-sizing:border-box;
     -o-box-sizing:border-box;
     box-sizing:border-box;
-    padding: 0;
-    margin: 0;
+    padding: 0; margin: 0;
+    z-index: 500;
 }
-.w-dropdown-menu ul ul
-{
-    -webkit-transition: max-height .4s ease;
-    -moz-transition: max-height .4s ease;
-    -ms-transition: max-height .4s ease;
-    -o-transition: max-height .4s ease;
-    transition: max-height .4s ease;
-    overflow: hidden;
-    max-height: 0;
-    display: block;
-    z-index: 10;
-}
-    .w-dropdown-menu ul ul ul
-        {
-        -webkit-transition: none;
-        -moz-transition: none;
-        -ms-transition: none;
-        -o-transition: none;
-        transition: none;
-        overflow: visible;
-        max-height: auto;
-        display: none;
-    }
-    .w-dropdown-menu ul li:hover > ul
-        {
-        overflow: visible;
-        max-height: 1500px;
-        z-index: 20;
-    }
-    .w-dropdown-menu ul ul li:hover > ul
-        {
-        display: block;
-    }
-.w-dropdown-menu ul
+.w-dropdown-menu  ul
 {
     -webkit-box-sizing:border-box;
     -moz-box-sizing:border-box;
     -ms-box-sizing:border-box;
     -o-box-sizing:border-box;
     box-sizing:border-box;
-    padding: 0 20px;
-    margin: 0;
-    border-radius: 8px;  
+    border: 1px solid transparent;
+    border-radius: 0;
+    padding: 0 20px; margin: 0;
     list-style: none;
     position: relative;
+    z-index: 1;
     display: inline-table;
 }
-    .w-dropdown-menu ul:after
-        {
-        content: ""; clear: both; display: block;
-    }
-    .w-dropdown-menu ul li
-        {
-        -webkit-box-sizing:border-box;
-        -moz-box-sizing:border-box;
-        -ms-box-sizing:border-box;
-        -o-box-sizing:border-box;
-        box-sizing:border-box;
-        float: left;
-        position: relative;
-        padding: 0;
-        margin: 0;
-    }
-        .w-dropdown-menu ul li p,
-        .w-dropdown-menu ul li a
-                {
-            display: block; padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-    .w-dropdown-menu ul ul
-        {
-        border-radius: 0; padding: 0;
-        position: absolute; top: 100%; left: 0; margin: 0;
-    }
-        .w-dropdown-menu ul ul li
-                {
-            float: none; 
-            border-bottom: 1px solid transparent;
-            position: relative;
-            min-width: 200px;
-        }
-        .w-dropdown-menu ul ul li:last-child
-                {
-            border-bottom: 0; 
-        }
-            .w-dropdown-menu ul ul li p,
-            .w-dropdown-menu ul ul li a
-                        {
-                padding: 8px 20px;
-                font-weight: normal;
-            }   
-    .w-dropdown-menu ul ul ul
-        {
-        position: absolute; left: 100%; top:0;
-    }
-.w-dropdown-menu li.w-dropdown-submenu > p:after,
-.w-dropdown-menu li.w-dropdown-submenu > a:after
+.w-dropdown-menu > ul:after
+{
+    content: "";
+    float: none;
+    clear: both;
+    display: block;
+}
+.w-dropdown-menu ul ul
+{
+    display: block; z-index: 10;
+    border-radius: 0; padding: 0; margin: 0;
+    position: absolute; top: 100%; left: 0;
+    -webkit-transition: max-height .4s ease;
+    -moz-transition: max-height .4s ease;
+    -ms-transition: max-height .4s ease;
+    -o-transition: max-height .4s ease;
+    transition: max-height .4s ease;
+    overflow: hidden; max-height: 0;
+}
+.w-dropdown-menu ul ul ul
+{
+    position: absolute; left: 100%; top:0;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+    overflow: visible;
+    display: none; max-height: auto;
+}
+.w-dropdown-menu ul  > li:focus > ul,
+.w-dropdown-menu ul  > li:active > ul,
+.w-dropdown-menu ul  > li:hover > ul
+{
+    overflow: visible;
+    max-height: 1500px;
+    z-index: 20;
+}
+.w-dropdown-menu ul ul  > li:focus > ul,
+.w-dropdown-menu ul ul  > li:active > ul,
+.w-dropdown-menu ul ul  > li:hover > ul
 {
     display: block;
-    position: absolute;
-    content: "\25B6";
-    font-size: 6px;
-    color: inherit;
-    right: 10px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    z-index: 2;
 }
+.w-dropdown-menu ul  > li
+{
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    position: relative;
+    padding: 0; margin: 0;
+    display: block;
+}
+.w-dropdown-menu > ul  > li
+{
+    float: left;
+    border-right: 1px solid transparent;
+}
+.w-dropdown-menu > ul  > li:last-child
+{
+    border-right: 0;
+}
+.w-dropdown-menu ul ul > li
+{
+    float: none; 
+    border-bottom: 1px solid transparent;
+    min-width: 200px;
+}
+.w-dropdown-menu ul ul > li:last-child
+{
+    border-bottom: 0; 
+}
+.w-dropdown-menu li:before
+{
+    position: absolute;  display: block;
+    font-family: FontAwesome; font-size: inherit; color: inherit;
+    right: 10px; top: 0;
+    -webkit-transform: translateY(100%);
+    -moz-transform: translateY(100%);
+    -ms-transform: translateY(100%);
+    -o-transform: translateY(100%);
+    transform: translateY(100%);
+    z-index: 2; opacity: 0.6;
+    content: "\f0d7"; /* fa-caret-down */
+}
+.w-dropdown-menu li li:before
+{
+    content: "\f0da"; /* fa-caret-right */
+}
+.w-dropdown-menu li:focus:before,
+.w-dropdown-menu li:active:before,
+.w-dropdown-menu li:hover:before
+{
+    opacity: 1;
+}
+.w-dropdown-menu li > div,
+.w-dropdown-menu li > p,
+.w-dropdown-menu li > label,
+.w-dropdown-menu li  > a
+{
+    position: relative;
+    display: block;
+    color: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 14px 28px;
+}
+.w-dropdown-menu ul ul > li > div,
+.w-dropdown-menu ul ul > li > p,
+.w-dropdown-menu ul ul > li > label,
+.w-dropdown-menu ul ul > li  > a
+{
+    font-weight: normal;
+    padding: 12px 24px;
+}   
 .w-dropdown-menu .w-icon
 {
     display: inline-block;
     vertical-align: middle;
     margin-right: 8px;
+}
+
+.w-vertical-menu
+{
+    position: relative;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    padding: 0; margin: 0;
+    min-width: 200px;
+    z-index: 500;
+}
+.w-vertical-menu  ul
+{
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    border: 1px solid transparent;
+    border-radius: 0;
+    padding: 0 20px; margin: 0;
+    list-style: none;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    min-width: 200px;
+}
+.w-vertical-menu  ul:focus,
+.w-vertical-menu  ul:active,
+.w-vertical-menu  ul:hover
+{
+    overflow: visible;
+}
+.w-vertical-menu  > ul
+{
+    min-width: auto;
+    width: 100%;
+}
+.w-vertical-menu > ul:after
+{
+    content: "";
+    float: none;
+    clear: both;
+    display: block;
+}
+.w-vertical-menu ul ul
+{
+    display: block; border-radius: 0; padding: 0; margin: 0;
+    position: absolute; top: 0; left: 100%;
+    z-index: -1;
+}
+.w-vertical-menu ul  > li > ul
+{
+    pointer-events: none;
+    opacity: 0;
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+    -webkit-transition: opacity .4s ease, -webkit-transform .6s ease;
+    -moz-transition: opacity .4s ease, -moz-transform .6s ease;
+    -ms-transition: opacity .4s ease, -ms-transform .6s ease;
+    -o-transition: opacity .4s ease, -o-transform .6s ease;
+    transition: opacity .4s ease, transform .6s ease;
+}
+.w-vertical-menu ul  > li:focus > ul,
+.w-vertical-menu ul  > li:active > ul,
+.w-vertical-menu ul  > li:hover > ul
+{
+    pointer-events: auto;
+    z-index: 1; opacity: 1;
+    -webkit-transform: translateX(0%);
+    -moz-transform: translateX(0%);
+    -ms-transform: translateX(0%);
+    -o-transform: translateX(0%);
+    transform: translateX(0%);
+    -webkit-transition: opacity .6s .2s ease, -webkit-transform .4s ease;
+    -moz-transition: opacity .6s .2s ease, -moz-transform .4s ease;
+    -ms-transition: opacity .6s .2s ease, -ms-transform .4s ease;
+    -o-transition: opacity .6s .2s ease, -o-transform .4s ease;
+    transition: opacity .6s .2s ease, transform .4s ease;
+}
+.w-vertical-menu ul  > li
+{
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    position: relative;
+    padding: 0; margin: 0;
+    display: block;
+    border-bottom: 1px solid transparent;
+}
+.w-vertical-menu ul > li:last-child
+{
+    border-bottom: 0; 
+}
+.w-vertical-menu li:before
+{
+    position: absolute;  display: block;
+    font-family: FontAwesome; font-size: inherit; color: inherit;
+    right: 10px; top: 0;
+    -webkit-transform: translateY(100%);
+    -moz-transform: translateY(100%);
+    -ms-transform: translateY(100%);
+    -o-transform: translateY(100%);
+    transform: translateY(100%);
+    z-index: 2; opacity: 0.6;
+    content: "\f0da"; /* fa-caret-right */
+}
+.w-vertical-menu li:focus:before,
+.w-vertical-menu li:active:before,
+.w-vertical-menu li:hover:before
+{
+    opacity: 1;
+}
+.w-vertical-menu li > div,
+.w-vertical-menu li > p,
+.w-vertical-menu li > label,
+.w-vertical-menu li  > a
+{
+    position: relative;
+    display: block;
+    color: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 14px 28px;
+    z-index: 10;
+}
+.w-vertical-menu ul ul > li > div,
+.w-vertical-menu ul ul > li > p,
+.w-vertical-menu ul ul > li > label,
+.w-vertical-menu ul ul > li  > a
+{
+    font-weight: normal;
+    padding: 12px 24px;
+}   
+.w-vertical-menu .w-icon
+{
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+.w-dropdown-menu ~ .w-vertical-menu,
+.w-vertical-menu ~ .w-dropdown-menu,
+.w-vertical-menu ~ .w-vertical-menu,
+.w-dropdown-menu ~ .w-dropdown-menu
+{
+    z-index: 200;
 }
 
 .w-dialog, 
@@ -3183,41 +3354,46 @@ input.w-radio:checked + label.w-led-button:before
     -webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, .9);
     box-shadow: inset 0 1px 0 #000;
 }
+.w-vertical-menu ul,
 .w-dropdown-menu ul
 {
-    background: #efefef; 
-    background: -moz-linear-gradient(top, #efefef 0%, #fbfbfb 100%); 
-    background: -webkit-linear-gradient(top, #efefef 0%,#fbfbfb 100%); 
-    background: linear-gradient(top, #efefef 0%, #fbfbfb 100%);  
+    background-color: #fefefe; 
     box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
-    color: #999;
+    color: #121212;
 }
-.w-dropdown-menu ul ul li:hover,
-.w-dropdown-menu ul li:hover,
-.w-dropdown-menu ul ul li p:hover,
-.w-dropdown-menu ul ul li a:hover
-{
-    background: #fff;
-}
-.w-dropdown-menu ul li:hover > p,
-.w-dropdown-menu ul li:hover > a
-{
-    color: #333;
-}
-.w-dropdown-menu ul li p,
-.w-dropdown-menu ul li a,
-.w-dropdown-menu ul ul li p,
-.w-dropdown-menu ul ul li a
-{
-    color: #999;
-}
+.w-vertical-menu ul ul,
 .w-dropdown-menu ul ul
 {
-    background: #efefef;
+    background-color: #efefef;
 }
-.w-dropdown-menu ul ul li
+.w-vertical-menu li ,
+.w-dropdown-menu li 
 {
-    border-bottom-color: #efefef; 
+    color: #121212;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+.w-vertical-menu li.current,
+.w-vertical-menu li.active,
+.w-vertical-menu li:focus,
+.w-vertical-menu li:active,
+.w-vertical-menu li:hover,
+.w-dropdown-menu li.current,
+.w-dropdown-menu li.active,
+.w-dropdown-menu li:focus,
+.w-dropdown-menu li:active,
+.w-dropdown-menu li:hover
+{
+    background-color: #1190d1;
+    color: #fff;
+}
+.w-dropdown-menu > ul > li
+{
+    border-right-color: #ccc; 
+}
+.w-vertical-menu ul > li,
+.w-dropdown-menu ul ul > li
+{
+    border-bottom-color: #ccc; 
 }
 .w-dialog
 {
