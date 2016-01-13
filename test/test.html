@@ -23,126 +23,16 @@
             cursor: pointer;
             display: none;
         }
+        .w-vertical-menu {
+            width: 300px;
+        }
         @media all and (max-width : 768px) {
 
-        .w-vertical-menu,
-        .w-vertical-menu > .w-menu-controller + ul,
-        .w-dropdown-menu,
-        .w-dropdown-menu > .w-menu-controller + ul {
-            width: 100%;
-        }
-        .w-vertical-menu,
-        .w-dropdown-menu {
-            padding-left: 28px;
-            min-height: 28px;
-        }
-        .w-vertical-menu > .w-menu-controller-bt,
-        .w-dropdown-menu > .w-menu-controller-bt {
+        .w-vertical-menu.w-mobile > .w-menu-controller-bt,
+        .w-dropdown-menu.w-mobile > .w-menu-controller-bt {
             display: block;
             position: absolute;
             top: 0; left: 0;
-        }
-        .w-vertical-menu > .w-menu-controller + ul,
-        .w-dropdown-menu > .w-menu-controller + ul {
-            -webkit-transition: max-height .4s ease;
-            -moz-transition: max-height .4s ease;
-            -ms-transition: max-height .4s ease;
-            -o-transition: max-height .4s ease;
-            transition: max-height .4s ease;
-            overflow: hidden;
-            max-height: 0;
-            display: block;
-        }
-        .w-vertical-menu > .w-menu-controller:checked + ul,
-        .w-dropdown-menu > .w-menu-controller:checked + ul {
-            -webkit-transition: max-height .4s ease;
-            -moz-transition: max-height .4s ease;
-            -ms-transition: max-height .4s ease;
-            -o-transition: max-height .4s ease;
-            transition: max-height .4s ease;
-            overflow: visible;
-            max-height: 3000px;
-        }
-        .w-dropdown-menu > .w-menu-controller + ul ul ul,
-        .w-dropdown-menu > .w-menu-controller + ul ul {
-            position: relative;
-            width: 98%;
-            left: 0; top: auto;
-            margin-left: 2%;
-            -webkit-transition: max-height .4s ease;
-            -moz-transition: max-height .4s ease;
-            -ms-transition: max-height .4s ease;
-            -o-transition: max-height .4s ease;
-            transition: max-height .4s ease;
-            overflow: hidden;
-            max-height: 0;
-            display: block;
-        }
-        .w-vertical-menu > .w-menu-controller + ul li > ul {
-            position: relative; display: block;
-            left 0; top: 0;
-            -webkit-transform: none;
-            -moz-transform: none;
-            -ms-transform: none;
-            -o-transform: none;
-            transform: none;
-            width: 98%;
-            margin-left: 2%;
-            -webkit-transition: max-height .4s ease;
-            -moz-transition: max-height .4s ease;
-            -ms-transition: max-height .4s ease;
-            -o-transition: max-height .4s ease;
-            transition: max-height .4s ease;
-            overflow: hidden;
-            opacity: 1;
-            max-height: 0;
-        }
-        .w-dropdown-menu > .w-menu-controller + ul li li,
-        .w-dropdown-menu > .w-menu-controller + ul li {
-            float: none;
-            /*display: block;*/
-            width: 100%;
-            min-width: auto;
-        }
-        .w-dropdown-menu > .w-controller + ul li:focus > ul,
-        .w-dropdown-menu > .w-controller + ul li:active > ul,
-        .w-dropdown-menu > .w-controller + ul li:hover > ul {
-            overflow: visible;
-            max-height: 1500px;
-        }
-        .w-vertical-menu > .w-menu-controller + ul li:focus > ul,
-        .w-vertical-menu > .w-menu-controller + ul li:active > ul,
-        .w-vertical-menu > .w-menu-controller + ul li:hover > ul {
-            left 0; top: 0;
-            opacity: 1;
-            -webkit-transform: none;
-            -moz-transform: none;
-            -ms-transform: none;
-            -o-transform: none;
-            transform: none;
-            overflow: visible;
-            max-height: 1500px;
-        }
-        .w-vertical-menu > .w-menu-controller + ul li:before,
-        .w-dropdown-menu > .w-menu-controller + ul li li:before {
-            content: "\f0d7"; /* fa-caret-down */
-        }
-        /*.w-dropdown-menu > .w-menu-controller + ul li li > ul + p:after,
-        .w-dropdown-menu > .w-menu-controller + li li > ul + label:after,
-        .w-dropdown-menu > .w-menu-controller + ul li li > ul + a:after,
-        .w-dropdown-menu > .w-menu-controller + ul li li.w-dropdown-submenu > p:after,
-        .w-dropdown-menu > .w-menu-controller + ul li li.w-dropdown-submenu > label:after,
-        .w-dropdown-menu > .w-menu-controller + ul li li.w-dropdown-submenu > a:after {
-            content: "\f0d7"; /* fa-caret-down * /
-        }*/
-        
-        }
-
-        @media all and (max-width : 330px) {
-        .w-dropdown-menu > .w-menu-controller + ul ul ul,
-        .w-dropdown-menu > .w-menu-controller + ul ul {
-            width: 100%;
-            margin-left: 0;
         }
         }
         </style>
@@ -152,22 +42,20 @@
         <h1>HtmlWidgets Test page</h1>
         <hr />
         
-        <div class="w-dropdown-menu">
-        <ul>
-        <!--  class="w-dropdown-submenu" -->
-        <li>
+        <div class="w-dropdown-menu"><ul>
+        <li class="w-submenu-item">
             <a href="#">Item</a>
             <ul>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
-            <li>
+            <li class="w-submenu-item">
                 <a href="#">sub Item</a>
                 <ul>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
-                <li>
+                <li class="w-submenu-item">
                     <a href="#">sub sub Item</a>
                     <ul>
                     <li><a href="#">sub sub sub Item</a></li>
@@ -187,24 +75,23 @@
         </ul></div>
         
         <hr />
-        <div class="w-dropdown-menu" style="z-index:300">
-        <label for="mobile-menu-toggle" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
-        <input id="mobile-menu-toggle" type="checkbox" class="w-menu-controller" value="1"/>
+        <div class="w-dropdown-menu w-mobile" style="z-index:300">
+        <label for="mobile-menu" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+        <input id="mobile-menu" type="checkbox" class="w-menu-controller" value="1" />
         <ul>
-        <!--  class="w-dropdown-submenu" -->
-        <li>
+        <li class="w-submenu-item">
             <a href="#">Item</a>
             <ul>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
-            <li>
+            <li class="w-submenu-item">
                 <a href="#">sub Item</a>
                 <ul>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
-                <li>
+                <li class="w-submenu-item">
                     <a href="#">sub sub Item</a>
                     <ul>
                     <li><a href="#">sub sub sub Item</a></li>
@@ -224,21 +111,20 @@
         </ul></div>
 
         <hr />
-        <div class="w-vertical-menu" style="width:300px;z-index:200">
-        <ul>
-        <li>
+        <div class="w-vertical-menu" style="z-index:200"><ul>
+        <li class="w-submenu-item">
             <a href="#">Item</a>
             <ul>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
-            <li>
+            <li class="w-submenu-item">
                 <a href="#">sub Item</a>
                 <ul>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
-                <li>
+                <li class="w-submenu-item">
                     <a href="#">sub sub Item</a>
                     <ul>
                     <li><a href="#">sub sub sub Item</a></li>
@@ -258,23 +144,23 @@
         </ul></div>
         
         <hr />
-        <div class="w-vertical-menu" style="width:300px;z-index:100">
-        <label for="mobile-menu-toggle2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
-        <input id="mobile-menu-toggle2" type="checkbox" class="w-menu-controller" value="1"/>
+        <div class="w-vertical-menu w-mobile" style="z-index:100">
+        <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+        <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
         <ul>
-        <li>
+        <li class="w-submenu-item">
             <a href="#">Item</a>
             <ul>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
             <li><a href="#">sub Item</a></li>
-            <li>
+            <li class="w-submenu-item">
                 <a href="#">sub Item</a>
                 <ul>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
                 <li><a href="#">sub sub Item</a></li>
-                <li>
+                <li class="w-submenu-item">
                     <a href="#">sub sub Item</a>
                     <ul>
                     <li><a href="#">sub sub sub Item</a></li>

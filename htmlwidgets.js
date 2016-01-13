@@ -1101,6 +1101,14 @@ $.fn.htmlwidget = function( type, opts ) {
                 });
             break;
         
+        case 'menu':
+            $el.find('li').each(function(){
+                var $li = $(this);
+                if ( $li.children('ul').length )
+                    $li.addClass('w-submenu-item');
+            });
+            break;
+        
         case 'dropdown':
             if ( $el.is('select') && !$el.parent().hasClass('w-dropdown') )
             {
@@ -1306,6 +1314,7 @@ htmlwidget.initialisable = function( el, root ) {
 };
 htmlwidget.widgetize = function( el ) {
     var $node = $(el);
+    if ( $node.hasClass('w-dropdown-menu') || $node.hasClass('w-vertical-menu') ) $node.htmlwidget('menu');
     if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
     if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
     if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
@@ -1379,14 +1388,14 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
 
 // dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
     ;
 }
 
