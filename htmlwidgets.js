@@ -762,6 +762,33 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
         self.instance = null;
     };
 });
+widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, options ){
+    var self = this;
+    if ( !(self instanceof areaselect) ) return new areaselect(el, options);
+    
+    self.instance = null;
+    
+    self.init = function( ) {
+        if ( 'function' === typeof AreaSelect )
+        {
+            var with_borders = el[HAS_ATTR]('data-areaselect-borders') ? el[ATTR]('data-areaselect-borders').toLowerCase() : null;
+            self.instance = new AreaSelect(el, {
+                className: el[HAS_ATTR]('data-areaselect-class') ? el[ATTR]('data-areaselect-class') : (options.className||null),
+                withBorders: with_borders
+                    ? ('1' === with_borders || 'yes' === with_borders || 'true' === with_borders || 'on' === with_borders)
+                    : (options.withBorders),
+                onSelect: function( selection ) {
+                    if ( options.onSelect ) options.onSelect.call(this, selection);
+                    $(el).trigger('areaselect', {selection: selection});
+                }
+            });
+        }
+    };
+    self.dispose = function( ) {
+        if ( self.instance ) self.instance.dispose( );
+        self.instance = null;
+    };
+});
 // http://nikos-web-development.netai.net
 // http://maps.googleapis.com/maps/api/js?sensor=false
 function map_geocode( location, cb, reverse_geocode )
@@ -1066,6 +1093,10 @@ $.fn.htmlwidget = function( type, opts ) {
             $el.colorpicker( opts );
             break;
         
+        case 'areaselect':
+            $el.areaselect( opts );
+            break;
+        
         case 'map':
         case 'gmap':
         case 'gmap3':
@@ -1210,6 +1241,33 @@ $.fn.htmlwidget = function( type, opts ) {
                     locale = 'custom_locale';
                     tinymce.util.I18n.add('custom_locale', opts["i18n"]);
                 }
+                var tinymce_plugins = el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
+                    'advlist autolink lists link image charmap preview hr anchor pagebreak',
+                    'searchreplace wordcount visualblocks visualchars code fullscreen',
+                    'insertdatetime media nonbreaking save table contextmenu directionality',
+                    'paste textcolor colorpicker textpattern imagetools placeholderalt codemirror' /*jbimages*/
+                    ]);
+                var tinymce_toolbar = el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
+                    'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
+                    ]);
+                var tinymce_menubar = el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools');
+                if ( el[HAS_ATTR]('data-tinymce-plugins-extra') )
+                {
+                    tinymce_plugins = tinymce_plugins.concat(el[ATTR]('data-tinymce-plugins-extra').split(','));
+                }
+                else if ( opts.plugins_extra )
+                {
+                    tinymce_plugins = tinymce_plugins.concat(opts.plugins_extra);
+                }
+                if ( el[HAS_ATTR]('data-tinymce-toolbar-extra') )
+                {
+                    tinymce_toolbar = tinymce_toolbar.concat(el[ATTR]('data-tinymce-toolbar-extra').split(','));
+                }
+                else if ( opts.toolbar_extra )
+                {
+                    tinymce_toolbar = tinymce_toolbar.concat(opts.toolbar_extra);
+                }
+                
                 tinymce.init({
                     selector: '#'+el.id,
                     theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
@@ -1217,16 +1275,9 @@ $.fn.htmlwidget = function( type, opts ) {
                     language: el[HAS_ATTR]('data-tinymce-lang') ? el[ATTR]('data-tinymce-lang') : (opts.language || locale),
                     directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
                     height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
-                    plugins: el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
-                    'advlist autolink lists link image charmap preview hr anchor pagebreak',
-                    'searchreplace wordcount visualblocks visualchars code fullscreen',
-                    'insertdatetime media nonbreaking save table contextmenu directionality',
-                    'paste textcolor colorpicker textpattern imagetools placeholderalt codemirror' /*jbimages*/
-                    ]),
-                    toolbar: el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
-                    'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
-                    ]),
-                    menubar: el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools'),
+                    plugins: tinymce_plugins,
+                    toolbar: tinymce_toolbar,
+                    menubar: tinymce_menubar,
                     /*menu: {
                         file: {title: 'File', items: 'newdocument'},
                         edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
@@ -1324,6 +1375,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-resizable') || $node.hasClass('w-resisable') ) $node.htmlwidget('resizable');
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
+    if ( $node.hasClass('w-areaselect') ) $node.htmlwidget('areaselect');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -1388,14 +1440,14 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselect').each( widget_able );
 
 // dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselect::added', widget_able)
     ;
 }
 

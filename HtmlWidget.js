@@ -145,6 +145,10 @@ var HtmlWidget = self = {
             ,['styles', 'colorpicker.css', asset_base+'colorpicker.css']
             ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css']]
              
+            // AreaSelect
+            //,['styles', 'areaselect.css', asset_base+'areaselect.css']
+            ,['scripts', 'areaselect', asset_base+'areaselect.js'/*, ['areaselect.css']*/]
+             
             // LocationPicker
             ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['-external-google-maps-api','jquery']]
              
