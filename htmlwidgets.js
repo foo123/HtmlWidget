@@ -1345,8 +1345,7 @@ $.fn.htmlwidget = function( type, options ) {
                 {
                     tinymce_toolbar = tinymce_toolbar.concat(opts.toolbar_extra);
                 }
-                
-                tinymce.init({
+                var tinymce_opts = {
                     selector: '#'+el.id,
                     theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
                     skin: el[HAS_ATTR]('data-tinymce-skin') ? el[ATTR]('data-tinymce-skin') : (opts.skin || 'lightgray'),
@@ -1375,7 +1374,11 @@ $.fn.htmlwidget = function( type, options ) {
                     body_class: el[HAS_ATTR]('data-tinymce-body-class') ? el[ATTR]('data-tinymce-body-class') : (opts.body_class || null),
                     content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
                     content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
-                });
+                };
+                if ( 'object' === typeof opts.options_extra )
+                    for (var o in opts.options_extra )
+                        tinymce_opts[o] = opts.options_extra[o];
+                tinymce.init( tinymce_opts );
             }
             break;
         
