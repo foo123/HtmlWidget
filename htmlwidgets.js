@@ -778,8 +778,8 @@ widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, optio
                 maxWidth: el[HAS_ATTR]('data-areaselect-max-width') ? el[ATTR]('data-areaselect-max-width') : (options.maxWidth||null),
                 minHeight: el[HAS_ATTR]('data-areaselect-min-height') ? el[ATTR]('data-areaselect-min-height') : (options.minHeight||null),
                 maxHeight: el[HAS_ATTR]('data-areaselect-max-height') ? el[ATTR]('data-areaselect-max-height') : (options.maxHeight||null),
-                ratioX: el[HAS_ATTR]('data-areaselect-ratio-x') ? el[ATTR]('data-areaselect-ratio-x') : (options.ratioX||null),
-                ratioY: el[HAS_ATTR]('data-areaselect-ratio-y') ? el[ATTR]('data-areaselect-ratio-y') : (options.ratioY||null),
+                ratioXY: el[HAS_ATTR]('data-areaselect-ratio-xy') ? el[ATTR]('data-areaselect-ratio-xy') : (options.ratioXY||null),
+                ratioYX: el[HAS_ATTR]('data-areaselect-ratio-yx') ? el[ATTR]('data-areaselect-ratio-yx') : (options.ratioYX||null),
                 withBorders: with_borders
                     ? ('1' === with_borders || 'yes' === with_borders || 'true' === with_borders || 'on' === with_borders)
                     : (options.withBorders),
@@ -795,6 +795,10 @@ widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, optio
         {
             self.instance.select( selection );
         }
+    };
+    self.selection = function( ) {
+        if ( self.instance ) return self.instance.getSelection( );
+        return null;
     };
     self.show = function( ) {
         if ( self.instance )
@@ -1045,14 +1049,18 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-$.fn.htmlwidget = function( type, opts ) {
-    opts = opts || {};
+$.fn.htmlwidget = function( type, options ) {
+    options = options || {};
     this.each(function( ) {
-        var el = this, $el, locale, i18n;
+        var el = this, $el, locale, i18n, opts;
         
         if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
         {
             opts = window[el[ATTR]('w-opts')];
+        }
+        else
+        {
+            opts = options;
         }
         
         if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
@@ -1073,17 +1081,24 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'sortable':
         case 'uploadable':
         case 'upload':
-            $el['upload'===type?'uploadable':('rearrangeable'===type?'sortable':type)]( opts );
+            type = 'upload'===type?'uploadable':('rearrangeable'===type?'sortable':type);
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
+            $el[type]( opts );
             break;
         
         case 'templateable':
         case 'template':
+            type = 'template';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             $el.template( opts );
             break;
         
         case 'draggable':
             if ( 'function' === typeof $.fn.tinyDraggable )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.tinyDraggable( opts );
+            }
             break;
         
         case 'resisable':
@@ -1093,13 +1108,18 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'timer':
             if ( 'function' === typeof $.fn.Timer )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.Timer( opts );
+            }
             break;
         
         case 'date':
         case 'datetime':
         case 'datepicker':
         case 'datetimepicker':
+            type = 'datetimepicker';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             if ( !opts["i18n"] && (htmlwidget.locale['Pikadaytime']||htmlwidget.locale['Pikaday']) )
             {
                 opts["i18n"] = htmlwidget.locale['Pikadaytime'] || htmlwidget.locale['Pikaday'];
@@ -1110,28 +1130,40 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'color':
         case 'colorselector':
         case 'colorpicker':
+            type = 'colorpicker';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             $el.colorpicker( opts );
             break;
         
+        case 'areaselectable':
         case 'areaselect':
+            type = 'areaselect';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             $el.areaselect( opts );
             break;
         
         case 'map':
         case 'gmap':
         case 'gmap3':
+            type = 'gmap';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             $el.gmap3( opts );
             break;
         
         case 'autocomplete':
         case 'autosuggest':
         case 'suggest':
+            type = 'autocomplete';
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
             $el.suggest( opts );
             break;
         
         case 'rangeslider':
         case 'range':
             if ( 'function' === typeof $.fn.rangeslider )
+            {
+                type = 'rangeslider';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.rangeslider({
                 /*
                 // https://andreruffert.github.io/rangeslider.js/
@@ -1150,6 +1182,7 @@ $.fn.htmlwidget = function( type, opts ) {
                  polyfill: false
                 ,orientation: el[ATTR]('data-range-orientation')||opts.orientation||"horizontal"
                 });
+            }
             break;
         
         case 'menu':
@@ -1175,6 +1208,8 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'select2':
             if ( 'function' === typeof $.fn.select2 )
             {
+                type = 'select2';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.select2( opts );
                 if ( el[HAS_ATTR]('w-tooltip') ) $el.prev('.select2-container').attr('w-tooltip',el[ATTR]('w-tooltip'));
                 else if ( el[HAS_ATTR]('data-tooltip') ) $el.prev('.select2-container').attr('data-tooltip',el[ATTR]('data-tooltip'));
@@ -1186,6 +1221,8 @@ $.fn.htmlwidget = function( type, opts ) {
         case 'datatable':
             if ( 'function' === typeof $.fn.dataTable )
             {
+                type = 'datatable';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 if ( !opts["language"] && htmlwidget.locale['DataTables'] )
                 {
 					opts["language"] =  htmlwidget.locale['DataTables'];
@@ -1208,32 +1245,51 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'modal':
             if ( 'function' === typeof $.fn.modal )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.modal( opts );
+            }
             break;
         
         case 'packery':
             if ( 'undefined' !== typeof Packery )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 new Packery( el, opts );
+            }
             break;
         
         case 'isotope':
             if ( 'undefined' !== typeof Isotope )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 new Isotope( el, opts );
+            }
             break;
         
         case 'masonry':
             if ( 'undefined' !== typeof Masonry )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 new Masonry( el, opts );
+            }
             break;
         
         case 'modelview':
             if ( 'undefined' !== typeof ModelView )
+            {
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.modelview( opts );
+            }
             break;
         
         case 'tag-editor':
             if ( 'function' === typeof $.fn.tagEditor )
+            {
+                type = 'tageditor';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 $el.tagEditor( opts );
+            }
             break;
         
         case 'wysiwyg-editor':
@@ -1244,6 +1300,8 @@ $.fn.htmlwidget = function( type, opts ) {
             }*/
             if ( 'undefined' !== typeof tinymce )
             {
+                type = 'tinymce';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 locale = 'en';
                 if ( htmlwidget.locale['tinymce'] )
                 {
@@ -1323,6 +1381,9 @@ $.fn.htmlwidget = function( type, opts ) {
         
         case 'syntax-editor':
             if ( 'function' === typeof CodeMirror )
+            {
+                type = 'codemirror';
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
                 CodeMirror.fromTextArea(el, {
                  mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
                 ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
@@ -1334,6 +1395,7 @@ $.fn.htmlwidget = function( type, opts ) {
                 ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
                 ,gutters          : null != opts.gutters ? opts.gutters : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
                 });
+            }
             break;
         
         default: 

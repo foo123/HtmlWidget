@@ -212,6 +212,7 @@ class HtmlWidget
         return array(
          array('DataTables', $i18n_base.'DataTables/'.$locale.'.json')
         ,array('Pikadaytime', $i18n_base.'Pikadaytime/'.$locale.'.json')
+        ,array('DateX', $i18n_base.'DateX/'.$locale.'.json')
         );
     }
     
@@ -229,7 +230,7 @@ class HtmlWidget
             foreach($attr['data'] as $k=>$v)
             {
                 if ( !empty($data_attr) ) $data_attr .= ' ';
-                $data_attr .= "data-$k='$v'";
+                $data_attr .= "data-{$k}='{$v}'";
             }
         }
         return $data_attr;
@@ -1050,9 +1051,15 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::data($attr);
+        $wopts = "";
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-autocomplete-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
         self::enqueue('scripts', 'autocomplete');
         self::enqueue('scripts', 'htmlwidgets');
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wopts $wname title=\"$wtitle\" class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wdata />$wicon</span>";
     }
     
     public static function w_upload( $attr, $data )
@@ -1094,8 +1101,14 @@ OUT;
         }
         else
         {
+            $wopts = "";
+            if ( isset($attr["options"]) && is_array($attr["options"]) )
+            {
+                $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+                self::enqueue('scripts', 'w-upload-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+            }
             self::enqueue('scripts', 'htmlwidgets');
-            return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra data-upload-base=\"$wupload_base\" $wdata><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$upload_data</textarea><label class=\"w-widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"w-widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
+            return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra data-upload-base=\"$wupload_base\" $wdata><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$upload_data</textarea><label class=\"w-widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"w-widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
     }
     
@@ -1110,28 +1123,39 @@ OUT;
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
+        $wopts = "";
         if ( !empty($attr['syntax-editor']) ) 
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
-            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass = 'w-widget w-syntax-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wopts = isset($attr['codemirror_options'])&&is_array($attr['codemirror_options']) ? $attr['codemirror_options'] : array();
-            self::enqueue('scripts', 'w-codemirror-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('codemirror','codemirror-fold','codemirror-htmlmixed','htmlwidgets'));
+            if ( isset($attr["options"]) && is_array($attr["options"]) )
+            {
+                $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+                self::enqueue('scripts', 'w-codemirror-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+            }
+            self::enqueue('scripts', 'codemirror');
+            self::enqueue('scripts', 'codemirror-fold');
+            self::enqueue('scripts', 'codemirror-htmlmixed');
+            self::enqueue('scripts', 'htmlwidgets');
         }
         elseif ( !empty($attr['wysiwyg-editor']) ) 
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
-            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass = 'w-widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            $wopts = isset($attr['tinymce_options'])&&is_array($attr['tinymce_options']) ? $attr['tinymce_options'] : array();
-            self::enqueue('scripts', 'w-tinymce-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('tinymce','htmlwidgets'));
+            if ( isset($attr["options"]) && is_array($attr["options"]) )
+            {
+                $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+                self::enqueue('scripts', 'w-tinymce-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+            }
+            self::enqueue('scripts', 'tinymce');
+            self::enqueue('scripts', 'htmlwidgets');
         }
         else
         {
             $wclass = 'w-widget w-textarea'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             self::enqueue('styles', 'htmlwidgets.css');
         }
-        return "<textarea id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" $wdata>$wvalue</textarea>";
+        return "<textarea id=\"$wid\" $winit $wopts $wname title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra placeholder=\"$wplaceholder\" $wdata>$wvalue</textarea>";
     }
     
     public static function w_date( $attr, $data )
@@ -1167,9 +1191,15 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::data($attr);
+        $wopts = ""
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-datetime-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
         self::enqueue('scripts', 'pikadaytime');
         self::enqueue('scripts', 'htmlwidgets');
-        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wtime $wdata />$wicon</span>";
+        return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wopts $wname title=\"$wtitle\" class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra data-datepicker-format=\"$wformat\" $wtime $wdata />$wicon</span>";
     }
     
     public static function w_time( $attr, $data )
@@ -1232,9 +1262,15 @@ OUT;
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : ''; 
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
+        $wopts = ""
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-timer-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
         self::enqueue('scripts', 'timer');
         self::enqueue('scripts', 'htmlwidgets');
-        return "<span id=\"{$wid}\" {$winit} class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
+        return "<span id=\"{$wid}\" {$winit} {$wopts} class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} {$wdata} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
     }
     
     public static function w_color( $attr, $data )
@@ -1260,9 +1296,15 @@ OUT;
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wformat = !empty($attr["format"]) ? $attr["format"] : 'rgba';
         $wdata = self::data($attr);
+        $wopts = "";
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-color-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
         self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'htmlwidgets');
-        return $winput."<div id=\"$wid\" $winit title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $winputref $wdata></div>";
+        return $winput."<div id=\"$wid\" $winit $wopts title=\"$wtitle\" class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $winputref $wdata></div>";
     }
     
     public static function w_gmap( $attr, $data )
@@ -1276,8 +1318,14 @@ OUT;
         $wzoom = !empty($attr["zoom"]) ? $attr["zoom"] : '6';
         $wmarkers = !empty($data["markers"]) ? $data["markers"] : null;
         $wdata = self::data($attr);
+        $wopts = "";
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-gmap-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
         self::enqueue('scripts', 'htmlwidgets');
-        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
+        return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
     }
     
     public static function w_select( $attr, $data )
@@ -1310,18 +1358,23 @@ OUT;
         }
         
         $wdata = self::data($attr);
+        $wopts = "";
         self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($attr['select2']) && !$wdropdown )
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
-            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass .= ' w-select2';
-            $wopts = isset($attr['select2_options'])&&is_array($attr['select2_options']) ? $attr['select2_options'] : array();
-            self::enqueue('scripts', 'w-select2-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('select2','htmlwidgets'));
+            if ( isset($attr["options"]) && is_array($attr["options"]) )
+            {
+                $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+                self::enqueue('scripts', 'w-select2-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+            }
+            self::enqueue('scripts', 'select2');
+            self::enqueue('scripts', 'htmlwidgets');
         }
         return $wdropdown
-        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wname class=\"w-dropdown-select\" $wextra $wdata>$woptions</select></span>"
-        : "<select id=\"$wid\" $winit $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
+        ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wopts $wname class=\"w-dropdown-select\" $wextra $wdata>$woptions</select></span>"
+        : "<select id=\"$wid\" $winit $wopts $wname class=\"$wclass\" $wstyle $wextra $wdata>$woptions</select>";
     }
     
     public static function w_menu( $attr, $data )
@@ -1374,16 +1427,21 @@ OUT;
             $wrows .= "</tr>";
         }
         $wdata = self::data($attr);
+        $wopts = "";
         self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($attr['datatable']) )
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
-            $winit .= ' w-opts="htmlw_'.$wid.'_options"';
             $wclass .= ' w-datatable';
-            $wopts = isset($attr['datatable_options'])&&is_array($attr['datatable_options']) ? $attr['datatable_options'] : array();
-            self::enqueue('scripts', 'w-datatable-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($wopts).';'), array('datatable','htmlwidgets'));
+            if ( isset($attr["options"]) && is_array($attr["options"]) )
+            {
+                $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+                self::enqueue('scripts', 'w-datatable-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+            }
+            self::enqueue('scripts', 'datatable');
+            self::enqueue('scripts', 'htmlwidgets');
         }
-        return "<table id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
+        return "<table id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
     
     public static function w_animation( $attr, $data )

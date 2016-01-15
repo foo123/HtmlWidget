@@ -255,6 +255,7 @@ var HtmlWidget = self = {
         return [
          ['DataTables', i18n_base+'DataTables/'+locale+'.json']
         ,['Pikadaytime', i18n_base+'Pikadaytime/'+locale+'.json']
+        ,['DateX', i18n_base+'DateX/'+locale+'.json']
         ];
     }
     
@@ -1121,7 +1122,8 @@ var HtmlWidget = self = {
     }
     
     ,w_suggest: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, winit;
+        var wid, wclass, wstyle, wextra, wdata, wajax, wicon, wplaceholder,
+            wvalue, wname, wtitle, wrapper_class, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1150,14 +1152,20 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.data(attr);
+        wopts = "";
+        if ( 'object'===typeof attr['options'] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-autocomplete-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
         self.enqueue('scripts', 'autocomplete');
         self.enqueue('scripts', 'htmlwidgets');
-        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wextra+' placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wdata+' />'+wicon+'</span>';
     }
     
     ,w_upload: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wupload_base, wvalue, wname,
-            msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit;
+            msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
@@ -1195,8 +1203,14 @@ var HtmlWidget = self = {
         }
         else
         {
+            wopts = "";
+            if ( 'object'===typeof attr['options'] )
+            {
+                wopts = 'w-opts="htmlw_'+wid+'_options"';
+                self.enqueue('scripts', 'w-upload-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+            }
             self.enqueue('scripts', 'htmlwidgets');
-            return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' data-upload-base="'+wupload_base+'" '+wdata+'><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+upload_data+'</textarea><label class="w-widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="w-widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
+            return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' data-upload-base="'+wupload_base+'" '+wdata+'><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+upload_data+'</textarea><label class="w-widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="w-widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
         }
     }
     
@@ -1211,23 +1225,34 @@ var HtmlWidget = self = {
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
+        wopts = "";
         if ( !!attr['syntax-editor'] ) 
         {
             if ( !winit ) winit = 'w-init="1"';
-            winit += ' w-opts="htmlw_'+wid+'_options"';
             wclass = 'w-widget w-syntax-editor';
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-            wopts = 'object'===typeof attr['codemirror_options'] ? attr['codemirror_options'] : {};
-            self.enqueue('scripts', 'w-codemirror-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(wopts)+';'], ['codemirror','codemirror-fold','codemirror-htmlmixed','htmlwidgets']);
+            if ( 'object'===typeof attr['options'] )
+            {
+                wopts = 'w-opts="htmlw_'+wid+'_options"';
+                self.enqueue('scripts', 'w-codemirror-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+            }
+            self.enqueue('scripts', 'codemirror');
+            self.enqueue('scripts', 'codemirror-fold');
+            self.enqueue('scripts', 'codemirror-htmlmixed');
+            self.enqueue('scripts', 'htmlwidgets');
         }
         else if ( !!attr['wysiwyg-editor'] ) 
         {
             if ( !winit ) winit = 'w-init="1"';
-            winit += ' w-opts="htmlw_'+wid+'_options"';
             wclass = 'w-widget w-wysiwyg-editor'; 
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-            wopts = 'object'===typeof attr['tinymce_options'] ? attr['tinymce_options'] : {};
-            self.enqueue('scripts', 'w-tinymce-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(wopts)+';'], ['tinymce','htmlwidgets']);
+            if ( 'object'===typeof attr['options'] )
+            {
+                wopts = 'w-opts="htmlw_'+wid+'_options"';
+                self.enqueue('scripts', 'w-tinymce-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+            }
+            self.enqueue('scripts', 'tinymce');
+            self.enqueue('scripts', 'htmlwidgets');
         }
         else
         {
@@ -1235,11 +1260,11 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             self.enqueue('styles', 'htmlwidgets.css');
         }
-        return '<textarea id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" '+wdata+'>'+wvalue+'</textarea>';
+        return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' placeholder="'+wplaceholder+'" '+wdata+'>'+wvalue+'</textarea>';
     }
     
     ,w_date: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wtime, wtitle, wformat, wrapper_class, winit;
+        var wid, wclass, wstyle, wextra, wdata, wplaceholder, wicon, wvalue, wname, wtime, wtitle, wformat, wrapper_class, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1272,9 +1297,15 @@ var HtmlWidget = self = {
             wrapper_class += ' w-icon-right';
         }
         wdata = self.data(attr);
+        wopts = "";
+        if ( 'object'===typeof attr['options'] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-datetime-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
         self.enqueue('scripts', 'pikadaytime');
         self.enqueue('scripts', 'htmlwidgets');
-        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datepicker-format="'+wformat+'" '+wtime+' '+wdata+' />'+wicon+'</span>';
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' title="'+wtitle+'" class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' data-datepicker-format="'+wformat+'" '+wtime+' '+wdata+' />'+wicon+'</span>';
     }
     
     ,w_time: function( attr, data ) {
@@ -1329,7 +1360,7 @@ var HtmlWidget = self = {
     }
     
     ,w_timer: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wtitle, wduration, wname, wformat, wtype, winit;
+        var wid, wclass, wstyle, wextra, wdata, wtitle, wduration, wname, wformat, wtype, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? attr["name"] : '';
@@ -1342,13 +1373,19 @@ var HtmlWidget = self = {
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
+        wopts = "";
+        if ( 'object'===typeof attr['options'] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-timer-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
         self.enqueue('scripts', 'timer');
         self.enqueue('scripts', 'htmlwidgets');
-        return '<span id="'+wid+'" '+winit+' class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
+        return '<span id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' '+wdata+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
     ,w_color: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wdata, wvalue, wopacity, winput, winputref, wname, wtitle, wformat, winit;
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wopacity, winput, winputref, wname, wtitle, wformat, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1371,9 +1408,15 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wformat = !empty(attr,"format") ? attr["format"] : 'rgba';
         wdata = self.data(attr);
+        wopts = "";
+        if ( 'object'===typeof attr['options'] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-color-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
         self.enqueue('scripts', 'colorpicker');
         self.enqueue('scripts', 'htmlwidgets');
-        return winput+'<div id="'+wid+'" '+winit+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wdata+'></div>';
+        return winput+'<div id="'+wid+'" '+winit+' '+wopts+' title="'+wtitle+'" class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wdata+'></div>';
     }
     
     ,w_gmap: function( attr, data ) {
@@ -1387,9 +1430,15 @@ var HtmlWidget = self = {
         wcenter = !empty(attr,"center") ? attr["center"] : null;
         wzoom = !empty(attr,"zoom") ? attr["zoom"] : '6';
         wmarkers = !empty(data,"markers") ? data["markers"] : null;
-        wdata = self.data(attr);   
+        wdata = self.data(attr);
+        wopts = "";
+        if ( 'object'===typeof attr['options'] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-gmap-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
         self.enqueue('scripts', 'htmlwidgets');
-        return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
+        return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
     }
     
     ,w_select: function( attr, data ) {
@@ -1425,18 +1474,23 @@ var HtmlWidget = self = {
         }
         
         wdata = self.data(attr);
+        wopts = "";
         self.enqueue('styles', 'htmlwidgets.css');
         if ( !!attr['select2'] && !wdropdown )
         {
             if ( !winit ) winit = 'w-init="1"';
-            winit += ' w-opts="htmlw_'+wid+'_options"';
             wclass += ' w-select2';
-            wopts = 'object'===typeof attr['select2_options'] ? attr['select2_options'] : {};
-            self.enqueue('scripts', 'w-select2-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(wopts)+';'], ['select2','htmlwidgets']);
+            if ( 'object'===typeof attr['options'] )
+            {
+                wopts = 'w-opts="htmlw_'+wid+'_options"';
+                self.enqueue('scripts', 'w-select2-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+            }
+            self.enqueue('scripts', 'select2');
+            self.enqueue('scripts', 'htmlwidgets');
         }
         return wdropdown
-        ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+winit+' '+wname+' class="w-dropdown-select" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
-        : '<select id="'+wid+'" '+winit+' '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';
+        ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+winit+' '+wopts+' '+wname+' class="w-dropdown-select" '+wextra+' '+wdata+'>'+woptions+'</select></span>'
+        : '<select id="'+wid+'" '+winit+' '+wopts+' '+wname+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+woptions+'</select>';
     }
     
     ,w_menu: function( attr, data ) {
@@ -1492,16 +1546,21 @@ var HtmlWidget = self = {
             wrows += "</tr>";
         }
         wdata = self.data(attr);
+        wopts = "";
         self.enqueue('styles', 'htmlwidgets.css');
         if ( !!attr['datatable'] )
         {
             if ( !winit ) winit = 'w-init="1"';
-            winit += ' w-opts="htmlw_'+wid+'_options"';
             wclass += ' w-datatable';
-            wopts = 'object'===typeof attr['datatable_options'] ? attr['datatable_options'] : {};
-            self.enqueue('scripts', 'w-datatable-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(wopts)+';'], ['datatable','htmlwidgets']);
+            if ( 'object'===typeof attr['options'] )
+            {
+                wopts = 'w-opts="htmlw_'+wid+'_options"';
+                self.enqueue('scripts', 'w-datatable-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+            }
+            self.enqueue('scripts', 'datatable');
+            self.enqueue('scripts', 'htmlwidgets');
         }
-        return '<table id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
+        return '<table id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
     
     ,w_animation: function( attr, data )  {
