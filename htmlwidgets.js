@@ -774,15 +774,35 @@ widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, optio
             var with_borders = el[HAS_ATTR]('data-areaselect-borders') ? el[ATTR]('data-areaselect-borders').toLowerCase() : null;
             self.instance = new AreaSelect(el, {
                 className: el[HAS_ATTR]('data-areaselect-class') ? el[ATTR]('data-areaselect-class') : (options.className||null),
+                minWidth: el[HAS_ATTR]('data-areaselect-min-width') ? el[ATTR]('data-areaselect-min-width') : (options.minWidth||null),
+                maxWidth: el[HAS_ATTR]('data-areaselect-max-width') ? el[ATTR]('data-areaselect-max-width') : (options.maxWidth||null),
+                minHeight: el[HAS_ATTR]('data-areaselect-min-height') ? el[ATTR]('data-areaselect-min-height') : (options.minHeight||null),
+                maxHeight: el[HAS_ATTR]('data-areaselect-max-height') ? el[ATTR]('data-areaselect-max-height') : (options.maxHeight||null),
+                ratioX: el[HAS_ATTR]('data-areaselect-ratio-x') ? el[ATTR]('data-areaselect-ratio-x') : (options.ratioX||null),
+                ratioY: el[HAS_ATTR]('data-areaselect-ratio-y') ? el[ATTR]('data-areaselect-ratio-y') : (options.ratioY||null),
                 withBorders: with_borders
                     ? ('1' === with_borders || 'yes' === with_borders || 'true' === with_borders || 'on' === with_borders)
                     : (options.withBorders),
-                onSelect: function( selection ) {
-                    if ( options.onSelect ) options.onSelect.call(this, selection);
+                onSelect: function( ele, selection ) {
+                    if ( options.onSelect ) options.onSelect.call(this, ele, selection);
                     $(el).trigger('areaselect', {selection: selection});
                 }
             });
         }
+    };
+    self.select = function( selection ) {
+        if ( self.instance )
+        {
+            self.instance.select( selection );
+        }
+    };
+    self.show = function( ) {
+        if ( self.instance )
+            self.instance.show( );
+    };
+    self.hide = function( ) {
+        if ( self.instance )
+            self.instance.hide( );
     };
     self.dispose = function( ) {
         if ( self.instance ) self.instance.dispose( );
@@ -1375,7 +1395,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-resizable') || $node.hasClass('w-resisable') ) $node.htmlwidget('resizable');
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
-    if ( $node.hasClass('w-areaselect') ) $node.htmlwidget('areaselect');
+    if ( $node.hasClass('w-areaselectable') ) $node.htmlwidget('areaselect');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -1440,14 +1460,14 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselect').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
 
 // dynamicaly added elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselect::added', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added', widget_able)
     ;
 }
 

@@ -102,8 +102,8 @@ class HtmlWidget
             ,array('scripts', 'colorpicker', $asset_base.'colorpicker.js', array('colorpicker.css'))
              
             // AreaSelect
-            //,array('styles', 'areaselect.css', $asset_base.'areaselect.css')
-            ,array('scripts', 'areaselect', $asset_base.'areaselect.js'/*, array('areaselect.css')*/)
+            ,array('styles', 'areaselect.css', $asset_base.'areaselect.css')
+            ,array('scripts', 'areaselect', $asset_base.'areaselect.js', array('areaselect.css'))
              
             // LocationPicker
             ,array('scripts', 'locationpicker', $asset_base.'locationpicker.js', array('-external-google-maps-api','jquery'))
