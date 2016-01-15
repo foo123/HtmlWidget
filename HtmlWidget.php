@@ -1191,7 +1191,7 @@ OUT;
             $wrapper_class .= ' w-icon-right';
         }
         $wdata = self::data($attr);
-        $wopts = ""
+        $wopts = "";
         if ( isset($attr["options"]) && is_array($attr["options"]) )
         {
             $wopts = 'w-opts="htmlw_'.$wid.'_options"';
@@ -1262,7 +1262,7 @@ OUT;
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : ''; 
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
-        $wopts = ""
+        $wopts = "";
         if ( isset($attr["options"]) && is_array($attr["options"]) )
         {
             $wopts = 'w-opts="htmlw_'.$wid.'_options"';
