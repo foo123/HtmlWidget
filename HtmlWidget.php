@@ -147,7 +147,7 @@ class HtmlWidget
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
             // ModelViewForm
-            ,array('scripts', 'modelviewform', $asset_base.'modelviewform.js', array('jquery','modelview'))
+            ,array('scripts', 'modelviewform', $asset_base.'modelviewform.js', array('jquery','datex','modelview'))
              
             // smoothState
             ,array('scripts', 'smoothstate', $asset_base.'smoothState.js', array('jquery'))

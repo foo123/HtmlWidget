@@ -21,12 +21,11 @@ tinymce.PluginManager.add('codemirror', function(editor, url) {
 		// Open editor window
 		var win = editor.windowManager.open({
 			title: 'HTML source code',
-			//url: url + '/source.html',
-			width: 700,
-			height: 350,
+			url: url + '/source.html',
+			width: 800,
+			height: 550,
 			resizable : true,
 			maximizable : true,
-			html: '<iframe src="' + url + '/source.html' + '" tabindex="-1"></iframe>',
 			buttons: [
 				{ text: 'Ok', subtype: 'primary', onclick: function(){
 					var doc = document.querySelectorAll('.mce-container-body>iframe')[0];

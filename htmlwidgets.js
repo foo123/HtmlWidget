@@ -165,6 +165,34 @@ function widget2jquery( name, widget, spr )
     };
 }
 htmlwidget.make = widget2jquery;
+htmlwidget.dispatch = function( event, element, native ) {
+    var evt; // The custom event that will be created
+    if ( false === native )
+    {
+        $(element).trigger(event);
+    }
+    else
+    {
+        if ( document.createEvent )
+        {
+            evt = document.createEvent( "HTMLEvents" );
+            evt.initEvent( event, true, true );
+            evt.eventName = event;
+            element.dispatchEvent(evt);
+        }
+        else
+        {
+            evt = document.createEventObject( );
+            evt.eventType = event;
+            evt.eventName = event;
+            element.fireEvent( "on" + evt.eventType, evt );
+        }
+    }
+};
+$.fn.triggerNative = function( event ) {
+    this.each(function( ){ htmlwidget.dispatch(event, this); });
+    return this;
+};
 
 // some useful widgets
 widget2jquery('selectable', htmlwidget.selectable=function selectable( el, options ){
@@ -1236,9 +1264,18 @@ $.fn.htmlwidget = function( type, options ) {
                 {
                     dt_wrapper.find(".w-table-controls").eq(0).append($(el[ATTR]('data-table-controls')));
                 }
-                else if ( opts.controls )
+                else if ( !!opts.controls )
                 {
-                    dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
+                    if ( opts.controls.concat )
+                    {
+                        var il, ol, dt_controls = dt_wrapper.find(".w-table-controls").eq(0);
+                        for(il=0,ol=opts.controls.length; il<ol; il++)
+                            dt_controls.append($(opts.controls[il]));
+                    }
+                    else
+                    {
+                        dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
+                    }
                 }
             }
             break;
@@ -1345,6 +1382,15 @@ $.fn.htmlwidget = function( type, options ) {
                 {
                     tinymce_toolbar = tinymce_toolbar.concat(opts.toolbar_extra);
                 }
+                var tinymce_external_plugins = null;
+                if ( el[HAS_ATTR]('data-tinymce-external-plugins') )
+                {
+                    tinymce_external_plugins = json_decode( el[ATTR]('data-tinymce-external-plugins') );
+                }
+                else if ( 'object' === typeof opts.external_plugins )
+                {
+                    tinymce_external_plugins = opts.external_plugins;
+                }
                 var tinymce_opts = {
                     selector: '#'+el.id,
                     theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
@@ -1378,6 +1424,24 @@ $.fn.htmlwidget = function( type, options ) {
                 if ( 'object' === typeof opts.options_extra )
                     for (var o in opts.options_extra )
                         tinymce_opts[o] = opts.options_extra[o];
+                if ( 'object' === typeof tinymce_external_plugins )
+                {
+                    for (var pl in tinymce_external_plugins)
+                    {
+                        if ( !tinymce_external_plugins[HAS](pl) ) continue;
+                        tinymce.PluginManager.load(pl, tinymce_external_plugins[pl]);
+                    }
+                }
+                var tinymce_autosave = el[HAS_ATTR]('data-tinymce-autosave') ? el[ATTR]('data-tinymce-autosave').toLowerCase() : !!opts.autosave;
+                if ( (true === tinymce_autosave) || ('1' === tinymce_autosave) || ('on' === tinymce_autosave) || ('yes' === tinymce_autosave) || ('true' === tinymce_autosave) )
+                {
+                    tinymce_opts.setup = function( editor ) {
+                        editor.on('change'/*'NodeChange'*/, function( ){
+                            editor.save( );
+                            htmlwidget.dispatch('change', el);
+                        });
+                    };
+                }
                 tinymce.init( tinymce_opts );
             }
             break;
