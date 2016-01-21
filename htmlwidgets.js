@@ -165,11 +165,13 @@ function widget2jquery( name, widget, spr )
     };
 }
 htmlwidget.make = widget2jquery;
-htmlwidget.dispatch = function( event, element, native ) {
+htmlwidget.dispatch = function( event, element, data, native ) {
     var evt; // The custom event that will be created
     if ( false === native )
     {
-        $(element).trigger(event);
+        evt = $.Event( event );
+        if ( null != data ) evt.data = data;
+        $(element).trigger( evt );
     }
     else
     {
@@ -178,19 +180,21 @@ htmlwidget.dispatch = function( event, element, native ) {
             evt = document.createEvent( "HTMLEvents" );
             evt.initEvent( event, true, true );
             evt.eventName = event;
-            element.dispatchEvent(evt);
+            if ( null != data ) evt.data = data;
+            element.dispatchEvent( evt );
         }
         else
         {
             evt = document.createEventObject( );
             evt.eventType = event;
             evt.eventName = event;
+            if ( null != data ) evt.data = data;
             element.fireEvent( "on" + evt.eventType, evt );
         }
     }
 };
-$.fn.triggerNative = function( event ) {
-    this.each(function( ){ htmlwidget.dispatch(event, this); });
+$.fn.triggerNative = function( event, data ) {
+    this.each(function( ){ htmlwidget.dispatch(event, this, data); });
     return this;
 };
 
@@ -212,12 +216,12 @@ widget2jquery('selectable', htmlwidget.selectable=function selectable( el, optio
                 if ( el.checked )
                 {
                     $el.addClass('w-selected');
-                    $el.trigger('selected');
+                    $el.triggerNative('selected');
                 }
                 else
                 {
                     $el.removeClass('w-selected');
-                    $el.trigger('deselected');
+                    $el.triggerNative('deselected');
                 }
             }
             else if ( 'click' === evt.type )
@@ -227,12 +231,12 @@ widget2jquery('selectable', htmlwidget.selectable=function selectable( el, optio
                 if ( $el.hasClass('w-selected') )
                 {
                     $el.removeClass('w-selected');
-                    $el.trigger('deselected');
+                    $el.triggerNative('deselected');
                 }
                 else
                 {
                     $el.addClass('w-selected');
-                    $el.trigger('selected');
+                    $el.triggerNative('selected');
                 }
             }
         });
@@ -261,7 +265,7 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
             var $el = $(this);
             if ( !!item ) $el = $el.closest( item );
             $el.fadeOut(animation, function( ){
-               $el.trigger('removed');
+               $el.triggerNative('removed');
                $el.remove( );
             });
         });
@@ -451,7 +455,7 @@ widget2jquery('template', htmlwidget.template=function template( el, options ){
         if ( self.instance )
         {
             self.instance( data );
-            if ( true === trigger ) $(el).trigger('render');
+            if ( true === trigger ) $(el).triggerNative('render');
         }
     };
     self.dispose = function( ) {
@@ -500,7 +504,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                     //var evt = $.Event( "suggest" );
                     
                     // allow to dynamicaly add suggest parameters
-                    $el.trigger("suggest", data);
+                    $el.triggerNative("suggest", data);
                     
                     if ( !!data.suggestions || !!data.list )
                     {
@@ -533,7 +537,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                     }
                 },
                 onSelect: function( evt, term, item, selected, key, value ) {
-                    $(el).trigger('suggest-select', {
+                    $(el).triggerNative('suggest-select', {
                         q: term,
                         item: item,
                         key: key,
@@ -609,7 +613,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
             control[0].upload_data = null;
             control.find('input._w-uploader[type=file]')[0].value = '';
             control.find('img').attr('src','');
-            control.find('._w-data').val('').trigger('change');
+            control.find('._w-data').val('').triggerNative('change');
             return false;
         })
         .on('change.uploadable', 'input._w-uploader[type=file]', function( evt ){
@@ -647,7 +651,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
                                 if ( w > fileDimensions[0] || h > fileDimensions[1] )
                                 {
                                     input.value = '';
-                                    control.trigger('upload-end');
+                                    control.triggerNative('upload-end');
                                     setTimeout(function( ){
                                         alert(msgFileDimensions);
                                     }, 10);
@@ -661,8 +665,8 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
                             img_thumb = canvas.toDataURL("image/png");
                             control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:img_thumb, width:w, height:h};
                             control.find('img').attr('src', img_thumb);
-                            control.find('._w-data').val( json_encode( control[0].upload_data ) ).trigger('change');
-                            control.trigger('upload-end');
+                            control.find('._w-data').val( json_encode( control[0].upload_data ) ).triggerNative('change');
+                            control.triggerNative('upload-end');
                         }, 10);
                     });
                     img.src = base64_data;
@@ -673,14 +677,14 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
                     setTimeout(function( ){
                         control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:'', width:0, height:0};
                         control.find('img').attr('src', '');
-                        control.find('._w-data').val( json_encode( control[0].upload_data ) ).trigger('change');
-                        control.trigger('upload-end');
+                        control.find('._w-data').val( json_encode( control[0].upload_data ) ).triggerNative('change');
+                        control.triggerNative('upload-end');
                     }, 10);
                 }
                 // clear input control
                 input.value = '';
             });
-            control.trigger('upload-start');
+            control.triggerNative('upload-start');
             file_reader.readAsDataURL( file );
         })
         ;
@@ -813,7 +817,7 @@ widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, optio
                     : (options.withBorders),
                 onSelect: function( ele, selection ) {
                     if ( options.onSelect ) options.onSelect.call(this, ele, selection);
-                    $(el).trigger('areaselect', {selection: selection});
+                    $(el).triggerNative('areaselect', {selection: selection});
                 }
             });
         }
@@ -1544,7 +1548,8 @@ htmlwidget.tooltip = function( el ) {
                 // http://iamceege.github.io/tooltipster/#options
                 onlyOne: true,
                 autoClose: true,
-                content: content,
+                contentAsHTML: true,
+                content: '<i class="fa fa-info-circle"></i>&nbsp;&nbsp;' + content,
                 position: $el.hasClass('tooltip-bottom') 
                             ? 'bottom'
                             : ($el.hasClass('tooltip-right')
@@ -1564,9 +1569,9 @@ htmlwidget.tooltip = function( el ) {
         $el.tooltipster('content', el[HAS_ATTR]('w-tooltip')
         ? el[ATTR]('w-tooltip')
         : (el[HAS_ATTR]('data-tooltip')
-        ? el[ATTR]('data-tooltip')
+        ? '<i class="fa fa-info-circle"></i>&nbsp;&nbsp;' + el[ATTR]('data-tooltip')
         : (el[HAS_ATTR]('title')
-        ? el[ATTR]('title')
+        ? '<i class="fa fa-info-circle"></i>&nbsp;&nbsp;' + el[ATTR]('title')
         : ''))).tooltipster('show');
     }
 };
