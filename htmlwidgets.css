@@ -949,7 +949,7 @@ input.w-radio + label.w-led-button:before
 }
 .w-dropdown
 {
-    overflow: hidden;
+    overflow: visible /*hidden*/;
     width: auto;
     z-index: 1;
     cursor: pointer;

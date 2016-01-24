@@ -490,6 +490,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                 value: el[ATTR]('data-suggest-value') || options.value || null,
                 delay: el[ATTR]('data-suggest-delay') || options.delay || 150,
                 cache: el[ATTR]('data-suggest-cache') || 5*60*1000,
+                noItems: el[ATTR]('data-suggest-noitems') || options.noItems || 'No Matches for <strong>{{term}}</strong>',
                 menuClass: el[ATTR]('data-suggest-class') || options.menuClass || 'w-suggestions',
                 source: function( term, suggest ) {
                     var $el = $(el), wrapper = $el.closest('.w-wrapper'),
@@ -663,7 +664,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
                             canvas.width = tw; canvas.height = th;
                             ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
                             img_thumb = canvas.toDataURL("image/png");
-                            control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:img_thumb, width:w, height:h};
+                            control[0].upload_data = {name:file.name, type:file.type, size:file.size, file:base64_data, thumb:img_thumb, width:w, height:h};
                             control.find('img').attr('src', img_thumb);
                             control.find('._w-data').val( json_encode( control[0].upload_data ) ).triggerNative('change');
                             control.triggerNative('upload-end');
@@ -675,7 +676,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
                 {
                     // add a small delay
                     setTimeout(function( ){
-                        control[0].upload_data = {name:file.name, type:file.type, file:base64_data, thumb:'', width:0, height:0};
+                        control[0].upload_data = {name:file.name, type:file.type, size:file.size, file:base64_data, thumb:'', width:0, height:0};
                         control.find('img').attr('src', '');
                         control.find('._w-data').val( json_encode( control[0].upload_data ) ).triggerNative('change');
                         control.triggerNative('upload-end');
