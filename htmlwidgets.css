@@ -950,7 +950,8 @@ input.w-radio + label.w-led-button:before
 .w-dropdown
 {
     overflow: visible /*hidden*/;
-    width: auto;
+    width: auto; padding: 0 !important;
+    /*min-width: 120px;*/
     z-index: 1;
     cursor: pointer;
     -webkit-box-sizing: padding-box;
@@ -1014,17 +1015,22 @@ input.w-radio + label.w-led-button:before
 {
     -webkit-appearance: none;
     -moz-appearance: none;
+    -ms-appearance: none;
     appearance: none;
     text-indent: 0.01px; /* Removes default arrow from firefox*/
-    text-overflow: "";  /*Removes default arrow from firefox*/
+    text-overflow: ellipsis;  /*Removes default arrow from firefox*/
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     -o-box-sizing: border-box;
     box-sizing: border-box;
     position: relative; display: inline-block;
-    margin: 0; padding: 6px 40px;
-    min-width: 100px;
+    margin: 0;
+    padding-left: 40px !important;
+    padding: 8px;
+    width: auto;
+    min-width: 160px;
+    max-width: 100%;
     line-height:normal;
     height: 100%;
     font-size: inherit;
@@ -1034,6 +1040,7 @@ input.w-radio + label.w-led-button:before
     background-color: inherit;
     text-shadow: inherit;
     cursor: inherit;
+    overflow: visible;
 }
 .w-dropdown > select::-ms-expand
 {
@@ -1064,20 +1071,30 @@ select.w-select option.w-option-placeholder,
 {
     font-style: italic;
 }
-
 @media all and (-webkit-min-device-pixel-ratio:0) 
 {
+    /* Webkit/chrome/safari/opera CSS*/
     .w-dropdown:after {
         display: none !important;
     }
 }
 @media all and (-moz-min-device-pixel-ratio:0) 
 {
+    /* Mozilla/firefox CSS*/
     .w-dropdown:after {
         display: none !important;
     }
 }
-
+@media all and (min-width:0\0) and (min-resolution: +72dpi)
+{
+    /* IE9+ CSS*/
+    .w-dropdown:after {
+        display: none !important;
+    }
+    .w-dropdown  > select:focus {
+        width: auto !important;
+    }
+}
 .w-dropdown-menu
 {
     position: relative;
@@ -2873,8 +2890,7 @@ input.w-checkbox + label.w-xlarge
 .w-select.w-large,
 .w-dropdown.w-large  > select
 {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding: 12px 8px;
 }
 .w-dropdown.w-xlarge,
 .w-select.w-xlarge,
@@ -2886,8 +2902,7 @@ input.w-checkbox + label.w-xlarge
 .w-select.w-xlarge,
 .w-dropdown.w-xlarge > select
 {
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding: 16px 8px;
 }
 .w-tooltip
 {

@@ -124,6 +124,9 @@ var HtmlWidget = self = {
             // Cookie
             ,['scripts', 'cookie', asset_base+'cookie.js']
             
+            // Modernizr
+            ,['scripts', 'modernizr', asset_base+'modernizr.js']
+            
             // Serialiser
             ,['scripts', 'serialiser', asset_base+'serialiser.js']
             

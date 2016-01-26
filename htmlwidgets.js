@@ -1344,7 +1344,7 @@ $.fn.htmlwidget = function( type, options ) {
             {
                 type = 'tinymce';
                 if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                locale = 'en';
+                locale = null;
                 if ( htmlwidget.locale['tinymce'] )
                 {
 					if ( ('object' === typeof htmlwidget.locale['tinymce']) && !opts["i18n"] )
@@ -1400,7 +1400,6 @@ $.fn.htmlwidget = function( type, options ) {
                     selector: '#'+el.id,
                     theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
                     skin: el[HAS_ATTR]('data-tinymce-skin') ? el[ATTR]('data-tinymce-skin') : (opts.skin || 'lightgray'),
-                    language: el[HAS_ATTR]('data-tinymce-lang') ? el[ATTR]('data-tinymce-lang') : (opts.language || locale),
                     directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
                     height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
                     plugins: tinymce_plugins,
@@ -1426,6 +1425,18 @@ $.fn.htmlwidget = function( type, options ) {
                     content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
                     content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
                 };
+                if ( el[HAS_ATTR]('data-tinymce-lang') )
+                {
+                    tinymce_opts.language = el[ATTR]('data-tinymce-lang');
+                }
+                else if ( !!opts.language )
+                {
+                    tinymce_opts.language = opts.language;
+                }
+                else if ( !!locale )
+                {
+                    tinymce_opts.language = locale;
+                }
                 if ( 'object' === typeof opts.options_extra )
                     for (var o in opts.options_extra )
                         tinymce_opts[o] = opts.options_extra[o];

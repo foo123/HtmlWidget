@@ -80,6 +80,9 @@ class HtmlWidget
             // Cookie
             ,array('scripts', 'cookie', $asset_base.'cookie.js')
             
+            // Modernizr
+            ,array('scripts', 'modernizr', $asset_base.'modernizr.js')
+            
             // Serialiser
             ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
             
