@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.3
+*  @version: 0.8.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -70,7 +70,7 @@ function merge( a, b )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.3"
+    VERSION: "0.8.4"
     
     ,BASE: './'
     
@@ -432,6 +432,7 @@ var HtmlWidget = self = {
             case 'colorpicker':
             case 'colorselector':
             case 'color':       out = self.w_color(attr, data); break;
+            case 'rating':      out = self.w_rating(attr, data); break;
             case 'map':
             case 'gmap':        out = self.w_gmap(attr, data); break;
             case 'checkbox-image':
@@ -1425,6 +1426,33 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'colorpicker');
         self.enqueue('scripts', 'htmlwidgets');
         return winput+'<div id="'+wid+'" '+winit+' '+wopts+' '+wtitle+' class="'+wclass+'" '+wstyle+' '+wextra+' data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wdata+'></div>';
+    }
+    
+    ,w_rating: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, wvalue, wratings, wname, wtitle, wtext, wicon,
+            r, rate, label, widget, wchecked;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : 'name="__rating_'+wid+'"';
+        wvalue = isset(data,'value') ? data['value'] : "";
+        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
+        wtext = !empty(data,'text') ? data['text'] : '';
+        wclass = 'w-rating'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wicon = !empty(attr,"icon") ? attr["icon"] : 'star';
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.data(attr);
+        wratings = !empty(data,"ratings") && (data["ratings"] instanceof Array) ? data["ratings"] : self.options({'1':'1','2':'2','3':'3','4':'4','5':'5'},-1);
+        widget = "<fieldset id=\""+wid+"\" "+wtitle+" class=\""+wclass+"\" "+wstyle+" "+wextra+">";
+        if ( !!wtext ) widget += "<legend "+wtitle+">"+wtext+"</legend>";
+        for (r=wratings.length-1; r>=0; r--)
+        {
+            rate = wratings[r][0]; label = wratings[r][1];
+            wchecked = !!wvalue && wvalue == rate ? 'checked' : '';
+            widget += "<input type=\"radio\" id=\""+wid+"_rating_"+rate+"\" class=\"w-rating-input\" "+wname+" value=\""+rate+"\" "+wchecked+" /><label for=\""+wid+"_rating_"+rate+"\" class=\"fa fa-"+wicon+" w-rating-label\" title=\""+label+"\">&nbsp;</label>";
+        }
+        widget += "</fieldset>";
+        self.enqueue('styles', 'htmlwidgets.css');
+        return widget;
     }
     
     ,w_gmap: function( attr, data ) {

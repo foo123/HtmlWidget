@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.8.3
+*  @version: 0.8.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -846,6 +846,56 @@ input.w-radio + label.w-led-button:before
 {
     opacity: 0.6;
 }
+
+.w-rating
+{ 
+    position: relative;
+    display: inline-block;
+    padding: 0; border: 0;
+    margin: 0px 4px;
+    vertical-align: middle;
+    /*float: left;*/
+}
+.w-rating > legend
+{
+    font-weight: bold;
+    font-size: 1em;
+}
+.w-rating  > input.w-rating-input
+{
+    display: none !important;
+} 
+.w-rating > label.w-rating-label
+{
+    position: relative; display: inline-block;
+    margin: 0; float: right;
+    cursor: pointer !important;
+    font-size: 2em;
+    color: #ddd; 
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+.w-rating:after
+{
+    position: relative; display: block;
+    height: 1px; font-size: 1px; line-height: 1px;
+    float: none; clear: both;
+    content: " ";
+}
+/*.w-rating > label.w-rating-label:before
+{ 
+    position: relative;
+    display: inline-block;
+}*/
+.w-rating > input.w-rating-input:checked ~ label.w-rating-label, /* show gold star when clicked */
+.w-rating:not(:checked) > label.w-rating-label:hover, /* hover current star */
+.w-rating:not(:checked) > label.w-rating-label:hover ~ label.w-rating-label, /* hover previous stars in list */
+.w-rating > input.w-rating-input:checked + label.w-rating-label:hover, /* hover current star when changing rating */
+.w-rating > input.w-rating-input:checked ~ label.w-rating-label:hover,
+.w-rating > label.w-rating-label:hover ~ input.w-rating-input:checked ~ label.w-rating-label, /* lighten current selection */
+.w-rating > input.w-rating-input:checked ~ label.w-rating-label:hover ~ label.w-rating-label
+{
+    color: gold;
+} 
 
 .w-tooltip
 {

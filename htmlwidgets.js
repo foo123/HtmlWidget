@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.3
+*  @version: 0.8.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -24,7 +24,7 @@ else
 }(this, 'htmlwidget', function( undef ) {
 "use strict";
 
-var $ = jQuery, htmlwidget = {VERSION: "0.8.3", widget: {}, locale: {}},
+var $ = jQuery, htmlwidget = {VERSION: "0.8.4", widget: {}, locale: {}},
 HAS = 'hasOwnProperty',
 ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
 PROTO = 'prototype', ID = 0,
@@ -1361,6 +1361,7 @@ $.fn.htmlwidget = function( type, options ) {
                     locale = 'custom_locale';
                     tinymce.util.I18n.add('custom_locale', opts["i18n"]);
                 }
+                var delayed_init = parseInt(el[HAS_ATTR]('data-tinymce-delayedinit') ? el[ATTR]('data-tinymce-delayedinit') : (opts.delayedInit||0),10);
                 var tinymce_plugins = el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
                     'advlist autolink lists link image charmap preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
@@ -1458,7 +1459,16 @@ $.fn.htmlwidget = function( type, options ) {
                         });
                     };
                 }
-                tinymce.init( tinymce_opts );
+                if ( delayed_init > 0 )
+                {
+                    setTimeout(function( ){
+                        tinymce.init( tinymce_opts );
+                    }, delayed_init);
+                }
+                else
+                {
+                    tinymce.init( tinymce_opts );
+                }
             }
             break;
         

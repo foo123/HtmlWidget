@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.3
+*  @version: 0.8.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/jquery-ui-widgets
@@ -16,7 +16,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.3";
+    const VERSION = "0.8.4";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -354,6 +354,7 @@ class HtmlWidget
             case 'colorpicker':
             case 'colorselector':
             case 'color':       $out = self::w_color($attr, $data); break;
+            case 'rating':      $out = self::w_rating($attr, $data); break;
             case 'map':
             case 'gmap':        $out = self::w_gmap($attr, $data); break;
             case 'checkbox-image':
@@ -1313,6 +1314,32 @@ OUT;
         self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'htmlwidgets');
         return $winput."<div id=\"$wid\" $winit $wopts $wtitle class=\"$wclass\" $wstyle $wextra data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $winputref $wdata></div>";
+    }
+    
+    public static function w_rating( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : 'name="__rating_{$wid}"';
+        $wvalue = isset($data['value']) ? $data['value'] : "";
+        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
+        $wtext = !empty($data['text']) ? $data['text'] : '';
+        $wclass = 'w-rating'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wicon = !empty($attr["icon"]) ? $attr["icon"] : 'star';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wdata = self::data($attr);
+        $wratings = !empty($data["ratings"]) ? (array)$data["ratings"] : self::options(array('1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),-1);
+        $widget = "<fieldset id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra>";
+        if ( !empty($wtext) ) $widget .= "<legend $wtitle>$wtext</legend>";
+        foreach(array_reverse($wratings) as $rating)
+        {
+            $rate = $rating[0]; $label = $rating[1];
+            $wchecked = !empty($wvalue) && $wvalue == $rate ? 'checked' : '';
+            $widget .= "<input type=\"radio\" id=\"{$wid}_rating_{$rate}\" class=\"w-rating-input\" $wname value=\"$rate\" $wchecked /><label for=\"{$wid}_rating_{$rate}\" class=\"fa fa-{$wicon} w-rating-label\" title=\"$label\">&nbsp;</label>";
+        }
+        $widget .= "</fieldset>";
+        self::enqueue('styles', 'htmlwidgets.css');
+        return $widget;
     }
     
     public static function w_gmap( $attr, $data )
