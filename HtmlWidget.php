@@ -1319,7 +1319,7 @@ OUT;
     public static function w_rating( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
-        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : 'name="__rating_{$wid}"';
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : 'name="__rating_'.$wid.'"';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wtext = !empty($data['text']) ? $data['text'] : '';
@@ -1331,9 +1331,9 @@ OUT;
         $wratings = !empty($data["ratings"]) ? (array)$data["ratings"] : self::options(array('1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),-1);
         $widget = "<fieldset id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra>";
         if ( !empty($wtext) ) $widget .= "<legend $wtitle>$wtext</legend>";
-        foreach(array_reverse($wratings) as $rating)
+        for ($r=count($wratings)-1; $r>=0; $r--)
         {
-            $rate = $rating[0]; $label = $rating[1];
+            $rate = $wratings[$r][0]; $label = $wratings[$r][1];
             $wchecked = !empty($wvalue) && $wvalue == $rate ? 'checked' : '';
             $widget .= "<input type=\"radio\" id=\"{$wid}_rating_{$rate}\" class=\"w-rating-input\" $wname value=\"$rate\" $wchecked /><label for=\"{$wid}_rating_{$rate}\" class=\"fa fa-{$wicon} w-rating-label\" title=\"$label\">&nbsp;</label>";
         }

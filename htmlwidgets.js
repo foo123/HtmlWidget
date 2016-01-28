@@ -1459,6 +1459,10 @@ $.fn.htmlwidget = function( type, options ) {
                         });
                     };
                 }
+                
+                // see if same editor was created in the past
+                var prev_editor = tinymce.get( el.id );
+                if ( prev_editor ) prev_editor.remove( );
                 if ( delayed_init > 0 )
                 {
                     setTimeout(function( ){
