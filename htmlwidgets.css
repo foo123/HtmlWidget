@@ -870,7 +870,7 @@ input.w-radio + label.w-led-button:before
     position: relative; display: inline-block;
     margin: 0; float: right;
     cursor: pointer !important;
-    font-size: 2em;
+    font-size: 1.4em;
     color: #ddd; 
     text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
 }
@@ -997,18 +997,22 @@ input.w-radio + label.w-led-button:before
     z-index: 1;
     cursor: pointer;
 }
+.w-widget.w-dropdown,
 .w-dropdown
 {
-    overflow: visible /*hidden*/;
+    overflow: visible;
     width: auto; padding: 0 !important;
     /*min-width: 120px;*/
     z-index: 1;
     cursor: pointer;
-    -webkit-box-sizing: padding-box;
-    -moz-box-sizing: padding-box;
-    -ms-box-sizing: padding-box;
-    -o-box-sizing: padding-box;
-    box-sizing: padding-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent !important;
 }
 .w-dropdown:after,
 .w-dropdown:before
@@ -1035,18 +1039,21 @@ input.w-radio + label.w-led-button:before
     background-image: inherit;
     background-repeat: inherit;
     background-color: inherit;
-    border: none; color: inherit;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent !important;
+    background-clip: padding-box !important;
+    color: inherit;
     text-shadow: none;
     vertical-align: middle; text-align: center;
 }
 .w-dropdown:after
 {
     top: 0; bottom: 0; right: 0; width: 40px;
-    border-left: none;
 }
 .w-dropdown:before
 {
-    background: none; border: none; width: 40px;
+    background: none; width: 40px;
     font-family: FontAwesome, sans-serif;
     font-size: 0.9em; font-weight: normal;
     opacity: 0.5; content: "\f0dd"; /*\f103\f0dc*/
@@ -1069,28 +1076,30 @@ input.w-radio + label.w-led-button:before
     appearance: none;
     text-indent: 0.01px; /* Removes default arrow from firefox*/
     text-overflow: ellipsis;  /*Removes default arrow from firefox*/
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    box-sizing: border-box;
+    -webkit-box-sizing: padding-box;
+    -moz-box-sizing: padding-box;
+    -ms-box-sizing: padding-box;
+    -o-box-sizing: padding-box;
+    box-sizing: padding-box;
     position: relative; display: inline-block;
     margin: 0;
     padding-left: 40px !important;
     padding: 8px;
-    width: auto;
+    width: 100%;
     min-width: 160px;
-    max-width: 100%;
-    line-height:normal;
+    max-width: 100% !important;
+    line-height: normal;
     height: 100%;
     font-size: inherit;
-    border: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
     border-radius: inherit;
     color: inherit;
     background-color: inherit;
     text-shadow: inherit;
     cursor: inherit;
-    overflow: visible;
+    /*overflow: visible;*/
 }
 .w-dropdown > select::-ms-expand
 {
@@ -2907,6 +2916,15 @@ input.w-checkbox + label.w-xlarge
 {
     font-size: 0.8em;
 }
+.w-rating.w-large > label.w-rating-label
+{
+    font-size: 2em;
+}
+.w-rating.w-xlarge > label.w-rating-label
+{
+    font-size: 3em;
+}
+
 .w-textarea.w-large,
 .w-text.w-large
 {
@@ -3229,7 +3247,7 @@ input.w-checkbox + label.w-xlarge
     background-color: #1190d1;
 }
 .w-time-component,
-.w-dropdown,
+.w-dropdown > select,
 .w-select,
 .w-text,
 .w-textarea,
@@ -3288,7 +3306,8 @@ input.w-checkbox + label
 {
     color: #ccc;
 }
-.w-dropdown:hover,
+.w-dropdown:hover > select,
+.w-dropdown > select:hover,
 .w-select:hover,
 .w-text:hover,
 .w-textarea:hover
@@ -3308,7 +3327,8 @@ input.w-checkbox + label:hover
     color: #999;
 }
 .w-time-component:focus,
-.w-dropdown:focus,
+.w-dropdown:focus > select,
+.w-dropdown > select:focus,
 .w-select:focus,
 .w-text:focus,
 .w-textarea:focus

@@ -222,6 +222,8 @@ function options( $options, $key=null, $val=null )
         <div w-init="1" class="colorpicker-selector w-colorselector" data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-format="rgba" style="background-color:rgba(210,0,0,0.7)"></div>
         <div w-init="1" class="colorpicker-selector w-colorselector w-large" data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-format="rgba" style="background-color:rgba(210,0,0,0.7)"></div>
         <?php widget('rating',array('title'=>'Please rate:','icon'=>'star'),array('value'=>'3')); ?>
+        <?php widget('rating',array('title'=>'Please rate:','class'=>'w-large','icon'=>'star'),array('value'=>'3')); ?>
+        <?php widget('rating',array('title'=>'Please rate:','class'=>'w-xlarge','icon'=>'star'),array('value'=>'3')); ?>
         <hr />
         <input type="text" class="w-widget w-text" placeholder="text.." value=""/>
         <input w-init="1" type="text" class="w-widget w-text w-date w-large" data-datepicker-time="1" data-datepicker-format="Y-m-d H:i:s" placeholder="large.." value=""/>
