@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+    .box {
+        width: 600px; height: 200px;
+        position: relative;
+        border: 1px solid #BBB;
+        background: #EEE;
+        margin-left: 100px;
+    }
+    .w-menu-controller-bt {
+        cursor: pointer;
+        display: none;
+    }
+    .w-vertical-menu {
+        width: 300px;
+    }
+    @media all and (max-width : 768px) {
+
+    .w-vertical-menu.w-mobile > .w-menu-controller-bt,
+    .w-dropdown-menu.w-mobile > .w-menu-controller-bt {
+        display: block;
+        position: absolute;
+        top: 0; left: 0;
+    }
+    }
+    </style>
+    <title>HtmlWidgets Test page</title>
+</head>
+<body class="fluid col-1-1" style="padding:10px 20px">
+    <h1>HtmlWidgets Test page</h1>
+    
+    <hr />
+    
+    <fieldset><legend>Menus</legend>
+    
+    <div class="w-dropdown-menu"><ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></div>
+    
+    <hr />
+    <div class="w-dropdown-menu w-mobile" style="z-index:300">
+    <label for="mobile-menu" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+    <input id="mobile-menu" type="checkbox" class="w-menu-controller" value="1" />
+    <ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></div>
+
+    <hr />
+    
+    <div class="w-vertical-menu" style="z-index:200"><ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></div>
+    
+    <hr />
+    
+    <div class="w-vertical-menu w-mobile" style="z-index:100">
+    <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+    <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
+    <ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></div>
+    
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Buttons</legend>
+    <button id="widget_1454016754_1_429_static1" type="button" class="w-widget w-button w-small w-icon"  title="small" ><span class="fa-wrapper left-fa"><i class="fa fa-plus"></i></span>small</button>    <button id="widget_1454016754_2_381_static1" type="button" class="w-widget w-button w-icon"  title="button" ><span class="fa-wrapper left-fa"><i class="fa fa-plus"></i></span>button</button>    <button id="widget_1454016754_3_277_static1" type="button" class="w-widget w-button w-large w-icon"  title="large" disabled="1"><span class="fa-wrapper left-fa"><i class="fa fa-times-circle"></i></span>large</button>    <button id="widget_1454016754_4_960_static1" type="button" class="w-widget w-button w-xlarge w-icon"  title="xlarge" ><span class="fa-wrapper left-fa"><i class="fa fa-info-circle"></i></span>xlarge</button>    <button id="widget_1454016754_5_773_static1" type="button" class="w-widget w-button w-icon-only"  title="" ><span class="fa-wrapper left-fa"><i class="fa fa-plus"></i></span></button>    <button id="widget_1454016754_6_202_static1" type="button" class="w-widget w-button w-large w-icon-only"  title="" ><span class="fa-wrapper left-fa"><i class="fa fa-times-circle"></i></span></button>    <button id="widget_1454016754_7_848_static1" type="button" class="w-widget w-button w-xlarge w-icon-only"  title="" ><span class="fa-wrapper left-fa"><i class="fa fa-info-circle"></i></span></button>    <button id="widget_1454016754_8_870_static1" type="button" class="w-widget w-button w-primary w-icon"  title="button" disabled="1"><span class="fa-wrapper left-fa"><i class="fa fa-plus"></i></span>button</button>    <button id="widget_1454016754_9_529_static1" type="button" class="w-widget w-button w-green w-icon"  title="button" ><span class="fa-wrapper left-fa"><i class="fa fa-plus"></i></span>button</button>    <button id="widget_1454016754_10_944_static1" type="button" class="w-widget w-button w-large w-orange w-icon"  title="large" ><span class="fa-wrapper left-fa"><i class="fa fa-times-circle"></i></span>large</button>    <button id="widget_1454016754_11_689_static1" type="button" class="w-widget w-button w-xlarge w-red w-icon"  title="xlarge" ><span class="fa-wrapper left-fa"><i class="fa fa-info-circle"></i></span>xlarge</button>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Dropdowns</legend>
+    <span class="w-widget w-dropdown" ><select id="widget_1454016754_12_371_static1"    class="w-dropdown-select"   data-placeholder="select.."><option value="" class="w-option-placeholder" disabled selected>select..</option><option value="1">option 1</option><option value="2">option 2</option></select></span>    <span class="w-widget w-dropdown w-large" ><select id="widget_1454016754_13_791_static1"    class="w-dropdown-select"  disabled="1" data-placeholder="large.."><option value="" class="w-option-placeholder" disabled selected>large..</option><option value="1">option 1</option><option value="2">option 2</option></select></span>    <span class="w-widget w-dropdown w-xlarge" ><select id="widget_1454016754_14_823_static1"    class="w-dropdown-select"  readonly="1" data-placeholder="xlarge.."><option value="" class="w-option-placeholder" disabled selected>xlarge..</option><option value="1">option 1</option><option value="2">option 2</option></select></span>    
+    <hr />
+    
+    <select id="widget_1454016754_15_645_static1" w-init="1"   class="w-widget w-select w-select2"    data-placeholder="select.."><option value="" class="w-option-placeholder" disabled selected>select..</option><option value="1">option 1</option><option value="2">option 2</option></select>    <select id="widget_1454016754_16_434_static1" w-init="1"   class="w-widget w-select w-large w-select2"   disabled="1" data-placeholder="large.."><option value="" class="w-option-placeholder" disabled selected>large..</option><option value="1">option 1</option><option value="2">option 2</option></select>    <select id="widget_1454016754_17_152_static1" w-init="1"   class="w-widget w-select w-xlarge w-select2"   readonly="1" data-placeholder="xlarge.."><option value="" class="w-option-placeholder" disabled selected>xlarge..</option><option value="1">option 1</option><option value="2">option 2</option></select>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Colorpicker</legend>
+    <div id="widget_1454016754_18_560_static1" w-init="1"  title="Select color" class="colorpicker-selector w-colorselector"  data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-opacity="1.0" data-colorpicker-format="rgba"  data-colorpicker-format='rgba'></div>    <div id="widget_1454016754_19_60_static1" w-init="1"  title="Select color" class="colorpicker-selector w-colorselector w-large"  data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-opacity="1.0" data-colorpicker-format="rgba"  data-colorpicker-format='rgba'></div>    <div id="widget_1454016754_20_526_static1" w-init="1"  title="Select color" class="colorpicker-selector w-colorselector w-xlarge"  data-colorpicker-color="rgba(210,0,0,0.7)" data-colorpicker-opacity="1.0" data-colorpicker-format="rgba"  data-colorpicker-format='rgba'></div>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Datetimepicker</legend>
+    <span class="w-wrapper w-icon-right" ><input type="text" id="widget_1454016754_21_708_static1" w-init="1"   title="Select date-time" class="w-widget w-text w-date" placeholder="Select date-time" value="2016-01-24 12:00:00" data-datepicker-format="Y-m-d H:i:s" data-datepicker-time="1" data-datepicker-seconds="1" data-datetime-format='Y-m-d H:i:s' data-datetime-time='1' data-datetime-seconds='1' /><span class="fa-wrapper right-fa"><i class="fa fa-calendar"></i></span></span>    <span class="w-wrapper w-icon-right" ><input type="text" id="widget_1454016754_22_373_static1" w-init="1"   title="Select date-time" class="w-widget w-text w-date w-large" placeholder="Select date-time" value="2016-01-24 12:00:00" data-datepicker-format="Y-m-d H:i:s" data-datepicker-time="1" data-datepicker-seconds="1" disabled="1" data-datetime-format='Y-m-d H:i:s' data-datetime-time='1' data-datetime-seconds='1' /><span class="fa-wrapper right-fa"><i class="fa fa-calendar"></i></span></span>    <span class="w-wrapper w-icon-right" ><input type="text" id="widget_1454016754_23_779_static1" w-init="1"   title="Select date-time" class="w-widget w-text w-date w-xlarge" placeholder="Select date-time" value="2016-01-24 12:00:00" data-datepicker-format="Y-m-d H:i:s" data-datepicker-time="1" data-datepicker-seconds="1" readonly="1" data-datetime-format='Y-m-d H:i:s' data-datetime-time='1' data-datetime-seconds='1' /><span class="fa-wrapper right-fa"><i class="fa fa-calendar"></i></span></span>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Ratings</legend>
+    <fieldset id="widget_1454016754_24_615_static1" title="Please rate:" class="w-rating"  ><input type="radio" id="widget_1454016754_24_615_static1_rating_5" class="w-rating-input" name="__rating_widget_1454016754_24_615_static1" value="5"  /><label for="widget_1454016754_24_615_static1_rating_5" class="fa fa-star w-rating-label" title="5">&nbsp;</label><input type="radio" id="widget_1454016754_24_615_static1_rating_4" class="w-rating-input" name="__rating_widget_1454016754_24_615_static1" value="4"  /><label for="widget_1454016754_24_615_static1_rating_4" class="fa fa-star w-rating-label" title="4">&nbsp;</label><input type="radio" id="widget_1454016754_24_615_static1_rating_3" class="w-rating-input" name="__rating_widget_1454016754_24_615_static1" value="3" checked /><label for="widget_1454016754_24_615_static1_rating_3" class="fa fa-star w-rating-label" title="3">&nbsp;</label><input type="radio" id="widget_1454016754_24_615_static1_rating_2" class="w-rating-input" name="__rating_widget_1454016754_24_615_static1" value="2"  /><label for="widget_1454016754_24_615_static1_rating_2" class="fa fa-star w-rating-label" title="2">&nbsp;</label><input type="radio" id="widget_1454016754_24_615_static1_rating_1" class="w-rating-input" name="__rating_widget_1454016754_24_615_static1" value="1"  /><label for="widget_1454016754_24_615_static1_rating_1" class="fa fa-star w-rating-label" title="1">&nbsp;</label></fieldset>    <fieldset id="widget_1454016754_25_50_static1" title="Please rate:" class="w-rating w-large"  ><input type="radio" id="widget_1454016754_25_50_static1_rating_5" class="w-rating-input" name="__rating_widget_1454016754_25_50_static1" value="5"  disabled="1"/><label for="widget_1454016754_25_50_static1_rating_5" class="fa fa-star w-rating-label" title="5">&nbsp;</label><input type="radio" id="widget_1454016754_25_50_static1_rating_4" class="w-rating-input" name="__rating_widget_1454016754_25_50_static1" value="4"  disabled="1"/><label for="widget_1454016754_25_50_static1_rating_4" class="fa fa-star w-rating-label" title="4">&nbsp;</label><input type="radio" id="widget_1454016754_25_50_static1_rating_3" class="w-rating-input" name="__rating_widget_1454016754_25_50_static1" value="3" checked disabled="1"/><label for="widget_1454016754_25_50_static1_rating_3" class="fa fa-star w-rating-label" title="3">&nbsp;</label><input type="radio" id="widget_1454016754_25_50_static1_rating_2" class="w-rating-input" name="__rating_widget_1454016754_25_50_static1" value="2"  disabled="1"/><label for="widget_1454016754_25_50_static1_rating_2" class="fa fa-star w-rating-label" title="2">&nbsp;</label><input type="radio" id="widget_1454016754_25_50_static1_rating_1" class="w-rating-input" name="__rating_widget_1454016754_25_50_static1" value="1"  disabled="1"/><label for="widget_1454016754_25_50_static1_rating_1" class="fa fa-star w-rating-label" title="1">&nbsp;</label></fieldset>    <fieldset id="widget_1454016754_26_982_static1" title="Please rate:" class="w-rating w-xlarge"  ><input type="radio" id="widget_1454016754_26_982_static1_rating_5" class="w-rating-input" name="__rating_widget_1454016754_26_982_static1" value="5"  readonly="1"/><label for="widget_1454016754_26_982_static1_rating_5" class="fa fa-star w-rating-label" title="5">&nbsp;</label><input type="radio" id="widget_1454016754_26_982_static1_rating_4" class="w-rating-input" name="__rating_widget_1454016754_26_982_static1" value="4"  readonly="1"/><label for="widget_1454016754_26_982_static1_rating_4" class="fa fa-star w-rating-label" title="4">&nbsp;</label><input type="radio" id="widget_1454016754_26_982_static1_rating_3" class="w-rating-input" name="__rating_widget_1454016754_26_982_static1" value="3" checked readonly="1"/><label for="widget_1454016754_26_982_static1_rating_3" class="fa fa-star w-rating-label" title="3">&nbsp;</label><input type="radio" id="widget_1454016754_26_982_static1_rating_2" class="w-rating-input" name="__rating_widget_1454016754_26_982_static1" value="2"  readonly="1"/><label for="widget_1454016754_26_982_static1_rating_2" class="fa fa-star w-rating-label" title="2">&nbsp;</label><input type="radio" id="widget_1454016754_26_982_static1_rating_1" class="w-rating-input" name="__rating_widget_1454016754_26_982_static1" value="1"  readonly="1"/><label for="widget_1454016754_26_982_static1_rating_1" class="fa fa-star w-rating-label" title="1">&nbsp;</label></fieldset>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Textboxes</legend>
+    <span class="w-wrapper w-icon" ><input type="text" id="widget_1454016754_27_143_static1"   title="text.." class="w-widget w-text"  placeholder="text.." value=""  /><span class="fa-wrapper left-fa"><i class="fa fa-pencil"></i></span></span>    <span class="w-wrapper w-icon" ><input type="text" id="widget_1454016754_28_171_static1"   title="large.." class="w-widget w-text w-large" disabled="1" placeholder="large.." value="" disabled="1" /><span class="fa-wrapper left-fa"><i class="fa fa-pencil"></i></span></span>    <span class="w-wrapper w-icon" ><input type="text" id="widget_1454016754_29_273_static1"   title="xlarge.." class="w-widget w-text w-xlarge" readonly="1" placeholder="xlarge.." value="" readonly="1" /><span class="fa-wrapper left-fa"><i class="fa fa-pencil"></i></span></span>    
+    <hr />
+    
+    <textarea id="widget_1454016754_30_604_static1"    title="text.." class="w-widget w-textarea"  placeholder="text.." ></textarea>    <textarea id="widget_1454016754_31_999_static1"    title="large.." class="w-widget w-textarea w-large"  placeholder="large.." disabled="1"></textarea>    <textarea id="widget_1454016754_32_164_static1"    title="xlarge.." class="w-widget w-textarea w-xlarge"  placeholder="xlarge.." readonly="1"></textarea>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Wysiwyg Editor</legend>
+    <textarea id="widget_1454016754_33_971_static1" w-init="1"    class="w-widget w-wysiwyg-editor"  placeholder="rich text.." ><i>hello</i></textarea>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Syntax Editor</legend>
+    <textarea id="widget_1454016754_34_958_static1" w-init="1"    class="w-widget w-syntax-editor"  placeholder="source text.." data-cm-mode='text/html'><p>Hello</p></textarea>    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Google Map</legend>
+        </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Checkboxes</legend>
+    <input type="checkbox" id="widget_1454016754_35_687_static1"  class="w-checkbox" value="1"   /><label for="widget_1454016754_35_687_static1" title="Check" class="w-widget w-control"   onclick="">&nbsp;</label>    <input type="checkbox" id="widget_1454016754_36_60_static1"  class="w-checkbox" value="1" disabled="1"  /><label for="widget_1454016754_36_60_static1" title="Check" class="w-widget w-control w-large"   onclick="">&nbsp;</label>    <input type="checkbox" id="widget_1454016754_37_236_static1"  class="w-checkbox" value="1" readonly="1"  /><label for="widget_1454016754_37_236_static1" title="Check" class="w-widget w-control w-xlarge"   onclick="">&nbsp;</label>    
+    <hr />
+    
+    <input type="radio" id="widget_1454016754_38_263_static1" name="radio" class="w-radio" value="1"   /><label for="widget_1454016754_38_263_static1" title="Check" class="w-widget w-control"   onclick="">&nbsp;</label>    <input type="radio" id="widget_1454016754_39_53_static1" name="radio" class="w-radio" value="1" disabled="1"  /><label for="widget_1454016754_39_53_static1" title="Check" class="w-widget w-control w-large"   onclick="">&nbsp;</label>    <input type="radio" id="widget_1454016754_40_830_static1" name="radio" class="w-radio" value="1" readonly="1"  /><label for="widget_1454016754_40_830_static1" title="Check" class="w-widget w-control w-xlarge"   onclick="">&nbsp;</label>    
+    <hr />
+    
+    <span class="w-widget w-switch" title="Check" ><input type="checkbox" id="widget_1454016754_41_665_static1"  class="w-switch-state" value="1" readonly="1"  /><label for="widget_1454016754_41_665_static1" class="w-switch-on" onclick="">&nbsp;</label><label for="widget_1454016754_41_665_static1" class="w-switch-off" onclick="">&nbsp;</label><span class="w-switch-handle"></span></span>    <span class="w-widget w-switch w-large" title="Check" ><input type="checkbox" id="widget_1454016754_42_239_static1"  class="w-switch-state" value="1" disabled="1"  /><label for="widget_1454016754_42_239_static1" class="w-switch-on" onclick=""><i class="fa fa-check"></i></label><label for="widget_1454016754_42_239_static1" class="w-switch-off" onclick=""><i class="fa fa-times-circle"></i></label><span class="w-switch-handle"></span></span>    <span class="w-widget w-switch w-xlarge" title="Check" ><input type="checkbox" id="widget_1454016754_43_441_static1"  class="w-switch-state" value="1"   /><label for="widget_1454016754_43_441_static1" class="w-switch-on" onclick=""><i class="fa fa-check"></i></label><label for="widget_1454016754_43_441_static1" class="w-switch-off" onclick=""><i class="fa fa-times-circle"></i></label><span class="w-switch-handle"></span></span>    
+    <hr />
+    <ul id="widget_1454016754_44_941_static1" class="w-control-list w-checkbox-list"  ><li class="w-control-list-option"><input type="checkbox" id="widget_1454016754_44_941_static1_option_1" name="name="demo_list_1[]"" class="w-checkbox" value="1"   /><label for="widget_1454016754_44_941_static1_option_1" title="Option 1" class="w-widget w-control"   onclick="">&nbsp;</label> <label id="widget_1454016754_45_349_static1" for="widget_1454016754_44_941_static1_option_1" class="w-widget w-label w-control-list-option-label" title="Option 1"  onclick="" >Option 1</label></li><li class="w-control-list-option"><input type="checkbox" id="widget_1454016754_44_941_static1_option_2" name="name="demo_list_1[]"" class="w-checkbox" value="2"  checked /><label for="widget_1454016754_44_941_static1_option_2" title="Option 2" class="w-widget w-control"   onclick="">&nbsp;</label> <label id="widget_1454016754_46_103_static1" for="widget_1454016754_44_941_static1_option_2" class="w-widget w-label w-control-list-option-label" title="Option 2"  onclick="" >Option 2</label></li><li class="w-control-list-option"><input type="checkbox" id="widget_1454016754_44_941_static1_option_3" name="name="demo_list_1[]"" class="w-checkbox" value="3"  checked /><label for="widget_1454016754_44_941_static1_option_3" title="Option 3" class="w-widget w-control"   onclick="">&nbsp;</label> <label id="widget_1454016754_47_695_static1" for="widget_1454016754_44_941_static1_option_3" class="w-widget w-label w-control-list-option-label" title="Option 3"  onclick="" >Option 3</label></li></ul>    <ol id="widget_1454016754_48_362_static1" class="w-control-list w-radio-list"  ><li class="w-control-list-option"><input type="radio" id="widget_1454016754_48_362_static1_option_1" name="name="demo_list_2"" class="w-radio" value="1"  checked /><label for="widget_1454016754_48_362_static1_option_1" title="Option 1" class="w-widget w-control w-large"   onclick="">&nbsp;</label> <label id="widget_1454016754_49_883_static1" for="widget_1454016754_48_362_static1_option_1" class="w-widget w-label w-control-list-option-label" title="Option 1"  onclick="" >Option 1</label></li><li class="w-control-list-option"><input type="radio" id="widget_1454016754_48_362_static1_option_2" name="name="demo_list_2"" class="w-radio" value="2"   /><label for="widget_1454016754_48_362_static1_option_2" title="Option 2" class="w-widget w-control w-large"   onclick="">&nbsp;</label> <label id="widget_1454016754_50_575_static1" for="widget_1454016754_48_362_static1_option_2" class="w-widget w-label w-control-list-option-label" title="Option 2"  onclick="" >Option 2</label></li><li class="w-control-list-option"><input type="radio" id="widget_1454016754_48_362_static1_option_3" name="name="demo_list_2"" class="w-radio" value="3"   /><label for="widget_1454016754_48_362_static1_option_3" title="Option 3" class="w-widget w-control w-large"   onclick="">&nbsp;</label> <label id="widget_1454016754_51_157_static1" for="widget_1454016754_48_362_static1_option_3" class="w-widget w-label w-control-list-option-label" title="Option 3"  onclick="" >Option 3</label></li></ol>    <ol id="widget_1454016754_52_564_static1" class="w-control-list w-radio-list"  ><li class="w-control-list-option"><input type="radio" id="widget_1454016754_52_564_static1_option_1" name="name="demo_list_3"" class="w-radio" value="1"  disabled="1"  /><label for="widget_1454016754_52_564_static1_option_1" title="Option 1" class="w-widget w-control w-xlarge"   onclick="">&nbsp;</label> <label id="widget_1454016754_53_359_static1" for="widget_1454016754_52_564_static1_option_1" class="w-widget w-label w-control-list-option-label" title="Option 1"  onclick="" >Option 1</label></li><li class="w-control-list-option"><input type="radio" id="widget_1454016754_52_564_static1_option_2" name="name="demo_list_3"" class="w-radio" value="2"  disabled="1"  /><label for="widget_1454016754_52_564_static1_option_2" title="Option 2" class="w-widget w-control w-xlarge"   onclick="">&nbsp;</label> <label id="widget_1454016754_54_873_static1" for="widget_1454016754_52_564_static1_option_2" class="w-widget w-label w-control-list-option-label" title="Option 2"  onclick="" >Option 2</label></li><li class="w-control-list-option"><input type="radio" id="widget_1454016754_52_564_static1_option_3" name="name="demo_list_3"" class="w-radio" value="3"  disabled="1" checked /><label for="widget_1454016754_52_564_static1_option_3" title="Option 3" class="w-widget w-control w-xlarge"   onclick="">&nbsp;</label> <label id="widget_1454016754_55_672_static1" for="widget_1454016754_52_564_static1_option_3" class="w-widget w-label w-control-list-option-label" title="Option 3"  onclick="" >Option 3</label></li></ol>    
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Tooltips</legend>
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Bottom <span class="w-tooltip-arrow w-arrow-bottom"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Left <span class="w-tooltip-arrow w-arrow-left"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
+    </fieldset>
+    
+    <hr /><br /><br />
+    
+    <fieldset><legend>Spinners</legend>
+    <div class="box w-delayable w-delayed"></div>
+    <div class="box"><div class="w-spinner w-spinner-dots2 active"></div></div>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Ribbons</legend>
+    <div class="box">
+       <div class="w-ribbon-dtl w-red w-ribbon-fold w-large"><span>Ribbon</span></div>
+       <div class="w-ribbon-dtr w-blue"><span>Ribbon</span></div>
+    </div>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Messages</legend>
+    <div class="w-msg w-msg-ok">
+        <i class="fa fa-check"></i> <strong>Success!</strong>
+        This msg indicates a successful or positive action.
+    </div>
+    <div class="w-msg w-msg-info">
+        <i class="fa fa-info"></i> <strong>Info!</strong>
+        This msg indicates a neutral informative change or action. 
+    </div>
+    <div class="w-msg w-msg-warn">
+        <i class="fa fa-exclamation-circle"></i> <strong>Warning!</strong>
+        This msg indicates a warning that might need attention.
+    </div>
+    <div class="w-msg w-msg-err">
+        <i class="fa fa-exclamation-triangle"></i> <strong>Error!</strong>
+        This msg indicates a dangerous or potentially negative action. 
+    </div>
+    </fieldset>
+    
+    <link id="importer-style-htmlwidgets_css" type="text/css" rel="stylesheet" href="../htmlwidgets.css" media="all" />
+<link id="importer-style-responsive_css" type="text/css" rel="stylesheet" href="../assets/responsive.css" media="all" />
+<link id="importer-style-fontawesome_css" type="text/css" rel="stylesheet" href="../assets/fontawesome.css" media="all" /><script id="importer-script-jquery" type="text/javascript" src="../assets/jquery.js"></script>
+<script id="importer-script-selectorlistener" type="text/javascript" src="../assets/selectorlistener.js"></script>
+<script id="importer-script-htmlwidgets" type="text/javascript" src="../htmlwidgets.js"></script>
+<link id="importer-style-pikadaytime_css" type="text/css" rel="stylesheet" href="../assets/pikadaytime.css" media="all" />
+<script id="importer-script-datex" type="text/javascript" src="../assets/datex.js"></script>
+<script id="importer-script-pikadaytime" type="text/javascript" src="../assets/pikadaytime.js"></script>
+<link id="importer-style-colorpicker_css" type="text/css" rel="stylesheet" href="../assets/colorpicker.css" media="all" />
+<script id="importer-script-colorpicker" type="text/javascript" src="../assets/colorpicker.js"></script>
+<link id="importer-style-select2_css" type="text/css" rel="stylesheet" href="../assets/select2.css" media="all" />
+<script id="importer-script-select2" type="text/javascript" src="../assets/select2.js"></script>
+<link id="importer-style-tooltipster_css" type="text/css" rel="stylesheet" href="../assets/tooltipster.css" media="all" />
+<script id="importer-script-tooltipster" type="text/javascript" src="../assets/tooltipster.js"></script>
+<script id="importer-script-tinymce" type="text/javascript" src="../assets/tinymce/tinymce.min.js"></script>
+<link id="importer-style-codemirror_css" type="text/css" rel="stylesheet" href="../assets/codemirror/lib/codemirror.css" media="all" />
+<link id="importer-style-codemirror_fold_css" type="text/css" rel="stylesheet" href="../assets/codemirror/addon/fold/foldgutter.css" media="all" />
+<script id="importer-script-codemirror-part-0" type="text/javascript" src="../assets/codemirror/lib/codemirror.js"></script>
+<script id="importer-script-codemirror-part-1" type="text/javascript" src="../assets/codemirror/addon/mode/multiplex.js"></script>
+<script id="importer-script-codemirror-part-2" type="text/javascript" src="../assets/codemirror/addon/comment/comment.js"></script>
+<script id="importer-script-codemirror_fold-part-0" type="text/javascript" src="../assets/codemirror/addon/fold/foldgutter.js"></script>
+<script id="importer-script-codemirror_fold-part-1" type="text/javascript" src="../assets/codemirror/addon/fold/foldcode.js"></script>
+<script id="importer-script-codemirror_fold-part-2" type="text/javascript" src="../assets/codemirror/addon/fold/comment-fold.js"></script>
+<script id="importer-script-codemirror_fold-part-3" type="text/javascript" src="../assets/codemirror/addon/fold/brace-fold.js"></script>
+<script id="importer-script-codemirror_fold-part-4" type="text/javascript" src="../assets/codemirror/addon/fold/indent-fold.js"></script>
+<script id="importer-script-codemirror_fold-part-5" type="text/javascript" src="../assets/codemirror/addon/fold/xml-fold.js"></script>
+<script id="importer-script-codemirror_htmlmixed-part-0" type="text/javascript" src="../assets/codemirror/mode/xml/xml.js"></script>
+<script id="importer-script-codemirror_htmlmixed-part-1" type="text/javascript" src="../assets/codemirror/mode/javascript/javascript.js"></script>
+<script id="importer-script-codemirror_htmlmixed-part-2" type="text/javascript" src="../assets/codemirror/mode/css/css.js"></script>
+<script id="importer-script-codemirror_htmlmixed-part-3" type="text/javascript" src="../assets/codemirror/mode/htmlmixed/htmlmixed.js"></script></body>
+</html>

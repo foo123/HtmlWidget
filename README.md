@@ -16,9 +16,12 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 
 **included widgets:**
 
-1. control, checkbox, radio, switch, checkbox-image, radio-image, selectbox, textbox, textarea, range/slider, table
-2. button, label, link, icon, rating
-3. accordeon, tab, page, collapsable panel, spinner, modal, tooltip
+(see `/test/test.html`, `/test/test.php` pages both for testing most widgets and as example code for how to use)
+
+
+1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-list, radio-list, selectbox, multi-selectbox, textbox, textarea, range/slider, rating
+2. button, label, link, icon
+3. table, accordeon, tab, page, collapsable panel, spinner, modal, tooltip
 4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable
 5. mvc/mvvm widget, area-select, autocompleter, date/time picker, color picker, location/address picker, timer, wysiwyg editor, syntax  editor, advanced selectbox, dataTable, google map, multi-faceted advanced search (TODO)
 
@@ -34,8 +37,8 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 
 **browser support**
 
+* ie (10+)
 * firefox (30+)
 * chrome (30+)
 * opera
-* ie (10+)
 * safari

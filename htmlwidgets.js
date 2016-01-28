@@ -942,63 +942,46 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
         gmap = null;
     };
     self.init = function( ) {
-        var $el = $(el),
-            address = !!el[ATTR]('data-map-address') ? el[ATTR]('data-map-address') : null,
-            center = el[HAS_ATTR]('data-map-center') ? el[ATTR]('data-map-center').split(',') : options.center || [0,0],
-            has_center_marker = !!el[HAS_ATTR]('data-map-center-marker') || !!options.centerMarker,
-            zoom = int(el[ATTR]('data-map-zoom')||options.zoom||6),
-            type = el[ATTR]('data-map-type')||options.type||"ROADMAP";
-        ;
-        c_lat = parseFloat(center[0]||0, 10);
-        c_lng = parseFloat(center[1]||0, 10);
-        gmap = new google.maps.Map(el, {
-            zoom: zoom,
-            center: new google.maps.LatLng( c_lat, c_lng ),
-            mapTypeId: google.maps.MapTypeId[ type ]
-        });
-        if ( has_center_marker )
+        if ( 'object' === typeof google && 'object' === typeof google.maps )
         {
-            var marker = {
-                lat: c_lat,
-                lng: c_lng,
-                title: el[ATTR]('title'),
-                info: null
-            };
-            center_marker = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
-        }
-        if ( !!address )
-        {
-            map_geocode(address, function( data ){
-                if ( data )
-                {
-                    c_lat = data.location.lat( ); c_lng = data.location.lng( );
-                    gmap.setCenter( data.location );
-                    if ( center_marker ) center_marker.setPosition( data.location );
-                }
+            var $el = $(el),
+                address = !!el[ATTR]('data-map-address') ? el[ATTR]('data-map-address') : null,
+                center = el[HAS_ATTR]('data-map-center') ? el[ATTR]('data-map-center').split(',') : options.center || [0,0],
+                has_center_marker = !!el[HAS_ATTR]('data-map-center-marker') || !!options.centerMarker,
+                zoom = int(el[ATTR]('data-map-zoom')||options.zoom||6),
+                type = el[ATTR]('data-map-type')||options.type||"ROADMAP";
+            ;
+            c_lat = parseFloat(center[0]||0, 10);
+            c_lng = parseFloat(center[1]||0, 10);
+            gmap = new google.maps.Map(el, {
+                zoom: zoom,
+                center: new google.maps.LatLng( c_lat, c_lng ),
+                mapTypeId: google.maps.MapTypeId[ type ]
             });
-        }
-        
-        // declarative markers
-        $el.children('.marker,.map-marker').each(function( ){
-            var m = this,
-                position = !!m[ATTR]('data-marker-position') ? m[ATTR]('data-marker-position').split(',') : [0,0],
-                marker = {
-                address: !!m[ATTR]('data-marker-address') ? m[ATTR]('data-marker-address') : null,
-                lat: parseFloat(position[0]||0, 10)||0,
-                lng: parseFloat(position[1]||0, 10)||0,
-                title: m[ATTR]('title'),
-                info: m.innerHTML,
-                clickable: !!m[ATTR]('data-marker-clickable'),
-                draggable: !!m[ATTR]('data-marker-draggable'),
-                visible: !!m[ATTR]('data-marker-visible')
-            };
-            add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
-        });
-        $el.empty( );
-        // markers reference
-        if ( !!el[ATTR]('data-map-markers') )
-        {
-            $(el[ATTR]('data-map-markers')).each(function( ){
+            if ( has_center_marker )
+            {
+                var marker = {
+                    lat: c_lat,
+                    lng: c_lng,
+                    title: el[ATTR]('title'),
+                    info: null
+                };
+                center_marker = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+            }
+            if ( !!address )
+            {
+                map_geocode(address, function( data ){
+                    if ( data )
+                    {
+                        c_lat = data.location.lat( ); c_lng = data.location.lng( );
+                        gmap.setCenter( data.location );
+                        if ( center_marker ) center_marker.setPosition( data.location );
+                    }
+                });
+            }
+            
+            // declarative markers
+            $el.children('.marker,.map-marker').each(function( ){
                 var m = this,
                     position = !!m[ATTR]('data-marker-position') ? m[ATTR]('data-marker-position').split(',') : [0,0],
                     marker = {
@@ -1013,22 +996,48 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 };
                 add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
             });
+            $el.empty( );
+            // markers reference
+            if ( !!el[ATTR]('data-map-markers') )
+            {
+                $(el[ATTR]('data-map-markers')).each(function( ){
+                    var m = this,
+                        position = !!m[ATTR]('data-marker-position') ? m[ATTR]('data-marker-position').split(',') : [0,0],
+                        marker = {
+                        address: !!m[ATTR]('data-marker-address') ? m[ATTR]('data-marker-address') : null,
+                        lat: parseFloat(position[0]||0, 10)||0,
+                        lng: parseFloat(position[1]||0, 10)||0,
+                        title: m[ATTR]('title'),
+                        info: m.innerHTML,
+                        clickable: !!m[ATTR]('data-marker-clickable'),
+                        draggable: !!m[ATTR]('data-marker-draggable'),
+                        visible: !!m[ATTR]('data-marker-visible')
+                    };
+                    add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+                });
+            }
+            // option markers
+            var i, markers = options.markers, marker, l = markers ? markers.length : 0;
+            for (i=0; i<l; i++)
+            {
+                // add markers, infos to map
+                marker = markers[i];
+                add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+            }
+            if ( null != options.kml )
+            {
+                var geoRssLayer = new google.maps.KmlLayer( options.kml );
+                geoRssLayer.setMap( gmap );
+            }
+            responsive = !!(el[ATTR]('data-map-responsive')||options.responsive);
+            if ( responsive ) $(el.parentNode||document.body).on( 'resize', on_resize );
         }
-        // option markers
-        var i, markers = options.markers, marker, l = markers ? markers.length : 0;
-        for (i=0; i<l; i++)
+        else
         {
-            // add markers, infos to map
-            marker = markers[i];
-            add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+            setTimeout(function(){
+                self.init( );
+            }, 100);
         }
-        if ( null != options.kml )
-        {
-            var geoRssLayer = new google.maps.KmlLayer( options.kml );
-            geoRssLayer.setMap( gmap );
-        }
-        responsive = !!(el[ATTR]('data-map-responsive')||options.responsive);
-        if ( responsive ) $(el.parentNode||document.body).on( 'resize', on_resize );
     };
     self.map = function( ) {
         return gmap;
@@ -1366,7 +1375,7 @@ $.fn.htmlwidget = function( type, options ) {
                     'advlist autolink lists link image charmap preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
                     'insertdatetime media nonbreaking save table contextmenu directionality',
-                    'paste textcolor colorpicker textpattern imagetools placeholderalt codemirror' /*jbimages*/
+                    'paste textcolor colorpicker textpattern imagetools placeholderalt' /*codemirror jbimages*/
                     ]);
                 var tinymce_toolbar = el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
                     'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
@@ -1415,7 +1424,7 @@ $.fn.htmlwidget = function( type, options ) {
                         table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
                         tools: {title: 'Tools', items: 'spellchecker code'}
                     },*/
-                    codemirror: opts.codemirror || null,
+                    //codemirror: opts.codemirror || null,
                     placeholder: el[HAS_ATTR]('placeholder') ? el[ATTR]('placeholder') : (opts.placeholder||''),
                     automatic_uploads: null != opts.automatic_uploads ? opts.automatic_uploads : true,
                     image_advtab: null != opts.image_advtab ? opts.image_advtab : true,
