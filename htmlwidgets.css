@@ -1121,13 +1121,13 @@ input.w-radio + label.w-led-button:before
 {
     display: none !important; /* IE10+ */
 }
-.w-dropdown > select:hover,
+/*.w-dropdown > select:hover,
 .w-dropdown > select:focus
 {
     color: inherit;
     background-color: inherit;
     outline: 0;
-}
+}*/
 .w-dropdown option,
 .w-dropdown optgroup
 {
@@ -3360,7 +3360,9 @@ input.w-checkbox + label:hover
     color: #999;
 }
 .w-time-component:focus,
+.w-dropdown:active > select,
 .w-dropdown:focus > select,
+.w-dropdown > select:active,
 .w-dropdown > select:focus,
 .w-select:focus,
 .w-text:focus,
@@ -3368,6 +3370,13 @@ input.w-checkbox + label:hover
 {
     border-color: #1190d1;
 }
+.w-dropdown:active:before
+.w-dropdown:focus:before
+{
+    color: #1190d1;
+    opacity: 1;
+}
+
 .w-wrapper.w-icon > .w-widget:not(:disabled):focus ~ .fa-wrapper,
 .w-wrapper.w-icon-right > .w-widget:not(:disabled):focus ~ .fa-wrapper,
 .w-wrapper.w-icon > .w-widget.w-text:not(:disabled):focus ~ .fa-wrapper,

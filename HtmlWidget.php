@@ -350,6 +350,7 @@ class HtmlWidget
             case 'link':        $out = self::w_link($attr, $data); break;
             case 'button':      $out = self::w_button($attr, $data); break;
             case 'label':       $out = self::w_label($attr, $data); break;
+            case 'file':        $out = self::w_file($attr, $data); break;
             case 'uploader':
             case 'upload':      $out = self::w_upload($attr, $data); break;
             case 'suggestbox':
@@ -530,6 +531,20 @@ class HtmlWidget
             $wtype = isset($attr['type']) ? $attr['type'] : 'button';
             return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra>$wtext</button>";
         }
+    }
+    
+    public static function w_file( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wtext = isset($data['text']) ? $data['text'] : '';
+        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
+        $wclass = 'w-widget w-file'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wvalue = isset($data['value']) ? $data['value'] : '';
+        $wextra = self::attributes($attr,array('accept','readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        self::enqueue('styles', 'htmlwidgets.css');
+        return "<input id=\"$wid\" $wname type=\"file\" class=\"$wclass\" $wstyle title=\"$wtitle\" value=\"$wvalue\" $wextra />";
     }
     
     public static function w_control( $attr, $data )
