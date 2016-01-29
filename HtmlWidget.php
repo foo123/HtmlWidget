@@ -535,16 +535,29 @@ class HtmlWidget
     
     public static function w_file( $attr, $data )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
-        $wtext = isset($data['text']) ? $data['text'] : '';
-        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'w-widget w-file'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wvalue = isset($data['value']) ? $data['value'] : "";
+        $titl = isset($attr["title"]) ? $attr["title"] : '';
+        $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
+        $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
+        $wclass = 'w-widget w-file w-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wvalue = isset($data['value']) ? $data['value'] : '';
-        $wextra = self::attributes($attr,array('accept','readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wicon = '';
+        $wrapper_class = 'w-wrapper';
+        if ( !empty($attr['icon']) )
+        {
+            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wrapper_class .= ' w-icon';
+        }
+        if ( !empty($attr['iconr']) )
+        {
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wrapper_class .= ' w-icon-right';
+        }
+        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<input id=\"$wid\" $wname type=\"file\" class=\"$wclass\" $wstyle title=\"$wtitle\" value=\"$wvalue\" $wextra />";
+        return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
     }
     
     public static function w_control( $attr, $data )
@@ -834,7 +847,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return !empty($wicon)
-        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $winit $wname $wtitle class=\"$wclass\" $wextra placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>".$wautocomplete
+        ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $winit $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>".$wautocomplete
         : "<input type=\"$wtype\" id=\"$wid\" $winit $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />".$wautocomplete;
     }
     

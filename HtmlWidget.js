@@ -614,18 +614,31 @@ var HtmlWidget = self = {
     }
     
     ,w_file: function( attr, data ) {
-        var wid, wname, wclass, wstyle, wextra, wtitle, wtext, wvalue;
+        var wid, wclass, wstyle, wextra, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, titl;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wtext = isset(data,'text') ? data['text'] : '';
-        wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'w-widget w-file'; 
+        wvalue = isset(data,"value") ? data["value"] : ""; 
+        titl = isset(attr,"title") ? attr["title"] : '';
+        wtitle = !!titl ? 'title="'+titl+'"' : '';
+        wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
+        wclass = 'w-widget w-file w-text'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
-        wvalue = isset(data,'value') ? data['value'] : '';
-        wextra = self.attributes(attr,['accept','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wicon = '';
+        wrapper_class = 'w-wrapper';
+        if ( !empty(attr,'icon') )
+        {
+            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wrapper_class += ' w-icon';
+        }
+        if ( !empty(attr,'iconr') )
+        {
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wrapper_class += ' w-icon-right';
+        }
+        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<input id="'+wid+'" '+wname+' type="file" class="'+wclass+'" '+wstyle+' title="'+wtitle+'" value="'+wvalue+'" '+wextra+' />';
+        return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
     }
     
     ,w_control: function( attr, data ) {

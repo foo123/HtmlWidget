@@ -1645,7 +1645,13 @@ if ( 'function' === typeof $.fn.tooltipster )
 {
     $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
-
+    $body.on('change', 'input[type=file].w-file-input', function( ){
+        this.nextSibling.value = this.value;
+    });
+    $body.on('click', 'input[type=file].w-file-input+input.w-file', function( ){
+        $(this.previousSibling).trigger('click');
+        return false;
+    });
 });
 
 return $.htmlwidget = htmlwidget;
