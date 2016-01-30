@@ -1371,6 +1371,7 @@ $.fn.htmlwidget = function( type, options ) {
                     tinymce.util.I18n.add('custom_locale', opts["i18n"]);
                 }
                 var delayed_init = parseInt(el[HAS_ATTR]('data-tinymce-delayedinit') ? el[ATTR]('data-tinymce-delayedinit') : (opts.delayedInit||0),10);
+                var tinymce_id = el[HAS_ATTR]('data-tinymce-id') ? el[ATTR]('data-tinymce-id') : (opts.id||(el.id+'_tinymce'));
                 var tinymce_plugins = el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
                     'advlist autolink lists link image charmap preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
@@ -1462,9 +1463,22 @@ $.fn.htmlwidget = function( type, options ) {
                 if ( (true === tinymce_autosave) || ('1' === tinymce_autosave) || ('on' === tinymce_autosave) || ('yes' === tinymce_autosave) || ('true' === tinymce_autosave) )
                 {
                     tinymce_opts.setup = function( editor ) {
+                        editor.on('init', function( ) {
+                            var cont = $(editor.getContainer( ));
+                            $('#'+cont.prop('id')+'-body',cont).attr('data-id', tinymce_id);
+                        });
                         editor.on('change'/*'NodeChange'*/, function( ){
                             editor.save( );
                             htmlwidget.dispatch('change', el);
+                        });
+                    };
+                }
+                else
+                {
+                    tinymce_opts.setup = function( editor ) {
+                        editor.on('init', function( ) {
+                            var cont = $(editor.getContainer( ));
+                            $('#'+cont.prop('id')+'-body',cont).attr('data-id', tinymce_id);
                         });
                     };
                 }
