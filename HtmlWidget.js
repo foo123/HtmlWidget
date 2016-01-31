@@ -104,6 +104,7 @@ var HtmlWidget = self = {
         {
             assets.push(['scripts', 'jquery', asset_base+'jquery.js']);
             assets.push(['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]);
+            assets.push(['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]);
         }
         if ( arguments.length < 2 || true === full )
         {

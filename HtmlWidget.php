@@ -60,6 +60,7 @@ class HtmlWidget
         {
             $assets[] = array('scripts', 'jquery', $asset_base.'jquery.js');
             $assets[] = array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'));
+            $assets[] = array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'));
         }
         if ( true === $full )
         {
