@@ -898,13 +898,11 @@ input.w-radio + label.w-led-button:before
     position: relative;
     display: inline-block;
 }*/
-.w-rating > input.w-rating-input:checked ~ label.w-rating-label, /* show gold star when clicked */
-.w-rating:not(:checked) > label.w-rating-label:hover, /* hover current star */
-.w-rating:not(:checked) > label.w-rating-label:hover ~ label.w-rating-label, /* hover previous stars in list */
-.w-rating > input.w-rating-input:checked + label.w-rating-label:hover, /* hover current star when changing rating */
-.w-rating > input.w-rating-input:checked ~ label.w-rating-label:hover,
-.w-rating > label.w-rating-label:hover ~ input.w-rating-input:checked ~ label.w-rating-label, /* lighten current selection */
-.w-rating > input.w-rating-input:checked ~ label.w-rating-label:hover ~ label.w-rating-label
+.w-rating > input.w-rating-input:checked  ~ label.w-rating-label, /* show gold star when rated */
+.w-rating > input.w-rating-input:not(:disabled)  + label.w-rating-label:active, /* show gold star when clicked */
+.w-rating > input.w-rating-input:not(:disabled)  + label.w-rating-label:hover, /* show gold star when hovered */
+.w-rating > input.w-rating-input:not(:disabled)  + label.w-rating-label:active ~ label.w-rating-label, /* + rest */
+.w-rating > input.w-rating-input:not(:disabled)  + label.w-rating-label:hover ~ label.w-rating-label /* + rest */
 {
     color: gold;
 } 
@@ -1193,7 +1191,9 @@ select.w-select option.w-option-placeholder,
     border-radius: 0;
     padding: 0; margin: 0;
     position: absolute;
-    list-style: none;
+    list-style: none !important;
+    list-style-image: none !important;
+    list-style-type: none !important;
 }
 .w-dropdown-menu  > ul
 {
@@ -1332,6 +1332,15 @@ select.w-select option.w-option-placeholder,
     display: inline-block;
     vertical-align: middle;
     margin-right: 8px;
+}
+@media all and (min-width:0\0) and (min-resolution: +72dpi)
+{
+    /* IE9+ CSS*/
+    /* if styles are loaded in footer, due to page optimisation bug, list-style does not apply in IE */
+    .w-dropdown-menu ul  > li  {
+        list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+        list-style-position: outside;
+    }
 }
 
 .w-vertical-menu
@@ -2402,6 +2411,8 @@ transform-style: preserve-3d;*/
     padding: 0; margin: 0;
 }
 
+/* http://www.cssportal.com/css-ribbon-generator/ */
+
 .w-ribbon-dtr,
 .w-ribbon-dtl
 {
@@ -2564,6 +2575,118 @@ transform-style: preserve-3d;*/
     border-width: 0.5em 0.5em 0 0;
 }
 */
+
+
+/*
+PURE CSS SPEECH BUBBLES
+by Nicolas Gallagher
+- http://nicolasgallagher.com/pure-css-speech-bubbles/
+*/
+.w-bubble
+{
+    position: relative; display: inline-block;
+    margin: 1em; padding: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+    box-shadow: 1px 1px 2px 2px rgba(0,0,0,0.3);
+}
+.w-bubble:after
+{
+    position: absolute; display: block;
+    content: ""; width: 0;
+    border-style: solid;
+}
+.w-bubble.w-bubble-down:after
+{
+    bottom: -15px; /* value = - border-top-width - border-bottom-width */
+    left: 50px; /* controls horizontal position */
+    border-width: 15px 15px 0; /* vary these values to change the angle of the vertex */
+    border-top-color: inherit;
+    border-bottom-color: inherit;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+.w-bubble.w-bubble-up:after
+{
+    top: -15px; /* value = - border-top-width - border-bottom-width */
+    right: 50px; /* controls horizontal position */
+    border-width: 0 15px 15px; /* vary these values to change the angle of the vertex */
+    border-top-color: inherit;
+    border-bottom-color: inherit;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+.w-bubble.w-bubble-left:after
+{
+    top: 16px; /* controls vertical position */
+    left: -20px; /* value = - border-left-width - border-right-width */
+    border-width: 10px 20px 10px 0;
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+.w-bubble.w-bubble-right:after
+{
+    top: 16px; /* controls vertical position */
+    right: -20px; /* value = - border-left-width - border-right-width */
+    border-width: 10px 0 10px 20px;
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+.w-bubble.w-bubble2-down:after
+{
+    bottom: -20px; /* value = - border-top-width - border-bottom-width */
+    left: 50px; /* controls horizontal position */
+    border-width: 20px 0 0 20px; /* vary these values to change the angle of the vertex */
+    border-top-color: inherit;
+    border-bottom-color: inherit;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+.w-bubble.w-bubble2-up:after
+{
+    top: -20px; /* value = - border-top-width - border-bottom-width */
+    right: 50px; /* controls horizontal position */
+    border-width: 20px 20px 0 0; /* vary these values to change the angle of the vertex */
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+.w-bubble.w-bubble2-left:after
+{
+    top: 16px;
+    left: -20px; /* value = - border-left-width - border-right-width */
+    border-width: 15px 20px 0 0; /* vary these values to change the angle of the vertex */
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+.w-bubble.w-bubble2-right:after
+{
+    top: 16px;
+    right: -20px; /* value = - border-left-width - border-right-width */
+    border-width: 15px 0 0 20px; /* vary these values to change the angle of the vertex */
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
 
 /* w-widget FX and auxiliaries */
 /*timing-function cubic-bezier(0, 1, 0.5, 1);*/

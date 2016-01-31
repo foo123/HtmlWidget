@@ -13,25 +13,35 @@
 **/
 !function( root, name, factory ) {
 "use strict";
-if ( 'object' === typeof exports )
-    // CommonJS module
-    module.exports = factory( );
-else if ( 'function' === typeof define && define.amd )
-    // AMD. Register as an anonymous module.
-    define(function( req ) { return factory( ); });
-else
-    root[name] = factory( );
+// CommonJS module
+if ( 'object' === typeof exports ) module.exports = factory( );
+// AMD. Register as an anonymous module.
+else if ( 'function' === typeof define && define.amd ) define(function( req ) { return factory( ); });
+else root[name] = factory( );
 }(this, 'htmlwidget', function( undef ) {
 "use strict";
 
-var $ = jQuery, htmlwidget = {VERSION: "0.8.4", widget: {}, locale: {}},
-HAS = 'hasOwnProperty',
-ATTR = 'getAttribute', SET_ATTR = 'setAttribute', HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
-PROTO = 'prototype', ID = 0,
-slice = Array[PROTO].slice,
-int = function( x ) { return parseInt(x||0,10)||0; },
-json_decode = JSON.parse, json_encode = JSON.stringify,
-toString = Object[PROTO].toString;
+// dont re-add it, abort
+if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
+
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.4', widget: {}, locale: {}, _handle: {}},
+    
+    HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
+    HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
+    
+    slice = Array[PROTO].slice, toString = Object[PROTO].toString,
+    
+    json_decode = JSON.parse, json_encode = JSON.stringify,
+    base64_decode = atob, base64_encode = btoa,
+    
+    int = function( x ) { return parseInt(x||0,10)||0; },
+    
+    DragDropUploadCap = (function( ) {
+        var div = document.createElement('div');
+        return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 
+            ('FormData' in window) && ('FileReader' in window);
+    })( )
+;
 
 // http://davidwalsh.name/add-rules-stylesheets
 function add_css( style, css )
@@ -1091,437 +1101,443 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-$.fn.htmlwidget = function( type, options ) {
-    options = options || {};
-    this.each(function( ) {
-        var el = this, $el, locale, i18n, opts;
-        
-        if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
+htmlwidget._handle['delayable'] = htmlwidget._handle['disabable'] = htmlwidget._handle['morphable'] = htmlwidget._handle['selectable'] = htmlwidget._handle['removable'] = htmlwidget._handle['sortable'] = htmlwidget._handle['uploadable'] = htmlwidget._handle['template'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el)[type]( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['draggable'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.tinyDraggable ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).tinyDraggable( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['timer'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.Timer ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).Timer( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['datetimepicker'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    if ( !opts["i18n"] && (htmlwidget.locale['Pikadaytime']||htmlwidget.locale['Pikaday']) )
+        opts["i18n"] = htmlwidget.locale['Pikadaytime'] || htmlwidget.locale['Pikaday'];
+    $(el).datetimepicker( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['colorpicker'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el).colorpicker( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['areaselect'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el).areaselect( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['gmap'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el).gmap3( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['autocomplete'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el).suggest( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['rangeslider'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.rangeslider ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).rangeslider({
+    /*
+    // https://andreruffert.github.io/rangeslider.js/
+    // Set this to `false` if you want to use
+    // the polyfill also in Browsers which support the native <input type="range"> element.
+    rangeClass: 'rangeslider',
+    disabledClass: 'rangeslider--disabled',
+    horizontalClass: 'rangeslider--horizontal',
+    verticalClass: 'rangeslider--vertical',
+    fillClass: 'rangeslider__fill',
+    handleClass: 'rangeslider__handle',
+    onInit: function() {},
+    onSlide: function(position, value) {},
+    onSlideEnd: function(position, value) {}
+    */
+     polyfill: false
+    ,orientation: el[ATTR]('data-range-orientation')||opts.orientation||"horizontal"
+    });
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['menu'] = function( type, el, opts, pre_init, post_init ) {
+    if ( pre_init ) pre_init( el, opts );
+    $(el).find('li').each(function(){
+        var $li = $(this);
+        if ( $li.children('ul').length )
+            $li.addClass('w-submenu-item');
+    });
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['dropdown'] = function( type, el, opts, pre_init, post_init ) {
+    var $el = $(el);
+    if ( $el.is('select') && !$el.parent().hasClass('w-dropdown') )
+    {
+        if ( pre_init ) pre_init( el, opts );
+        if ( $el.hasClass('w-widget') ) $el.removeClass('w-widget');
+        if ( $el.hasClass('w-select') ) $el.removeClass('w-select');
+        var el_class = "w-widget w-dropdown " + (el.className||''),
+            el_style = $el.attr('style')||'';
+        $el.attr('class','w-dropdown-select').attr('style','').wrap('<span class="'+el_class+'" style="'+el_style+'"></span>');
+        if ( post_init ) post_init( el, opts );
+    }
+};
+
+htmlwidget._handle['select2'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.select2 ) return;
+    if ( pre_init ) pre_init( el, opts );
+    var $el = $(el);
+    $el.select2( opts );
+    if ( el[HAS_ATTR]('w-tooltip') ) $el.prev('.select2-container').attr('w-tooltip',el[ATTR]('w-tooltip'));
+    else if ( el[HAS_ATTR]('data-tooltip') ) $el.prev('.select2-container').attr('data-tooltip',el[ATTR]('data-tooltip'));
+    else if ( el[HAS_ATTR]('title') ) $el.prev('.select2-container').attr('title',el[ATTR]('title'));
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['datatable'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.dataTable ) return;
+    if ( pre_init ) pre_init( el, opts );
+    var $el = $(el);
+    if ( !opts["language"] && htmlwidget.locale['DataTables'] )
+    {
+        opts["language"] =  htmlwidget.locale['DataTables'];
+    }
+    $el.dataTable( opts );
+    var dt_wrapper = $el.closest(".dataTables_wrapper");
+    dt_wrapper.addClass("w-table-wrapper");
+    dt_wrapper.find(".dataTables_filter input").addClass("w-widget w-text");
+    dt_wrapper.find(".dataTables_length select").htmlwidget("dropdown");
+    if ( el[HAS_ATTR]('data-table-controls') )
+    {
+        dt_wrapper.find(".w-table-controls").eq(0).append($(el[ATTR]('data-table-controls')));
+    }
+    else if ( !!opts.controls )
+    {
+        if ( opts.controls.concat )
         {
-            opts = window[el[ATTR]('w-opts')];
+            var il, ol, dt_controls = dt_wrapper.find(".w-table-controls").eq(0);
+            for(il=0,ol=opts.controls.length; il<ol; il++)
+                dt_controls.append($(opts.controls[il]));
         }
         else
         {
-            opts = options;
+            dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
         }
-        
-        if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+    }
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['modal'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.modal ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).modal( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['packery'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof Packery ) return;
+    if ( pre_init ) pre_init( el, opts );
+    new Packery( el, opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['isotope'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof Isotope ) return;
+    if ( pre_init ) pre_init( el, opts );
+    new Isotope( el, opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['masonry'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof Masonry ) return;
+    if ( pre_init ) pre_init( el, opts );
+    new Masonry( el, opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['modelview'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof ModelView ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).modelview( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['tageditor'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof $.fn.tagEditor ) return;
+    if ( pre_init ) pre_init( el, opts );
+    $(el).tagEditor( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
+htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) {
+    /*if ( 'function' === typeof $.fn.trumbowyg )
+    {
+        var $el = $(el);
+        $el.trumbowyg( opts );
+        $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')* /;
+    }*/
+    if ( 'undefined' === typeof tinymce ) return;
+    if ( pre_init ) pre_init( el, opts );
+    var locale = null;
+    if ( htmlwidget.locale['tinymce'] )
+    {
+        if ( ('object' === typeof htmlwidget.locale['tinymce']) && !opts["i18n"] )
         {
-            htmlwidget.widget[type]( el, opts );
-            return;
+            opts["i18n"] = htmlwidget.locale['tinymce'];
         }
-        
-        $el = $(el);
-        switch( type )
+        else if ( 'string' === typeof htmlwidget.locale['tinymce'] )
         {
-        case 'delayable':
-        case 'disabable':
-        case 'morphable':
-        case 'selectable':
-        case 'removable':
-        case 'rearrangeable':
-        case 'sortable':
-        case 'uploadable':
-        case 'upload':
-            type = 'upload'===type?'uploadable':('rearrangeable'===type?'sortable':type);
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el[type]( opts );
-            break;
-        
-        case 'templateable':
-        case 'template':
-            type = 'template';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el.template( opts );
-            break;
-        
-        case 'draggable':
-            if ( 'function' === typeof $.fn.tinyDraggable )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.tinyDraggable( opts );
-            }
-            break;
-        
-        case 'resisable':
-        case 'resizable':
-            /* TO BE ADDED */
-            break;
-        
-        case 'timer':
-            if ( 'function' === typeof $.fn.Timer )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.Timer( opts );
-            }
-            break;
-        
-        case 'date':
-        case 'datetime':
-        case 'datepicker':
-        case 'datetimepicker':
-            type = 'datetimepicker';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            if ( !opts["i18n"] && (htmlwidget.locale['Pikadaytime']||htmlwidget.locale['Pikaday']) )
-            {
-                opts["i18n"] = htmlwidget.locale['Pikadaytime'] || htmlwidget.locale['Pikaday'];
-            }
-            $el.datetimepicker( opts );
-            break;
-        
-        case 'color':
-        case 'colorselector':
-        case 'colorpicker':
-            type = 'colorpicker';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el.colorpicker( opts );
-            break;
-        
-        case 'areaselectable':
-        case 'areaselect':
-            type = 'areaselect';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el.areaselect( opts );
-            break;
-        
-        case 'map':
-        case 'gmap':
-        case 'gmap3':
-            type = 'gmap';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el.gmap3( opts );
-            break;
-        
-        case 'autocomplete':
-        case 'autosuggest':
-        case 'suggest':
-            type = 'autocomplete';
-            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-            $el.suggest( opts );
-            break;
-        
-        case 'rangeslider':
-        case 'range':
-            if ( 'function' === typeof $.fn.rangeslider )
-            {
-                type = 'rangeslider';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.rangeslider({
-                /*
-                // https://andreruffert.github.io/rangeslider.js/
-                // Set this to `false` if you want to use
-                // the polyfill also in Browsers which support the native <input type="range"> element.
-                rangeClass: 'rangeslider',
-                disabledClass: 'rangeslider--disabled',
-                horizontalClass: 'rangeslider--horizontal',
-                verticalClass: 'rangeslider--vertical',
-                fillClass: 'rangeslider__fill',
-                handleClass: 'rangeslider__handle',
-                onInit: function() {},
-                onSlide: function(position, value) {},
-                onSlideEnd: function(position, value) {}
-                */
-                 polyfill: false
-                ,orientation: el[ATTR]('data-range-orientation')||opts.orientation||"horizontal"
-                });
-            }
-            break;
-        
-        case 'menu':
-            $el.find('li').each(function(){
-                var $li = $(this);
-                if ( $li.children('ul').length )
-                    $li.addClass('w-submenu-item');
+            locale = htmlwidget.locale['tinymce'];
+        }
+    }
+    if ( opts["i18n"] )
+    {
+        locale = 'custom_locale';
+        tinymce.util.I18n.add('custom_locale', opts["i18n"]);
+    }
+    var delayed_init = parseInt(el[HAS_ATTR]('data-tinymce-delayedinit') ? el[ATTR]('data-tinymce-delayedinit') : (opts.delayedInit||0),10);
+    var tinymce_plugins = el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
+        'advlist autolink lists link image charmap preview hr anchor pagebreak',
+        'searchreplace wordcount visualblocks visualchars code fullscreen',
+        'insertdatetime media nonbreaking save table contextmenu directionality',
+        'paste textcolor colorpicker textpattern imagetools placeholderalt' /*codemirror jbimages*/
+        ]);
+    var tinymce_toolbar = el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
+        'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
+        ]);
+    var tinymce_menubar = el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools');
+    if ( el[HAS_ATTR]('data-tinymce-plugins-extra') )
+    {
+        tinymce_plugins = tinymce_plugins.concat(el[ATTR]('data-tinymce-plugins-extra').split(','));
+    }
+    else if ( opts.plugins_extra )
+    {
+        tinymce_plugins = tinymce_plugins.concat(opts.plugins_extra);
+    }
+    if ( el[HAS_ATTR]('data-tinymce-toolbar-extra') )
+    {
+        tinymce_toolbar = tinymce_toolbar.concat(el[ATTR]('data-tinymce-toolbar-extra').split(','));
+    }
+    else if ( opts.toolbar_extra )
+    {
+        tinymce_toolbar = tinymce_toolbar.concat(opts.toolbar_extra);
+    }
+    var tinymce_external_plugins = null;
+    if ( el[HAS_ATTR]('data-tinymce-external-plugins') )
+    {
+        tinymce_external_plugins = json_decode( el[ATTR]('data-tinymce-external-plugins') );
+    }
+    else if ( 'object' === typeof opts.external_plugins )
+    {
+        tinymce_external_plugins = opts.external_plugins;
+    }
+    var tinymce_opts = {
+        selector: '#'+el.id,
+        theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
+        skin: el[HAS_ATTR]('data-tinymce-skin') ? el[ATTR]('data-tinymce-skin') : (opts.skin || 'lightgray'),
+        directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
+        height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
+        plugins: tinymce_plugins,
+        toolbar: tinymce_toolbar,
+        menubar: tinymce_menubar,
+        /*menu: {
+            file: {title: 'File', items: 'newdocument'},
+            edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+            insert: {title: 'Insert', items: 'link media | template hr'},
+            view: {title: 'View', items: 'visualaid'},
+            format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+            table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+            tools: {title: 'Tools', items: 'spellchecker code'}
+        },*/
+        //codemirror: opts.codemirror || null,
+        placeholder: el[HAS_ATTR]('placeholder') ? el[ATTR]('placeholder') : (opts.placeholder||''),
+        automatic_uploads: null != opts.automatic_uploads ? opts.automatic_uploads : true,
+        image_advtab: null != opts.image_advtab ? opts.image_advtab : true,
+        paste_data_images: null != opts.paste_data_images ? opts.paste_data_images : true,
+        browser_spellcheck: null != opts.browser_spellcheck ? opts.browser_spellcheck : true,
+        templates: null != opts.templates ? opts.templates : [],
+        body_class: el[HAS_ATTR]('data-tinymce-body-class') ? el[ATTR]('data-tinymce-body-class') : (opts.body_class || null),
+        content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
+        content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
+    };
+    if ( el[HAS_ATTR]('data-tinymce-lang') )
+    {
+        tinymce_opts.language = el[ATTR]('data-tinymce-lang');
+    }
+    else if ( !!opts.language )
+    {
+        tinymce_opts.language = opts.language;
+    }
+    else if ( !!locale )
+    {
+        tinymce_opts.language = locale;
+    }
+    if ( 'object' === typeof opts.options_extra )
+        for (var o in opts.options_extra )
+            tinymce_opts[o] = opts.options_extra[o];
+    if ( 'object' === typeof tinymce_external_plugins )
+    {
+        for (var pl in tinymce_external_plugins)
+        {
+            if ( !tinymce_external_plugins[HAS](pl) ) continue;
+            tinymce.PluginManager.load(pl, tinymce_external_plugins[pl]);
+        }
+    }
+    var tinymce_autosave = el[HAS_ATTR]('data-tinymce-autosave') ? el[ATTR]('data-tinymce-autosave').toLowerCase() : !!opts.autosave;
+    if ( (true === tinymce_autosave) || ('1' === tinymce_autosave) || ('on' === tinymce_autosave) || ('yes' === tinymce_autosave) || ('true' === tinymce_autosave) )
+    {
+        tinymce_opts.setup = function( editor ) {
+            editor.on('init', function( ){
+                if ( post_init ) post_init( el, opts );
             });
-            break;
-        
-        case 'dropdown':
-            if ( $el.is('select') && !$el.parent().hasClass('w-dropdown') )
-            {
-                if ( $el.hasClass('w-widget') ) $el.removeClass('w-widget');
-                if ( $el.hasClass('w-select') ) $el.removeClass('w-select');
-                var el_class = "w-widget w-dropdown " + (el.className||''),
-                    el_style = $el.attr('style')||'';
-                $el.attr('class','w-dropdown-select').attr('style','').wrap('<span class="'+el_class+'" style="'+el_style+'"></span>');
-            }
-            break;
-        
-        case 'select':
-        case 'select2':
-            if ( 'function' === typeof $.fn.select2 )
-            {
-                type = 'select2';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.select2( opts );
-                if ( el[HAS_ATTR]('w-tooltip') ) $el.prev('.select2-container').attr('w-tooltip',el[ATTR]('w-tooltip'));
-                else if ( el[HAS_ATTR]('data-tooltip') ) $el.prev('.select2-container').attr('data-tooltip',el[ATTR]('data-tooltip'));
-                else if ( el[HAS_ATTR]('title') ) $el.prev('.select2-container').attr('title',el[ATTR]('title'));
-            }
-            break;
-        
-        case 'table':
-        case 'datatable':
-            if ( 'function' === typeof $.fn.dataTable )
-            {
-                type = 'datatable';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                if ( !opts["language"] && htmlwidget.locale['DataTables'] )
-                {
-					opts["language"] =  htmlwidget.locale['DataTables'];
-                }
-                $el.dataTable( opts );
-                var dt_wrapper = $el.closest(".dataTables_wrapper");
-                dt_wrapper.addClass("w-table-wrapper");
-                dt_wrapper.find(".dataTables_filter input").addClass("w-widget w-text");
-                dt_wrapper.find(".dataTables_length select").htmlwidget("dropdown");
-                if ( el[HAS_ATTR]('data-table-controls') )
-                {
-                    dt_wrapper.find(".w-table-controls").eq(0).append($(el[ATTR]('data-table-controls')));
-                }
-                else if ( !!opts.controls )
-                {
-                    if ( opts.controls.concat )
-                    {
-                        var il, ol, dt_controls = dt_wrapper.find(".w-table-controls").eq(0);
-                        for(il=0,ol=opts.controls.length; il<ol; il++)
-                            dt_controls.append($(opts.controls[il]));
-                    }
-                    else
-                    {
-                        dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
-                    }
-                }
-            }
-            break;
-        
-        case 'modal':
-            if ( 'function' === typeof $.fn.modal )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.modal( opts );
-            }
-            break;
-        
-        case 'packery':
-            if ( 'undefined' !== typeof Packery )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                new Packery( el, opts );
-            }
-            break;
-        
-        case 'isotope':
-            if ( 'undefined' !== typeof Isotope )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                new Isotope( el, opts );
-            }
-            break;
-        
-        case 'masonry':
-            if ( 'undefined' !== typeof Masonry )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                new Masonry( el, opts );
-            }
-            break;
-        
-        case 'modelview':
-            if ( 'undefined' !== typeof ModelView )
-            {
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.modelview( opts );
-            }
-            break;
-        
-        case 'tag-editor':
-            if ( 'function' === typeof $.fn.tagEditor )
-            {
-                type = 'tageditor';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                $el.tagEditor( opts );
-            }
-            break;
-        
-        case 'wysiwyg-editor':
-            /*if ( 'function' === typeof $.fn.trumbowyg )
-            {
-                $el.trumbowyg( opts );
-                $el.closest(".trumbowyg-box").addClass("w-widget w-wysiwyg-editor-box")/*.attr("style", opts.style||'')* /;
-            }*/
-            if ( 'undefined' !== typeof tinymce )
-            {
-                type = 'tinymce';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                locale = null;
-                if ( htmlwidget.locale['tinymce'] )
-                {
-					if ( ('object' === typeof htmlwidget.locale['tinymce']) && !opts["i18n"] )
-                    {
-                        opts["i18n"] = htmlwidget.locale['tinymce'];
-                    }
-                    else if ( 'string' === typeof htmlwidget.locale['tinymce'] )
-                    {
-                        locale = htmlwidget.locale['tinymce'];
-                    }
-                }
-                if ( opts["i18n"] )
-                {
-                    locale = 'custom_locale';
-                    tinymce.util.I18n.add('custom_locale', opts["i18n"]);
-                }
-                var delayed_init = parseInt(el[HAS_ATTR]('data-tinymce-delayedinit') ? el[ATTR]('data-tinymce-delayedinit') : (opts.delayedInit||0),10);
-                var tinymce_id = el[HAS_ATTR]('data-tinymce-id') ? el[ATTR]('data-tinymce-id') : (opts.id||(el.id+'_tinymce'));
-                var tinymce_plugins = el[HAS_ATTR]('data-tinymce-plugins') ? el[ATTR]('data-tinymce-plugins').split(',') : (opts.plugins || [
-                    'advlist autolink lists link image charmap preview hr anchor pagebreak',
-                    'searchreplace wordcount visualblocks visualchars code fullscreen',
-                    'insertdatetime media nonbreaking save table contextmenu directionality',
-                    'paste textcolor colorpicker textpattern imagetools placeholderalt' /*codemirror jbimages*/
-                    ]);
-                var tinymce_toolbar = el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
-                    'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
-                    ]);
-                var tinymce_menubar = el[HAS_ATTR]('data-tinymce-menubar') ? el[ATTR]('data-tinymce-menubar') : (opts.menubar || 'file edit insert view format table tools');
-                if ( el[HAS_ATTR]('data-tinymce-plugins-extra') )
-                {
-                    tinymce_plugins = tinymce_plugins.concat(el[ATTR]('data-tinymce-plugins-extra').split(','));
-                }
-                else if ( opts.plugins_extra )
-                {
-                    tinymce_plugins = tinymce_plugins.concat(opts.plugins_extra);
-                }
-                if ( el[HAS_ATTR]('data-tinymce-toolbar-extra') )
-                {
-                    tinymce_toolbar = tinymce_toolbar.concat(el[ATTR]('data-tinymce-toolbar-extra').split(','));
-                }
-                else if ( opts.toolbar_extra )
-                {
-                    tinymce_toolbar = tinymce_toolbar.concat(opts.toolbar_extra);
-                }
-                var tinymce_external_plugins = null;
-                if ( el[HAS_ATTR]('data-tinymce-external-plugins') )
-                {
-                    tinymce_external_plugins = json_decode( el[ATTR]('data-tinymce-external-plugins') );
-                }
-                else if ( 'object' === typeof opts.external_plugins )
-                {
-                    tinymce_external_plugins = opts.external_plugins;
-                }
-                var tinymce_opts = {
-                    selector: '#'+el.id,
-                    theme: el[HAS_ATTR]('data-tinymce-theme') ? el[ATTR]('data-tinymce-theme') : (opts.theme || 'modern'),
-                    skin: el[HAS_ATTR]('data-tinymce-skin') ? el[ATTR]('data-tinymce-skin') : (opts.skin || 'lightgray'),
-                    directionality: el[HAS_ATTR]('data-tinymce-dir') ? el[ATTR]('data-tinymce-dir') : (opts.directionality || 'ltr'),
-                    height: parseInt(el[HAS_ATTR]('data-tinymce-height') ? el[ATTR]('data-tinymce-height') : (opts.height||500) ,10),
-                    plugins: tinymce_plugins,
-                    toolbar: tinymce_toolbar,
-                    menubar: tinymce_menubar,
-                    /*menu: {
-                        file: {title: 'File', items: 'newdocument'},
-                        edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
-                        insert: {title: 'Insert', items: 'link media | template hr'},
-                        view: {title: 'View', items: 'visualaid'},
-                        format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
-                        table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
-                        tools: {title: 'Tools', items: 'spellchecker code'}
-                    },*/
-                    //codemirror: opts.codemirror || null,
-                    placeholder: el[HAS_ATTR]('placeholder') ? el[ATTR]('placeholder') : (opts.placeholder||''),
-                    automatic_uploads: null != opts.automatic_uploads ? opts.automatic_uploads : true,
-                    image_advtab: null != opts.image_advtab ? opts.image_advtab : true,
-                    paste_data_images: null != opts.paste_data_images ? opts.paste_data_images : true,
-                    browser_spellcheck: null != opts.browser_spellcheck ? opts.browser_spellcheck : true,
-                    templates: null != opts.templates ? opts.templates : [],
-                    body_class: el[HAS_ATTR]('data-tinymce-body-class') ? el[ATTR]('data-tinymce-body-class') : (opts.body_class || null),
-                    content_css: el[HAS_ATTR]('data-tinymce-content-css') ? el[ATTR]('data-tinymce-content-css') : (opts.content_css || null),
-                    content_style: el[HAS_ATTR]('data-tinymce-content-style') ? el[ATTR]('data-tinymce-content-style') : (opts.content_style || null)
-                };
-                if ( el[HAS_ATTR]('data-tinymce-lang') )
-                {
-                    tinymce_opts.language = el[ATTR]('data-tinymce-lang');
-                }
-                else if ( !!opts.language )
-                {
-                    tinymce_opts.language = opts.language;
-                }
-                else if ( !!locale )
-                {
-                    tinymce_opts.language = locale;
-                }
-                if ( 'object' === typeof opts.options_extra )
-                    for (var o in opts.options_extra )
-                        tinymce_opts[o] = opts.options_extra[o];
-                if ( 'object' === typeof tinymce_external_plugins )
-                {
-                    for (var pl in tinymce_external_plugins)
-                    {
-                        if ( !tinymce_external_plugins[HAS](pl) ) continue;
-                        tinymce.PluginManager.load(pl, tinymce_external_plugins[pl]);
-                    }
-                }
-                var tinymce_autosave = el[HAS_ATTR]('data-tinymce-autosave') ? el[ATTR]('data-tinymce-autosave').toLowerCase() : !!opts.autosave;
-                if ( (true === tinymce_autosave) || ('1' === tinymce_autosave) || ('on' === tinymce_autosave) || ('yes' === tinymce_autosave) || ('true' === tinymce_autosave) )
-                {
-                    tinymce_opts.setup = function( editor ) {
-                        editor.on('init', function( ) {
-                            var cont = $(editor.getContainer( ));
-                            $('#'+cont.prop('id')+'-body',cont).attr('data-id', tinymce_id);
-                        });
-                        editor.on('change'/*'NodeChange'*/, function( ){
-                            editor.save( );
-                            htmlwidget.dispatch('change', el);
-                        });
-                    };
-                }
-                else
-                {
-                    tinymce_opts.setup = function( editor ) {
-                        editor.on('init', function( ) {
-                            var cont = $(editor.getContainer( ));
-                            $('#'+cont.prop('id')+'-body',cont).attr('data-id', tinymce_id);
-                        });
-                    };
-                }
-                
-                // see if same editor was created in the past
-                var prev_editor = tinymce.get( el.id );
-                if ( prev_editor ) prev_editor.remove( );
-                if ( delayed_init > 0 )
-                {
-                    setTimeout(function( ){
-                        tinymce.init( tinymce_opts );
-                    }, delayed_init);
-                }
-                else
-                {
-                    tinymce.init( tinymce_opts );
-                }
-            }
-            break;
-        
-        case 'syntax-editor':
-            if ( 'function' === typeof CodeMirror )
-            {
-                type = 'codemirror';
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                CodeMirror.fromTextArea(el, {
-                 mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
-                ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
-                ,lineWrapping     : null != opts.lineWrapping ? opts.lineWrapping : false
-                ,lineNumbers      : null != opts.lineNumbers ? opts.lineNumbers : true
-                ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
-                ,indentWithTabs   : null != opts.indentWithTabs ? opts.indentWithTabs : false
-                ,lint             : null != opts.lint ? opts.lint : false
-                ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
-                ,gutters          : null != opts.gutters ? opts.gutters : ["CodeMirror-lint-markers","CodeMirror-linenumbers","CodeMirror-foldgutter"]
-                });
-            }
-            break;
-        
-        default: 
-            break;
-        }
+            editor.on('change'/*'NodeChange'*/, function( ){
+                editor.save( );
+                htmlwidget.dispatch('change', el);
+            });
+        };
+    }
+    else if ( post_init )
+    {
+        tinymce_opts.setup = function( editor ) {
+            editor.on('init', function( ){
+                post_init( el, opts );
+            });
+        };
+    }
+    
+    // see if same editor was created in the past
+    var prev_editor = tinymce.get( el.id );
+    if ( prev_editor ) prev_editor.remove( );
+    if ( delayed_init > 0 )
+    {
+        setTimeout(function( ){
+            tinymce.init( tinymce_opts );
+        }, delayed_init);
+    }
+    else
+    {
+        tinymce.init( tinymce_opts );
+    }
+};
+
+htmlwidget._handle['codemirror'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' !== typeof CodeMirror ) return;
+    if ( pre_init ) pre_init( el, opts );
+    CodeMirror.fromTextArea(el, {
+     mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
+    ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
+    ,lineWrapping     : null != opts.lineWrapping ? opts.lineWrapping : false
+    ,lineNumbers      : null != opts.lineNumbers ? opts.lineNumbers : true
+    ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
+    ,indentWithTabs   : null != opts.indentWithTabs ? opts.indentWithTabs : false
+    ,lint             : null != opts.lint ? opts.lint : false
+    ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
+    ,gutters          : null != opts.gutters ? opts.gutters : ['CodeMirror-lint-markers','CodeMirror-linenumbers','CodeMirror-foldgutter']
     });
+    if ( post_init ) post_init( el, opts );
+};
+
+$.fn.htmlwidget = function( type, options ) {
+    options = options || { };
+    
+    if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+    {
+        this.each(function( ){
+            var el = this, opts, pre_init = null, post_init = null;
+            if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
+                opts = window[el[ATTR]('w-opts')];
+            else
+                opts = options;
+            
+            if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
+                pre_init = window[opts['w-pre-init']];
+            
+            if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
+                post_init = window[opts['w-post-init']];
+            
+            htmlwidget.widget[type]( el, opts, pre_init, post_init );
+        });
+    }
+    else
+    {
+        // type aliases
+        switch(type)
+        {
+            case 'upload':
+                type = 'uploadable'; break;
+            case 'rearrangeable':
+                type = 'sortable'; break;
+            case 'templateable':
+                type = 'template'; break;
+            case 'date':
+            case 'datetime':
+            case 'datepicker':
+                type = 'datetimepicker'; break;
+            case 'color':
+            case 'colorselector':
+                type = 'colorpicker'; break;
+            case 'areaselectable':
+                type = 'areaselect'; break;
+            case 'map':
+            case 'gmap3':
+                type = 'gmap'; break;
+            case 'autosuggest':
+            case 'suggest':
+                type = 'autocomplete'; break;
+            case 'range':
+                type = 'rangeslider'; break;
+            case 'select':
+                type = 'select2'; break;
+            case 'table':
+                type = 'datatable'; break;
+            case 'tag-editor':
+                type = 'tageditor'; break;
+            case 'wysiwyg-editor':
+                type = 'tinymce'; break;
+            case 'syntax-editor':
+                type = 'codemirror'; break;
+            default:
+                break;
+        }
+        if ( htmlwidget._handle[HAS]( type ) )
+        {
+            this.each(function( ){
+                var el = this, opts, pre_init = null, post_init = null;
+                if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
+                    opts = window[el[ATTR]('w-opts')];
+                else
+                    opts = options;
+                
+                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
+                
+                if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
+                    pre_init = window[opts['w-pre-init']];
+                
+                if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
+                    post_init = window[opts['w-post-init']];
+                
+                htmlwidget._handle[ type ]( type, el, opts, pre_init, post_init );
+            });
+        }
+    }
     return this;
 };
 htmlwidget.init = function( node, current, deep ) {
@@ -1557,11 +1573,11 @@ htmlwidget.init = function( node, current, deep ) {
 };
 htmlwidget.initialisable = function( el, root ) {
     root = root || window;
-    var $el = $(el), w_init = ($el.attr('w-init')||'').toLowerCase();
-    if ( '1' === w_init || 'true' === w_init || 'on' === w_init || 'yes' === w_init ) w_init = "__htmlwidget_init__";
-    if ( !!w_init && 'function' === typeof root[w_init] )
+    var w_init = el[ATTR]('w-init')||'', w_init_i = w_init.toLowerCase( );
+    if ( '1' === w_init_i || 'true' === w_init_i || 'on' === w_init_i || 'yes' === w_init_i ) w_init = '__htmlwidget_init__';
+    if ( !!w_init && ('function' === typeof root[w_init]) )
     {
-        $el.removeAttr('w-init');
+        el[DEL_ATTR]('w-init');
         root[w_init]( el );
     }
 };
@@ -1630,7 +1646,8 @@ window["__htmlwidget_init__"] = function( e ){
     htmlwidget.init( e );
 };
 
-$(function(){
+// on dom ready, init and listen
+$(function( ){
 
 if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
 if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
@@ -1645,12 +1662,13 @@ var $body = $(document.body),
 $body.find('[w-init]').each( widget_init );
 $body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
 
-// dynamicaly added elements
+// dynamicaly added elements and/or dynamicaly altered elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
         .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added', widget_able)
+        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable)', widget_able)
     ;
 }
 
@@ -1659,13 +1677,18 @@ if ( 'function' === typeof $.fn.tooltipster )
 {
     $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
-    $body.on('change', 'input[type=file].w-file-input', function( ){
+
+// w-file controls
+$body
+    .on('change', 'input[type=file].w-file-input', function( ){
         this.nextSibling.value = this.value;
-    });
-    $body.on('click', 'input[type=file].w-file-input+input.w-file', function( ){
+    })
+    .on('click', 'input[type=file].w-file-input+input.w-file', function( ){
         $(this.previousSibling).trigger('click');
         return false;
-    });
+    })
+;
+
 });
 
 return $.htmlwidget = htmlwidget;

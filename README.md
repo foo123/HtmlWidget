@@ -14,19 +14,22 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 *  [Importer](https://github.com/foo123/Importer)
 
 
-**included widgets:**
+*note 1:* see `/test/test.html`, `/test/test.php` pages both for testing most widgets and as example code for how to use
 
-(see `/test/test.html`, `/test/test.php` pages both for testing most widgets and as example code for how to use)
+*note 2:* most widgets are implemented as pure `html` / `css` components so that they can work even without `javascript` (unless absolutely necessary)
+
+
+**included widgets:**
 
 
 1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-list, radio-list, selectbox, multi-selectbox, textbox, textarea, file, range/slider, rating
-2. button, label, link, icon
-3. table, accordeon, tab, page, collapsable panel, spinner, modal, tooltip
+2. buttons, labels, links, icons, tooltips, speech bubbles, spinners
+3. table, accordeon, tab, page, collapsable panel, modal, dialog, hierarchical responsive horizontal menus, hierarchical responsive vertical menus
 4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable
 5. mvc/mvvm widget, area-select, autocompleter, date/time picker, color picker, location/address picker, timer, wysiwyg editor, syntax  editor, advanced selectbox, dataTable, google map, multi-faceted advanced search (TODO)
 
 
-**external widgets/plugins/libraries (mashup):**
+**external widgets/plugins/libraries (integrated mashup components):**
 
 1. [`DataTables`](https://github.com/DataTables/DataTables), [`TagEditor`](https://github.com/Pixabay/jQuery-tagEditor), [`Trumbowyg`](https://github.com/Alex-D/Trumbowyg), [`CodeMirror`](https://github.com/codemirror/CodeMirror), [`MathJax`](https://github.com/mathjax/MathJax), [`VexFlow`](https://github.com/0xfe/vexflow), [`VexTab`](https://github.com/0xfe/vextab), [`TinyMce`](https://github.com/tinymce/tinymce)
 2. [`Select2`](https://github.com/select2/select2), [`Sortable`](https://github.com/RubaXa/Sortable), [`tinyDraggable`](https://github.com/Pixabay/jQuery-tinyDraggable), [`AutoComplete`](https://github.com/foo123/AutoComplete), [`DateX`](https://github.com/foo123/DateX), [`Pikadaytime`](https://github.com/foo123/Pikadaytime), [`ColorPicker`](https://github.com/foo123/ColorPicker), [`Timer`](https://github.com/foo123/Timer)
@@ -35,7 +38,7 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 5. [`jQuery`](https://jquery.com/), [`Font-Awesome`](https://github.com/FortAwesome/Font-Awesome), [`Modernizr`](https://github.com/modernizr/modernizr)
 
 
-**browser support**
+**browser support (tested)**
 
 * ie (10+)
 * firefox (30+)

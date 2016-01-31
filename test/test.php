@@ -37,6 +37,18 @@ function options( $options, $key=null, $val=null )
     .w-vertical-menu {
         width: 300px;
     }
+    .w-bubble {
+        max-width: 300px;
+        border-color: #f3961c;
+        background: #f3961c;
+        color: #fff;
+        font-weight: bold;
+    }
+    legend {
+        font-size: 2em;
+        font-weight: bold;
+        padding: 20px;
+    }
     @media all and (max-width : 768px) {
 
     .w-vertical-menu.w-mobile > .w-menu-controller-bt,
@@ -429,6 +441,19 @@ function options( $options, $key=null, $val=null )
        <div class="w-ribbon-dtl w-red w-ribbon-fold w-large"><span>Ribbon</span></div>
        <div class="w-ribbon-dtr w-blue"><span>Ribbon</span></div>
     </div>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>(Speech) Bubbles</legend>
+    <div class="w-bubble w-bubble-up">Bubble Up</div>
+    <div class="w-bubble w-bubble-down">Bubble Down</div>
+    <div class="w-bubble w-bubble-left">Bubble Left</div>
+    <div class="w-bubble w-bubble-right">Bubble Right</div>
+    <div class="w-bubble w-bubble2-up">Bubble Up</div>
+    <div class="w-bubble w-bubble2-down">Bubble Down</div>
+    <div class="w-bubble w-bubble2-left">Bubble Left</div>
+    <div class="w-bubble w-bubble2-right">Bubble Right</div>
     </fieldset>
     
     <hr />
