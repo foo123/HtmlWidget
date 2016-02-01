@@ -19,10 +19,78 @@ function options( $options, $key=null, $val=null )
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<!--[if lt IE 7]>
+<html lang="en" class="ie lt-ie9 lt-ie8 lt-ie7">
+<![endif]-->
+<!--[if IE 7]>
+<html lang="en" class="ie lt-ie9 lt-ie8">
+<![endif]-->
+<!--[if IE 8]>
+<html lang="en" class="ie lt-ie9">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" class="no-ie">
+<!--<![endif]-->
 <head>
     <style type="text/css">
+    #forkongithub  a {
+        background: #aa0000;
+        color: #fff;
+        text-decoration: none;
+        font-family: arial, sans-serif;
+        text-align: center;
+        font-weight: bold;
+        padding: 5px 40px;
+        font-size: 0.9rem;
+        line-height: 1.4rem;
+        position: relative;
+        transition: all 0.5s;
+    }
+
+    #forkongithub a:hover {
+        background: #aa0000;
+        color: #fff;
+    }
+
+    #forkongithub a::before, #forkongithub a::after {
+        content: "";
+        width: 100%;
+        display: block;
+        position: absolute;
+        z-index: 100;
+        top: 1px;
+        left: 0;
+        height: 1px;
+        background: #fff;
+    }
+
+    #forkongithub a::after
+    {
+        bottom: 1px;
+        top: auto;
+    }
+
+    @media screen and (min-width:800px) {
+        #forkongithub {
+            position: absolute;
+            display: block;
+            z-index: 100;
+            top: 0;
+            right: 0;
+            width: 200px;
+            overflow: hidden;
+            height: 200px;
+        }
+        #forkongithub a {
+            width: 200px;
+            position: absolute;
+            top: 60px;
+            right: -60px;
+            transform: rotate(45deg);
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
+        }
+    }
     .box {
         width: 600px; height: 200px;
         position: relative;
@@ -62,6 +130,7 @@ function options( $options, $key=null, $val=null )
     <title>HtmlWidgets Test page</title>
 </head>
 <body class="fluid col-1-1" style="padding:10px 20px">
+    <span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Find me on GitHub</a></span>
     <h1>HtmlWidgets Test page</h1>
     
     <hr />
