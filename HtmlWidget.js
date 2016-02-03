@@ -95,6 +95,7 @@ var HtmlWidget = self = {
         var asset_base = base + 'assets/';
         var assets = [
          ['styles', 'htmlwidgets.css', base+'htmlwidgets.css']
+        ,['styles', 'normalize.css', asset_base+'normalize.css']
         ,['styles', 'responsive.css', asset_base+'responsive.css']
         ,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
         ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
@@ -195,7 +196,7 @@ var HtmlWidget = self = {
             ,['scripts', 'modelview', asset_base+'modelview.js']
              
             // ModelViewForm
-            ,['scripts', 'modelviewform', asset_base+'modelviewform.js', ['jquery','datex','modelview']]
+            ,['scripts', 'modelviewform', asset_base+'modelview.form.js', ['jquery','datex','modelview']]
              
             // smoothState
             ,['scripts', 'smoothstate', asset_base+'smoothState.js', ['jquery']]
@@ -429,9 +430,16 @@ var HtmlWidget = self = {
             case 'link':        out = self.w_link(attr, data); break;
             case 'button':      out = self.w_button(attr, data); break;
             case 'label':       out = self.w_label(attr, data); break;
-            case 'file':        out = self.w_file(attr, data); break;
             case 'uploader':
-            case 'upload':      out = self.w_upload(attr, data); break;
+            case 'upload':
+            case 'dnd-uploader':
+            case 'dnd-upload':
+            case 'drag-n-drop-uploader':
+            case 'drag-n-drop-upload':
+                                out = self.w_dnd_upload(attr, data); break;
+            /*case 'uploader':
+            case 'upload':      out = self.w_upload(attr, data); break;*/
+            case 'file':        out = self.w_file(attr, data); break;
             case 'suggestbox':
             case 'suggest':     out = self.w_suggest(attr, data); break;
             case 'textbox':
@@ -614,34 +622,6 @@ var HtmlWidget = self = {
         }
     }
     
-    ,w_file: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, titl;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
-        titl = isset(attr,"title") ? attr["title"] : '';
-        wtitle = !!titl ? 'title="'+titl+'"' : '';
-        wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
-        wclass = 'w-widget w-file w-text'; 
-        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
-        wicon = '';
-        wrapper_class = 'w-wrapper';
-        if ( !empty(attr,'icon') )
-        {
-            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
-            wrapper_class += ' w-icon';
-        }
-        if ( !empty(attr,'iconr') )
-        {
-            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
-            wrapper_class += ' w-icon-right';
-        }
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
-        self.enqueue('styles', 'htmlwidgets.css');
-        return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
-    }
-    
     ,w_control: function( attr, data ) {
         var wid, wclass, wstyle, wctrl, wextra, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
@@ -822,7 +802,7 @@ var HtmlWidget = self = {
     
     ,w_rating: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wvalue, wratings, wname, wtitle, wtext, wicon,
-            r, rate, label, widget, wchecked, w_item_atts;
+            r, rate, label, widget, wchecked, w_item_atts, w_icon;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : 'name="__rating_'+wid+'"';
         wvalue = isset(data,'value') ? data['value'] : "";
@@ -836,11 +816,21 @@ var HtmlWidget = self = {
         wratings = !empty(data,"ratings") && (data["ratings"] instanceof Array) ? data["ratings"] : self.options({'1':'1','2':'2','3':'3','4':'4','5':'5'},-1);
         widget = "<fieldset id=\""+wid+"\" "+wtitle+" class=\""+wclass+"\" "+wstyle+" "+wextra+">";
         if ( !!wtext ) widget += "<legend "+wtitle+">"+wtext+"</legend>";
+        if ( !wicon ) wicon = 'star';
         for (r=wratings.length-1; r>=0; r--)
         {
             rate = wratings[r][0]; label = wratings[r][1];
+            if ( wicon instanceof Array )
+            {
+                if ( wicon.length > r ) w_icon = wicon[r];
+                else w_icon = wicon[wicon.length-1];
+            }
+            else
+            {
+                w_icon = wicon;
+            }
             wchecked = !!wvalue && wvalue == rate ? 'checked' : '';
-            widget += "<input type=\"radio\" id=\""+wid+"_rating_"+rate+"\" class=\"w-rating-input\" "+wname+" value=\""+rate+"\" "+wchecked+" "+w_item_atts+"/><label for=\""+wid+"_rating_"+rate+"\" class=\"fa fa-"+wicon+" w-rating-label\" title=\""+label+"\">&nbsp;</label>";
+            widget += "<input type=\"radio\" id=\""+wid+"_rating_"+rate+"\" class=\"w-rating-input\" "+wname+" value=\""+rate+"\" "+wchecked+" "+w_item_atts+"/><label for=\""+wid+"_rating_"+rate+"\" class=\"fa fa-"+w_icon+" w-rating-label\" title=\""+label+"\">&nbsp;</label>";
         }
         widget += "</fieldset>";
         self.enqueue('styles', 'htmlwidgets.css');
@@ -1206,6 +1196,56 @@ var HtmlWidget = self = {
         }
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
+    }
+    
+    ,w_file: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, titl;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
+        wvalue = isset(data,"value") ? data["value"] : ""; 
+        titl = isset(attr,"title") ? attr["title"] : '';
+        wtitle = !!titl ? 'title="'+titl+'"' : '';
+        wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
+        wclass = 'w-widget w-file w-text'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wicon = '';
+        wrapper_class = 'w-wrapper';
+        if ( !empty(attr,'icon') )
+        {
+            wicon += "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-" + attr['icon'] + "\"></i></span>";
+            wrapper_class += ' w-icon';
+        }
+        if ( !empty(attr,'iconr') )
+        {
+            wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
+            wrapper_class += ' w-icon-right';
+        }
+        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        self.enqueue('styles', 'htmlwidgets.css');
+        return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
+    }
+    
+    ,w_dnd_upload: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wname,
+            msg_upload, msg_delete, winit, wopts;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
+        winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
+        wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
+        wclass = 'w-widget w-dnd-upload';
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = self.attributes(attr,['accept','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
+        msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
+        wopts = "";
+        if ( isset(attr,"options") && 'object' === typeof attr["options"] )
+        {
+            wopts = 'w-opts="htmlw_'+wid+'_options"';
+            self.enqueue('scripts', 'w-dnd-upload-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+        }
+        self.enqueue('scripts', 'htmlwidgets');
+        return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" data-alternative-value="files_dropped" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
     
     ,w_upload: function( attr, data ) {

@@ -51,6 +51,7 @@ class HtmlWidget
         $asset_base = $base . 'assets/';
         $assets = array(
          array('styles', 'htmlwidgets.css', $base.'htmlwidgets.css')
+        ,array('styles', 'normalize.css', $asset_base.'normalize.css')
         ,array('styles', 'responsive.css', $asset_base.'responsive.css')
         ,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
         ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
@@ -151,7 +152,7 @@ class HtmlWidget
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
             // ModelViewForm
-            ,array('scripts', 'modelviewform', $asset_base.'modelviewform.js', array('jquery','datex','modelview'))
+            ,array('scripts', 'modelviewform', $asset_base.'modelview.form.js', array('jquery','datex','modelview'))
              
             // smoothState
             ,array('scripts', 'smoothstate', $asset_base.'smoothState.js', array('jquery'))
@@ -351,9 +352,16 @@ class HtmlWidget
             case 'link':        $out = self::w_link($attr, $data); break;
             case 'button':      $out = self::w_button($attr, $data); break;
             case 'label':       $out = self::w_label($attr, $data); break;
-            case 'file':        $out = self::w_file($attr, $data); break;
             case 'uploader':
-            case 'upload':      $out = self::w_upload($attr, $data); break;
+            case 'upload':
+            case 'dnd-uploader':
+            case 'dnd-upload':
+            case 'drag-n-drop-uploader':
+            case 'drag-n-drop-upload':
+                                $out = self::w_dnd_upload($attr, $data); break;
+            /*case 'uploader':
+            case 'upload':      $out = self::w_upload($attr, $data); break;*/
+            case 'file':        $out = self::w_file($attr, $data); break;
             case 'suggestbox':
             case 'suggest':     $out = self::w_suggest($attr, $data); break;
             case 'textbox':
@@ -532,33 +540,6 @@ class HtmlWidget
             $wtype = isset($attr['type']) ? $attr['type'] : 'button';
             return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra>$wtext</button>";
         }
-    }
-    
-    public static function w_file( $attr, $data )
-    {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
-        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
-        $wvalue = isset($data['value']) ? $data['value'] : "";
-        $titl = isset($attr["title"]) ? $attr["title"] : '';
-        $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
-        $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
-        $wclass = 'w-widget w-file w-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wicon = '';
-        $wrapper_class = 'w-wrapper';
-        if ( !empty($attr['icon']) )
-        {
-            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
-            $wrapper_class .= ' w-icon';
-        }
-        if ( !empty($attr['iconr']) )
-        {
-            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
-            $wrapper_class .= ' w-icon-right';
-        }
-        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
-        self::enqueue('styles', 'htmlwidgets.css');
-        return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
     }
     
     public static function w_control( $attr, $data )
@@ -748,11 +729,21 @@ class HtmlWidget
         $wratings = !empty($data["ratings"]) ? (array)$data["ratings"] : self::options(array('1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),-1);
         $widget = "<fieldset id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra>";
         if ( !empty($wtext) ) $widget .= "<legend $wtitle>$wtext</legend>";
+        if ( empty($wicon) ) $wicon = 'star';
         for ($r=count($wratings)-1; $r>=0; $r--)
         {
             $rate = $wratings[$r][0]; $label = $wratings[$r][1];
+            if ( is_array($wicon) )
+            {
+                if ( isset($wicon[$r]) ) $w_icon = $wicon[$r];
+                else $w_icon = $wicon[count($wicon)-1];
+            }
+            else
+            {
+                $w_icon = $wicon;
+            }
             $wchecked = !empty($wvalue) && $wvalue == $rate ? 'checked' : '';
-            $widget .= "<input type=\"radio\" id=\"{$wid}_rating_{$rate}\" class=\"w-rating-input\" $wname value=\"$rate\" $wchecked {$w_item_atts}/><label for=\"{$wid}_rating_{$rate}\" class=\"fa fa-{$wicon} w-rating-label\" title=\"$label\">&nbsp;</label>";
+            $widget .= "<input type=\"radio\" id=\"{$wid}_rating_{$rate}\" class=\"w-rating-input\" $wname value=\"$rate\" $wchecked {$w_item_atts}/><label for=\"{$wid}_rating_{$rate}\" class=\"fa fa-{$w_icon} w-rating-label\" title=\"$label\">&nbsp;</label>";
         }
         $widget .= "</fieldset>";
         self::enqueue('styles', 'htmlwidgets.css');
@@ -1102,6 +1093,53 @@ class HtmlWidget
         }
         self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
+    }
+    
+    public static function w_file( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wvalue = isset($data['value']) ? $data['value'] : "";
+        $titl = isset($attr["title"]) ? $attr["title"] : '';
+        $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
+        $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
+        $wclass = 'w-widget w-file w-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wicon = '';
+        $wrapper_class = 'w-wrapper';
+        if ( !empty($attr['icon']) )
+        {
+            $wicon .= "<span class=\"fa-wrapper left-fa\"><i class=\"fa fa-{$attr['icon']}\"></i></span>";
+            $wrapper_class .= ' w-icon';
+        }
+        if ( !empty($attr['iconr']) )
+        {
+            $wicon .= "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-{$attr['iconr']}\"></i></span>";
+            $wrapper_class .= ' w-icon-right';
+        }
+        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        self::enqueue('styles', 'htmlwidgets.css');
+        return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
+    }
+    
+    public static function w_dnd_upload( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
+        $wname = !empty($attr['name']) ? 'name="'.$attr['name'].'"' : '';
+        $wclass = 'w-widget w-dnd-upload'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = self::attributes($attr,array('accept','readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $msg_upload = !empty($attr["msg-upload"]) ? $attr["msg-upload"] : 'Upload';
+        $msg_delete = !empty($attr["msg-delete"]) ? $attr["msg-delete"] : 'Delete';
+        $wopts = "";
+        if ( isset($attr["options"]) && is_array($attr["options"]) )
+        {
+            $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+            self::enqueue('scripts', 'w-dnd-upload-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
+        }
+        self::enqueue('scripts', 'htmlwidgets');
+        return "<div $winit $wopts id=\"{$wid}_wrapper\" class=\"$wclass\" $wstyle><input id=\"$wid\" $wname type=\"file\" class=\"_w-dnd-uploader\" value=\"\" style=\"display:none !important;\" data-alternative-value=\"files_dropped\" $wextra><label for=\"$wid\" class=\"w-widget w-button w-dnd-upload-upload\" title=\"{$msg_upload}\"><i class=\"fa fa-upload fa-2x\"></i></label><button type=\"button\" class=\"w-widget w-button w-dnd-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times fa-2x\"></i></button></div>";
     }
     
     public static function w_upload( $attr, $data )

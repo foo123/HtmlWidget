@@ -45,7 +45,9 @@ input.w-checkbox + label
     max-width: 300px;
     word-wrap: normal;
 }
+.w-widget.w-dnd-upload,
 .w-widget.w-upload,
+.w-dnd-upload,
 .w-upload
 {
     position: relative;
@@ -53,20 +55,61 @@ input.w-checkbox + label
     padding: 0; margin: 0;
     cursor: pointer;
 }
-img.w-upload-thumbnail
+.w-widget.w-dnd-upload,
+.w-dnd-upload
+{
+    min-width: 120px;  min-height: 120px;
+    text-align: center; overflow: hidden;
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+.w-dnd-upload.__empty__  > .w-dnd-upload-upload
+{
+    position: absolute; display: block;
+    margin: 0;
+    top: 50%; left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+.w-dnd-upload:not(.__empty__)  > .w-dnd-upload-upload
+{
+    position: relative; display: inline-block;
+    top: auto; left: auto;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none;
+}
+.w-dnd-upload > .w-dnd-upload-preview,
+.w-upload > img.w-upload-thumbnail
 {
     position: relative;
     max-width: 100%;
-    margin: 0;
+    margin: 0 auto;
     margin-bottom: 10px;
     display: block;
 }
-img.w-upload-thumbnail[src='']
+.w-dnd-upload.__empty__  > .w-dnd-upload-preview,
+.w-upload > img.w-upload-thumbnail[src='']
 {
     display: none;
     margin-bottom: 0;
 }
-img.w-upload-thumbnail[src=''] ~ .w-upload-delete
+.w-dnd-upload.__empty__  > .w-dnd-upload-delete,
+.w-upload > img.w-upload-thumbnail[src=''] ~ .w-upload-delete
 {
     display: none;
 }
@@ -305,7 +348,8 @@ input.w-checkbox + label
     display: none;
     z-index: -1;
 }
-.w-wrapper.ajax > .w-widget.w-suggest ~ .fa-wrapper.w-suggest-spinner
+/*.w-wrapper.ajax > .w-widget.w-suggest ~ .fa-wrapper.w-suggest-spinner,*/
+.w-wrapper.__ajax__ > .w-widget.w-suggest ~ .fa-wrapper.w-suggest-spinner
 {
     display: inline-block; 
     z-index: 2;
@@ -393,21 +437,27 @@ input.w-checkbox + label
     transform: translate(50%,-50%);
 }
 
+input[type=radio].w-radio-image + label 
+input[type=checkbox].w-checkbox-image + label 
+{
+    padding: 0 !important;
+    border: none;
+}
 input[type=radio].w-radio-image + label > span,
 input[type=checkbox].w-checkbox-image + label > span
 {
-    display: block !important;
-    position: relative;
+    display: block !important; position: relative;
     padding: 0; margin: 0;
-    -webkit-box-sizing:padding-box;
-    -moz-box-sizing:padding-box;
-    -ms-box-sizing:padding-box;
-    -o-box-sizing:padding-box;
-    box-sizing:padding-box;
-    overflow: hidden; z-index: 2;
+    width: 100%; height: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
     border: 4px solid transparent;
-    border-radius: inherit;
+    overflow: hidden; z-index: 2;
     background-color: transparent;
+    background-clip: padding-box;
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 100% auto;
@@ -435,10 +485,22 @@ input[type=checkbox].w-checkbox-image:checked + label > span
     transition: all 0.15s ease-out;
     opacity: 1;
 }
-/*label.img.luxury > span
+input[type=radio].w-radio-image + label > span:after,
+input[type=checkbox].w-checkbox-image + label > span:after
 {
-    background-image: url(./photos/step2/room/luxury.jpg);
-}*/
+    position: absolute; display: none; z-index: 0;
+    top: 2px; right: 2px;
+    content: "\f058"; /* check-circle */
+    font-family: FontAwesome, sans-serif;
+    font-size: 2em;
+    color: rgb(28, 184, 65);
+    pointer-events: none;
+}
+input[type=radio].w-radio-image:checked + label > span:after,
+input[type=checkbox].w-checkbox-image:checked + label > span:after
+{
+    display: block; z-index: 2;
+}
 input.w-radio + label,
 input.w-checkbox + label
 {
@@ -2831,13 +2893,13 @@ by Nicolas Gallagher
     width: 10px; height: 10px;
     line-height: 10px; font-size: 10px;
 }
-input.w-radio-image + label > span,
+/*input.w-radio-image + label > span,
 input.w-checkbox-image + label > span
 {
-    /* 1:1 aspect responsive */
+    /* 1:1 aspect responsive * /
     height: 0;
     padding-bottom: 100% !important;
-}
+}*/
 .w-map
 {
     /* 1:1 aspect responsive */
@@ -3004,6 +3066,12 @@ input.w-checkbox + label
 {
     padding-right: 2.5em;
 }
+.w-widget.w-dnd-upload,
+.w-dnd-upload
+{
+    padding: 10px 5px;
+}
+
 input.w-radio-image + label,
 input.w-checkbox-image + label
 {
@@ -3477,6 +3545,43 @@ input.w-checkbox + label:hover
 {
     border-color: #333;
 }
+.w-widget.w-dnd-upload,
+.w-dnd-upload
+{
+    border-color: #ccc;
+    color: #333;
+    background-color: transparent;
+}
+.w-dnd-upload > span.w-dnd-upload-preview
+{
+    background-color: #efefef;
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+.w-dnd-upload > img.w-dnd-upload-preview
+{
+    border: 4px solid #efefef;
+}
+.w-widget.w-dnd-upload:not(.__empty__),
+.w-dnd-upload:not(.__empty__)
+{
+    background-color: rgba(0,0,0,0.6);
+}
+.w-widget.w-dnd-upload:hover,
+.w-dnd-upload:hover
+{
+    border-color: #999;
+}
+.w-widget.w-dnd-upload.__dragover__,
+.w-dnd-upload.__dragover__
+{
+    border-color: #1190d1;
+}
+.w-widget.w-dnd-upload.__dragover__ > .w-button,
+.w-dnd-upload.__dragover__ > .w-button
+{
+    color: #1190d1;
+}
 .w-wrapper.w-icon > .w-widget.w-text:not(:disabled):hover ~ .fa-wrapper,
 .w-wrapper.w-icon-right > .w-widget.w-text:not(:disabled):hover ~ .fa-wrapper
 {
@@ -3520,11 +3625,15 @@ select.w-select option.w-option-placeholder,
 {
     opacity: 0.6;
 }
+input.w-radio-image + label ,
+input.w-checkbox-image + label 
+{
+    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.5);
+}
 input.w-radio-image + label > span,
 input.w-checkbox-image + label > span
 {
     border-color: #ccc;
-    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.5);
 }
 input.w-radio-image + label:hover > span,
 input.w-checkbox-image + label:hover > span,

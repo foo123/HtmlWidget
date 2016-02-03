@@ -203,8 +203,36 @@ htmlwidget.dispatch = function( event, element, data, native ) {
         }
     }
 };
+htmlwidget.resetFormElements = function ( els ) {
+  if ( els.length )
+  {
+      var $form = $('<form></form>').appendTo('body'), i;
+      
+      i = 0;
+      $(els).each(function( ){
+          var id = '__ele_reset_proxy__'+(++i)+'';
+          $( this ).replaceWith( '<span id="'+id+'"></span>' );
+          $form.append( this );
+      });
+      
+      $form[0].reset( );
+      
+      i = 0;
+      $(els).each(function( ){
+          var id = '#__ele_reset_proxy__'+(++i)+'';
+          $( id ).replaceWith( this );
+      });
+      
+      $form.remove( );
+  }
+  return els;
+};
 $.fn.triggerNative = function( event, data ) {
     this.each(function( ){ htmlwidget.dispatch(event, this, data); });
+    return this;
+};
+$.fn.resetElement = function( ) {
+    htmlwidget.resetFormElements( this );
     return this;
 };
 
@@ -523,7 +551,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                     }
                     else if ( !!data.ajax )
                     {
-                        wrapper.addClass('ajax');
+                        wrapper.addClass('__ajax__');
                         // optimise multiple xhr requests
                         try { xhr && xhr.abort(); } catch(e){ }
                         xhr = $.ajax({
@@ -533,11 +561,11 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                             dataType: data.dataType,
                             data: data.suggest,
                             success: function( data ) {
-                                wrapper.removeClass('ajax');
+                                wrapper.removeClass('__ajax__');
                                 suggest( data );
                             },
                             error: function( ) {
-                                wrapper.removeClass('ajax');
+                                wrapper.removeClass('__ajax__');
                                 suggest( [] );
                             }
                         });
@@ -564,6 +592,110 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     self.dispose = function( ) {
         if ( self.instance ) self.instance.dispose( );
         self.instance = null;
+    };
+});
+widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadable( el, options ){
+    var self = this;
+    if ( !(self instanceof dnd_uploadable) ) return new dnd_uploadable(el, options);
+    
+    self.dispose = function( ) {
+        var control = $(el);
+        control.off('.dnd_uploadable');
+        control = null;
+    };
+    self.init = function( ) {
+        var control = $(el),
+            preview_size = (el[HAS_ATTR]('data-dnd-upload-preview')
+                ? int(el[ATTR]('data-dnd-upload-preview'))
+                : int(options.preview || 120)) || 120;
+        
+        control.addClass('__empty__');
+        
+        control
+        .on('click.dnd_uploadable', '.w-dnd-upload-delete', function( evt ){
+            var $file = control.find('input._w-dnd-uploader[type=file]');
+            $file[0].files_dropped = null;
+            $file.resetElement( );
+            $file.triggerNative('change');
+            return false;
+        })
+        .on('change.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
+            var input = evt.target,
+                file_reader, $preview,
+                file = input.files_dropped && input.files_dropped.length ? input.files_dropped[0] : (input.files && input.files.length ? input.files[0] : null)
+            ;
+            if ( !file )
+            {
+                control.addClass('__empty__').find('.w-dnd-upload-preview').remove( );
+            }
+            else
+            {
+                control.removeClass('__empty__').find('.w-dnd-upload-preview').remove( );
+                if ( file.type.match( 'image' ) )
+                {
+                    file_reader = new FileReader( );
+                    file_reader.addEventListener("load", function( evt ){
+                        var base64_data = evt.target.result;
+                        var img = new Image( );
+                        img.addEventListener("load", function( ) {
+                            // add a small delay
+                            setTimeout(function( ){
+                                var w = img.width, h = img.height,
+                                    tw, th, canvas, ctx, img_thumb, text = file.name+' ('+file.type+')';
+                                if ( w <= preview_size )
+                                {
+                                    th = preview_size; tw = Math.round(preview_size*w/h);
+                                }
+                                else
+                                {
+                                    tw = preview_size; th = Math.round(preview_size*h/w);
+                                }
+                                canvas = document.createElement('canvas'); ctx = canvas.getContext('2d');
+                                canvas.width = tw; canvas.height = th;
+                                ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
+                                img_thumb = canvas.toDataURL("image/png");
+                                control.prepend('<img src="'+img_thumb+'" data-src-full="'+base64_data+'" class="w-dnd-upload-preview" onclick="window.open(this.getAttribute(\'data-src-full\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();" alt="'+text+'" title="'+text+'" />');
+                            }, 10);
+                        });
+                        img.src = base64_data;
+                    });
+                    file_reader.readAsDataURL( file );
+                }
+                else
+                {
+                    var text = file.name+' ('+file.type+')';
+                    control.prepend('<span class="w-dnd-upload-preview" title="'+text+'">'+text+'</span>');
+                }
+            }
+        })
+        ;
+        // drag&drop files if the feature is available
+        if( DragDropUploadCap )
+        {
+            control
+            .addClass('__dnd-upload__')
+            .on('drag.dnd_uploadable dragstart.dnd_uploadable dragend.dnd_uploadable dragover.dnd_uploadable dragenter.dnd_uploadable dragleave.dnd_uploadable drop.dnd_uploadable', function( evt ) {
+                // preventing the unwanted behaviours
+                evt.preventDefault( );
+                evt.stopPropagation( );
+                var evt_type = ' '+evt.type.toLowerCase( )+' ';
+                if ( -1 < ' dragover dragenter '.indexOf( evt_type ) )
+                {
+                    control.addClass( '__dragover__' );
+                }
+                else if ( -1 < ' dragleave dragend drop '.indexOf( evt_type ) )
+                {
+                    control.removeClass( '__dragover__' );
+                }
+                if ( ' drop ' === evt_type )
+                {
+                    var droppedFiles = evt.originalEvent.dataTransfer.files, // the files that were dropped
+                        $file = control.find('input._w-dnd-uploader[type=file]');
+                    if ( droppedFiles.length ) $file[0].files_dropped = droppedFiles;
+                    $file.triggerNative( 'change' );
+                }
+            });
+        }
     };
 });
 widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
@@ -1101,7 +1233,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-htmlwidget._handle['delayable'] = htmlwidget._handle['disabable'] = htmlwidget._handle['morphable'] = htmlwidget._handle['selectable'] = htmlwidget._handle['removable'] = htmlwidget._handle['sortable'] = htmlwidget._handle['uploadable'] = htmlwidget._handle['template'] = function( type, el, opts, pre_init, post_init ) {
+htmlwidget._handle['delayable'] = htmlwidget._handle['disabable'] = htmlwidget._handle['morphable'] = htmlwidget._handle['selectable'] = htmlwidget._handle['removable'] = htmlwidget._handle['sortable'] = htmlwidget._handle['dnd_uploadable'] = htmlwidget._handle['uploadable'] = htmlwidget._handle['template'] = function( type, el, opts, pre_init, post_init ) {
     if ( pre_init ) pre_init( el, opts );
     $(el)[type]( opts );
     if ( post_init ) post_init( el, opts );
@@ -1481,6 +1613,10 @@ $.fn.htmlwidget = function( type, options ) {
         // type aliases
         switch(type)
         {
+            case 'dnd-upload':
+            case 'dnd_upload':
+            case 'dnd-uploadable':
+                type = 'dnd_uploadable'; break;
             case 'upload':
                 type = 'uploadable'; break;
             case 'rearrangeable':
@@ -1545,6 +1681,7 @@ htmlwidget.init = function( node, current, deep ) {
     if ( true === deep )
     {
         $node.find('input[type=range].w-rangeslider').htmlwidget('range');
+        $node.find('.w-dnd-upload').htmlwidget('dnd-upload');
         $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
@@ -1559,6 +1696,7 @@ htmlwidget.init = function( node, current, deep ) {
     if ( false !== current )
     {
         if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
+        else if ( $node.hasClass('w-dnd-upload') ) $node.htmlwidget('dnd-upload');
         else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');

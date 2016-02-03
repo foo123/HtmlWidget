@@ -4,6 +4,8 @@
 require('../../Importer/src/php/Importer.php');
 require('../HtmlWidget.php');
 
+global $importer;
+
 $importer = new Importer();
 HtmlWidget::enqueueAssets(array($importer,'enqueue'));
 $importer->register('assets', HtmlWidget::assets('../', true, true));
@@ -12,10 +14,24 @@ function widget( $widget, $attr=array(), $data=array() )
 {
     echo HtmlWidget::widget( $widget, $attr, $data );
 }
-
 function options( $options, $key=null, $val=null )
 {
     return HtmlWidget::options( $options, $key, $val );
+}
+function enqueue($type, $asset)
+{
+    global $importer;
+    $importer->enqueue( $type, $asset );
+}
+function styles( )
+{
+    global $importer;
+    echo $importer->assets('styles');
+}
+function scripts( )
+{
+    global $importer;
+    echo $importer->assets('scripts');
 }
 
 ?>
@@ -466,6 +482,7 @@ function options( $options, $key=null, $val=null )
     <?php widget('switch',array('title'=>'Check','class'=>'w-xlarge','iconon'=>'check','iconoff'=>'times-circle'),array('value'=>'1')); ?>
     
     <hr />
+    
     <?php widget('checklist',array('name'=>'demo_list_1[]'),array('options'=>options(array(
         '1' => 'Option 1',
         '2' => 'Option 2',
@@ -482,7 +499,21 @@ function options( $options, $key=null, $val=null )
         '3' => 'Option 3 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option'
     ),-1), 'value'=>3)); ?>
     
+    <hr />
+    
+    <?php widget('checkbox-image',array('image'=>'./luxury.jpg','name'=>'demo_image_1','style'=>'width:152px;height:152px'),array()); ?>
+    <?php widget('radio-image',array('image'=>'./luxury.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px'),array()); ?>
+    <?php widget('radio-image',array('image'=>'./comfort.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px','checked'=>1),array()); ?>
+    
     </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Uploads</legend>
+    <?php widget('file',array(),array('value'=>'')); ?>
+    <?php widget('dnd-upload',array('preview'=>1),array()); ?>
+    </fieldset>
+    
     
     <hr />
     
@@ -547,13 +578,14 @@ function options( $options, $key=null, $val=null )
     </fieldset>
     
     <?php
-    //$importer->enqueue('scripts','-external-google-maps-api');
-    $importer->enqueue('styles','responsive.css');
-    $importer->enqueue('styles','fontawesome.css');
-    $importer->enqueue('scripts','jquery');
-    $importer->enqueue('scripts','tooltipster');
-    echo $importer->assets('styles');
-    echo $importer->assets('scripts');
+    //enqueue('scripts','-external-google-maps-api');
+    enqueue('styles','normalize.css');
+    enqueue('styles','responsive.css');
+    enqueue('styles','fontawesome.css');
+    enqueue('scripts','jquery');
+    enqueue('scripts','tooltipster');
+    styles( );
+    scripts( );
     ?>
 </body>
 </html>
