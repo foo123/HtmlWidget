@@ -510,8 +510,8 @@ function scripts( )
     <hr />
     
     <fieldset><legend>Uploads</legend>
-    <?php widget('file',array(),array('value'=>'')); ?>
-    <?php widget('dnd-upload',array('preview'=>1),array()); ?>
+    <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
+    <?php widget('dnd-upload',array('title'=>'Upload your file here')); ?>
     </fieldset>
     
     

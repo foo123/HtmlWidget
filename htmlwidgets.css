@@ -82,6 +82,7 @@ input.w-checkbox + label
     -ms-transform: translate(-50%,-50%);
     -o-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
+    font-size: 2em;
 }
 .w-dnd-upload:not(.__empty__)  > .w-dnd-upload-upload
 {
@@ -3562,20 +3563,20 @@ input.w-checkbox + label:hover
 {
     border: 4px solid #efefef;
 }
-.w-widget.w-dnd-upload:not(.__empty__),
-.w-dnd-upload:not(.__empty__)
-{
-    background-color: rgba(0,0,0,0.6);
-}
 .w-widget.w-dnd-upload:hover,
 .w-dnd-upload:hover
 {
     border-color: #999;
 }
+.w-widget.w-dnd-upload:not(.__empty__),
+.w-dnd-upload:not(.__empty__)
+{
+    background-color: #1190d1;
+}
 .w-widget.w-dnd-upload.__dragover__,
 .w-dnd-upload.__dragover__
 {
-    border-color: #1190d1;
+    border-color: #1190d1 !important;
 }
 .w-widget.w-dnd-upload.__dragover__ > .w-button,
 .w-dnd-upload.__dragover__ > .w-button

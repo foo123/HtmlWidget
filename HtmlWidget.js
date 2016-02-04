@@ -512,16 +512,15 @@ var HtmlWidget = self = {
     }
     
     ,w_icon: function( attr, data ) {
-        var wclass, wstyle, wextra, wdata, wtitle;
+        var wclass, wstyle, wextra, wtitle;
         wclass = 'fa'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         if ( !empty(attr,'icon') ) wclass += ' fa-'+attr['icon'];
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-        wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wdata = self.data(attr);
+        wextra = self.attributes(attr,['data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<i class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+' '+wdata+'></i>';
+        return '<i class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+'></i>';
     }
     
     ,w_label: function( attr, data ) {
@@ -848,7 +847,7 @@ var HtmlWidget = self = {
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wextra = self.attributes(attr,['multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wselected = isset(data,'selected') ? data['selected'] : [];
         if ( !(wselected instanceof Array) ) wselected = [wselected];
         woptions = ''; 
@@ -1221,21 +1220,22 @@ var HtmlWidget = self = {
             wicon += "<span class=\"fa-wrapper right-fa\"><i class=\"fa fa-" + attr['iconr'] + "\"></i></span>";
             wrapper_class += ' w-icon-right';
         }
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wextra = self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
         return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
     }
     
     ,w_dnd_upload: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wname,
+        var wid, wclass, wstyle, wextra, wname, wtitle,
             msg_upload, msg_delete, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
+        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wclass = 'w-widget w-dnd-upload';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
-        wextra = self.attributes(attr,['accept','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wextra = self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
         msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
         wopts = "";
@@ -1245,7 +1245,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'w-dnd-upload-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
         }
         self.enqueue('scripts', 'htmlwidgets');
-        return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" data-alternative-value="files_dropped" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
+        return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" data-alt-value="files_dropped" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
     
     ,w_upload: function( attr, data ) {
@@ -1256,7 +1256,7 @@ var HtmlWidget = self = {
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
         wclass = 'w-widget w-upload'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wextra = self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wupload_base = !empty(attr,"upload-base") ? attr["upload-base"] : '';
         msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
         msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
@@ -1304,8 +1304,11 @@ var HtmlWidget = self = {
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wclass = 'w-widget w-table'; 
-        /*if ( !isset(attr,'stripped') || attr['stripped'] ) wclass += ' stripped';
-        if ( !isset(attr,'responsive') || attr['responsive'] ) wclass += ' responsive';*/
+        /*
+        if ( !empty(attr,'stripped') ) wclass += ' stripped';
+        if ( !empty(attr,'bordered') ) wclass += ' bordered';
+        if ( !empty(attr,'responsive') ) wclass += ' responsive';
+        */
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         var plus_footer = !empty(attr['footer']);
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 

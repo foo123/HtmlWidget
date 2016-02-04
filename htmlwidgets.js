@@ -607,7 +607,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         var control = $(el),
             preview_size = (el[HAS_ATTR]('data-dnd-upload-preview')
                 ? int(el[ATTR]('data-dnd-upload-preview'))
-                : int(options.preview || 120)) || 120;
+                : int(options.preview || 140)) || 140;
         
         control.addClass('__empty__');
         
@@ -620,51 +620,56 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
             return false;
         })
         .on('change.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
-            var input = evt.target,
-                file_reader, $preview,
-                file = input.files_dropped && input.files_dropped.length ? input.files_dropped[0] : (input.files && input.files.length ? input.files[0] : null)
+            var input = evt.target, i, l, text,
+                files = input.files_dropped && input.files_dropped.length ? input.files_dropped : (input.files && input.files.length ? input.files : null)
             ;
-            if ( !file )
+            if ( !files || !files.length )
             {
                 control.addClass('__empty__').find('.w-dnd-upload-preview').remove( );
             }
             else
             {
                 control.removeClass('__empty__').find('.w-dnd-upload-preview').remove( );
-                if ( file.type.match( 'image' ) )
+                
+                for (i=0,l=files.length; i<l; i++)
                 {
-                    file_reader = new FileReader( );
-                    file_reader.addEventListener("load", function( evt ){
-                        var base64_data = evt.target.result;
-                        var img = new Image( );
-                        img.addEventListener("load", function( ) {
-                            // add a small delay
-                            setTimeout(function( ){
-                                var w = img.width, h = img.height,
-                                    tw, th, canvas, ctx, img_thumb, text = file.name+' ('+file.type+')';
-                                if ( w <= preview_size )
-                                {
-                                    th = preview_size; tw = Math.round(preview_size*w/h);
-                                }
-                                else
-                                {
-                                    tw = preview_size; th = Math.round(preview_size*h/w);
-                                }
-                                canvas = document.createElement('canvas'); ctx = canvas.getContext('2d');
-                                canvas.width = tw; canvas.height = th;
-                                ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
-                                img_thumb = canvas.toDataURL("image/png");
-                                control.prepend('<img src="'+img_thumb+'" data-src-full="'+base64_data+'" class="w-dnd-upload-preview" onclick="window.open(this.getAttribute(\'data-src-full\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();" alt="'+text+'" title="'+text+'" />');
-                            }, 10);
+                    if ( files[i].type.match( 'image' ) )
+                    {
+                        (function( file ){
+                        var file_reader = new FileReader( );
+                        file_reader.addEventListener("load", function( evt ){
+                            var base64_data = evt.target.result;
+                            var img = new Image( );
+                            img.addEventListener("load", function( ) {
+                                // add a small delay
+                                setTimeout(function( ){
+                                    var w = img.width, h = img.height,
+                                        tw, th, canvas, ctx, img_thumb, text = file.name+' ('+file.type+')';
+                                    if ( w <= preview_size )
+                                    {
+                                        th = preview_size; tw = Math.round(preview_size*w/h);
+                                    }
+                                    else
+                                    {
+                                        tw = preview_size; th = Math.round(preview_size*h/w);
+                                    }
+                                    canvas = document.createElement('canvas'); ctx = canvas.getContext('2d');
+                                    canvas.width = tw; canvas.height = th;
+                                    ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
+                                    img_thumb = canvas.toDataURL("image/png");
+                                    control.prepend('<img src="'+img_thumb+'" data-src-full="'+base64_data+'" class="w-dnd-upload-preview" onclick="window.open(this.getAttribute(\'data-src-full\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();" alt="'+text+'" title="'+text+'" />');
+                                }, 10);
+                            });
+                            img.src = base64_data;
                         });
-                        img.src = base64_data;
-                    });
-                    file_reader.readAsDataURL( file );
-                }
-                else
-                {
-                    var text = file.name+' ('+file.type+')';
-                    control.prepend('<span class="w-dnd-upload-preview" title="'+text+'">'+text+'</span>');
+                        file_reader.readAsDataURL( file );
+                        })( files[ i ] );
+                    }
+                    else
+                    {
+                        text = files[i].name+' ('+files[i].type+')';
+                        control.prepend('<span class="w-dnd-upload-preview" title="'+text+'">'+text+'</span>');
+                    }
                 }
             }
         })
