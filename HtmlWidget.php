@@ -573,7 +573,7 @@ class HtmlWidget
     public static function w_control_list( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
-        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wname = !empty($attr["name"]) ? $attr["name"] : null;
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? (' '.$attr["extra"]) : '';
@@ -724,8 +724,8 @@ class HtmlWidget
         $wclass = 'w-rating'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wicon = !empty($attr["icon"]) ? $attr["icon"] : 'star';
-        $w_item_atts = self::attributes($attr,array('readonly','disabled'));
-        $wextra = self::attributes($attr,array('data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $w_item_atts = self::attributes($attr,array('readonly','disabled','data'));
+        $wextra = !empty($attr["extra"]) ? (' '.$attr["extra"]) : '';
         $wratings = !empty($data["ratings"]) ? (array)$data["ratings"] : self::options(array('1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),-1);
         $widget = "<fieldset id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra>";
         if ( !empty($wtext) ) $widget .= "<legend $wtitle>$wtext</legend>";

@@ -655,7 +655,7 @@ var HtmlWidget = self = {
         var wid, wname, wclass, wstyle, wextra, wvalue, woptions,
             w_item_atts, w_item_class, w_large, w_xlarge, i, l, opt, widget;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
-        wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
+        wname = !empty(attr,"name") ? attr["name"] : null;
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
         wvalue = isset(data,"value") ? data["value"] : "1"; 
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
@@ -811,8 +811,8 @@ var HtmlWidget = self = {
         wclass = 'w-rating'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wicon = !empty(attr,"icon") ? attr["icon"] : 'star';
-        w_item_atts = self.attributes(attr,['readonly','disabled']);
-        wextra = self.attributes(attr,['data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        w_item_atts = self.attributes(attr,['readonly','disabled','data']);
+        wextra = !empty(attr,"extra") ? (' '+attr["extra"]) : '';
         wratings = !empty(data,"ratings") && (data["ratings"] instanceof Array) ? data["ratings"] : self.options({'1':'1','2':'2','3':'3','4':'4','5':'5'},-1);
         widget = "<fieldset id=\""+wid+"\" "+wtitle+" class=\""+wclass+"\" "+wstyle+" "+wextra+">";
         if ( !!wtext ) widget += "<legend "+wtitle+">"+wtext+"</legend>";
