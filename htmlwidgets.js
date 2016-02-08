@@ -89,6 +89,64 @@ function dispose_style( document, style )
     if ( style ) document.head.removeChild( style );
 }
 
+function datauri2blob( dataUri, mimeType )
+{
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString, arrayBuffer, dataType, i, i0, n, j, p;
+    if ( 'data:' === dataUri.substr( 0, 5 ) )
+    {
+        if ( -1 < (p=dataUri.indexOf(';base64,')) )
+        {
+            // separate out the mime component
+            dataType = dataUri.slice( 5, p );
+            dataUri = dataUri.slice( p+8 );
+            byteString = base64_decode( dataUri );
+        }
+        else
+        {
+            // separate out the mime component
+            dataType = dataUri.slice( 5, p=dataUri.indexOf(',') );
+            dataUri = dataUri.slice( p+1 );
+            byteString = unescape( dataUri );
+        }
+        if ( null == mimeType ) mimeType = dataType;
+    }
+    else
+    {
+        byteString = dataUri;
+    }
+
+    // write the bytes of the string to a typed array
+    n = byteString.length;
+    arrayBuffer = new Uint8Array( n );
+    i0 = n & 15;
+    for (i=0; i<i0; i++)
+    {
+        arrayBuffer[ i ] = byteString.charCodeAt( i ) & 0xFF;
+    }
+    for (i=i0; i<n; i+=16)
+    {
+        // loop unrolling, ~ 16 x faster
+        j = i;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+        arrayBuffer[ j ] = byteString.charCodeAt( j++ ) & 0xFF;
+    }
+    return new Blob( [arrayBuffer], {type:mimeType} );
+}
 
 /*if ( 'undefined' !== typeof HtmlWidget )
 {
@@ -605,18 +663,38 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
     };
     self.init = function( ) {
         var control = $(el),
-            preview_size = (el[HAS_ATTR]('data-dnd-upload-preview')
-                ? int(el[ATTR]('data-dnd-upload-preview'))
+            $file = control.find('input._w-dnd-uploader[type=file]'),
+            show_preview = control.hasClass('__with_preview__'),
+            upload_thumbnail = control.hasClass('__with_thumbnail__'),
+            filesize = ($file[0][HAS_ATTR]('data-dnd-upload-filesize')
+                ? int($file[0][ATTR]('data-dnd-upload-filesize'))
+                : int(options.filesize||1048576)) || 1048576,
+            mimetype = $file[0][HAS_ATTR]('data-dnd-upload-mimetype')
+                ? $file[0][ATTR]('data-dnd-upload-mimetype')
+                : (options.mimetype || null),
+            preview_size = ($file[0][HAS_ATTR]('data-dnd-upload-preview')
+                ? int($file[0][ATTR]('data-dnd-upload-preview'))
                 : int(options.preview || 140)) || 140;
         
-        control.addClass('__empty__');
-        
-        control
-        .on('click.dnd_uploadable', '.w-dnd-upload-delete', function( evt ){
+        var do_reset = function( and_trigger ) {
             var $file = control.find('input._w-dnd-uploader[type=file]');
             $file[0].files_dropped = null;
             $file.resetElement( );
-            $file.triggerNative('change');
+            if ( false !== and_trigger ) $file.triggerNative('change');
+        };
+        
+        if ( !!mimetype && ('string' === typeof mimetype) )
+        {
+            mimetype = new RegExp( ".?(" + mimetype.replace( /\s/g, "" ).replace( /[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&" ).replace( /,/g, '|' ).split( '\/*' ).join( '/.*' ) + ")$", "i" );
+        }
+        else
+        {
+            mimetype = null;
+        }
+        control.addClass('__empty__');
+        control
+        .on('click.dnd_uploadable', '.w-dnd-upload-delete', function( evt ){
+            do_reset( );
             return false;
         })
         .on('change.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
@@ -625,17 +703,25 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
             ;
             if ( !files || !files.length )
             {
-                control.addClass('__empty__').find('.w-dnd-upload-preview').remove( );
+                control.addClass('__empty__').find('.w-dnd-upload-preview,.w-dnd-upload-thumbnail').remove( );
             }
             else
             {
-                control.removeClass('__empty__').find('.w-dnd-upload-preview').remove( );
+                control.removeClass('__empty__').find('.w-dnd-upload-preview,.w-dnd-upload-thumbnail').remove( );
+                for (i=0,l=files.length; i<l; i++)
+                {
+                    if ( ((filesize > 0) && (files[i].size > filesize)) || (mimetype && !mimetype.test( files[i].type )) )
+                    {
+                        setTimeout(do_reset, 10);
+                        return;
+                    }
+                }
                 
                 for (i=0,l=files.length; i<l; i++)
                 {
-                    if ( files[i].type.match( 'image' ) )
+                    if ( (show_preview||upload_thumbnail) && files[i].type.match( 'image' ) )
                     {
-                        (function( file ){
+                        (function( file, index ){
                         var file_reader = new FileReader( );
                         file_reader.addEventListener("load", function( evt ){
                             var base64_data = evt.target.result;
@@ -644,7 +730,8 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
                                 // add a small delay
                                 setTimeout(function( ){
                                     var w = img.width, h = img.height,
-                                        tw, th, canvas, ctx, img_thumb, text = file.name+' ('+file.type+')';
+                                        tw, th, canvas, ctx, img_thumb, input_thumb,
+                                        text = file.name+' ('+file.type+')';
                                     if ( w <= preview_size )
                                     {
                                         th = preview_size; tw = Math.round(preview_size*w/h);
@@ -657,13 +744,35 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
                                     canvas.width = tw; canvas.height = th;
                                     ctx.drawImage(img, 0, 0, w, h, 0, 0, tw, th);
                                     img_thumb = canvas.toDataURL("image/png");
-                                    control.prepend('<img src="'+img_thumb+'" data-src-full="'+base64_data+'" class="w-dnd-upload-preview" onclick="window.open(this.getAttribute(\'data-src-full\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();" alt="'+text+'" title="'+text+'" />');
+                                    if ( show_preview )
+                                    {
+                                        control.prepend('<img src="'+img_thumb+'" data-src-full="'+base64_data+'" class="w-dnd-upload-preview" onclick="window.open(this.getAttribute(\'data-src-full\'),\'preview\',\'scrollbars=yes,resizable=yes,width=600,height=400\').focus();" alt="'+text+'" title="'+text+'" />');
+                                    }
+                                    if ( upload_thumbnail )
+                                    {
+                                        input_thumb = '<input type="file" data-alt-value="blob_attached" class="w-dnd-upload-thumbnail" style="display:none !important;"';
+                                        if ( !!input.name )
+                                        {
+                                            var m = input.name.match( /(.*?)(\[([^\[\]]+)\])?(\[\s*\])?$/ );
+                                            if ( !!m[2] )
+                                            {
+                                                input_thumb += ' name="'+(m[1]+'['+m[3]+'_thumbnail]'+(!!m[4]?('['+index+']'):''))+'"';
+                                            }
+                                            else
+                                            {
+                                                input_thumb += ' name="'+(m[1]+'_thumbnail'+(!!m[4]?('['+index+']'):''))+'"';
+                                            }
+                                        }
+                                        input_thumb += ' />';
+                                        control.append( input_thumb = $(input_thumb) );
+                                        input_thumb[0].blob_attached = [datauri2blob( img_thumb )];
+                                    }
                                 }, 10);
                             });
                             img.src = base64_data;
                         });
                         file_reader.readAsDataURL( file );
-                        })( files[ i ] );
+                        })( files[ i ], i );
                     }
                     else
                     {

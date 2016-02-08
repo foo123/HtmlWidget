@@ -1,6 +1,14 @@
 <?php
 @ini_set('display_errors', E_ALL);
 
+if ( !empty($_POST) || !empty($_FILES) )
+{
+    echo json_encode(array(
+        '$_POST'        => empty($_POST) ? array() : $_POST,
+        '$_FILES'       => empty($_FILES) ? array() : $_FILES
+    ));
+    exit;
+}
 require('../../Importer/src/php/Importer.php');
 require('../HtmlWidget.php');
 
@@ -151,6 +159,7 @@ function scripts( )
     
     <hr />
     
+    <form method="post" enctype="multipart/form-data">
     <fieldset><legend>Menus</legend>
     
     <div class="w-dropdown-menu"><ul>
@@ -511,7 +520,10 @@ function scripts( )
     
     <fieldset><legend>Uploads</legend>
     <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
-    <?php widget('dnd-upload',array('title'=>'Upload your file here')); ?>
+    <?php widget('dnd-upload',array('name'=>'foo','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
+    <?php widget('dnd-upload',array('name'=>'bar[foo]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
+    <?php widget('dnd-upload',array('name'=>'foo2[]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
+    <?php widget('dnd-upload',array('name'=>'bar2[foo2][]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
     </fieldset>
     
     
@@ -576,6 +588,8 @@ function scripts( )
         This msg indicates a dangerous or potentially negative action. 
     </div>
     </fieldset>
+    <button id="submit_form" type="submit">Submit Test</button>
+    </form>
     
     <?php
     //enqueue('scripts','-external-google-maps-api');
@@ -584,8 +598,27 @@ function scripts( )
     enqueue('styles','fontawesome.css');
     enqueue('scripts','jquery');
     enqueue('scripts','tooltipster');
+    enqueue('scripts','serialiser');
     styles( );
     scripts( );
     ?>
+    <script>
+    jQuery(function($){
+       $('#submit_form').on('click', function( evt ){
+           evt.preventDefault( );
+           evt.stopPropagation( );
+           $.ajax({
+                type: 'POST',
+                method: 'POST',
+                dataType: 'json',
+                url: document.location,
+                data: Serialiser.ModelToFormData(Serialiser.FieldsToModel($('form').find('input,textarea,select'), {})),
+                processData: false,
+                contentType: false
+            });
+           return false;
+       });
+    });
+    </script>
 </body>
 </html>

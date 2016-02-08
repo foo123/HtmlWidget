@@ -1234,8 +1234,12 @@ var HtmlWidget = self = {
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wclass = 'w-widget w-dnd-upload';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        if ( !empty(attr,'show-preview') ) wclass += ' __with_preview__';
+        if ( !empty(attr,'upload-thumbnail') ) wclass += ' __with_thumbnail__';
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
-        wextra = self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wextra = 'data-alt-value="files_dropped"';
+        if ( !empty(attr,"mimetype") ) wextra += ' data-dnd-upload-mimetype="'+attr["mimetype"]+'"';
+        wextra += ' ' + (self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : ''));
         msg_upload = !empty(attr,"msg-upload") ? attr["msg-upload"] : 'Upload';
         msg_delete = !empty(attr,"msg-delete") ? attr["msg-delete"] : 'Delete';
         wopts = "";
@@ -1245,7 +1249,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'w-dnd-upload-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
         }
         self.enqueue('scripts', 'htmlwidgets');
-        return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" data-alt-value="files_dropped" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
+        return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
     
     ,w_upload: function( attr, data ) {
