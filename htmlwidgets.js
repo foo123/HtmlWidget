@@ -664,8 +664,8 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
     self.init = function( ) {
         var control = $(el),
             $file = control.find('input._w-dnd-uploader[type=file]'),
-            show_preview = control.hasClass('__with_preview__'),
             upload_thumbnail = control.hasClass('__with_thumbnail__'),
+            show_preview = upload_thumbnail || control.hasClass('__with_preview__'),
             filesize = ($file[0][HAS_ATTR]('data-dnd-upload-filesize')
                 ? int($file[0][ATTR]('data-dnd-upload-filesize'))
                 : int(options.filesize||1048576)) || 1048576,
