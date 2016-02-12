@@ -4,9 +4,10 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.4
+*  @version: 0.8.5
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
+*  https://github.com/foo123/responsive.css
 *  https://github.com/foo123/jquery-ui-widgets
 *  https://github.com/foo123/modelview-widgets
 *  https://github.com/foo123/SelectorListener
@@ -16,16 +17,10 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.4";
+    const VERSION = "0.8.5";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
-    
-    /*private static function htmlwidget_( $type, $id, $options=null )
-    {
-        $options = !empty($options) ? json_encode($options) : 'null';
-        return 'jQuery(function($){$("#'.$id.'").htmlwidget("'.$type.'"'.','.$options.');});';
-    }*/
     
     private static function htmlwidget_init( $id, $args, $fn, $root='window' )
     {
@@ -1146,7 +1141,7 @@ class HtmlWidget
         return "<div $winit $wopts $wtitle id=\"{$wid}_wrapper\" class=\"$wclass\" $wstyle><input id=\"$wid\" $wname type=\"file\" class=\"_w-dnd-uploader\" value=\"\" style=\"display:none !important;\" $wextra><label for=\"$wid\" class=\"w-widget w-button w-dnd-upload-upload\" title=\"{$msg_upload}\"><i class=\"fa fa-upload fa-2x\"></i></label><button type=\"button\" class=\"w-widget w-button w-dnd-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times fa-2x\"></i></button></div>";
     }
     
-    public static function w_upload( $attr, $data )
+    /*public static function w_upload( $attr, $data )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
@@ -1193,7 +1188,7 @@ class HtmlWidget
             self::enqueue('scripts', 'htmlwidgets');
             return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle data-upload-base=\"$wupload_base\" $wextra><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$upload_data</textarea><label class=\"w-widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"w-widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
-    }
+    }*/
     
     public static function w_table( $attr, $data )
     {

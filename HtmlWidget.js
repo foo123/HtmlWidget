@@ -3,9 +3,10 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.4
+*  @version: 0.8.5
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
+*  https://github.com/foo123/responsive.css
 *  https://github.com/foo123/jquery-ui-widgets
 *  https://github.com/foo123/modelview-widgets
 *  https://github.com/foo123/SelectorListener
@@ -57,20 +58,9 @@ function merge( a, b )
     return c;
 }
 
-/*function htmlwidget_( type, id, options )
-{
-    options = !!options ? json_encode(options) : 'null';
-    return 'jQuery(function($){$("#'+id+'").htmlwidget("'+type+'"'+','+options+');});';
-}*/
-
-/*function htmlwidget_init( id, args, fn, root )
-{
-    return (root||'window')+'["'+id+'"]=function('+args+'){var $=jQuery;'+"\n"+'('+fn+')('+args+');};';
-}*/
-
 var HtmlWidget = self = {
     
-    VERSION: "0.8.4"
+    VERSION: "0.8.5"
     
     ,BASE: './'
     
@@ -1252,7 +1242,7 @@ var HtmlWidget = self = {
         return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
     
-    ,w_upload: function( attr, data ) {
+    /*,w_upload: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wupload_base, wvalue, wname,
             msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
@@ -1300,7 +1290,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'htmlwidgets');
             return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' data-upload-base="'+wupload_base+'" '+wextra+'><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+upload_data+'</textarea><label class="w-widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="w-widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
         }
-    }
+    }*/
     
     ,w_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wcolumns, wrows, wheader, wfooter,

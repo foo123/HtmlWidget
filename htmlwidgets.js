@@ -3,9 +3,10 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.4
+*  @version: 0.8.5
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
+*  https://github.com/foo123/responsive.css
 *  https://github.com/foo123/jquery-ui-widgets
 *  https://github.com/foo123/modelview-widgets
 *  https://github.com/foo123/SelectorListener
@@ -24,7 +25,7 @@ else root[name] = factory( );
 // dont re-add it, abort
 if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.4', widget: {}, locale: {}, _handle: {}},
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.5', widget: {}, locale: {}, _handle: {}},
     
     HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
@@ -269,7 +270,7 @@ htmlwidget.resetFormElements = function ( els ) {
       i = 0;
       $(els).each(function( ){
           var id = '__ele_reset_proxy__'+(++i)+'';
-          $( this ).replaceWith( '<span id="'+id+'"></span>' );
+          $( this ).blur( ).replaceWith( '<span id="'+id+'"></span>' );
           $form.append( this );
       });
       
@@ -695,12 +696,18 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         control
         .on('click.dnd_uploadable', '.w-dnd-upload-delete', function( evt ){
             do_reset( );
+            setTimeout(function( ){
+                control.find('.w-dnd-upload-upload,.w-dnd-upload-delete').blur( );
+            }, 40);
             return false;
         })
         .on('change.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
             var input = evt.target, i, l, text,
                 files = input.files_dropped && input.files_dropped.length ? input.files_dropped : (input.files && input.files.length ? input.files : null)
             ;
+            setTimeout(function( ){
+                control.find('.w-dnd-upload-upload,.w-dnd-upload-delete').blur( );
+            }, 40);
             if ( !files || !files.length )
             {
                 control.addClass('__empty__').find('.w-dnd-upload-preview,.w-dnd-upload-thumbnail').remove( );
@@ -812,7 +819,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         }
     };
 });
-widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
+/*widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
     var self = this;
     if ( !(self instanceof uploadable) ) return new uploadable(el, options);
     
@@ -826,9 +833,9 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
         
             fileSizeMax = (el[HAS_ATTR]('data-upload-size')
                 ? int(el[ATTR]('data-upload-size'))
-                : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB*/,
+                : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB* /,
                 
-            fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')*/,
+            fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')* /,
             
             fileDimensions = el[HAS_ATTR]('data-upload-dimensions')
                 ? el[ATTR]('data-upload-dimensions').split('x').map(int)
@@ -946,7 +953,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
         })
         ;
     };
-});
+});*/
 widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicker( el, options ){
     var self = this;
     if ( !(self instanceof datetimepicker) ) return new datetimepicker(el, options);
@@ -1796,7 +1803,7 @@ htmlwidget.init = function( node, current, deep ) {
     {
         $node.find('input[type=range].w-rangeslider').htmlwidget('range');
         $node.find('.w-dnd-upload').htmlwidget('dnd-upload');
-        $node.find('.w-upload').htmlwidget('upload');
+        //$node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
         $node.find('.w-date').htmlwidget('datetimepicker');
@@ -1811,7 +1818,7 @@ htmlwidget.init = function( node, current, deep ) {
     {
         if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
         else if ( $node.hasClass('w-dnd-upload') ) $node.htmlwidget('dnd-upload');
-        else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
+        //else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
         else if ( $node.hasClass('w-date') ) $node.htmlwidget('datetimepicker');

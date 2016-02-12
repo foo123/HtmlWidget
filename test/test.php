@@ -71,12 +71,10 @@ function scripts( )
         position: relative;
         transition: all 0.5s;
     }
-
     #forkongithub a:hover {
         background: #aa0000;
         color: #fff;
     }
-
     #forkongithub a::before, #forkongithub a::after {
         content: "";
         width: 100%;
@@ -88,7 +86,6 @@ function scripts( )
         height: 1px;
         background: #fff;
     }
-
     #forkongithub a::after
     {
         bottom: 1px;
@@ -151,11 +148,11 @@ function scripts( )
     }
     }
     </style>
-    <title>HtmlWidgets Test page</title>
+    <title>HtmlWidgets Test page (v.<?php echo HtmlWidget::VERSION; ?>)</title>
 </head>
 <body class="fluid col-1-1" style="padding:10px 20px">
     <span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Find me on GitHub</a></span>
-    <h1>HtmlWidgets Test page</h1>
+    <h1>HtmlWidgets Test page (v.<?php echo HtmlWidget::VERSION; ?>)</h1>
     
     <hr />
     
@@ -566,6 +563,17 @@ function scripts( )
     <div class="w-bubble w-bubble2-down">Bubble Down</div>
     <div class="w-bubble w-bubble2-left">Bubble Left</div>
     <div class="w-bubble w-bubble2-right">Bubble Right</div>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Tags</legend>
+    <span class="w-tag w-orange">Tag 1</span>
+    <span class="w-tag w-large w-green">Tag 2</span>
+    <span class="w-tag w-xlarge w-red w-tag2">Tag 3</span>
+    <span class="w-tag w-primary w-tag2">Tag 4</span>
+    <span class="w-tag w-blue w-tag3">Tag 5</span>
+    <span class="w-tag w-green w-large w-tag3">Tag 6</span>
     </fieldset>
     
     <hr />

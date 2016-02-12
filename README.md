@@ -6,6 +6,7 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 **related projects:**
 
 *  [components.css](https://github.com/foo123/components.css)
+*  [responsive.css](https://github.com/foo123/responsive.css)
 *  [jquery-ui-widgets](https://github.com/foo123/jquery-ui-widgets)
 *  [modelview-widgets](https://github.com/foo123/modelview-widgets)
 *  [SelectorListener](https://github.com/foo123/SelectorListener)
@@ -23,9 +24,9 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 
 
 1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-list, radio-list, selectbox, multi-selectbox, textbox, textarea, file, range/slider, rating
-2. buttons, labels, links, icons, tooltips, speech bubbles, spinners
+2. buttons, labels, links, icons, tooltips, tags, speech bubbles, spinners
 3. table, accordeon, tab, page, collapsable panel, modal, dialog, hierarchical responsive horizontal menus, hierarchical responsive vertical menus
-4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable
+4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable (dnd)
 5. mvc/mvvm widget, area-select, autocompleter, date/time picker, color picker, location/address picker, timer, wysiwyg editor, syntax  editor, advanced selectbox, dataTable, google map, multi-faceted advanced search (TODO)
 
 

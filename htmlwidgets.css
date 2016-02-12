@@ -3,9 +3,10 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.8.4
+*  @version: 0.8.5
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
+*  https://github.com/foo123/responsive.css
 *  https://github.com/foo123/jquery-ui-widgets
 *  https://github.com/foo123/modelview-widgets
 *
@@ -113,6 +114,97 @@ input.w-checkbox + label
 .w-upload > img.w-upload-thumbnail[src=''] ~ .w-upload-delete
 {
     display: none;
+}
+
+.w-tag
+{
+    position: relative; display: inline-block;
+    cursor: pointer; vertical-align: middle;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-top-left-radius: 5px;
+    border-top-left-radius: 5px;
+    text-decoration: none;
+    background: #777;
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.w-tag:before
+{
+    position: absolute;
+    content: "";
+    right: 1px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 5px; height: 5px;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    background: #fff;
+    -moz-box-shadow: -1px -1px 2px rgba(0,0,0,0.4);
+    -webkit-box-shadow: -1px -1px 2px rgba(0,0,0,0.4);
+    box-shadow: -1px -1px 2px rgba(0,0,0,0.4);
+}
+.w-tag:after
+{
+    position: absolute;
+    content: "";
+    right: -12px;top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 0;  height: 0;
+    border-color: transparent transparent transparent #777;
+    border-style: solid;
+    border-width: 12px 0 12px 12px;
+}
+.w-tag.w-tag2
+{
+    -moz-border-radius-bottomleft: 0;
+    -webkit-border-bottom-left-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-radius-topleft: 0;
+    -webkit-border-top-left-radius: 0;
+    border-top-left-radius: 0;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -moz-border-radius-topright: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.w-tag.w-tag2:before
+{
+    left: 1px; right: auto;
+}
+.w-tag.w-tag2:after
+{
+    left: -12px; right: auto;
+    border-color: transparent #777 transparent transparent;
+    border-width: 12px 12px 12px 0;
+}
+.w-tag.w-tag3
+{
+    -webkit-border-radius: 5px 5px 5px 5px !important;
+    -moz-border-radius: 5px 5px 5px 5px !important;
+    -ms-border-radius: 5px 5px 5px 5px !important;
+    border-radius: 5px 5px 5px 5px !important;
+}
+.w-tag.w-tag3:before,
+.w-tag.w-tag3:after
+{
+    display: none !important;
 }
 
 .w-error-msg
@@ -3282,6 +3374,67 @@ input.w-checkbox + label.w-xlarge
     border-width: 3px;
 }
 */
+.w-tag
+{
+    height: 24px; line-height: 23px;
+    margin: 0 12px 8px 0; padding: 0 12px 0 10px;
+    font-size: 0.9em;
+}
+.w-tag.w-tag2
+{
+    margin: 0 0 8px 12px; padding: 0 10px 0 12px;
+}
+.w-tag.w-tag3
+{
+    margin: 0 6px 8px 6px; padding: 0 12px 0 12px;
+}
+.w-tag.w-large
+{
+    font-size: 1.2em;
+    padding: 2px 14px 2px 12px;
+}
+.w-tag.w-large:after
+{
+    right: -14px;
+    border-width: 14px 0 14px 14px;
+}
+.w-tag.w-tag2.w-large
+{
+    padding: 2px 12px 2px 14px;
+}
+.w-tag.w-tag2.w-large:after
+{
+    left: -14px; right: auto;
+    border-width: 14px 14px 14px 0;
+}
+.w-tag.w-tag3.w-large
+{
+    padding: 2px 14px 2px 14px;
+}
+.w-tag.w-xlarge
+{
+    font-size: 1.5em;
+    padding: 6px 16px 6px 12px;
+}
+.w-tag.w-xlarge:after
+{
+    right: -16px;
+    border-width: 16px 0 16px 16px;
+}
+.w-tag.w-tag2.w-xlarge
+{
+    padding: 6px 12px 6px 16px;
+}
+.w-tag.w-tag2.w-xlarge:after
+{
+    left: -16px; right: auto;
+    border-width: 16px 16px 16px 0;
+}
+.w-tag.w-tag3.w-xlarge
+{
+    padding: 6px 16px 6px 16px;
+}
+
 .w-select + .select2-container
 {
     padding: 2px;
@@ -4125,6 +4278,68 @@ table.w-table th
 {
     border-color: #8F5408 #8F5408 transparent transparent;
 }
+
+.w-tag.w-orange
+{
+    background: #f58220;
+}
+.w-tag.w-orange:after
+{
+    border-color: transparent transparent transparent #f58220;
+}
+.w-tag.w-tag2.w-orange:after
+{
+    border-color: transparent #f58220 transparent transparent;
+}
+.w-tag.w-green
+{
+    background: #97c224;
+}
+.w-tag.w-green:after
+{
+    border-color: transparent transparent transparent #97c224;
+}
+.w-tag.w-tag2.w-green:after
+{
+    border-color: transparent #97c224 transparent transparent;
+}
+.w-tag.w-red
+{
+    background: #de3f3e;
+}
+.w-tag.w-red:after
+{
+    border-color: transparent transparent transparent #de3f3e;
+}
+.w-tag.w-tag2.w-red:after
+{
+    border-color: transparent #de3f3e transparent transparent;
+}
+.w-tag.w-blue
+{
+    background: #00a6df;
+}
+.w-tag.w-blue:after
+{
+    border-color: transparent transparent transparent #00a6df;
+}	
+.w-tag.w-tag2.w-blue:after
+{
+    border-color: transparent #00a6df transparent transparent;
+}	
+.w-tag.w-primary
+{
+    background: #ec008c;
+}
+.w-tag.w-primary:after
+{
+    border-color: transparent transparent transparent #ec008c;
+}
+.w-tag.w-tag2.w-primary:after
+{
+    border-color: transparent #ec008c transparent transparent;
+}
+
 .w-msg
 {
     font-family: sans-serif;
