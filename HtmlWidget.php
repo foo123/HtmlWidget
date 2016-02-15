@@ -39,18 +39,19 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='', $full=true, $jquery=false )
+    public static function assets( $base='', $full=true, $jquery=false, $dev=false )
     {
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
         $asset_base = $base . 'assets/';
+        $dev = true === $dev;
         $assets = array(
-         array('styles', 'htmlwidgets.css', $base.'htmlwidgets.css')
+         array('styles', 'htmlwidgets.css', $dev ? $base.'htmlwidgets.dev.css' : $base.'htmlwidgets.css')
         ,array('styles', 'normalize.css', $asset_base.'normalize.css')
         ,array('styles', 'responsive.css', $asset_base.'responsive.css')
         ,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
         ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
-        ,array('scripts', 'htmlwidgets', $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
+        ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         );
         if ( true === $jquery )
         {

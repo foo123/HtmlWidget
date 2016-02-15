@@ -79,17 +79,18 @@ var HtmlWidget = self = {
         }
     }
     
-    ,assets: function( base, full, jquery ) {
+    ,assets: function( base, full, jquery, dev ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
+        dev = true === dev;
         var assets = [
-         ['styles', 'htmlwidgets.css', base+'htmlwidgets.css']
+         ['styles', 'htmlwidgets.css', dev ? base+'htmlwidgets.dev.css' : base+'htmlwidgets.css']
         ,['styles', 'normalize.css', asset_base+'normalize.css']
         ,['styles', 'responsive.css', asset_base+'responsive.css']
         ,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
         ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
-        ,['scripts', 'htmlwidgets', base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
+        ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         ];
         if ( true === jquery )
         {

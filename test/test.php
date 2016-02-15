@@ -16,7 +16,7 @@ global $importer;
 
 $importer = new Importer();
 HtmlWidget::enqueueAssets(array($importer,'enqueue'));
-$importer->register('assets', HtmlWidget::assets('../', true, true));
+$importer->register('assets', HtmlWidget::assets('../', true, true, true));
 
 function widget( $widget, $attr=array(), $data=array() )
 {
