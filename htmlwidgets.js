@@ -265,21 +265,22 @@ htmlwidget.dispatch = function( event, element, data, native ) {
 htmlwidget.resetFormElements = function ( els ) {
   if ( els.length )
   {
-      var $form = $('<form></form>').appendTo('body'), i;
+      var $form = $('<form style="display:none"></form>').appendTo('body'), i;
       
       i = 0;
       $(els).each(function( ){
           var id = '__ele_reset_proxy__'+(++i)+'';
-          $( this ).blur( ).replaceWith( '<span id="'+id+'"></span>' );
+          $( this ).val( '' )/*.blur( )*/.replaceWith( '<span id="'+id+'"></span>' );
           $form.append( this );
       });
       
-      $form[0].reset( );
+      $form.trigger( 'reset' )/*reset()*/;
       
       i = 0;
       $(els).each(function( ){
           var id = '#__ele_reset_proxy__'+(++i)+'';
           $( id ).replaceWith( this );
+          $(this).triggerNative( 'reset' );
       });
       
       $form.remove( );
@@ -700,6 +701,15 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
                 control.find('.w-dnd-upload-upload,.w-dnd-upload-delete').blur( );
             }, 40);
             return false;
+        })
+        .on('reset.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
+            var input = evt.target;
+            input.files_dropped = null;
+            control.addClass('__empty__').find('.w-dnd-upload-preview,.w-dnd-upload-thumbnail').remove( );
+            setTimeout(function( ){
+                control.find('.w-dnd-upload-upload,.w-dnd-upload-delete').blur( );
+                $(input).triggerNative('change');
+            }, 40);
         })
         .on('change.dnd_uploadable', 'input._w-dnd-uploader[type=file]', function( evt ){
             var input = evt.target, i, l, text,

@@ -133,6 +133,8 @@ input.w-checkbox + label
     font-weight: bold;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .w-tag:before
 {
@@ -205,6 +207,27 @@ input.w-checkbox + label
 .w-tag.w-tag3:after
 {
     display: none !important;
+}
+.w-tag i.fa
+{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 4px;
+}
+.w-tag > button,
+.w-tag > label,
+.w-tag > a
+{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    text-decoration: none;
+    font-size: inherit;
+    color: inherit;
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .w-error-msg
@@ -1652,7 +1675,7 @@ select.w-select option.w-option-placeholder,
     vertical-align: middle;
     margin-right: 8px;
 }
-@media all and (max-width : 768px){
+@media all and (max-width : 780px){
 
 .w-vertical-menu.w-mobile,
 .w-vertical-menu.w-mobile > ul,
