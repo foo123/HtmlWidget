@@ -127,7 +127,7 @@ input.w-checkbox + label
     -webkit-border-top-left-radius: 5px;
     border-top-left-radius: 5px;
     text-decoration: none;
-    background: #777;
+    background-color: #777;
     color: #fff;
     font-size: 1em;
     font-weight: bold;
@@ -228,6 +228,77 @@ input.w-checkbox + label
     max-width: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+.w-tag  select
+{
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-size: inherit !important;
+    color: inherit;
+    min-width: 8em;
+    max-width: 100%;
+    border: none;
+    background-color: inherit;
+    padding: 0;
+    padding-right: 5px;
+    margin: 0 1px;
+    overflow: hidden;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    text-indent: 0.01px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+.w-tag  select::-ms-expand
+{
+    display: none !important; /* IE10+ */
+}
+.w-tag  select,
+.w-tag  select:hover,
+.w-tag  select:focus,
+.w-tag  select:active
+{
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+.w-tag  select option
+{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 0.9em !important;
+    font-weight: bold;
+    color: inherit;
+    background-color: inherit;
+    /*background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.1)), color-stop(100%,rgba(255,255,255,0.1)));
+	background-image: -webkit-linear-gradient(top,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);
+	background-image: -moz-linear-gradient(top,  rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%);
+	background-image: -ms-linear-gradient(top,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);
+	background-image: -o-linear-gradient(top,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);
+	background-image: linear-gradient(to bottom,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);*/
+}
+.w-tag.w-tag3  select option
+{
+    padding: 6px 2px;
+}
+.w-tag  select,
+.w-tag  select option
+{
+    background-color: #777;
+    color: #fff !important;
 }
 
 .w-error-msg
@@ -3409,6 +3480,7 @@ input.w-checkbox + label.w-xlarge
 }
 .w-tag.w-tag3
 {
+    height: auto; line-height: auto;
     margin: 0 6px 8px 6px; padding: 0 12px 0 12px;
 }
 .w-tag.w-large
@@ -4302,9 +4374,11 @@ table.w-table th
     border-color: #8F5408 #8F5408 transparent transparent;
 }
 
+.w-tag.w-orange  select,
+.w-tag.w-orange  select option,
 .w-tag.w-orange
 {
-    background: #f58220;
+    background-color: #f58220;
 }
 .w-tag.w-orange:after
 {
@@ -4314,9 +4388,11 @@ table.w-table th
 {
     border-color: transparent #f58220 transparent transparent;
 }
+.w-tag.w-green  select,
+.w-tag.w-green  select option,
 .w-tag.w-green
 {
-    background: #97c224;
+    background-color: #97c224;
 }
 .w-tag.w-green:after
 {
@@ -4326,9 +4402,11 @@ table.w-table th
 {
     border-color: transparent #97c224 transparent transparent;
 }
+.w-tag.w-red  select,
+.w-tag.w-red  select option,
 .w-tag.w-red
 {
-    background: #de3f3e;
+    background-color: #de3f3e;
 }
 .w-tag.w-red:after
 {
@@ -4338,9 +4416,11 @@ table.w-table th
 {
     border-color: transparent #de3f3e transparent transparent;
 }
+.w-tag.w-blue  select,
+.w-tag.w-blue  select option,
 .w-tag.w-blue
 {
-    background: #00a6df;
+    background-color: #00a6df;
 }
 .w-tag.w-blue:after
 {
@@ -4350,9 +4430,11 @@ table.w-table th
 {
     border-color: transparent #00a6df transparent transparent;
 }	
+.w-tag.w-primary  select,
+.w-tag.w-primary  select option,
 .w-tag.w-primary
 {
-    background: #ec008c;
+    background-color: #ec008c;
 }
 .w-tag.w-primary:after
 {

@@ -14,9 +14,9 @@ require('../HtmlWidget.php');
 
 global $importer;
 
-$importer = new Importer();
-HtmlWidget::enqueueAssets(array($importer,'enqueue'));
-$importer->register('assets', HtmlWidget::assets('../', true, true, true));
+$importer = new Importer( );
+$importer->register( 'assets', HtmlWidget::assets( '../', true, true, true ) );
+HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
 function widget( $widget, $attr=array(), $data=array() )
 {
@@ -26,7 +26,7 @@ function options( $options, $key=null, $val=null )
 {
     return HtmlWidget::options( $options, $key, $val );
 }
-function enqueue($type, $asset)
+function enqueue( $type, $asset )
 {
     global $importer;
     $importer->enqueue( $type, $asset );
@@ -34,12 +34,12 @@ function enqueue($type, $asset)
 function styles( )
 {
     global $importer;
-    echo $importer->assets('styles');
+    echo $importer->assets( 'styles' );
 }
 function scripts( )
 {
     global $importer;
-    echo $importer->assets('scripts');
+    echo $importer->assets( 'scripts' );
 }
 
 ?>
@@ -342,7 +342,7 @@ function scripts( )
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
-    <?php widget('select2',array('placeholder'=>'xlarge..','class'=>'w-xlarge','readonly'=>1),array('options'=>options(array(
+    <?php widget('select2',array('placeholder'=>'xlarge..','class'=>'w-xlarge','multiple'=>1),array('options'=>options(array(
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
@@ -574,6 +574,16 @@ function scripts( )
     <span class="w-tag w-primary w-tag2">Tag 4</span>
     <span class="w-tag w-blue w-tag3">Tag 5</span>
     <span class="w-tag w-green w-large w-tag3">Tag 6</span>
+    <br />
+    <span class="w-tag w-orange w-large"><?php widget('select',array(
+    ),array(
+        'options' => options(array('Option 1','Option 2','Option 3'),-1)
+    ))?></span>
+    <span class="w-tag w-green w-tag3"><select>
+    <option value="0">Option 1</option>
+    <option value="1">Option 2</option>
+    <option value="2">Option 3</option>
+    </select></span>
     </fieldset>
     
     <hr />
