@@ -1216,10 +1216,11 @@ class HtmlWidget
         $wheader = !isset($attr['header']) || !empty($attr['header']) ? '<thead>'.$wcolumns.'</thead>' : '';
         $wfooter = !empty($attr['footer']) ? '<tfoot>'.$wcolumns.'</tfoot>' : '';
         $wrows = '';
-        foreach($data['rows'] as $row)
+        foreach($data['rows'] as $i=>$row)
         {
-            $rowv = array_values($row);
-            $wrows .= "\n" . "<tr>";
+            $rowid = isset($row['id']) ? $row['id'] : $i;
+            $rowv = array_values(isset($row['cells']) ? $row['cells'] : $row);
+            $wrows .= "\n" . "<tr data-row=\"$rowid\">";
             foreach($column_values as $c=>$column)
             {
                 $wrows .= "<td data-column=\"".$column."\">{$rowv[$c]}</td>";

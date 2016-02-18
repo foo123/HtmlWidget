@@ -1295,7 +1295,7 @@ var HtmlWidget = self = {
     
     ,w_table: function( attr, data ) {
         var wid, wclass, wstyle, wextra, wdata, wcolumns, wrows, wheader, wfooter,
-            column_values, column_keys, row, rowk, r, c, rl, cl, winit, wopts;
+            column_values, column_keys, row, rowid, rowk, rowv, r, c, rl, cl, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wclass = 'w-widget w-table'; 
@@ -1322,12 +1322,14 @@ var HtmlWidget = self = {
         wrows = ''; rl = data['rows'].length;
         for(r=0; r<rl; r++)
         {
-            row = data['rows'][r]; 
-            rowk = KEYS(row);
-            wrows += "\n" + "<tr>";
+            row = data['rows'][r];
+            rowid = null != row.id ? row.id : r;
+            rowv = null != row.cells ? row.cells : row;
+            rowk = KEYS(rowv);
+            wrows += "\n" + "<tr data-row=\""+rowid+"\">";
             for(c=0; c<cl; c++)
             {
-                wrows += "<td data-column=\""+column_values[column_keys[c]]+"\">"+row[rowk[c]]+"</td>";
+                wrows += "<td data-column=\""+column_values[column_keys[c]]+"\">"+rowv[rowk[c]]+"</td>";
             }
             wrows += "</tr>";
         }
