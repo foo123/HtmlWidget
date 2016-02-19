@@ -641,7 +641,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                         item: item,
                         key: key,
                         value: value
-                    });
+                    }).triggerNative('change');
                 }
             });
         }
