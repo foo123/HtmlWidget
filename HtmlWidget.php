@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.5
+*  @version: 0.8.6
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.5";
+    const VERSION = "0.8.6";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -71,6 +71,10 @@ class HtmlWidget
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane.css')
             ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
+            
+            // Popr
+            ,array('styles', 'popr.css', $asset_base.'popr.css')
+            ,array('scripts', 'popr', $asset_base.'popr.js', array('popr.css'))
             
             // History
             ,array('scripts', 'history', $asset_base.'history.js')

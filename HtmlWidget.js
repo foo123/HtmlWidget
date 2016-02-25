@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.5
+*  @version: 0.8.6
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -60,7 +60,7 @@ function merge( a, b )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.5"
+    VERSION: "0.8.6"
     
     ,BASE: './'
     
@@ -110,6 +110,10 @@ var HtmlWidget = self = {
             // Humane
             ,['styles', 'humane.css', asset_base+'humane.css']
             ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
+            
+            // Popr
+            ,['styles', 'popr.css', asset_base+'popr.css']
+            ,['scripts', 'popr', asset_base+'popr.js', ['popr.css']]
             
             // History
             ,['scripts', 'history', asset_base+'history.js']

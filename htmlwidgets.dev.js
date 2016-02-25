@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.5
+*  @version: 0.8.6
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -25,7 +25,7 @@ else root[name] = factory( );
 // dont re-add it, abort
 if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.5', widget: {}, locale: {}, _handle: {}},
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.6', widget: {}, locale: {}, _handle: {}},
     
     HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
@@ -1364,24 +1364,14 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-htmlwidget._handle['delayable'] = htmlwidget._handle['disabable'] = htmlwidget._handle['morphable'] = htmlwidget._handle['selectable'] = htmlwidget._handle['removable'] = htmlwidget._handle['sortable'] = htmlwidget._handle['dnd_uploadable'] = htmlwidget._handle['uploadable'] = htmlwidget._handle['template'] = function( type, el, opts, pre_init, post_init ) {
-    if ( pre_init ) pre_init( el, opts );
-    $(el)[type]( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['draggable'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' !== typeof $.fn.tinyDraggable ) return;
-    if ( pre_init ) pre_init( el, opts );
-    $(el).tinyDraggable( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['timer'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' !== typeof $.fn.Timer ) return;
-    if ( pre_init ) pre_init( el, opts );
-    $(el).Timer( opts );
-    if ( post_init ) post_init( el, opts );
+htmlwidget._handleDefault = function( type, el, opts, pre_init, post_init ) {
+    if ( 'function' === typeof $.fn[type] )
+    {
+        // existing jquery plugin
+        if ( pre_init ) pre_init( el, opts );
+        $(el)[type]( opts );
+        if ( post_init ) post_init( el, opts );
+    }
 };
 
 htmlwidget._handle['datetimepicker'] = function( type, el, opts, pre_init, post_init ) {
@@ -1389,30 +1379,6 @@ htmlwidget._handle['datetimepicker'] = function( type, el, opts, pre_init, post_
     if ( !opts["i18n"] && (htmlwidget.locale['Pikadaytime']||htmlwidget.locale['Pikaday']) )
         opts["i18n"] = htmlwidget.locale['Pikadaytime'] || htmlwidget.locale['Pikaday'];
     $(el).datetimepicker( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['colorpicker'] = function( type, el, opts, pre_init, post_init ) {
-    if ( pre_init ) pre_init( el, opts );
-    $(el).colorpicker( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['areaselect'] = function( type, el, opts, pre_init, post_init ) {
-    if ( pre_init ) pre_init( el, opts );
-    $(el).areaselect( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['gmap'] = function( type, el, opts, pre_init, post_init ) {
-    if ( pre_init ) pre_init( el, opts );
-    $(el).gmap3( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['autocomplete'] = function( type, el, opts, pre_init, post_init ) {
-    if ( pre_init ) pre_init( el, opts );
-    $(el).suggest( opts );
     if ( post_init ) post_init( el, opts );
 };
 
@@ -1508,13 +1474,6 @@ htmlwidget._handle['datatable'] = function( type, el, opts, pre_init, post_init 
     if ( post_init ) post_init( el, opts );
 };
 
-htmlwidget._handle['modal'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' !== typeof $.fn.modal ) return;
-    if ( pre_init ) pre_init( el, opts );
-    $(el).modal( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
 htmlwidget._handle['packery'] = function( type, el, opts, pre_init, post_init ) {
     if ( 'undefined' === typeof Packery ) return;
     if ( pre_init ) pre_init( el, opts );
@@ -1533,20 +1492,6 @@ htmlwidget._handle['masonry'] = function( type, el, opts, pre_init, post_init ) 
     if ( 'undefined' === typeof Masonry ) return;
     if ( pre_init ) pre_init( el, opts );
     new Masonry( el, opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['modelview'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'undefined' === typeof ModelView ) return;
-    if ( pre_init ) pre_init( el, opts );
-    $(el).modelview( opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['tageditor'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' !== typeof $.fn.tagEditor ) return;
-    if ( pre_init ) pre_init( el, opts );
-    $(el).tagEditor( opts );
     if ( post_init ) post_init( el, opts );
 };
 
@@ -1719,24 +1664,20 @@ htmlwidget._handle['codemirror'] = function( type, el, opts, pre_init, post_init
 };
 
 $.fn.htmlwidget = function( type, options ) {
+    var widget_handler;
     options = options || { };
     
     if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
     {
+        widget_handler = htmlwidget.widget[type];
         this.each(function( ){
             var el = this, opts, pre_init = null, post_init = null;
-            if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
-                opts = window[el[ATTR]('w-opts')];
-            else
-                opts = options;
-            
+            opts = el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) ? window[el[ATTR]('w-opts')] : options;
             if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
                 pre_init = window[opts['w-pre-init']];
-            
             if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
                 post_init = window[opts['w-post-init']];
-            
-            htmlwidget.widget[type]( el, opts, pre_init, post_init );
+            widget_handler( type, el, opts, pre_init, post_init );
         });
     }
     else
@@ -1764,19 +1705,22 @@ $.fn.htmlwidget = function( type, options ) {
             case 'areaselectable':
                 type = 'areaselect'; break;
             case 'map':
+            case 'gmap':
             case 'gmap3':
-                type = 'gmap'; break;
+                type = 'gmap3'; break;
+            case 'autocomplete':
             case 'autosuggest':
             case 'suggest':
-                type = 'autocomplete'; break;
+                type = 'suggest'; break;
             case 'range':
                 type = 'rangeslider'; break;
             case 'select':
                 type = 'select2'; break;
             case 'table':
                 type = 'datatable'; break;
+            case 'tageditor':
             case 'tag-editor':
-                type = 'tageditor'; break;
+                type = 'tagEditor'; break;
             case 'wysiwyg-editor':
                 type = 'tinymce'; break;
             case 'syntax-editor':
@@ -1784,26 +1728,17 @@ $.fn.htmlwidget = function( type, options ) {
             default:
                 break;
         }
-        if ( htmlwidget._handle[HAS]( type ) )
-        {
-            this.each(function( ){
-                var el = this, opts, pre_init = null, post_init = null;
-                if ( el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) )
-                    opts = window[el[ATTR]('w-opts')];
-                else
-                    opts = options;
-                
-                if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
-                
-                if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
-                    pre_init = window[opts['w-pre-init']];
-                
-                if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
-                    post_init = window[opts['w-post-init']];
-                
-                htmlwidget._handle[ type ]( type, el, opts, pre_init, post_init );
-            });
-        }
+        widget_handler = htmlwidget._handle[HAS]( type ) ? htmlwidget._handle[ type ] : htmlwidget._handleDefault;
+        this.each(function( ){
+            var el = this, opts, pre_init = null, post_init = null;
+            opts = el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) ? window[el[ATTR]('w-opts')] : options;
+            if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
+            if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
+                pre_init = window[opts['w-pre-init']];
+            if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
+                post_init = window[opts['w-post-init']];
+            widget_handler( type, el, opts, pre_init, post_init );
+        });
     }
     return this;
 };
@@ -1863,6 +1798,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
     if ( $node.hasClass('w-areaselectable') ) $node.htmlwidget('areaselect');
+    if ( $node.hasClass('w-popr') ) $node.htmlwidget('popr');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -1929,15 +1865,15 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable,.w-popr').each( widget_able );
 
 // dynamicaly added elements and/or dynamicaly altered elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added', widget_able)
-        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable)', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added,.w-popr::added', widget_able)
+        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable),:class-added(.w-popr)', widget_able)
     ;
 }
 

@@ -554,6 +554,14 @@ function scripts( )
     
     <hr />
     
+    <fieldset><legend>Popup Menus</legend>
+    <div class="popr inline-block w-popr" data-id="1"><i class="fa fa-list-alt"></i> Feugait nostrud</div>
+    <div class="popr inline-block w-popr" data-id="2"><i class="fa fa-cog"></i></div>
+    <div class="popr inline-block w-popr" data-id="3" data-mode="top"><i class="fa fa-list-alt"></i> Dolore</div>
+    </fieldset>
+    
+    <hr />
+    
     <fieldset><legend>(Speech) Bubbles</legend>
     <div class="w-bubble w-bubble-up">Bubble Up</div>
     <div class="w-bubble w-bubble-down">Bubble Down</div>
@@ -606,9 +614,28 @@ function scripts( )
         This msg indicates a dangerous or potentially negative action. 
     </div>
     </fieldset>
+    
     <button id="submit_form" type="submit">Submit Test</button>
     </form>
     
+<div class="popr-box" data-box-id="1">
+<a href="$loc"><div class="popr-item">Feugait delenit</div></a>
+<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
+<a href="$loc"><div class="popr-item">Exerci ipsum</div></a>
+</div>
+
+<div class="popr-box" data-box-id="2">
+<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
+<div class="popr-item" id="feugait">Feugait</div>
+<a href="$loc"><div class="popr-item">Commodo quis</div></a>
+</div>
+
+<div class="popr-box" data-box-id="3">
+<a href="$loc"><div class="popr-item">Malorum</div></a>
+<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
+<a href="$loc"><div class="popr-item">Exerci ipsum</div></a>
+</div>
+
     <?php
     //enqueue('scripts','-external-google-maps-api');
     enqueue('styles','normalize.css');
@@ -616,6 +643,7 @@ function scripts( )
     enqueue('styles','fontawesome.css');
     enqueue('scripts','jquery');
     enqueue('scripts','tooltipster');
+    enqueue('scripts','popr');
     enqueue('scripts','serialiser');
     styles( );
     scripts( );
