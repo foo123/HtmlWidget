@@ -2941,6 +2941,87 @@ by Nicolas Gallagher
     border-bottom-color: transparent;
 }
 
+.w-arrowed
+{
+    position: relative;
+    overflow: visible;
+}
+.w-arrowed:after,
+.w-arrowed:before
+{
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+.w-arrowed.w-arrowed-top:after
+{
+    bottom: 100%; left: 50%;
+    border-color: rgba(255, 255, 255, 0);
+    border-bottom-color: #fff; /* background-color */
+    border-width: 12px;
+    margin-left: -12px;
+}
+.w-arrowed.w-arrowed-top:before
+{
+    bottom: 100%; left: 50%;
+    border-color: rgba(85, 85, 85, 0);
+    border-bottom-color: #555; /* border-color */
+    border-width: 13px;
+    margin-left: -13px;
+}
+.w-arrowed.w-arrowed-bottom:after
+{
+    top: 100%; left: 50%;
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #fff; /* background-color */
+    border-width: 12px;
+    margin-left: -12px;
+}
+.w-arrowed.w-arrowed-bottom:before
+{
+    top: 100%; left: 50%;
+    border-color: rgba(85, 85, 85, 0);
+    border-top-color: #555; /* border-color */
+    border-width: 13px;
+    margin-left: -13px;
+}
+.w-arrowed.w-arrowed-right:after
+{
+    left: 100%; top: 50%;
+    border-color: rgba(255, 255, 255, 0);
+    border-left-color: #fff; /* background-color */
+    border-width: 12px;
+    margin-top: -12px;
+}
+.w-arrowed.w-arrowed-right:before
+{
+    left: 100%; top: 50%;
+    border-color: rgba(85, 85, 85, 0);
+    border-left-color: #555; /* border-color */
+    border-width: 13px;
+    margin-top: -13px;
+}
+.w-arrowed.w-arrowed-left:after
+{
+    right: 100%; top: 50%;
+    border-color: rgba(255, 255, 255, 0);
+    border-right-color: #fff; /* background-color */
+    border-width: 12px;
+    margin-top: -12px;
+}
+.w-arrowed.w-arrowed-left:before
+{
+    right: 100%; top: 50%;
+    border-color: rgba(85, 85, 85, 0);
+    border-right-color: #555; /* border-color */
+    border-width: 13px;
+    margin-top: -13px;
+}
+
 /* w-widget FX and auxiliaries */
 /*timing-function cubic-bezier(0, 1, 0.5, 1);*/
 /*.w-fx-blur
