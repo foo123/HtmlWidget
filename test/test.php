@@ -555,9 +555,9 @@ function scripts( )
     <hr />
     
     <fieldset><legend>Popup Menus</legend>
-    <div class="popr inline-block w-popr" data-id="1"><i class="fa fa-list-alt"></i> Feugait nostrud</div>
-    <div class="popr inline-block w-popr" data-id="2"><i class="fa fa-cog"></i></div>
-    <div class="popr inline-block w-popr" data-id="3" data-mode="top"><i class="fa fa-list-alt"></i> Dolore</div>
+    <div class="popr inline-block w-popr" data-popr="popr_1"><i class="fa fa-list-alt"></i> Feugait nostrud</div>
+    <div class="popr inline-block w-popr" data-popr="popr_2"><i class="fa fa-cog"></i></div>
+    <div class="popr inline-block w-popr" data-popr="popr_3" data-popr-mode="top"><i class="fa fa-list-alt"></i> Dolore</div>
     </fieldset>
     
     <hr />
@@ -618,22 +618,22 @@ function scripts( )
     <button id="submit_form" type="submit">Submit Test</button>
     </form>
     
-<div class="popr-box" data-box-id="1">
-<a href="$loc"><div class="popr-item">Feugait delenit</div></a>
-<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
-<a href="$loc"><div class="popr-item">Exerci ipsum</div></a>
+<div class="popr-box" id="popr_1">
+<a href="#"><i class="fa fa-list-alt"></i> Feugait delenit</a>
+<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
+<a href="#"><i class="fa fa-list-alt"></i> Exerci ipsum</a>
 </div>
 
-<div class="popr-box" data-box-id="2">
-<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
-<div class="popr-item" id="feugait">Feugait</div>
-<a href="$loc"><div class="popr-item">Commodo quis</div></a>
+<div class="popr-box" id="popr_2">
+<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
+<a href="#" id="feugait"><i class="fa fa-list-alt"></i> Feugait</a>
+<a href="#"><i class="fa fa-list-alt"></i> Commodo quis</a>
 </div>
 
-<div class="popr-box" data-box-id="3">
-<a href="$loc"><div class="popr-item">Malorum</div></a>
-<a href="$loc"><div class="popr-item">Vero dolor et</div></a>
-<a href="$loc"><div class="popr-item">Exerci ipsum</div></a>
+<div class="popr-box" id="popr_3">
+<a href="#">Malorum</a>
+<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
+<a href="#">Exerci ipsum</a>
 </div>
 
     <?php
@@ -643,7 +643,7 @@ function scripts( )
     enqueue('styles','fontawesome.css');
     enqueue('scripts','jquery');
     enqueue('scripts','tooltipster');
-    enqueue('scripts','popr');
+    enqueue('scripts','popr2');
     enqueue('scripts','serialiser');
     styles( );
     scripts( );

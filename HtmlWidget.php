@@ -72,10 +72,6 @@ class HtmlWidget
             ,array('styles', 'humane.css', $asset_base.'humane.css')
             ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
             
-            // Popr
-            ,array('styles', 'popr.css', $asset_base.'popr.css')
-            ,array('scripts', 'popr', $asset_base.'popr.js', array('popr.css'))
-            
             // History
             ,array('scripts', 'history', $asset_base.'history.js')
             
@@ -144,6 +140,10 @@ class HtmlWidget
             ,array('styles', 'tooltipster.css', $asset_base.'tooltipster.css')
             ,array('scripts', 'tooltipster', $asset_base.'tooltipster.js', array('tooltipster.css','jquery'))
              
+            // Popr2
+            ,array('styles', 'popr2.css', $asset_base.'popr2.css')
+            ,array('scripts', 'popr2', $asset_base.'popr2.js', array('popr2.css','jquery'))
+            
             // Modal
             ,array('styles', 'modal.css', $asset_base.'modal.css')
             ,array('scripts', 'modal', $asset_base.'modal.js', array('modal.css','jquery'))

@@ -1798,7 +1798,6 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
     if ( $node.hasClass('w-areaselectable') ) $node.htmlwidget('areaselect');
-    if ( $node.hasClass('w-popr') ) $node.htmlwidget('popr');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -1865,15 +1864,15 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable,.w-popr').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
 
 // dynamicaly added elements and/or dynamicaly altered elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added,.w-popr::added', widget_able)
-        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable),:class-added(.w-popr)', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added', widget_able)
+        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable)', widget_able)
     ;
 }
 
@@ -1881,6 +1880,15 @@ if ( 'function' === typeof $.fn.onSelector )
 if ( 'function' === typeof $.fn.tooltipster )
 {
     $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
+}
+// dynamic popup menus
+if ( 'function' === typeof $.fn.popr2 )
+{
+    $body.popr2({
+        'selector'  : '.w-popr',
+        'attribute' : 'data-popr',
+        'activate'  : 'click'
+     });
 }
 
 // w-file controls

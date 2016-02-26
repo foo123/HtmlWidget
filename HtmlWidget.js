@@ -111,10 +111,6 @@ var HtmlWidget = self = {
             ,['styles', 'humane.css', asset_base+'humane.css']
             ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
             
-            // Popr
-            ,['styles', 'popr.css', asset_base+'popr.css']
-            ,['scripts', 'popr', asset_base+'popr.js', ['popr.css']]
-            
             // History
             ,['scripts', 'history', asset_base+'history.js']
             
@@ -183,6 +179,10 @@ var HtmlWidget = self = {
             ,['styles', 'tooltipster.css', asset_base+'tooltipster.css']
             ,['scripts', 'tooltipster', asset_base+'tooltipster.js', ['tooltipster.css','jquery']]
              
+            // Popr2
+            ,['styles', 'popr2.css', asset_base+'popr2.css']
+            ,['scripts', 'popr2', asset_base+'popr2.js', ['popr2.css','jquery']]
+            
             // Modal
             ,['styles', 'modal.css', asset_base+'modal.css']
             ,['scripts', 'modal', asset_base+'modal.js', ['modal.css','jquery']]
