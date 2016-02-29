@@ -46,3 +46,15 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 * chrome (30+)
 * opera
 * safari
+
+
+**screenshot samples**
+
+
+![widgets-1](/screenshots/widgets-1.png)
+![widgets-2](/screenshots/widgets-2.png)
+![widgets-3](/screenshots/widgets-3.png)
+![widgets-4](/screenshots/widgets-4.png)
+![widgets-5](/screenshots/widgets-5.png)
+![widgets-6](/screenshots/widgets-6.png)
+![widgets-7](/screenshots/widgets-7.png)
