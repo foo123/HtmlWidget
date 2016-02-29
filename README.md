@@ -58,3 +58,10 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 ![widgets-5](/screenshots/widgets-5.png)
 ![widgets-6](/screenshots/widgets-6.png)
 ![widgets-7](/screenshots/widgets-7.png)
+
+![details-1](/screenshots/details-1.png)
+![details-2](/screenshots/details-2.png)
+![details-3](/screenshots/details-3.png)
+![details-4](/screenshots/details-4.png)
+![details-5](/screenshots/details-5.png)
+![details-6](/screenshots/details-6.png)
