@@ -209,6 +209,9 @@ var HtmlWidget = self = {
             ,['styles', 'datatable.css', asset_base+'datatable.css']
             ,['scripts', 'datatable', asset_base+'datatable.js', ['datatable.css','jquery']]
             
+            // ImTranslator
+            //,[]
+            
             // MathJax
             ,['scripts', 'mathjax', asset_base+'mathjax/MathJax.js?config=TeX-AMS_HTML-full']
             
@@ -440,6 +443,8 @@ var HtmlWidget = self = {
             case 'textbox':
             case 'textfield':
             case 'text':        out = self.w_text(attr, data); break;
+            case 'imtranslator':
+            case 'translator':  out = self.w_translator(attr, data); break;
             case 'editor':
             case 'rich-editor':
             case 'rich':
@@ -1016,6 +1021,22 @@ var HtmlWidget = self = {
             self.enqueue('styles', 'htmlwidgets.css');
         }
         return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>';
+    }
+    
+    ,w_translator: function( attr, data ) {
+        var wtype, wclass, wstyle, wextra, wdims, wsource, wtarget, wlocale;
+        wtype = !empty(attr,'type') ? attr['type'] : "iframe";
+        wdims = !empty(attr,'dimensions') ? attr['dimensions'] : "510x510";
+        wsource = !empty(attr,'source') ? attr['source'] : "en";
+        wtarget = !empty(attr,'target') ? attr['target'] : "el";
+        wlocale = !empty(attr,'locale') ? attr['locale'] : "en";
+        wclass = 'w-translator'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = self.attributes(attr,['data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        self.enqueue('scripts', 'w-translator-opts', ['window.imtranslatorOptions = {dir:"'+wsource+'/'+wtarget+'", loc:"'+wlocale+'"}; var dir=window.imtranslatorOptions.dir,loc=window.imtranslatorOptions.loc;']);
+        self.enqueue('scripts', 'w-translator', 'http://imtranslator.net/translation/webmaster/wm-im-'+('popup'===wtype?'popup':wdims)+'.js', ['w-translator-opts']);
+        return '<div id="TranslatorBuilder" class="'+wclass+'" '+wstyle+' '+wextra+'><a href="http://imtranslator.net/translation/" id="ImTranslator" target="_top" title="Translator - imtranslator.net">Translator</a></div><div id="ImBack"></div>';
     }
     
     ,w_date: function( attr, data ) {

@@ -454,6 +454,12 @@ function scripts( )
     
     <hr />
     
+    <fieldset><legend>Translator</legend>
+    <?php widget('translator'); ?>
+    </fieldset>
+    
+    <hr />
+    
     <fieldset><legend>Google Map</legend>
     <?php /*widget('map', array(
         'title' => 'Here',
