@@ -19,6 +19,8 @@ standalone and pluggable optimised, modular and dynamicaly initialised html widg
 
 *note 2:* most widgets are implemented as pure `html` / `css` components so that they can work even without `javascript` (unless absolutely necessary)
 
+* `HtmlWidget` is also a `XPCOM JavaScript Component` (Firefox) (e.g to be used in firefox browser addons/plugins)
+
 
 **included widgets:**
 
