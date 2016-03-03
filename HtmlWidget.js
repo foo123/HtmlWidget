@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.6
+*  @version: 0.8.7
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -58,9 +58,28 @@ function merge( a, b )
     return c;
 }
 
+function data_attr( k, v )
+{
+    if ( 'object' === typeof v )
+    {
+        var attr = '', k1;
+        for (k1 in v)
+        {
+            if ( !v[HAS](k1) ) continue;
+            attr += (!attr.length ? '' : ' ') + data_attr( k+'-'+k1, v[k1] );
+        }
+        return attr;
+    }
+    else
+    {
+        return ""+k+"='"+v+"'";
+    }
+}
+    
+
 var HtmlWidget = self = {
     
-    VERSION: "0.8.6"
+    VERSION: "0.8.7"
     
     ,BASE: './'
     
@@ -119,6 +138,13 @@ var HtmlWidget = self = {
             
             // Modernizr
             ,['scripts', 'modernizr', asset_base+'modernizr.js']
+            
+            // html5media
+            ,['scripts', 'html5media', asset_base+'html5media/html5media.js']
+            
+            // video.js
+            ,['styles', 'video-js.css', asset_base+'video.js/video-js.css']
+            ,['scripts', 'video.js', asset_base+'video.js/video.js', ['video-js.css']]
             
             // Serialiser
             ,['scripts', 'serialiser', asset_base+'serialiser.js']
@@ -288,16 +314,24 @@ var HtmlWidget = self = {
         return assets;
     }
     
-    ,i18n: function( locale, base ) {
+    ,i18n: function( locale, base, all ) {
         if ( !locale ) return [];
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
-        var i18n_base = base + 'i18n/';
-        return [
-         ['DataTables', i18n_base+'DataTables/'+locale+'.json']
-        ,['Pikadaytime', i18n_base+'Pikadaytime/'+locale+'.json']
-        ,['DateX', i18n_base+'DateX/'+locale+'.json']
+        var asset_base = base + 'assets/';
+        var i18n = [
+         ['pikadaytime', asset_base+'i18n/pikadaytime/'+locale+'.json']
+        ,['datex', asset_base+'i18n/datex/'+locale+'.json']
+        ,['datatables', asset_base+'datatables/langs/'+locale+'.json']
         ];
+        if ( true === all )
+        {
+            i18n = i18n.concat([
+             ['tinymce', asset_base+'tinymce/langs/'+locale+'.js']
+            ,['video-js', asset_base+'video.js/lang/'+locale+'.js']
+            ]);
+        }
+        return i18n;
     }
     
     ,uuid: function( prefix, suffix ) {
@@ -306,20 +340,19 @@ var HtmlWidget = self = {
         return [prefix, new Date().getTime(), ++GID, ~~(1000*Math.random()), suffix].join("_");
     }
     
-    ,data: function( attr ) {
-        var data_attr = '';
-        if ( attr[HAS]('data') )
+    ,data: function( attr, ctx ) {
+        var d_attr = '';
+        if ( arguments.length < 2 ) ctx = 'data';
+        if ( !!ctx && attr[HAS](ctx) && ('object' === typeof attr[ctx]) )
         {
-            var k, v, attr_data = attr['data'];
-            for(k in attr_data)
+            var k, attr_ctx = attr[ctx];
+            for(k in attr_ctx)
             {
-                if ( !attr_data[HAS](k) ) continue;
-                v = attr_data[k];
-                if ( data_attr.length ) data_attr += ' ';
-                data_attr += "data-"+k+"='"+v+"'";
+                if ( !attr_ctx[HAS](k) ) continue;
+                d_attr += (!d_attr.length ? '' : ' ') + data_attr( ctx+'-'+k, attr_ctx[k] );
             }
         }
-        return data_attr;
+        return d_attr;
     }
     
     ,attributes: function( attr, atts ) {
@@ -337,7 +370,7 @@ var HtmlWidget = self = {
                 else
                 {
                     v = attr[k];
-                    attrs.push(k+'="'+v+'"');
+                    attrs.push(''+k+'="'+v+'"');
                 }
             }
         }
@@ -428,7 +461,9 @@ var HtmlWidget = self = {
             if ( widgets[HAS]('w_'+widget) )
                 return widgets['w_'+widget](attr, data);
             
-            if ( "checkbox-list" === widget || "checklist" === widget ) attr["type"] = "checkbox";
+            if ( "audio" === widget ) attr["type"] = "audio";
+            else if ( "video" === widget ) attr["type"] = "video";
+            else if ( "checkbox-list" === widget || "checklist" === widget ) attr["type"] = "checkbox";
             else if ( "radiobox-list" === widget || "radio-list" === widget || "radiolist" === widget ) attr["type"] = "radio";
             else if ( "checkbox-image" === widget ) attr["type"] = "checkbox";
             else if ( "radio-image" === widget ) attr["type"] = "radio";
@@ -531,8 +566,9 @@ var HtmlWidget = self = {
             case 'animation':   out = self.w_animation(attr, data); break;
             case 'flash':
             case 'swf':         out = self.w_swf(attr, data); break;
-            //case 'video':
-            //case 'audio':
+            case 'video':
+            case 'audio':
+            case 'media':       out = self.w_media(attr, data); break;
             default: out = ''; break;
             }
         }
@@ -1449,6 +1485,27 @@ var HtmlWidget = self = {
         wflashvars = empty(attr,'flashvars') ? '' : attr['flashvars'];
         wallowfullscreen = empty(attr,'allowfullscreen') ? 'false' : attr['allowfullscreen'];
         return '<object id="'+wid+'" type="application/x-shockwave-flash" '+wextra+' data="'+wswf+'" class="'+wclass+'" '+wstyle+'><param name="movie" value="'+wswf+'" /><param name="quality" value="'+wquality+'" /><param name="wmode" value="'+wmode+'" /><param name="scale" value="'+wscale+'" /><param name="FlashVars" value="'+wflashvars+'" /><param name="allowFullScreen" value="'+wallowfullscreen+'" /></object>';
+    }
+    
+    ,w_media: function( attr, data ) {
+        var wid, wtype, wclass, wstyle, wextra, wtext, wsources, wsource, source, src, src_type;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wtype = empty(attr,'type') ? "video" : attr['type'];
+        if ( 'audio' !== wtype ) wtype = 'video';
+        wclass = 'w-media w-'+wtype; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = self.attributes(attr,['title','width','height','src','controls','autoplay','loop','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wtext = empty(data,'text') ? '' : data['text'];
+        wsources = empty(data,'sources') ? [] : data['sources'];
+        wsource = '';
+        for (var o=0,l=wsources.length; o<l; o++)
+        {
+            // NOTE: use HtmlWidget::options() to format options accordingly to be used here
+            source = wsources[o]; src = source[0]; src_type = source[1];
+            wsource += '<source src="'+src+'" type="'+src_type+'"></source>';
+        }
+        self.enqueue('scripts','html5media');
+        return '<'+wtype+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>'+wsource+wtext+'</'+wtype+'>';
     }
     
     ,w_delayable: function( attr, data ) {

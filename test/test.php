@@ -486,6 +486,28 @@ function scripts( )
     
     <hr />
     
+    <fieldset><legend>Html5 Audio</legend>
+    <?php widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
+        'sources'    => options(array(
+        './audio.mp3' => 'audio/mp3',
+        './audio.ogg' => 'audio/ogg'
+        ),-1)
+    )); ?>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Html5 Video</legend>
+    <?php widget('video', array('autoplay'=>1,'controls'=>1),array(
+        'sources'    => options(array(
+        './video.mp4' => 'video/mp4',
+        './video.ogv' => 'video/ogv'
+        ),-1)
+    )); ?>
+    </fieldset>
+    
+    <hr />
+    
     <fieldset><legend>Checkboxes</legend>
     <?php widget('checkbox',array('title'=>'Check'),array('value'=>'1')); ?>
     <?php widget('checkbox',array('title'=>'Check','class'=>'w-large','disabled'=>1),array('value'=>'1')); ?>

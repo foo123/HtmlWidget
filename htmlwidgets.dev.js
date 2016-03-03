@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.6
+*  @version: 0.8.7
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -25,7 +25,7 @@ else root[name] = factory( );
 // dont re-add it, abort
 if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.6', widget: {}, locale: {}, _handle: {}},
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.7', widget: {}, locale: {}, _handle: {}},
     
     HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',

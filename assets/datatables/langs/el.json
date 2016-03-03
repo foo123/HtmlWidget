@@ -1,0 +1,17 @@
+{
+	"processing": "Παρακαλώ περιμένετε...",
+	"lengthMenu": "Εμφάνισε _MENU_ σειρές",
+	"zeroRecords": "Δεν βρέθηκαν σειρές",
+	"info": "_START_ εως _END_ απο _TOTAL_ σειρές",
+	"infoEmpty": "0 εως 0 απο 0 σειρές",
+	"infoFiltered": "(απο _MAX_ σειρές)",
+	"infoPostFix": "",
+	"search": "Αναζήτηση",
+	"url": "",
+	"paginate": {
+		"first":    "Πρώτο",
+		"previous": "Προηγούμενο",
+		"next":     "Επόμενο",
+		"last":     "Τελευταίο"
+	}
+}

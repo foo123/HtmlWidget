@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.6
+*  @version: 0.8.7
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,15 +17,10 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.6";
+    const VERSION = "0.8.7";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
-    
-    private static function htmlwidget_init( $id, $args, $fn, $root='window' )
-    {
-        return $root.'["'.$id.'"]=function('.$args.'){var $=jQuery;'."\n".'('.$fn.')('.$args.');};';
-    }
     
     public static function enqueueAssets( $enqueuer=null )
     {
@@ -80,6 +75,13 @@ class HtmlWidget
             
             // Modernizr
             ,array('scripts', 'modernizr', $asset_base.'modernizr.js')
+            
+            // html5media
+            ,array('scripts', 'html5media', $asset_base.'html5media/html5media.js')
+            
+            // video.js
+            ,array('styles', 'video-js.css', $asset_base.'video.js/video-js.css')
+            ,array('scripts', 'video.js', $asset_base.'video.js/video.js', array('video-js.css'))
             
             // Serialiser
             ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
@@ -249,17 +251,25 @@ class HtmlWidget
         return $assets;
     }
     
-    public static function i18n( $locale, $base='' )
+    public static function i18n( $locale, $base='', $all=false )
     {
         if ( empty($locale) ) return array();
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
-        $i18n_base = $base . 'i18n/';
-        return array(
-         array('DataTables', $i18n_base.'DataTables/'.$locale.'.json')
-        ,array('Pikadaytime', $i18n_base.'Pikadaytime/'.$locale.'.json')
-        ,array('DateX', $i18n_base.'DateX/'.$locale.'.json')
+        $asset_base = $base . 'assets/';
+        $i18n = array(
+         array('pikadaytime', $asset_base.'i18n/pikadaytime/'.$locale.'.json')
+        ,array('datex', $asset_base.'i18n/datex/'.$locale.'.json')
+        ,array('datatables', $asset_base.'datatables/langs/'.$locale.'.json')
         );
+        if ( true === $all )
+        {
+            $i18n = array_merge($i18n, array(
+             array('tinymce', $asset_base.'tinymce/langs/'.$locale.'.js')
+            ,array('video-js', $asset_base.'video.js/lang/'.$locale.'.js')
+            ));
+        }
+        return $i18n;
     }
     
     public static function uuid( $prefix="widget", $suffix="static1" )
@@ -268,18 +278,30 @@ class HtmlWidget
         return implode("_", array($prefix, time(), ++$GID, rand(0,1000), $suffix));
     }
     
-    public static function data( $attr )
+    private static function data_attr( $k, $v )
     {
-        $data_attr = '';
-        if ( !empty($attr['data']) )
+        if ( is_array($v) )
         {
-            foreach($attr['data'] as $k=>$v)
-            {
-                if ( !empty($data_attr) ) $data_attr .= ' ';
-                $data_attr .= "data-{$k}='{$v}'";
-            }
+            $attr = '';
+            foreach($v as $k1=>$v1)
+                $attr .= (empty($attr) ? '' : ' ') . self::data_attr( $k.'-'.$k1, $v1 );
+            return $attr;
         }
-        return $data_attr;
+        else
+        {
+            return "{$k}='{$v}'";
+        }
+    }
+    
+    public static function data( $attr, $ctx='data' )
+    {
+        $d_attr = '';
+        if ( !!$ctx && !empty($attr[$ctx]) && is_array($attr[$ctx]) )
+        {
+            foreach($attr[$ctx] as $k=>$v)
+                $d_attr .= (empty($d_attr) ? '' : ' ') . self::data_attr( $ctx.'-'.$k, $v );
+        }
+        return $d_attr;
     }
     
     public static function attributes( $attr, $atts=array() )
@@ -355,7 +377,9 @@ class HtmlWidget
             if ( isset(self::$widgets['w_'.$widget]) ) 
                 return call_user_func(self::$widgets['w_'.$widget], $attr, $data);
             
-            if ( "checkbox-list" === $widget || "checklist" === $widget ) $attr["type"] = "checkbox";
+            if ( "audio" === $widget ) $attr["type"] = "audio";
+            elseif ( "video" === $widget ) $attr["type"] = "video";
+            elseif ( "checkbox-list" === $widget || "checklist" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radiobox-list" === $widget || "radio-list" === $widget || "radiolist" === $widget ) $attr["type"] = "radio";
             elseif ( "checkbox-image" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radio-image" === $widget ) $attr["type"] = "radio";
@@ -458,8 +482,9 @@ class HtmlWidget
             case 'animation':   $out = self::w_animation($attr, $data); break;
             case 'flash':
             case 'swf':         $out = self::w_swf($attr, $data); break;
-            //case 'video':
-            //case 'audio':
+            case 'video':
+            case 'audio':
+            case 'media':       $out = self::w_media($attr, $data); break;
             default: $out = ''; break;
             }
         }
@@ -1342,6 +1367,28 @@ class HtmlWidget
         $wflashvars = empty($attr['flashvars']) ? '' : $attr['flashvars'];
         $wallowfullscreen = empty($attr['allowfullscreen']) ? 'false' : $attr['allowfullscreen'];
         return "<object id=\"{$wid}\" type=\"application/x-shockwave-flash\" {$wextra} data=\"{$wswf}\" class=\"{$wclass}\" $wstyle><param name=\"movie\" value=\"{$wswf}\" /><param name=\"quality\" value=\"{$wquality}\" /><param name=\"wmode\" value=\"{$wmode}\" /><param name=\"scale\" value=\"{$wscale}\" /><param name=\"FlashVars\" value=\"{$wflashvars}\" /><param name=\"allowFullScreen\" value=\"{$wallowfullscreen}\" /></object>";
+    }
+    
+    public static function w_media( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wtype = empty($attr['type']) ? "video" : $attr['type'];
+        if ( 'audio' !== $wtype ) $wtype = 'video';
+        $wclass = 'w-media w-'.$wtype;
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = self::attributes($attr,array('title','width','height','src','controls','autoplay','loop','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wtext = empty($data['text']) ? '' : $data['text'];
+        $wsources = empty($data['sources']) ? array() : (array)$data['sources'];
+        $wsource = '';
+        foreach($wsources as $source)
+        {
+            // NOTE: use HtmlWidget::options() to format options accordingly to be used here
+            $src = $source[0]; $src_type = $source[1];
+            $wsource .= "<source src=\"{$src}\" type=\"{$src_type}\"></source>";
+        }
+        self::enqueue('scripts','html5media');
+        return "<{$wtype} id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra}>{$wsource}{$wtext}</{$wtype}>";
     }
     
     public static function w_delayable( $attr, $data )

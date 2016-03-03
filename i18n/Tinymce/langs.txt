@@ -1,1 +1,0 @@
-currently loaded through tinymce/langs/ folder
