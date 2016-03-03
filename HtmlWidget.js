@@ -79,7 +79,7 @@ var HtmlWidget = self = {
         }
     }
     
-    ,assets: function( base, full, jquery, dev ) {
+    ,assets: function( base, full, jquery, dev, cdn ) {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
@@ -96,13 +96,13 @@ var HtmlWidget = self = {
         {
             assets.push(['scripts', 'jquery', asset_base+'jquery.js']);
             assets.push(['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]);
-            assets.push(['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]);
+            //assets.push(['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]);
         }
         if ( arguments.length < 2 || true === full )
         {
             assets = assets.concat([
             //  external APIS
-             ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places']
+             ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?libraries=places']
             
             // Tao
             ,['scripts', 'tao', asset_base+'tao.js']
@@ -205,15 +205,53 @@ var HtmlWidget = self = {
             // Masonry
             ,['scripts', 'masonry', asset_base+'masonry.js']
              
-            // DataTable
-            ,['styles', 'datatable.css', asset_base+'datatable.css']
-            ,['scripts', 'datatable', asset_base+'datatable.js', ['datatable.css','jquery']]
-            
             // ImTranslator
             //,[]
             
             // MathJax
             ,['scripts', 'mathjax', asset_base+'mathjax/MathJax.js?config=TeX-AMS_HTML-full']
+            
+            // DataTables
+            ,['styles', 'datatables.css', asset_base+'datatables/css/datatables.css']
+            ,['scripts', 'datatables', asset_base+'datatables/js/datatables.js', ['datatables.css','jquery']]
+            ,['styles-composite', 'datatables-extra.css', [
+                asset_base+'datatables/css/responsive.datatables.css',
+                asset_base+'datatables/css/buttons.datatables.css',
+                asset_base+'datatables/css/select.datatables.css',
+                asset_base+'datatables/css/colreorder.datatables.css',
+                asset_base+'datatables/css/rowreorder.datatables.css'
+            ], ['datatables.css']]
+            ,['scripts-composite', 'datatables-extra', [
+                asset_base+'datatables/js/datatables.responsive.js',
+                asset_base+'datatables/js/datatables.buttons.js',
+                asset_base+'datatables/js/datatables.select.js',
+                asset_base+'datatables/js/datatables.colreorder.js',
+                asset_base+'datatables/js/datatables.rowreorder.js'
+            ], ['datatables-extra.css','datatables']]
+            ,['styles-composite', 'datatables-all.css', [
+                asset_base+'datatables/css/responsive.datatables.css',
+                asset_base+'datatables/css/buttons.datatables.css',
+                asset_base+'datatables/css/select.datatables.css',
+                asset_base+'datatables/css/colreorder.datatables.css',
+                asset_base+'datatables/css/rowreorder.datatables.css',
+                asset_base+'datatables/css/autofill.datatables.css',
+                asset_base+'datatables/css/fixedcolumns.datatables.css',
+                asset_base+'datatables/css/fixedheader.datatables.css',
+                asset_base+'datatables/css/scroller.datatables.css',
+                asset_base+'datatables/css/keytable.datatables.css'
+            ], ['datatables.css']]
+            ,['scripts-composite', 'datatables-all', [
+                asset_base+'datatables/js/datatables.responsive.js',
+                asset_base+'datatables/js/datatables.buttons.js',
+                asset_base+'datatables/js/datatables.select.js',
+                asset_base+'datatables/js/datatables.colreorder.js',
+                asset_base+'datatables/js/datatables.rowreorder.js',
+                asset_base+'datatables/js/datatables.autofill.js',
+                asset_base+'datatables/js/datatables.fixedcolumns.js',
+                asset_base+'datatables/js/datatables.fixedheader.js',
+                asset_base+'datatables/js/datatables.scroller.js',
+                asset_base+'datatables/js/datatables.keytable.js'
+            ], ['datatables-all.css','datatables']]
             
             // Tinymce
             ,['scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js']
@@ -491,6 +529,10 @@ var HtmlWidget = self = {
             case 'datatable':
             case 'table':       out = self.w_table(attr, data); break;
             case 'animation':   out = self.w_animation(attr, data); break;
+            case 'flash':
+            case 'swf':         out = self.w_swf(attr, data); break;
+            //case 'video':
+            //case 'audio':
             default: out = ''; break;
             }
         }
@@ -1370,7 +1412,7 @@ var HtmlWidget = self = {
                 wopts = 'w-opts="htmlw_'+wid+'_options"';
                 self.enqueue('scripts', 'w-datatable-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
             }
-            self.enqueue('scripts', 'datatable');
+            self.enqueue('scripts', 'datatables');
             self.enqueue('scripts', 'htmlwidgets');
         }
         return '<table id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
@@ -1391,6 +1433,22 @@ var HtmlWidget = self = {
     ,w_menu_end: function( attr, data ) {
         self.enqueue('styles', 'htmlwidgets.css');
         return '</div>';
+    }
+    
+    ,w_swf: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wswf, wquality, wmode, wscale, wflashvars, wallowfullscreen;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'w-swf'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = self.attributes(attr,['width','height'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wswf = empty(data,'swf') ? '' : data['swf'];
+        wquality = empty(attr,'quality') ? 'best' : attr['quality'];
+        wmode = empty(attr,'wmode') ? 'transparent' : attr['wmode'];
+        wscale = empty(attr,'scale') ? 'default' : attr['scale'];
+        wflashvars = empty(attr,'flashvars') ? '' : attr['flashvars'];
+        wallowfullscreen = empty(attr,'allowfullscreen') ? 'false' : attr['allowfullscreen'];
+        return '<object id="'+wid+'" type="application/x-shockwave-flash" '+wextra+' data="'+wswf+'" class="'+wclass+'" '+wstyle+'><param name="movie" value="'+wswf+'" /><param name="quality" value="'+wquality+'" /><param name="wmode" value="'+wmode+'" /><param name="scale" value="'+wscale+'" /><param name="FlashVars" value="'+wflashvars+'" /><param name="allowFullScreen" value="'+wallowfullscreen+'" /></object>';
     }
     
     ,w_delayable: function( attr, data ) {

@@ -1155,13 +1155,13 @@ function add_map_marker( map, lat, lng, title, info, opts )
         position: new google.maps.LatLng( lat, lng )
     }, marker, marker_popup;
     
-    if ( 'undefined' !== opts.clickable ) marker_options.clickable = !!opts.clickable;
-    if ( 'undefined' !== opts.draggable ) marker_options.draggable = !!opts.draggable;
-    if ( 'undefined' !== opts.crossOnDrag ) marker_options.crossOnDrag = !!opts.crossOnDrag;
-    if ( 'undefined' !== opts.visible ) marker_options.visible = !!opts.visible;
-    if ( 'undefined' !== opts.icon ) marker_options.icon = opts.icon;
-    if ( 'undefined' !== opts.zIndex ) marker_options.zIndex = opts.zIndex;
-    if ( 'undefined' !== opts.shape ) marker_options.shape = opts.shape;
+    /*if ( null != opts.clickable ) marker_options.clickable = !!opts.clickable;
+    if ( null != opts.draggable ) marker_options.draggable = !!opts.draggable;
+    if ( null != opts.crossOnDrag ) marker_options.crossOnDrag = !!opts.crossOnDrag;
+    if ( null != opts.visible ) marker_options.visible = !!opts.visible;
+    if ( null != opts.icon ) marker_options.icon = opts.icon;
+    if ( null != opts.zIndex ) marker_options.zIndex = opts.zIndex;
+    if ( null != opts.shape ) marker_options.shape = opts.shape;*/
     
     marker = new google.maps.Marker( marker_options );
     if ( !!info )
@@ -1177,7 +1177,6 @@ function add_map_marker( map, lat, lng, title, info, opts )
             if ( data ) marker.setPosition( data.location );
         });
     }
-    
     return marker;
 }
 widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
@@ -1202,15 +1201,14 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
         {
             google.maps.event.addListenerOnce( gmap, 'idle', function( ){
                 google.maps.event.trigger( gmap, 'resize' );
-                var pos = new google.maps.LatLng( c_lat, c_lng );
-                gmap.setCenter( pos );
-                if ( center_marker ) center_marker.setPosition( pos );
+                gmap.setCenter( new google.maps.LatLng( c_lat, c_lng ) );
+                if ( center_marker ) center_marker.setPosition( new google.maps.LatLng( c_lat, c_lng ) );
             });
         }
     }
     
     self.dispose = function( ) {
-        if ( responsive ) $(el.parentNode||document.body).off( 'resize', on_resize );
+        if ( responsive ) $(window).off( 'resize.gmap3', on_resize );
         // http://stackoverflow.com/questions/10485582/what-is-the-proper-way-to-destroy-a-map-instance
         gmap = null;
     };
@@ -1222,15 +1220,12 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 center = el[HAS_ATTR]('data-map-center') ? el[ATTR]('data-map-center').split(',') : options.center || [0,0],
                 has_center_marker = !!el[HAS_ATTR]('data-map-center-marker') || !!options.centerMarker,
                 zoom = int(el[ATTR]('data-map-zoom')||options.zoom||6),
-                type = el[ATTR]('data-map-type')||options.type||"ROADMAP";
+                type = el[ATTR]('data-map-type')||options.type||"ROADMAP",
+                markers = [ ];
             ;
             c_lat = parseFloat(center[0]||0, 10);
             c_lng = parseFloat(center[1]||0, 10);
-            gmap = new google.maps.Map(el, {
-                zoom: zoom,
-                center: new google.maps.LatLng( c_lat, c_lng ),
-                mapTypeId: google.maps.MapTypeId[ type ]
-            });
+            
             if ( has_center_marker )
             {
                 var marker = {
@@ -1239,18 +1234,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                     title: el[ATTR]('title'),
                     info: null
                 };
-                center_marker = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
-            }
-            if ( !!address )
-            {
-                map_geocode(address, function( data ){
-                    if ( data )
-                    {
-                        c_lat = data.location.lat( ); c_lng = data.location.lng( );
-                        gmap.setCenter( data.location );
-                        if ( center_marker ) center_marker.setPosition( data.location );
-                    }
-                });
+                markers.push( center_marker = marker );
             }
             
             // declarative markers
@@ -1267,9 +1251,10 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                     draggable: !!m[ATTR]('data-marker-draggable'),
                     visible: !!m[ATTR]('data-marker-visible')
                 };
-                add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+                markers.push( marker );
             });
             $el.empty( );
+            
             // markers reference
             if ( !!el[ATTR]('data-map-markers') )
             {
@@ -1286,24 +1271,55 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                         draggable: !!m[ATTR]('data-marker-draggable'),
                         visible: !!m[ATTR]('data-marker-visible')
                     };
-                    add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+                    markers.push( marker );
                 });
             }
+            
             // option markers
-            var i, markers = options.markers, marker, l = markers ? markers.length : 0;
+            var i, marker, l = options.markers ? options.markers.length : 0;
             for (i=0; i<l; i++)
             {
                 // add markers, infos to map
-                marker = markers[i];
-                add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+                marker = options.markers[i];
+                markers.push( marker );
             }
+            
+            gmap = new google.maps.Map(el, {
+                zoom: zoom,
+                center: new google.maps.LatLng( c_lat, c_lng ),
+                mapTypeId: google.maps.MapTypeId[ type ]
+            });
+            
+            for(i=0,l=markers.length; i<l; i++)
+            {
+                marker = markers[i];
+                if ( center_marker === marker )
+                    center_marker = add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+                else
+                    add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
+            }
+            markers = null;
+            
+            /*if ( !!address )
+            {
+                map_geocode(address, function( data ){
+                    if ( data )
+                    {
+                        c_lat = data.location.lat( ); c_lng = data.location.lng( );
+                        gmap.setCenter( data.location );
+                        if ( center_marker ) center_marker.setPosition( data.location );
+                    }
+                });
+            }
+            
             if ( null != options.kml )
             {
                 var geoRssLayer = new google.maps.KmlLayer( options.kml );
                 geoRssLayer.setMap( gmap );
-            }
+            }*/
+            
             responsive = !!(el[ATTR]('data-map-responsive')||options.responsive);
-            if ( responsive ) $(el.parentNode||document.body).on( 'resize', on_resize );
+            if ( responsive ) $(window).on( 'resize.gmap3', on_resize );
         }
         else
         {

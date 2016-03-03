@@ -39,7 +39,7 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='', $full=true, $jquery=false, $dev=false )
+    public static function assets( $base='', $full=true, $jquery=false, $dev=false, $cdn=false )
     {
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
@@ -57,13 +57,13 @@ class HtmlWidget
         {
             $assets[] = array('scripts', 'jquery', $asset_base.'jquery.js');
             $assets[] = array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'));
-            $assets[] = array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'));
+            //$assets[] = array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'));
         }
         if ( true === $full )
         {
             $assets = array_merge($assets, array(
             //  external APIS
-             array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false&libraries=places')
+             array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?libraries=places')
             
             // Tao
             ,array('scripts', 'tao', $asset_base.'tao.js')
@@ -166,15 +166,53 @@ class HtmlWidget
             // Masonry
             ,array('scripts', 'masonry', $asset_base.'masonry.js')
              
-            // DataTable
-            ,array('styles', 'datatable.css', $asset_base.'datatable.css')
-            ,array('scripts', 'datatable', $asset_base.'datatable.js', array('datatable.css','jquery'))
-            
             // ImTranslator
             //,array()
             
             // MathJax
             ,array('scripts', 'mathjax', $asset_base.'mathjax/MathJax.js?config=TeX-AMS_HTML-full')
+            
+            // DataTables
+            ,array('styles', 'datatables.css', $asset_base.'datatables/css/datatables.css')
+            ,array('scripts', 'datatables', $asset_base.'datatables/js/datatables.js', array('datatables.css','jquery'))
+            ,array('styles-composite', 'datatables-extra.css', array(
+                $asset_base.'datatables/css/responsive.datatables.css',
+                $asset_base.'datatables/css/buttons.datatables.css',
+                $asset_base.'datatables/css/select.datatables.css',
+                $asset_base.'datatables/css/colreorder.datatables.css',
+                $asset_base.'datatables/css/rowreorder.datatables.css'
+            ), array('datatables.css'))
+            ,array('scripts-composite', 'datatables-extra', array(
+                $asset_base.'datatables/js/datatables.responsive.js',
+                $asset_base.'datatables/js/datatables.buttons.js',
+                $asset_base.'datatables/js/datatables.select.js',
+                $asset_base.'datatables/js/datatables.colreorder.js',
+                $asset_base.'datatables/js/datatables.rowreorder.js'
+            ), array('datatables-extra.css','datatables'))
+            ,array('styles-composite', 'datatables-all.css', array(
+                $asset_base.'datatables/css/responsive.datatables.css',
+                $asset_base.'datatables/css/buttons.datatables.css',
+                $asset_base.'datatables/css/select.datatables.css',
+                $asset_base.'datatables/css/colreorder.datatables.css',
+                $asset_base.'datatables/css/rowreorder.datatables.css',
+                $asset_base.'datatables/css/autofill.datatables.css',
+                $asset_base.'datatables/css/fixedcolumns.datatables.css',
+                $asset_base.'datatables/css/fixedheader.datatables.css',
+                $asset_base.'datatables/css/scroller.datatables.css',
+                $asset_base.'datatables/css/keytable.datatables.css'
+            ), array('datatables.css'))
+            ,array('scripts-composite', 'datatables-all', array(
+                $asset_base.'datatables/js/datatables.responsive.js',
+                $asset_base.'datatables/js/datatables.buttons.js',
+                $asset_base.'datatables/js/datatables.select.js',
+                $asset_base.'datatables/js/datatables.colreorder.js',
+                $asset_base.'datatables/js/datatables.rowreorder.js',
+                $asset_base.'datatables/js/datatables.autofill.js',
+                $asset_base.'datatables/js/datatables.fixedcolumns.js',
+                $asset_base.'datatables/js/datatables.fixedheader.js',
+                $asset_base.'datatables/js/datatables.scroller.js',
+                $asset_base.'datatables/js/datatables.keytable.js'
+            ), array('datatables-all.css','datatables'))
             
             // Tinymce
             ,array('scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js')
@@ -418,6 +456,10 @@ class HtmlWidget
             case 'datatable':
             case 'table':       $out = self::w_table($attr, $data); break;
             case 'animation':   $out = self::w_animation($attr, $data); break;
+            case 'flash':
+            case 'swf':         $out = self::w_swf($attr, $data); break;
+            //case 'video':
+            //case 'audio':
             default: $out = ''; break;
             }
         }
@@ -1263,7 +1305,7 @@ class HtmlWidget
                 $wopts = 'w-opts="htmlw_'.$wid.'_options"';
                 self::enqueue('scripts', 'w-datatable-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
             }
-            self::enqueue('scripts', 'datatable');
+            self::enqueue('scripts', 'datatables');
             self::enqueue('scripts', 'htmlwidgets');
         }
         return "<table id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
@@ -1284,6 +1326,22 @@ class HtmlWidget
     {
         self::enqueue('styles', 'htmlwidgets.css');
         return "</div>";
+    }
+    
+    public static function w_swf( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wclass = 'w-swf'; 
+        if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = self::attributes($attr,array('width','height')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wswf = empty($data['swf']) ? '' : $data['swf'];
+        $wquality = empty($attr['quality']) ? 'best' : $attr['quality'];
+        $wmode = empty($attr['wmode']) ? 'transparent' : $attr['wmode'];
+        $wscale = empty($attr['scale']) ? 'default' : $attr['scale'];
+        $wflashvars = empty($attr['flashvars']) ? '' : $attr['flashvars'];
+        $wallowfullscreen = empty($attr['allowfullscreen']) ? 'false' : $attr['allowfullscreen'];
+        return "<object id=\"{$wid}\" type=\"application/x-shockwave-flash\" {$wextra} data=\"{$wswf}\" class=\"{$wclass}\" $wstyle><param name=\"movie\" value=\"{$wswf}\" /><param name=\"quality\" value=\"{$wquality}\" /><param name=\"wmode\" value=\"{$wmode}\" /><param name=\"scale\" value=\"{$wscale}\" /><param name=\"FlashVars\" value=\"{$wflashvars}\" /><param name=\"allowFullScreen\" value=\"{$wallowfullscreen}\" /></object>";
     }
     
     public static function w_delayable( $attr, $data )

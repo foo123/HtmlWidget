@@ -455,7 +455,7 @@ function scripts( )
     <hr />
     
     <fieldset><legend>Translator</legend>
-    <?php widget('translator'); ?>
+    <?php /*widget('translator');*/ ?>
     </fieldset>
     
     <hr />
@@ -471,6 +471,16 @@ function scripts( )
             'type'          => 'ROADMAP',
             'responsive'    => true
         )
+    ));*/ ?>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Flash Video</legend>
+    <?php /*widget('swf', array(
+        'width' => '600', 'height' => '400'
+    ),array(
+        'swf'    => 'https://www.youtube.com/v/g_2regfwgggreggeW40'
     ));*/ ?>
     </fieldset>
     
