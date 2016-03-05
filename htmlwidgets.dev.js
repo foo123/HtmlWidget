@@ -1,6 +1,6 @@
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
 *  @version: 0.8.7

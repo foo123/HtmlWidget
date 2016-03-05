@@ -1,7 +1,7 @@
 <?php
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for PHP, Node/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
 *  @version: 0.8.7
@@ -178,42 +178,50 @@ class HtmlWidget
             ,array('styles', 'datatables.css', $asset_base.'datatables/css/datatables.css')
             ,array('scripts', 'datatables', $asset_base.'datatables/js/datatables.js', array('datatables.css','jquery'))
             ,array('styles-composite', 'datatables-extra.css', array(
-                $asset_base.'datatables/css/responsive.datatables.css',
-                $asset_base.'datatables/css/buttons.datatables.css',
-                $asset_base.'datatables/css/select.datatables.css',
-                $asset_base.'datatables/css/colreorder.datatables.css',
-                $asset_base.'datatables/css/rowreorder.datatables.css'
+                $asset_base.'datatables/css/responsive.css',
+                $asset_base.'datatables/css/buttons.css',
+                $asset_base.'datatables/css/select.css',
+                $asset_base.'datatables/css/colreorder.css',
+                $asset_base.'datatables/css/rowreorder.css'
             ), array('datatables.css'))
             ,array('scripts-composite', 'datatables-extra', array(
-                $asset_base.'datatables/js/datatables.responsive.js',
-                $asset_base.'datatables/js/datatables.buttons.js',
-                $asset_base.'datatables/js/datatables.select.js',
-                $asset_base.'datatables/js/datatables.colreorder.js',
-                $asset_base.'datatables/js/datatables.rowreorder.js'
+                $asset_base.'datatables/js/responsive.js',
+                $asset_base.'datatables/js/buttons.js',
+                $asset_base.'datatables/js/buttons.colvis.js',
+                $asset_base.'datatables/js/buttons.html5.js',
+                $asset_base.'datatables/js/buttons.flash.js',
+                $asset_base.'datatables/js/buttons.print.js',
+                $asset_base.'datatables/js/select.js',
+                $asset_base.'datatables/js/colreorder.js',
+                $asset_base.'datatables/js/rowreorder.js'
             ), array('datatables-extra.css','datatables'))
             ,array('styles-composite', 'datatables-all.css', array(
-                $asset_base.'datatables/css/responsive.datatables.css',
-                $asset_base.'datatables/css/buttons.datatables.css',
-                $asset_base.'datatables/css/select.datatables.css',
-                $asset_base.'datatables/css/colreorder.datatables.css',
-                $asset_base.'datatables/css/rowreorder.datatables.css',
-                $asset_base.'datatables/css/autofill.datatables.css',
-                $asset_base.'datatables/css/fixedcolumns.datatables.css',
-                $asset_base.'datatables/css/fixedheader.datatables.css',
-                $asset_base.'datatables/css/scroller.datatables.css',
-                $asset_base.'datatables/css/keytable.datatables.css'
+                $asset_base.'datatables/css/responsive.css',
+                $asset_base.'datatables/css/buttons.css',
+                $asset_base.'datatables/css/select.css',
+                $asset_base.'datatables/css/colreorder.css',
+                $asset_base.'datatables/css/rowreorder.css',
+                $asset_base.'datatables/css/autofill.css',
+                $asset_base.'datatables/css/fixedcolumns.css',
+                $asset_base.'datatables/css/fixedheader.css',
+                $asset_base.'datatables/css/scroller.css',
+                $asset_base.'datatables/css/keytable.css'
             ), array('datatables.css'))
             ,array('scripts-composite', 'datatables-all', array(
-                $asset_base.'datatables/js/datatables.responsive.js',
-                $asset_base.'datatables/js/datatables.buttons.js',
-                $asset_base.'datatables/js/datatables.select.js',
-                $asset_base.'datatables/js/datatables.colreorder.js',
-                $asset_base.'datatables/js/datatables.rowreorder.js',
-                $asset_base.'datatables/js/datatables.autofill.js',
-                $asset_base.'datatables/js/datatables.fixedcolumns.js',
-                $asset_base.'datatables/js/datatables.fixedheader.js',
-                $asset_base.'datatables/js/datatables.scroller.js',
-                $asset_base.'datatables/js/datatables.keytable.js'
+                $asset_base.'datatables/js/responsive.js',
+                $asset_base.'datatables/js/buttons.js',
+                $asset_base.'datatables/js/buttons.colvis.js',
+                $asset_base.'datatables/js/buttons.html5.js',
+                $asset_base.'datatables/js/buttons.flash.js',
+                $asset_base.'datatables/js/buttons.print.js',
+                $asset_base.'datatables/js/select.js',
+                $asset_base.'datatables/js/colreorder.js',
+                $asset_base.'datatables/js/rowreorder.js',
+                $asset_base.'datatables/js/autofill.js',
+                $asset_base.'datatables/js/fixedcolumns.js',
+                $asset_base.'datatables/js/fixedheader.js',
+                $asset_base.'datatables/js/scroller.js',
+                $asset_base.'datatables/js/keytable.js'
             ), array('datatables-all.css','datatables'))
             
             // Tinymce
