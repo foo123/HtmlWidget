@@ -2246,6 +2246,119 @@ table.w-table.dataTable thead .sorting_asc::after
 {
     content: "\f0de";
 }
+table.w-table.w-datatable,
+table.w-table
+{
+    position: relative;
+    margin-bottom: 20px;
+    max-width: 100%;
+    width: 100%;
+    background: #fff;
+    border-spacing: 0;
+    border: none;
+    border-collapse: collapse;
+}
+table.w-table.w-datatable.bordered,
+table.w-table.bordered
+{
+    border-collapse: separate;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.w-table.w-datatable.responsive tbody td::before,
+table.w-table.responsive tbody td::before 
+{
+    background: #fff;
+    color: inherit;
+    border-right: 3px solid #ddd;
+    font-size: 1.1em;
+    font-weight: normal;
+    font-family: Helvetica, Arial, sans-serif;
+}
+table.w-table.w-datatable tfoot  tr,
+table.w-table.w-datatable thead  tr,
+table.w-table tfoot  tr,
+table.w-table thead  tr
+{
+    background: #fff !important;
+    color: #121212;
+    font-size: 1em;
+    font-weight: normal;
+    font-family: Helvetica, Arial, sans-serif;
+}
+table.w-table.w-datatable tfoot  td,
+table.w-table.w-datatable tfoot  th,
+table.w-table.w-datatable thead  td,
+table.w-table.w-datatable thead  th,
+table.w-table tfoot  td,
+table.w-table tfoot  th,
+table.w-table thead  td,
+table.w-table thead  th
+{
+    background: none;
+    color: inherit;
+    vertical-align: middle;
+    text-align: left;
+    padding: 14px;
+    font-weight: normal;
+}
+table.w-table.w-datatable tbody  td,
+table.w-table tbody  td
+{
+    background: #fefefe;
+    color: #232323;
+    font-weight: normal;
+    vertical-align: middle;
+    text-align: left;
+    padding: 8px;
+}
+table.w-table.bordered thead  td,
+table.w-table.bordered thead  th
+{
+    border-bottom: 1px solid #ddd;
+}
+table.w-table.bordered tfoot  td,
+table.w-table.bordered tfoot  th
+{
+    border-top: 1px solid #ddd;
+}
+table.w-table.bordered tbody  td
+{
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+table.w-table.w-datatable.stripped tbody tr.odd,
+table.w-table.stripped tbody tr:nth-of-type(2n+1),
+table.w-table.w-datatable.stripped tbody tr.even,
+table.w-table.stripped tbody tr:nth-of-type(2n)
+{
+    background: none;
+}
+table.w-table.w-datatable.stripped tbody tr.even > td,
+table.w-table.w-datatable.stripped tbody tr:nth-of-type(2n) > td,
+table.w-table.stripped tbody tr.even > td,
+table.w-table.stripped tbody tr:nth-of-type(2n) > td
+{
+    background: rgba(0,0,0,0.11);
+}
+table.w-table.vstripped td:nth-of-type(2n)
+{
+    background: rgba(0,0,0,0.11);
+}
+table.w-table.w-datatable tbody tr.selected > td,
+table.w-table.w-datatable tbody tr.selected > td
+{
+    background: #b1c1fb !important;
+}
+table.w-table.fit-content
+{
+    width: auto;
+}
+table.w-table.fit-content td
+{
+    width: 1px !important;
+    padding: 2px 6px !important;
+    white-space: nowrap;
+}
 
 /*!
  * Pikaday
