@@ -1891,12 +1891,15 @@ if ( 'function' === typeof $.fn.onSelector )
         .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable)', widget_able)
     ;
 }
-
 // dynamic tooltips
 if ( 'function' === typeof $.fn.tooltipster )
 {
-    $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
+    /*if ( 'function' === typeof $.fn.onSelector )
+        $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover,.tooltipstered:hover', widget_tooltip);
+    else*/
+        $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
+
 // dynamic popup menus
 if ( 'function' === typeof $.fn.popr2 )
 {
