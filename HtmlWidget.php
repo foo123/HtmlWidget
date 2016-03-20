@@ -177,6 +177,14 @@ class HtmlWidget
             // DataTables
             ,array('styles', 'datatables.css', $asset_base.'datatables/css/datatables.css')
             ,array('scripts', 'datatables', $asset_base.'datatables/js/datatables.js', array('datatables.css','jquery'))
+            ,array('styles-composite', 'datatables-reorder.css', array(
+                $asset_base.'datatables/css/colreorder.css',
+                $asset_base.'datatables/css/rowreorder.css'
+            ), array('datatables.css'))
+            ,array('scripts-composite', 'datatables-reorder', array(
+                $asset_base.'datatables/js/colreorder.js',
+                $asset_base.'datatables/js/rowreorder.js'
+            ), array('datatables-reorder.css','datatables'))
             ,array('styles-composite', 'datatables-extra.css', array(
                 $asset_base.'datatables/css/responsive.css',
                 $asset_base.'datatables/css/buttons.css',

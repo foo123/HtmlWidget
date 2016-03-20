@@ -1,0 +1,17 @@
+{
+	"processing": "Please Wait...",
+	"lengthMenu": "Show _MENU_ entries",
+	"zeroRecords": "No entries found",
+	"info": "_START_ to _END_ from _TOTAL_ entries",
+	"infoEmpty": "0 to 0 from 0 entries",
+	"infoFiltered": "(from _MAX_ entries)",
+	"infoPostFix": "",
+	"search": "Search",
+	"url": "",
+	"paginate": {
+		"first":    "First",
+		"previous": "Previous",
+		"next":     "Next",
+		"last":     "Last"
+	}
+}

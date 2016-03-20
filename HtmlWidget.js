@@ -240,6 +240,14 @@ var HtmlWidget = self = {
             // DataTables
             ,['styles', 'datatables.css', asset_base+'datatables/css/datatables.css']
             ,['scripts', 'datatables', asset_base+'datatables/js/datatables.js', ['datatables.css','jquery']]
+            ,['styles-composite', 'datatables-reorder.css', [
+                asset_base+'datatables/css/colreorder.css',
+                asset_base+'datatables/css/rowreorder.css'
+            ], ['datatables.css']]
+            ,['scripts-composite', 'datatables-reorder', [
+                asset_base+'datatables/js/colreorder.js',
+                asset_base+'datatables/js/rowreorder.js'
+            ], ['datatables-reorder.css','datatables']]
             ,['styles-composite', 'datatables-extra.css', [
                 asset_base+'datatables/css/responsive.css',
                 asset_base+'datatables/css/buttons.css',

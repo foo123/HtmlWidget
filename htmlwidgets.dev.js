@@ -35,6 +35,8 @@ var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.7', wid
     json_decode = JSON.parse, json_encode = JSON.stringify,
     base64_decode = atob, base64_encode = btoa,
     
+    camel_case_re = /(_)([a-z])/g, snake_case_re = /([a-z])([A-Z])/g,
+    
     int = function( x ) { return parseInt(x||0,10)||0; },
     
     DragDropUploadCap = (function( ) {
@@ -156,7 +158,70 @@ function datauri2blob( dataUri, mimeType )
     };
 }*/
 
-//$.htmlwidget = htmlwidget;
+function data2options( el, nameSpace, opts, camelCase, att )
+{
+    opts = opts || {};
+    if ( !el || !nameSpace ) return opts;
+    camelCase = true === camelCase;
+    var prefix;
+    if ( null != att )
+    {
+        prefix = '-';
+    }
+    else
+    {
+        att = el.attributes;
+        prefix = 'data-'+nameSpace/*.toLowerCase( )*/+'-';
+    }
+    var prefix_len = prefix.length, name, nam, pos;
+    for(var i=0,len=att.length; i<len; i++)
+    {
+        name = att[i].name;
+        if ( (name.length > prefix_len) && (prefix === name.slice( 0, prefix_len )) )
+        {
+            name = name.slice( prefix_len );
+            if ( camelCase )
+                name = name.toLowerCase( ).replace(camel_case_re, function(m, m1, m2){return m2.toUpperCase( );});
+            if ( -1 < (pos=name.indexOf('-')) )
+            {
+                // nested attribute
+                nam = name.slice(0,pos);
+                opts[nam] = data2options( el, nameSpace, opts[nam]||{}, camelCase, [{name:name.slice(pos),value:att[i].value}] );
+            }
+            else
+            {
+                opts[name] = att[i].value;
+            }
+        }
+    }
+    return opts;
+}
+function options2data( opts, nameSpace, data, snakeCase, prefix )
+{
+    data = data || {};
+    if ( !opts || !nameSpace ) return data;
+    snakeCase = true === snakeCase;
+    if ( !prefix ) prefix = 'data-'+nameSpace/*.toLowerCase( )*/+'-';
+    var att = Object.keys(opts), name, value;
+    for(var i=0,len=att.length; i<len; i++)
+    {
+        name = att[i]; value = opts[name];
+        if ( snakeCase )
+            name = name.replace(snake_case_re, function(m, m1, m2){return m1+'_'+m2.toLowerCase( );});
+        if ( 'object' === typeof value )
+        {
+            // nested option
+            data = options2data( value, nameSpace, data, prefix+name+'-', snakeCase );
+        }
+        else
+        {
+            data[prefix+name] = value;
+        }
+    }
+    return data;
+}
+htmlwidget.dataOptions = data2options;
+htmlwidget.optionsData = options2data;
 
 // adapted from jquery-ui
 function widget2jquery( name, widget, spr )
@@ -234,6 +299,7 @@ function widget2jquery( name, widget, spr )
     };
 }
 htmlwidget.make = widget2jquery;
+
 htmlwidget.dispatch = function( event, element, data, native ) {
     var evt; // The custom event that will be created
     if ( false === native )
@@ -262,6 +328,7 @@ htmlwidget.dispatch = function( event, element, data, native ) {
         }
     }
 };
+
 htmlwidget.resetFormElements = function ( els ) {
   if ( els.length )
   {
@@ -1380,8 +1447,15 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     };
 });	
 
-htmlwidget._handleDefault = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' === typeof $.fn[type] )
+htmlwidget._handleDefault = function( type, el, opts, pre_init, post_init, pluginClass ) {
+    if ( pluginClass && ('function' === typeof window[pluginClass]) )
+    {
+        // existing generic plugin class
+        if ( pre_init ) pre_init( el, opts );
+        new window[pluginClass]( el, opts );
+        if ( post_init ) post_init( el, opts );
+    }
+    else if ( 'function' === typeof $.fn[type] )
     {
         // existing jquery plugin
         if ( pre_init ) pre_init( el, opts );
@@ -1487,27 +1561,6 @@ htmlwidget._handle['datatable'] = function( type, el, opts, pre_init, post_init 
             dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
         }
     }
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['packery'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'undefined' === typeof Packery ) return;
-    if ( pre_init ) pre_init( el, opts );
-    new Packery( el, opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['isotope'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'undefined' === typeof Isotope ) return;
-    if ( pre_init ) pre_init( el, opts );
-    new Isotope( el, opts );
-    if ( post_init ) post_init( el, opts );
-};
-
-htmlwidget._handle['masonry'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'undefined' === typeof Masonry ) return;
-    if ( pre_init ) pre_init( el, opts );
-    new Masonry( el, opts );
     if ( post_init ) post_init( el, opts );
 };
 
@@ -1689,6 +1742,8 @@ $.fn.htmlwidget = function( type, options ) {
         this.each(function( ){
             var el = this, opts, pre_init = null, post_init = null;
             opts = el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) ? window[el[ATTR]('w-opts')] : options;
+            // handle extra element data attributes as options
+            //opts = $.extend(true, opts, data2options(el, type));
             if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
                 pre_init = window[opts['w-pre-init']];
             if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
@@ -1698,6 +1753,7 @@ $.fn.htmlwidget = function( type, options ) {
     }
     else
     {
+        var pluginClass = null;
         // type aliases
         switch(type)
         {
@@ -1741,6 +1797,12 @@ $.fn.htmlwidget = function( type, options ) {
                 type = 'tinymce'; break;
             case 'syntax-editor':
                 type = 'codemirror'; break;
+            case 'packery':
+                pluginClass = 'Packery'; break;
+            case 'masonry':
+                pluginClass = 'Masonry'; break;
+            case 'isotope':
+                pluginClass = 'Isotope'; break;
             default:
                 break;
         }
@@ -1749,11 +1811,13 @@ $.fn.htmlwidget = function( type, options ) {
             var el = this, opts, pre_init = null, post_init = null;
             opts = el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) ? window[el[ATTR]('w-opts')] : options;
             if ( 'object' === typeof opts['options_'+type] ) opts = opts['options_'+type];
+            // handle extra element data attributes as options
+            //opts = $.extend(true, opts, data2options(el, type));
             if ( !!opts['w-pre-init'] && ('function' === typeof window[opts['w-pre-init']]) )
                 pre_init = window[opts['w-pre-init']];
             if ( !!opts['w-post-init'] && ('function' === typeof window[opts['w-post-init']]) )
                 post_init = window[opts['w-post-init']];
-            widget_handler( type, el, opts, pre_init, post_init );
+            widget_handler( type, el, opts, pre_init, post_init, pluginClass );
         });
     }
     return this;
@@ -1866,8 +1930,75 @@ window["__htmlwidget_init__"] = function( e ){
     htmlwidget.init( e );
 };
 
+/*!
+ * contentloaded.js
+ *
+ * Author: Diego Perini (diego.perini at gmail.com)
+ * Summary: cross-browser wrapper for DOMContentLoaded
+ * Updated: 20101020
+ * License: MIT
+ * Version: 1.2
+ *
+ * URL:
+ * http://javascript.nwbox.com/ContentLoaded/
+ * http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
+ *
+ */
+// @win window reference
+// @fn function reference
+function contentLoaded(win, fn) {
+
+	var done = false, top = true,
+
+	doc = win.document,
+	root = doc.documentElement,
+	modern = doc.addEventListener,
+
+	add = modern ? 'addEventListener' : 'attachEvent',
+	rem = modern ? 'removeEventListener' : 'detachEvent',
+	pre = modern ? '' : 'on',
+
+	init = function(e) {
+		if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+		(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+		if (!done && (done = true)) fn.call(win, e.type || e);
+	},
+
+	poll = function() {
+		try { root.doScroll('left'); } catch(e) { setTimeout(poll, 50); return; }
+		init('poll');
+	};
+
+	if (doc.readyState == 'complete') fn.call(win, 'lazy');
+	else {
+		if (!modern && root.doScroll) {
+			try { top = !win.frameElement; } catch(e) { }
+			if (top) poll();
+		}
+		doc[add](pre + 'DOMContentLoaded', init, false);
+		doc[add](pre + 'readystatechange', init, false);
+		win[add](pre + 'load', init, false);
+	}
+
+}
+
+var domReady_hooked = false, domReady_loaded = false, domReady_queue = [ ];
+htmlwidget.domReady = function domReady( f ) {
+    if ( !domReady_hooked )
+    {
+        domReady_hooked = true;
+        contentLoaded(window, function( type ){
+            domReady_loaded = true;
+            var q = domReady_queue;
+            while ( q.length ) q.shift( )( );
+        });
+    }
+    if ( domReady_loaded ) setTimeout(f, 10);
+    else domReady_queue.push( f );
+};
+
 // on dom ready, init and listen
-$(function( ){
+htmlwidget.domReady(function( ){
 
 if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
 if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
@@ -1895,9 +2026,9 @@ if ( 'function' === typeof $.fn.onSelector )
 if ( 'function' === typeof $.fn.tooltipster )
 {
     /*if ( 'function' === typeof $.fn.onSelector )
-        $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover,.tooltipstered:hover', widget_tooltip);
+        $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover', widget_tooltip);
     else*/
-        $body.on('mouseover', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
+        $body.on('mouseenter.htmlwidget touchstart.htmlwidget', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
 
 // dynamic popup menus
@@ -1912,10 +2043,10 @@ if ( 'function' === typeof $.fn.popr2 )
 
 // w-file controls
 $body
-    .on('change', 'input[type=file].w-file-input', function( ){
+    .on('change.htmlwidget', 'input[type=file].w-file-input', function( ){
         this.nextSibling.value = this.value;
     })
-    .on('click', 'input[type=file].w-file-input+input.w-file', function( ){
+    .on('click.htmlwidget', 'input[type=file].w-file-input+input.w-file', function( ){
         $(this.previousSibling).trigger('click');
         return false;
     })
