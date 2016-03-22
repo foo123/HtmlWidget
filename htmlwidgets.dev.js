@@ -1998,7 +1998,7 @@ htmlwidget.domReady = function domReady( f ) {
 };
 
 // on dom ready, init and listen
-htmlwidget.domReady(function( ){
+$(function( ){
 
 if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
 if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
