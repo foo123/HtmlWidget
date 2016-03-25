@@ -3,6 +3,9 @@
 standalone and pluggable optimised, localised, modular and dynamicaly initialised html widgets / components for Node/XPCOM/JS, PHP, Python (in progress)
 
 
+![HtmlWidget](/htmlwidget.jpg)
+
+
 **related projects:**
 
 *  [components.css](https://github.com/foo123/components.css)
