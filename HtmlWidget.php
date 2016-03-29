@@ -73,6 +73,9 @@ class HtmlWidget
             // Cookie
             ,array('scripts', 'cookie', $asset_base.'cookie.js')
             
+            // isMobile
+            ,array('scripts', 'ismobile', $asset_base.'ismobile.js')
+            
             // Modernizr
             ,array('scripts', 'modernizr', $asset_base.'modernizr.js')
             

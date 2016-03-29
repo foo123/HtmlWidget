@@ -732,9 +732,10 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
     };
     self.init = function( ) {
         var control = $(el),
+            mobile_device = 'undefined' !== typeof isMobile ? isMobile.any : false,
             $file = control.find('input._w-dnd-uploader[type=file]'),
-            upload_thumbnail = control.hasClass('__with_thumbnail__'),
-            show_preview = upload_thumbnail || control.hasClass('__with_preview__'),
+            upload_thumbnail = !mobile_device && control.hasClass('__with_thumbnail__'),
+            show_preview = !mobile_device && (upload_thumbnail || control.hasClass('__with_preview__')),
             filesize = ($file[0][HAS_ATTR]('data-dnd-upload-filesize')
                 ? int($file[0][ATTR]('data-dnd-upload-filesize'))
                 : int(options.filesize||1048576)) || 1048576,

@@ -136,6 +136,9 @@ var HtmlWidget = self = {
             // Cookie
             ,['scripts', 'cookie', asset_base+'cookie.js']
             
+            // isMobile
+            ,['scripts', 'ismobile', asset_base+'ismobile.js']
+            
             // Modernizr
             ,['scripts', 'modernizr', asset_base+'modernizr.js']
             
