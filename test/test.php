@@ -487,23 +487,23 @@ function scripts( )
     <hr />
     
     <fieldset><legend>Html5 Audio</legend>
-    <?php widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
+    <?php /*widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
         'sources'    => options(array(
         './audio.mp3' => 'audio/mp3',
         './audio.ogg' => 'audio/ogg'
         ),-1)
-    )); ?>
+    ));*/ ?>
     </fieldset>
     
     <hr />
     
     <fieldset><legend>Html5 Video</legend>
-    <?php widget('video', array('autoplay'=>1,'controls'=>1),array(
+    <?php /*widget('video', array('autoplay'=>1,'controls'=>1),array(
         'sources'    => options(array(
         './video.mp4' => 'video/mp4',
         './video.ogv' => 'video/ogv'
         ),-1)
-    )); ?>
+    ));*/ ?>
     </fieldset>
     
     <hr />
@@ -537,12 +537,51 @@ function scripts( )
         '2' => 'Option 2',
         '3' => 'Option 3'
     ),-1), 'value'=>1)); ?>
+    <span>A choice:</span> <?php widget('radiolist',array('class'=>'w-large','name'=>'demo_list_2_1','horizontal'=>true),array('options'=>options(array(
+        '1' => 'Option 1',
+        '2' => 'Option 2',
+        '3' => 'Option 3'
+    ),-1), 'value'=>1)); ?>
     <?php widget('radiolist',array('class'=>'w-xlarge','name'=>'demo_list_3','disabled'=>1),array('options'=>options(array(
         '1' => 'Option 1 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option',
         '2' => 'Option 2 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option',
         '3' => 'Option 3 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option'
     ),-1), 'value'=>3)); ?>
     
+    <hr />
+    <?php widget('checkbox-array',array('name'=>'demo_array_1','randomised'=>true),array(
+    'fields'=>array(
+    'darth_vader'=>'Darth Vader',
+    'obi_wan'=>'Obi Wan',
+    'yoda'=>'Yoda'
+    ),
+    'options'=>options(array(
+        '1' => 'Option 1',
+        '2' => 'Option 2',
+        '3' => 'Option 3'
+    ),-1),
+    'value'=>array(
+    'darth_vader'=>array(2,3),
+    'yoda'=>array(1,3)
+    )
+    )); ?>
+    <?php widget('radio-array',array('class'=>'w-large','name'=>'demo_array_2'),array(
+    'fields'=>array(
+    'darth_vader'=>'Darth Vader',
+    'obi_wan'=>'Obi Wan',
+    'yoda'=>'Yoda'
+    ),
+    'options'=>options(array(
+        '1' => 'Option 1',
+        '2' => 'Option 2',
+        '3' => 'Option 3'
+    ),-1),
+    'value'=>array(
+    'darth_vader'=>2,
+    'obi_wan'=>3,
+    'yoda'=>1
+    )
+    )); ?>
     <hr />
     
     <?php widget('checkbox-image',array('image'=>'./luxury.jpg','name'=>'demo_image_1','style'=>'width:152px;height:152px'),array()); ?>

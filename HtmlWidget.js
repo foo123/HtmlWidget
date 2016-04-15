@@ -58,6 +58,18 @@ function merge( a, b )
     return c;
 }
 
+function shuffle( a )
+{
+    var p, b, i;
+    for (i=a.length-1; i>0; i--)
+    { 
+        p = Math.round(i*Math.random()); 
+        if ( i === p ) continue;
+        b = a[ i ]; a[ i ] = a[ p ]; a[ p ] = b; 
+    }
+    return a;
+}
+
 function data_attr( k, v )
 {
     if ( 'object' === typeof v )
@@ -482,6 +494,8 @@ var HtmlWidget = self = {
             
             if ( "audio" === widget ) attr["type"] = "audio";
             else if ( "video" === widget ) attr["type"] = "video";
+            else if ( "checkbox-array" === widget || "check-array" === widget ) attr["type"] = "checkbox";
+            else if ( "radiobox-array" === widget || "radio-array" === widget ) attr["type"] = "radio";
             else if ( "checkbox-list" === widget || "checklist" === widget ) attr["type"] = "checkbox";
             else if ( "radiobox-list" === widget || "radio-list" === widget || "radiolist" === widget ) attr["type"] = "radio";
             else if ( "checkbox-image" === widget ) attr["type"] = "checkbox";
@@ -561,6 +575,10 @@ var HtmlWidget = self = {
             case 'rating':      out = self.w_rating(attr, data); break;
             case 'map':
             case 'gmap':        out = self.w_gmap(attr, data); break;
+            case 'radiobox-array':
+            case 'radio-array':
+            case 'checkbox-array':
+            case 'check-array': out = self.w_control_array(attr, data); break;
             case 'radiobox-list':
             case 'radio-list':
             case 'radiolist':
@@ -762,6 +780,7 @@ var HtmlWidget = self = {
         w_large = !!wclass && (-1 !== (' '+wclass+' ').indexOf(' w-large '));
         w_xlarge = !!wclass && (-1 !== (' '+wclass+' ').indexOf(' w-xlarge '));
         w_item_atts = self.attributes(attr,['readonly','disabled','data']);
+        if ( !empty(attr,"horizontal") ) wclass += ' w-control-list-horizontal w-clearfloat';
         if ( 'radio' == wtype )
         {
             if ( w_xlarge ) w_item_class = 'w-xlarge';
@@ -818,6 +837,101 @@ var HtmlWidget = self = {
                 })+'</li>';
             }
             widget += '</ul>';
+        }
+        self.enqueue('styles', 'htmlwidgets.css');
+        return widget;
+    }
+    
+    ,w_control_array: function( attr, data ) {
+        var wid, wname, wclass, wstyle, wextra, wvalues, wvalue, woptions, wfields, fields, field, f,fl,
+            w_item_atts, w_item_class, w_item_name, w_large, w_xlarge, i, l, opt, widget;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wname = !empty(attr,"name") ? attr["name"] : null;
+        wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
+        wvalue = isset(data,"value") ? data["value"] : "1"; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wfields = data['fields'] || {};
+        woptions = [].concat(data['options']);
+        wvalues = isset(data,'value') ? data['value'] : {};
+        wclass = !empty(attr,"class") ? attr["class"] : '';
+        w_large = !!wclass && (-1 !== (' '+wclass+' ').indexOf(' w-large '));
+        w_xlarge = !!wclass && (-1 !== (' '+wclass+' ').indexOf(' w-xlarge '));
+        w_item_atts = self.attributes(attr,['readonly','disabled','data']);
+        fields = KEYS(wfields);
+        if ( !empty(attr,"randomised") ) shuffle(fields);
+        if ( 'radio' == wtype )
+        {
+            if ( w_xlarge ) w_item_class = 'w-xlarge';
+            else if ( w_large ) w_item_class = 'w-large';
+            else w_item_class = '';
+            widget = '<table id="'+wid+'" class="w-control-array w-radio-array '+wclass+'" '+wstyle+' '+wextra+'>';
+            widget += '<thead><tr><td>&nbsp;</td>';
+            for (i=0,l=woptions.length; i<l; i++)
+            {
+                opt = woptions[i];
+                widget += '<td>'+opt[1]+'</td>';
+            }
+            widget += '<td>&nbsp;</td></tr></thead><tbody>';
+            for (f=0,fl=fields.length; f<fl; f++)
+            {
+                field = fields[f];
+                widget += '<tr><td>'+wfields[field]+'</td>';
+                w_item_name = wname+'['+field+']';
+                for (i=0,l=woptions.length; i<l; i++)
+                {
+                    opt = woptions[i];
+                    widget += '<td>'+self.widget('radio',{
+                        'id'        : wid+'_'+field+'_'+(i+1),
+                        'name'      : w_item_name,
+                        'class'     : w_item_class,
+                        'title'     : opt[1],
+                        'checked'   : isset(wvalues,field) && (opt[0] == wvalues[field]),
+                        'extra'     : w_item_atts
+                    },{
+                        'value'     : opt[0]
+                    })+'</td>';
+                }
+                widget += '<td>&nbsp;</td></tr>';
+            }
+            widget += '</tbody></table>';
+        }
+        else
+        {
+            if ( w_xlarge ) w_item_class = 'w-xlarge';
+            else if ( w_large ) w_item_class = 'w-large';
+            else w_item_class = '';
+            widget = '<table id="'+wid+'" class="w-control-array w-checkbox-array '+wclass+'" '+wstyle+' '+wextra+'>';
+            widget += '<thead><tr><td>&nbsp;</td>';
+            for (i=0,l=woptions.length; i<l; i++)
+            {
+                opt = woptions[i];
+                widget += '<td>'+opt[1]+'</td>';
+            }
+            widget += '<td>&nbsp;</td></tr></thead><tbody>';
+            for (f=0,fl=fields.length; f<fl; f++)
+            {
+                field = fields[f];
+                wvalue = isset(wvalues,field) ? [].concat(wvalues[field]) : [];
+                widget += '<tr><td>'+wfields[field]+'</td>';
+                w_item_name = wname+'['+field+']';
+                for (i=0,l=woptions.length; i<l; i++)
+                {
+                    opt = woptions[i];
+                    widget += '<td>'+self.widget('checkbox',{
+                        'id'        : wid+'_'+field+'_'+(i+1),
+                        'name'      : w_item_name,
+                        'class'     : w_item_class,
+                        'title'     : opt[1],
+                        'checked'   : -1 < wvalue.indexOf(opt[0]),
+                        'extra'     : w_item_atts
+                    },{
+                        'value'     : opt[0]
+                    })+'</td>';
+                }
+                widget += '<td>&nbsp;</td></tr>';
+            }
+            widget += '</tbody></table>';
         }
         self.enqueue('styles', 'htmlwidgets.css');
         return widget;

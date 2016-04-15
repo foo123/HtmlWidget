@@ -398,6 +398,8 @@ class HtmlWidget
             
             if ( "audio" === $widget ) $attr["type"] = "audio";
             elseif ( "video" === $widget ) $attr["type"] = "video";
+            elseif ( "checkbox-array" === $widget || "check-array" === $widget ) $attr["type"] = "checkbox";
+            elseif ( "radiobox-array" === $widget || "radio-array" === $widget ) $attr["type"] = "radio";
             elseif ( "checkbox-list" === $widget || "checklist" === $widget ) $attr["type"] = "checkbox";
             elseif ( "radiobox-list" === $widget || "radio-list" === $widget || "radiolist" === $widget ) $attr["type"] = "radio";
             elseif ( "checkbox-image" === $widget ) $attr["type"] = "checkbox";
@@ -477,6 +479,10 @@ class HtmlWidget
             case 'rating':      $out = self::w_rating($attr, $data); break;
             case 'map':
             case 'gmap':        $out = self::w_gmap($attr, $data); break;
+            case 'radiobox-array':
+            case 'radio-array':
+            case 'checkbox-array':
+            case 'check-array': $out = self::w_control_array($attr, $data); break;
             case 'radiobox-list':
             case 'radio-list':
             case 'radiolist':
@@ -673,12 +679,13 @@ class HtmlWidget
         $w_large = !empty($wclass) && (false !== strpos(' '.$wclass.' ',' w-large '));
         $w_xlarge = !empty($wclass) && (false !== strpos(' '.$wclass.' ',' w-xlarge '));
         $w_item_atts = self::attributes($attr,array('readonly','disabled','data'));
+        if ( !empty($attr["horizontal"]) ) $wclass .= ' w-control-list-horizontal w-clearfloat';
         if ( 'radio' == $wtype )
         {
             if ( $w_xlarge ) $w_item_class = 'w-xlarge';
             elseif ( $w_large ) $w_item_class = 'w-large';
             else $w_item_class = '';
-            $widget = '<ol id="'.$wid.'" class="w-control-list w-radio-list $wclass" '.$wstyle.' '.$wextra.'>';
+            $widget = '<ol id="'.$wid.'" class="w-control-list w-radio-list '.$wclass.'" '.$wstyle.' '.$wextra.'>';
             foreach($woptions as $i=>$opt)
             {
                 $widget .= '<li class="w-control-list-option">'.self::widget('radio',array(
@@ -706,7 +713,7 @@ class HtmlWidget
             if ( $w_xlarge ) $w_item_class = 'w-xlarge';
             elseif ( $w_large ) $w_item_class = 'w-large';
             else $w_item_class = '';
-            $widget = '<ul id="'.$wid.'" class="w-control-list w-checkbox-list $wclass" '.$wstyle.' '.$wextra.'>';
+            $widget = '<ul id="'.$wid.'" class="w-control-list w-checkbox-list '.$wclass.'" '.$wstyle.' '.$wextra.'>';
             foreach($woptions as $i=>$opt)
             {
                 $widget .= '<li class="w-control-list-option">'.self::widget('checkbox',array(
@@ -727,6 +734,93 @@ class HtmlWidget
                 )).'</li>';
             }
             $widget .= '</ul>';
+        }
+        self::enqueue('styles', 'htmlwidgets.css');
+        return $widget;
+    }
+    
+    public static function w_control_array( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wname = !empty($attr["name"]) ? $attr["name"] : null;
+        $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? (' '.$attr["extra"]) : '';
+        $wfields = (array)$data['fields'];
+        $woptions = (array)$data['options'];
+        $wvalues = isset($data['value']) ? (array)$data['value'] : array();
+        $wclass = !empty($attr["class"]) ? $attr["class"] : '';
+        $w_large = !empty($wclass) && (false !== strpos(' '.$wclass.' ',' w-large '));
+        $w_xlarge = !empty($wclass) && (false !== strpos(' '.$wclass.' ',' w-xlarge '));
+        $w_item_atts = self::attributes($attr,array('readonly','disabled','data'));
+        $fields = array_keys($wfields);
+        if ( !empty($attr["randomised"]) ) shuffle($fields);
+        if ( 'radio' == $wtype )
+        {
+            if ( $w_xlarge ) $w_item_class = 'w-xlarge';
+            elseif ( $w_large ) $w_item_class = 'w-large';
+            else $w_item_class = '';
+            $widget = '<table id="'.$wid.'" class="w-control-array w-radio-array '.$wclass.'" '.$wstyle.' '.$wextra.'>';
+            $widget .= '<thead><tr><td>&nbsp;</td>';
+            foreach($woptions as $i=>$opt)
+            {
+                $widget .= '<td>'.$opt[1].'</td>';
+            }
+            $widget .= '<td>&nbsp;</td></tr></thead><tbody>';
+            foreach($fields as $field)
+            {
+                $widget .= '<tr><td>'.$wfields[$field].'</td>';
+                $w_item_name = $wname.'['.$field.']';
+                foreach($woptions as $i=>$opt)
+                {
+                    $widget .= '<td>'.self::widget('radio',array(
+                        'id'        => $wid.'_'.$field.'_'.($i+1),
+                        'name'      => $w_item_name,
+                        'class'     => $w_item_class,
+                        'title'     => $opt[1],
+                        'checked'   => isset($wvalues[$field]) && ($opt[0] == $wvalues[$field]),
+                        'extra'     => $w_item_atts
+                    ),array(
+                        'value'     => $opt[0]
+                    )).'</td>';
+                }
+                $widget .= '<td>&nbsp;</td></tr>';
+            }
+            $widget .= '</tbody></table>';
+        }
+        else
+        {
+            if ( $w_xlarge ) $w_item_class = 'w-xlarge';
+            elseif ( $w_large ) $w_item_class = 'w-large';
+            else $w_item_class = '';
+            $widget = '<table id="'.$wid.'" class="w-control-array w-checkbox-array '.$wclass.'" '.$wstyle.' '.$wextra.'>';
+            $widget .= '<thead><tr><td>&nbsp;</td>';
+            foreach($woptions as $i=>$opt)
+            {
+                $widget .= '<td>'.$opt[1].'</td>';
+            }
+            $widget .= '<td>&nbsp;</td></tr></thead><tbody>';
+            foreach($fields as $field)
+            {
+                $wvalue = isset($wvalues[$field]) ? (array)$wvalues[$field] : array();
+                $widget .= '<tr><td>'.$wfields[$field].'</td>';
+                $w_item_name = $wname.'['.$field.']';
+                foreach($woptions as $i=>$opt)
+                {
+                    $widget .= '<td>'.self::widget('checkbox',array(
+                        'id'        => $wid.'_'.$field.'_'.($i+1),
+                        'name'      => $w_item_name,
+                        'class'     => $w_item_class,
+                        'title'     => $opt[1],
+                        'checked'   => in_array($opt[0],$wvalue),
+                        'extra'     => $w_item_atts
+                    ),array(
+                        'value'     => $opt[0]
+                    )).'</td>';
+                }
+                $widget .= '<td>&nbsp;</td></tr>';
+            }
+            $widget .= '</tbody></table>';
         }
         self::enqueue('styles', 'htmlwidgets.css');
         return $widget;

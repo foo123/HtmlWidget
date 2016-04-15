@@ -34,6 +34,15 @@ input.w-checkbox + label
     -o-box-sizing: border-box;
     box-sizing: border-box;
 }
+/* clearfix container hack */
+/* https://css-tricks.com/snippets/css/clear-fix/ */
+.w-clearfloat:after 
+{
+    content: "";
+    display: table;
+    clear: both;
+}
+
 .w-widget.w-control-list,
 .w-control-list
 {
@@ -45,6 +54,49 @@ input.w-checkbox + label
 {
     max-width: 300px;
     word-wrap: normal;
+}
+.w-widget.w-control-list.w-control-list-horizontal,
+.w-control-list.w-control-list-horizontal
+{
+    list-style-type: none !important;
+    display: inline-block;
+    padding: 0;
+}
+.w-widget.w-control-list.w-control-list-horizontal > li,
+.w-control-list.w-control-list-horizontal > li
+{
+    display: inline-block;
+    padding: 4px;
+    text-align: center;
+    max-width: 100px;
+}
+.w-widget.w-control-list.w-control-list-horizontal > li > .w-control-list-option-label,
+.w-control-list.w-control-list-horizontal > li > .w-control-list-option-label
+{
+    display: none;
+}
+.w-widget.w-control-array,
+.w-control-array
+{
+    position: relative;
+    display: table;
+}
+.w-widget.w-control-array td,
+.w-control-array  td
+{
+    padding: 4px;
+}
+.w-widget.w-control-array thead td,
+.w-control-array  thead td
+{
+    text-align: center;
+    font-weight: bold;
+}
+.w-widget.w-control-array tbody td:first-child,
+.w-control-array  tbody td:first-child
+{
+    text-align: right;
+    font-weight: bold;
 }
 .w-widget.w-dnd-upload,
 .w-widget.w-upload,
