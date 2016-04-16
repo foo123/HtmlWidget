@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.7
+*  @version: 0.8.8
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -91,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.7"
+    VERSION: "0.8.8"
     
     ,BASE: './'
     
@@ -110,11 +110,20 @@ var HtmlWidget = self = {
         }
     }
     
-    ,assets: function( base, full, jquery, dev, cdn ) {
+    ,assets: function( opts ) {
+        opts = merge({
+            'base'      : '',
+            'full'      : true,
+            'jquery'    : false,
+            'dev'       : false,
+            'cdn'       : false
+        }, opts);
+        
+        var dev = true === opts['dev'], cdn = true === opts['cdn'];
+        var base = opts['base'];
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
-        dev = true === dev;
         var assets = [
          ['styles', 'htmlwidgets.css', dev ? base+'htmlwidgets.dev.css' : base+'htmlwidgets.css']
         ,['styles', 'normalize.css', asset_base+'normalize.css']
@@ -123,20 +132,25 @@ var HtmlWidget = self = {
         ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         ];
-        if ( true === jquery )
+        if ( true === opts['jquery'] )
         {
-            assets.push(['scripts', 'jquery', asset_base+'jquery.js']);
-            assets.push(['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]);
-            //assets.push(['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]);
+            assets = assets.concat(cdn
+            ? [
+                 ['scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js']
+                //,['scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js']
+                ,['scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', ['jquery']]
+            ]
+            : [
+                 ['scripts', 'jquery', asset_base+'jquery.js']
+                ,['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]
+                //,['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]
+            ]
+            );
         }
-        if ( arguments.length < 2 || true === full )
+        if ( true === opts['full'] )
         {
             assets = assets.concat([
-            //  external APIS
-             ['scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?libraries=places']
-            
-            // Tao
-            ,['scripts', 'tao', asset_base+'tao.js']
+             ['scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places']
             
             // Humane
             ,['styles', 'humane.css', asset_base+'humane.css']
@@ -154,6 +168,9 @@ var HtmlWidget = self = {
             // Modernizr
             ,['scripts', 'modernizr', asset_base+'modernizr.js']
             
+            // Typo
+            ,['scripts', 'typo', asset_base+'typo/typo.js']
+            
             // html5media
             ,['scripts', 'html5media', asset_base+'html5media/html5media.js']
             
@@ -161,19 +178,12 @@ var HtmlWidget = self = {
             ,['styles', 'video-js.css', asset_base+'video.js/video-js.css']
             ,['scripts', 'video.js', asset_base+'video.js/video.js', ['video-js.css']]
             
-            // Serialiser
-            ,['scripts', 'serialiser', asset_base+'serialiser.js']
-            
             // Timer
             ,['scripts', 'timer', asset_base+'timer.js']
             
             // DateX
             ,['scripts', 'datex', asset_base+'datex.js']
             
-            // SunDial
-            //,['styles', 'sundial.css', asset_base+'sundial.css']
-            //,['scripts', 'sundial', asset_base+'sundial.js', ['sundial.css','datex']]
-             
             // Pikadaytime
             ,['styles', 'pikadaytime.css', asset_base+'pikadaytime.css']
             ,['scripts', 'pikadaytime', asset_base+'pikadaytime.js', ['pikadaytime.css','datex']]
@@ -182,12 +192,12 @@ var HtmlWidget = self = {
             ,['styles', 'colorpicker.css', asset_base+'colorpicker.css']
             ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css']]
              
+            // LocationPicker
+            ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['cdn--google-maps','jquery']]
+             
             // AreaSelect
             ,['styles', 'areaselect.css', asset_base+'areaselect.css']
             ,['scripts', 'areaselect', asset_base+'areaselect.js', ['areaselect.css']]
-             
-            // LocationPicker
-            ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['-external-google-maps-api','jquery']]
              
             // RangeSlider
             ,['styles', 'rangeslider.css', asset_base+'rangeslider.css']
@@ -209,7 +219,7 @@ var HtmlWidget = self = {
              
             // AutoComplete
             ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
-            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css']]
+            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css','jquery']]
              
             // TagEditor
             ,['scripts', 'caret', asset_base+'caret.js']
@@ -227,10 +237,22 @@ var HtmlWidget = self = {
             // Modal
             ,['styles', 'modal.css', asset_base+'modal.css']
             ,['scripts', 'modal', asset_base+'modal.js', ['modal.css','jquery']]
-             
+            
+            // List.js
+            ,['scripts', 'list', asset_base+'list.js']
+            
+            // NodeList
+            ,['scripts', 'nodelist', asset_base+'nodelist.js']
+            
+            // Tao
+            ,['scripts', 'tao', asset_base+'tao.js']
+            
+            // Serialiser
+            ,['scripts', 'serialiser', asset_base+'serialiser.js']
+            
             // ModelView
             ,['scripts', 'modelview', asset_base+'modelview.js']
-             
+            
             // ModelViewForm
             ,['scripts', 'modelviewform', asset_base+'modelview.form.js', ['jquery','datex','modelview']]
              
@@ -238,39 +260,103 @@ var HtmlWidget = self = {
             ,['scripts', 'smoothstate', asset_base+'smoothState.js', ['jquery']]
              
             // Packery
-            ,['scripts', 'packery', asset_base+'packery.js']
+            ,['scripts', 'packery', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
+                : asset_base+'packery.js'
+            ]
              
             // Isotope
-            ,['scripts', 'isotope', asset_base+'isotope.js']
+            ,['scripts', 'isotope', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
+                : asset_base+'isotope.js'
+            ]
              
             // Masonry
-            ,['scripts', 'masonry', asset_base+'masonry.js']
+            ,['scripts', 'masonry', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
+                : asset_base+'masonry.js'
+            ]
+             
+            // D3
+            ,['scripts', 'd3', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
+                : asset_base+'d3/d3.js'
+            ]
+             
+            // C3
+            ,['styles', 'c3.css', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css'
+                : asset_base+'c3/c3.css'
+            ]
+            ,['scripts', 'c3', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js'
+                : asset_base+'c3/c3.js'
+            , ['c3.css','d3']]
              
             // ImTranslator
             //,[]
             
-            // MathJax
-            ,['scripts', 'mathjax', asset_base+'mathjax/MathJax.js?config=TeX-AMS_HTML-full']
+            // MathJax, ?config=TeX-AMS_HTML-full
+            ,['scripts', 'mathjax', cdn
+                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
+                : asset_base+'mathjax/MathJax.js'
+            ]
             
             // DataTables
-            ,['styles', 'datatables.css', asset_base+'datatables/css/datatables.css']
-            ,['scripts', 'datatables', asset_base+'datatables/js/datatables.js', ['datatables.css','jquery']]
-            ,['styles-composite', 'datatables-reorder.css', [
+            ,['styles', 'datatables.css', cdn
+                ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
+                : asset_base+'datatables/css/datatables.css'
+            ]
+            ,['scripts', 'datatables', cdn
+                ? 'https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js'
+                : asset_base+'datatables/js/datatables.js'
+            , ['datatables.css','jquery']]
+            ,['styles-composite', 'datatables-reorder.css', cdn
+            ? [
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+            ]
+            : [
                 asset_base+'datatables/css/colreorder.css',
                 asset_base+'datatables/css/rowreorder.css'
             ], ['datatables.css']]
-            ,['scripts-composite', 'datatables-reorder', [
+            ,['scripts-composite', 'datatables-reorder', cdn
+            ? [
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+            ]
+            : [
                 asset_base+'datatables/js/colreorder.js',
                 asset_base+'datatables/js/rowreorder.js'
             ], ['datatables-reorder.css','datatables']]
-            ,['styles-composite', 'datatables-extra.css', [
+            ,['styles-composite', 'datatables-extra.css', cdn
+            ? [
+                'https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css',
+                'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
+                'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+            ]
+            : [
                 asset_base+'datatables/css/responsive.css',
                 asset_base+'datatables/css/buttons.css',
                 asset_base+'datatables/css/select.css',
                 asset_base+'datatables/css/colreorder.css',
                 asset_base+'datatables/css/rowreorder.css'
             ], ['datatables.css']]
-            ,['scripts-composite', 'datatables-extra', [
+            ,['scripts-composite', 'datatables-extra', cdn
+            ? [
+                'https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
+                'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+            ]
+            : [
                 asset_base+'datatables/js/responsive.js',
                 asset_base+'datatables/js/buttons.js',
                 asset_base+'datatables/js/buttons.colvis.js',
@@ -281,7 +367,20 @@ var HtmlWidget = self = {
                 asset_base+'datatables/js/colreorder.js',
                 asset_base+'datatables/js/rowreorder.js'
             ], ['datatables-extra.css','datatables']]
-            ,['styles-composite', 'datatables-all.css', [
+            ,['styles-composite', 'datatables-all.css', cdn
+            ? [
+                'https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css',
+                'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
+                'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css',
+                'https://cdn.datatables.net/autofill/2.1.1/css/autoFill.dataTables.min.css',
+                'https://cdn.datatables.net/fixedcolumns/3.2.1/css/fixedColumns.dataTables.min.css',
+                'https://cdn.datatables.net/fixedheader/3.1.1/css/fixedHeader.dataTables.min.css',
+                'https://cdn.datatables.net/scroller/1.4.1/css/scroller.dataTables.min.css',
+                'https://cdn.datatables.net/keytable/2.1.1/css/keyTable.dataTables.min.css'
+            ]
+            : [
                 asset_base+'datatables/css/responsive.css',
                 asset_base+'datatables/css/buttons.css',
                 asset_base+'datatables/css/select.css',
@@ -293,7 +392,24 @@ var HtmlWidget = self = {
                 asset_base+'datatables/css/scroller.css',
                 asset_base+'datatables/css/keytable.css'
             ], ['datatables.css']]
-            ,['scripts-composite', 'datatables-all', [
+            ,['scripts-composite', 'datatables-all', cdn
+            ? [
+                'https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
+                'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js',
+                'https://cdn.datatables.net/autofill/2.1.1/js/dataTables.autoFill.min.js',
+                'https://cdn.datatables.net/fixedcolumns/3.2.1/js/dataTables.fixedColumns.min.js',
+                'https://cdn.datatables.net/fixedheader/3.1.1/js/dataTables.fixedHeader.min.js',
+                'https://cdn.datatables.net/scroller/1.4.1/js/dataTables.scroller.min.js',
+                'https://cdn.datatables.net/keytable/2.1.1/js/dataTables.keyTable.min.js'
+            ]
+            : [
                 asset_base+'datatables/js/responsive.js',
                 asset_base+'datatables/js/buttons.js',
                 asset_base+'datatables/js/buttons.colvis.js',
@@ -310,18 +426,49 @@ var HtmlWidget = self = {
                 asset_base+'datatables/js/keytable.js'
             ], ['datatables-all.css','datatables']]
             
+            
             // Tinymce
-            ,['scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js']
-            ,['scripts', 'tinymce', asset_base+'tinymce/tinymce.min.js']
+            ,['scripts', 'tinymce', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.10/tinymce.min.js'
+                : asset_base+'tinymce/tinymce.min.js'
+            ]
+             
+            // CKEditor
+            ,['scripts', 'ckeditor', cdn
+                ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
+                : asset_base+'ckeditor/ckeditor.js'
+            ]
              
             // Trumbowyg
-            ,['styles', 'trumbowyg.css', asset_base+'trumbowyg.css']
-            ,['scripts', 'trumbowyg', asset_base+'trumbowyg.js', ['trumbowyg.css','jquery']]
-             
+            ,['styles', 'trumbowyg.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/ui/trumbowyg.min.css'
+            : asset_base+'trumbowyg/trumbowyg.css'
+            ]
+            ,['scripts', 'trumbowyg', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/trumbowyg.min.js'
+            : asset_base+'trumbowyg/trumbowyg.js'
+            , ['trumbowyg.css','jquery']]
+            
             // CodeMirror
-            ,['styles', 'codemirror.css', asset_base+'codemirror/lib/codemirror.css']
-            ,['styles', 'codemirror-fold.css', asset_base+'codemirror/addon/fold/foldgutter.css', ['codemirror.css']]
-            ,['scripts-composite', 'codemirror-fold', [
+            ,['styles', 'codemirror.css', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.css'
+                : asset_base+'codemirror/lib/codemirror.css'
+            ]
+            ,['styles', 'codemirror-fold.css', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.css'
+                : asset_base+'codemirror/addon/fold/foldgutter.css'
+            , ['codemirror.css']]
+            ,['scripts-composite', 'codemirror-fold', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldcode.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/comment-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/brace-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/indent-fold.min.js',
+                //'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/markdown-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/xml-fold.min.js'
+            ]
+            : [
                 asset_base+'codemirror/addon/fold/foldgutter.js',
                 asset_base+'codemirror/addon/fold/foldcode.js',
                 asset_base+'codemirror/addon/fold/comment-fold.js',
@@ -329,17 +476,33 @@ var HtmlWidget = self = {
                 asset_base+'codemirror/addon/fold/indent-fold.js',
                 asset_base+'codemirror/addon/fold/xml-fold.js'
             ], ['codemirror-fold.css','codemirror']]
-            ,['scripts-composite', 'codemirror-htmlmixed', [
+            ,['scripts-composite', 'codemirror-htmlmixed', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/xml/xml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/css/css.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/htmlmixed/htmlmixed.min.js'
+            ]
+            : [
                 asset_base+'codemirror/mode/xml/xml.js',
                 asset_base+'codemirror/mode/javascript/javascript.js',
                 asset_base+'codemirror/mode/css/css.js',
                 asset_base+'codemirror/mode/htmlmixed/htmlmixed.js'
             ], ['codemirror']]
-            ,['scripts-composite', 'codemirror', [
+            ,['scripts-composite', 'codemirror', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/mode/multiplex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.min.js'
+            ]
+            : [
                 asset_base+'codemirror/lib/codemirror.js',
                 asset_base+'codemirror/addon/mode/multiplex.js',
                 asset_base+'codemirror/addon/comment/comment.js'
             ], ['codemirror.css']]
+            
+            // ACE
+            //..
             ]);
         }
         return assets;
@@ -600,6 +763,8 @@ var HtmlWidget = self = {
             case 'menu_end':    out = self.w_menu_end(attr, data); break;
             case 'datatable':
             case 'table':       out = self.w_table(attr, data); break;
+            case 'graph':
+            case 'chart':       out = self.w_chart(attr, data); break;
             case 'animation':   out = self.w_animation(attr, data); break;
             case 'flash':
             case 'swf':         out = self.w_swf(attr, data); break;
@@ -1585,6 +1750,23 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'htmlwidgets');
         }
         return '<table id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
+    }
+    
+    ,w_chart: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wdata, winit, wopts;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
+        wclass = 'w-widget w-dropdown-menu'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wdata = self.data(attr);
+        wopts = 'w-opts="htmlw_'+wid+'_options"';
+        data['bindto'] = '#'+wid;
+        self.enqueue('scripts', 'w-chart-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(data)+';']);
+        self.enqueue('scripts', 'c3');
+        self.enqueue('scripts', 'htmlwidgets');
+        return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></div>';
     }
     
     ,w_menu: function( attr, data ) {

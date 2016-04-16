@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.8.7
+*  @version: 0.8.8
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -25,7 +25,7 @@ else root[name] = factory( );
 // dont re-add it, abort
 if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.7', widget: {}, locale: {}, _handle: {}},
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.8.8', widget: {}, locale: {}, _handle: {}},
     
     HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
@@ -1596,7 +1596,7 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
         'advlist autolink lists link image charmap preview hr anchor pagebreak',
         'searchreplace wordcount visualblocks visualchars code fullscreen',
         'insertdatetime media nonbreaking save table contextmenu directionality',
-        'paste textcolor colorpicker textpattern imagetools placeholderalt' /*codemirror jbimages*/
+        'paste textcolor colorpicker textpattern imagetools placeholderalt' /*placeholderalt codemirror jbimages*/
         ]);
     var tinymce_toolbar = el[HAS_ATTR]('data-tinymce-toolbar') ? el[ATTR]('data-tinymce-toolbar').split(',') : (opts.toolbar || [
         'undo redo | forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image code preview' /*jbimages*/
@@ -1733,6 +1733,13 @@ htmlwidget._handle['codemirror'] = function( type, el, opts, pre_init, post_init
     if ( post_init ) post_init( el, opts );
 };
 
+htmlwidget._handle['c3'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof c3 ) return;
+    if ( pre_init ) pre_init( el, opts );
+    var chart = c3.generate( opts );
+    if ( post_init ) post_init( el, opts );
+};
+
 $.fn.htmlwidget = function( type, options ) {
     var widget_handler;
     options = options || { };
@@ -1798,6 +1805,9 @@ $.fn.htmlwidget = function( type, options ) {
                 type = 'tinymce'; break;
             case 'syntax-editor':
                 type = 'codemirror'; break;
+            case 'graph':
+            case 'chart':
+                type = 'c3'; break;
             case 'packery':
                 pluginClass = 'Packery'; break;
             case 'masonry':
@@ -1839,6 +1849,7 @@ htmlwidget.init = function( node, current, deep ) {
         $node.find('.w-datatable').htmlwidget('datatable');
         $node.find('.w-syntax-editor').htmlwidget('syntax-editor');
         $node.find('.w-wysiwyg-editor').htmlwidget('wysiwyg-editor');
+        $node.find('.w-chart').htmlwidget('chart');
     }
     if ( false !== current )
     {
@@ -1854,6 +1865,7 @@ htmlwidget.init = function( node, current, deep ) {
         else if ( $node.hasClass('w-datatable') ) $node.htmlwidget('datatable');
         else if ( $node.hasClass('w-syntax-editor') ) $node.htmlwidget('syntax-editor');
         else if ( $node.hasClass('w-wysiwyg-editor') ) $node.htmlwidget('wysiwyg-editor');
+        else if ( $node.hasClass('w-chart') ) $node.htmlwidget('chart');
     }
 };
 htmlwidget.initialisable = function( el, root ) {

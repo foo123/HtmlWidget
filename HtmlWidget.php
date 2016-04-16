@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.7
+*  @version: 0.8.8
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.7";
+    const VERSION = "0.8.8";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -34,12 +34,22 @@ class HtmlWidget
             call_user_func(self::$enqueuer, $type, $id, $asset, $deps);
     }
     
-    public static function assets( $base='', $full=true, $jquery=false, $dev=false, $cdn=false )
+    public static function assets( $opts=array() )
     {
+        $opts = array_merge(array(
+            'base'      => '',
+            'full'      => true,
+            'jquery'    => false,
+            'dev'       => false,
+            'cdn'       => false
+        ), (array)$opts);
+        
+        $dev = true === $opts['dev']; $cdn = true === $opts['cdn'];
+        $base = $opts['base'];
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
         $asset_base = $base . 'assets/';
-        $dev = true === $dev;
+        
         $assets = array(
          array('styles', 'htmlwidgets.css', $dev ? $base.'htmlwidgets.dev.css' : $base.'htmlwidgets.css')
         ,array('styles', 'normalize.css', $asset_base.'normalize.css')
@@ -48,20 +58,25 @@ class HtmlWidget
         ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         );
-        if ( true === $jquery )
+        if ( true === $opts['jquery'] )
         {
-            $assets[] = array('scripts', 'jquery', $asset_base.'jquery.js');
-            $assets[] = array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'));
-            //$assets[] = array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'));
+            $assets = array_merge($assets, $cdn
+            ? array(
+                 array('scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js')
+                //,array('scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js')
+                ,array('scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', array('jquery'))
+            )
+            : array(
+                 array('scripts', 'jquery', $asset_base.'jquery.js')
+                ,array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'))
+                //,array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'))
+            )
+            );
         }
-        if ( true === $full )
+        if ( true === $opts['full'] )
         {
             $assets = array_merge($assets, array(
-            //  external APIS
-             array('scripts', '-external-google-maps-api', 'http://maps.google.com/maps/api/js?libraries=places')
-            
-            // Tao
-            ,array('scripts', 'tao', $asset_base.'tao.js')
+             array('scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places')
             
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane.css')
@@ -79,6 +94,9 @@ class HtmlWidget
             // Modernizr
             ,array('scripts', 'modernizr', $asset_base.'modernizr.js')
             
+            // Typo
+            ,array('scripts', 'typo', $asset_base.'typo/typo.js')
+            
             // html5media
             ,array('scripts', 'html5media', $asset_base.'html5media/html5media.js')
             
@@ -86,19 +104,12 @@ class HtmlWidget
             ,array('styles', 'video-js.css', $asset_base.'video.js/video-js.css')
             ,array('scripts', 'video.js', $asset_base.'video.js/video.js', array('video-js.css'))
             
-            // Serialiser
-            ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
-            
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer.js')
             
             // DateX
             ,array('scripts', 'datex', $asset_base.'datex.js')
             
-            // SunDial
-            //,array('styles', 'sundial.css', $asset_base.'sundial.css')
-            //,array('scripts', 'sundial', $asset_base.'sundial.js', array('sundial.css','datex'))
-             
             // Pikadaytime
             ,array('styles', 'pikadaytime.css', $asset_base.'pikadaytime.css')
             ,array('scripts', 'pikadaytime', $asset_base.'pikadaytime.js', array('pikadaytime.css','datex'))
@@ -107,12 +118,12 @@ class HtmlWidget
             ,array('styles', 'colorpicker.css', $asset_base.'colorpicker.css')
             ,array('scripts', 'colorpicker', $asset_base.'colorpicker.js', array('colorpicker.css'))
              
+            // LocationPicker
+            ,array('scripts', 'locationpicker', $asset_base.'locationpicker.js', array('cdn--google-maps','jquery'))
+             
             // AreaSelect
             ,array('styles', 'areaselect.css', $asset_base.'areaselect.css')
             ,array('scripts', 'areaselect', $asset_base.'areaselect.js', array('areaselect.css'))
-             
-            // LocationPicker
-            ,array('scripts', 'locationpicker', $asset_base.'locationpicker.js', array('-external-google-maps-api','jquery'))
              
             // RangeSlider
             ,array('styles', 'rangeslider.css', $asset_base.'rangeslider.css')
@@ -153,6 +164,18 @@ class HtmlWidget
             ,array('styles', 'modal.css', $asset_base.'modal.css')
             ,array('scripts', 'modal', $asset_base.'modal.js', array('modal.css','jquery'))
             
+            // List.js
+            ,array('scripts', 'list', $asset_base.'list.js')
+            
+            // NodeList
+            ,array('scripts', 'nodelist', $asset_base.'nodelist.js')
+            
+            // Tao
+            ,array('scripts', 'tao', $asset_base.'tao.js')
+            
+            // Serialiser
+            ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
+            
             // ModelView
             ,array('scripts', 'modelview', $asset_base.'modelview.js')
             
@@ -163,39 +186,103 @@ class HtmlWidget
             ,array('scripts', 'smoothstate', $asset_base.'smoothState.js', array('jquery'))
              
             // Packery
-            ,array('scripts', 'packery', $asset_base.'packery.js')
+            ,array('scripts', 'packery', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
+                : $asset_base.'packery.js'
+            )
              
             // Isotope
-            ,array('scripts', 'isotope', $asset_base.'isotope.js')
+            ,array('scripts', 'isotope', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
+                : $asset_base.'isotope.js'
+            )
              
             // Masonry
-            ,array('scripts', 'masonry', $asset_base.'masonry.js')
+            ,array('scripts', 'masonry', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
+                : $asset_base.'masonry.js'
+            )
+             
+            // D3
+            ,array('scripts', 'd3', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
+                : $asset_base.'d3/d3.js'
+            )
+             
+            // C3
+            ,array('styles', 'c3.css', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css'
+                : $asset_base.'c3/c3.css'
+            )
+            ,array('scripts', 'c3', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js'
+                : $asset_base.'c3/c3.js'
+            , array('c3.css','d3'))
              
             // ImTranslator
             //,array()
             
-            // MathJax
-            ,array('scripts', 'mathjax', $asset_base.'mathjax/MathJax.js?config=TeX-AMS_HTML-full')
+            // MathJax, ?config=TeX-AMS_HTML-full
+            ,array('scripts', 'mathjax', $cdn
+                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
+                : $asset_base.'mathjax/MathJax.js'
+            )
             
             // DataTables
-            ,array('styles', 'datatables.css', $asset_base.'datatables/css/datatables.css')
-            ,array('scripts', 'datatables', $asset_base.'datatables/js/datatables.js', array('datatables.css','jquery'))
-            ,array('styles-composite', 'datatables-reorder.css', array(
+            ,array('styles', 'datatables.css', $cdn
+                ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
+                : $asset_base.'datatables/css/datatables.css'
+            )
+            ,array('scripts', 'datatables', $cdn
+                ? 'https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js'
+                : $asset_base.'datatables/js/datatables.js'
+            , array('datatables.css','jquery'))
+            ,array('styles-composite', 'datatables-reorder.css', $cdn
+            ? array(
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+            )
+            : array(
                 $asset_base.'datatables/css/colreorder.css',
                 $asset_base.'datatables/css/rowreorder.css'
             ), array('datatables.css'))
-            ,array('scripts-composite', 'datatables-reorder', array(
+            ,array('scripts-composite', 'datatables-reorder', $cdn
+            ? array(
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+            )
+            : array(
                 $asset_base.'datatables/js/colreorder.js',
                 $asset_base.'datatables/js/rowreorder.js'
             ), array('datatables-reorder.css','datatables'))
-            ,array('styles-composite', 'datatables-extra.css', array(
+            ,array('styles-composite', 'datatables-extra.css', $cdn
+            ? array(
+                'https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css',
+                'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
+                'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+            )
+            : array(
                 $asset_base.'datatables/css/responsive.css',
                 $asset_base.'datatables/css/buttons.css',
                 $asset_base.'datatables/css/select.css',
                 $asset_base.'datatables/css/colreorder.css',
                 $asset_base.'datatables/css/rowreorder.css'
             ), array('datatables.css'))
-            ,array('scripts-composite', 'datatables-extra', array(
+            ,array('scripts-composite', 'datatables-extra', $cdn
+            ? array(
+                'https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
+                'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+            )
+            : array(
                 $asset_base.'datatables/js/responsive.js',
                 $asset_base.'datatables/js/buttons.js',
                 $asset_base.'datatables/js/buttons.colvis.js',
@@ -206,7 +293,20 @@ class HtmlWidget
                 $asset_base.'datatables/js/colreorder.js',
                 $asset_base.'datatables/js/rowreorder.js'
             ), array('datatables-extra.css','datatables'))
-            ,array('styles-composite', 'datatables-all.css', array(
+            ,array('styles-composite', 'datatables-all.css', $cdn
+            ? array(
+                'https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css',
+                'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
+                'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
+                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css',
+                'https://cdn.datatables.net/autofill/2.1.1/css/autoFill.dataTables.min.css',
+                'https://cdn.datatables.net/fixedcolumns/3.2.1/css/fixedColumns.dataTables.min.css',
+                'https://cdn.datatables.net/fixedheader/3.1.1/css/fixedHeader.dataTables.min.css',
+                'https://cdn.datatables.net/scroller/1.4.1/css/scroller.dataTables.min.css',
+                'https://cdn.datatables.net/keytable/2.1.1/css/keyTable.dataTables.min.css'
+            )
+            : array(
                 $asset_base.'datatables/css/responsive.css',
                 $asset_base.'datatables/css/buttons.css',
                 $asset_base.'datatables/css/select.css',
@@ -218,7 +318,24 @@ class HtmlWidget
                 $asset_base.'datatables/css/scroller.css',
                 $asset_base.'datatables/css/keytable.css'
             ), array('datatables.css'))
-            ,array('scripts-composite', 'datatables-all', array(
+            ,array('scripts-composite', 'datatables-all', $cdn
+            ? array(
+                'https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js',
+                'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
+                'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
+                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js',
+                'https://cdn.datatables.net/autofill/2.1.1/js/dataTables.autoFill.min.js',
+                'https://cdn.datatables.net/fixedcolumns/3.2.1/js/dataTables.fixedColumns.min.js',
+                'https://cdn.datatables.net/fixedheader/3.1.1/js/dataTables.fixedHeader.min.js',
+                'https://cdn.datatables.net/scroller/1.4.1/js/dataTables.scroller.min.js',
+                'https://cdn.datatables.net/keytable/2.1.1/js/dataTables.keyTable.min.js'
+            )
+            : array(
                 $asset_base.'datatables/js/responsive.js',
                 $asset_base.'datatables/js/buttons.js',
                 $asset_base.'datatables/js/buttons.colvis.js',
@@ -235,18 +352,49 @@ class HtmlWidget
                 $asset_base.'datatables/js/keytable.js'
             ), array('datatables-all.css','datatables'))
             
+            
             // Tinymce
-            ,array('scripts', 'tinymce-cdn', '//cdn.tinymce.com/4/tinymce.min.js')
-            ,array('scripts', 'tinymce', $asset_base.'tinymce/tinymce.min.js')
+            ,array('scripts', 'tinymce', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.10/tinymce.min.js'
+                : $asset_base.'tinymce/tinymce.min.js'
+            )
+             
+            // CKEditor
+            ,array('scripts', 'ckeditor', $cdn
+                ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
+                : $asset_base.'ckeditor/ckeditor.js'
+            )
              
             // Trumbowyg
-            ,array('styles', 'trumbowyg.css', $asset_base.'trumbowyg.css')
-            ,array('scripts', 'trumbowyg', $asset_base.'trumbowyg.js', array('trumbowyg.css','jquery'))
+            ,array('styles', 'trumbowyg.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/ui/trumbowyg.min.css'
+            : $asset_base.'trumbowyg/trumbowyg.css'
+            )
+            ,array('scripts', 'trumbowyg', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/trumbowyg.min.js'
+            : $asset_base.'trumbowyg/trumbowyg.js'
+            , array('trumbowyg.css','jquery'))
             
             // CodeMirror
-            ,array('styles', 'codemirror.css', $asset_base.'codemirror/lib/codemirror.css')
-            ,array('styles', 'codemirror-fold.css', $asset_base.'codemirror/addon/fold/foldgutter.css', array('codemirror.css'))
-            ,array('scripts-composite', 'codemirror-fold', array(
+            ,array('styles', 'codemirror.css', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.css'
+                : $asset_base.'codemirror/lib/codemirror.css'
+            )
+            ,array('styles', 'codemirror-fold.css', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.css'
+                : $asset_base.'codemirror/addon/fold/foldgutter.css'
+            , array('codemirror.css'))
+            ,array('scripts-composite', 'codemirror-fold', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldcode.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/comment-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/brace-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/indent-fold.min.js',
+                //'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/markdown-fold.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/xml-fold.min.js'
+            )
+            : array(
                 $asset_base.'codemirror/addon/fold/foldgutter.js',
                 $asset_base.'codemirror/addon/fold/foldcode.js',
                 $asset_base.'codemirror/addon/fold/comment-fold.js',
@@ -254,17 +402,33 @@ class HtmlWidget
                 $asset_base.'codemirror/addon/fold/indent-fold.js',
                 $asset_base.'codemirror/addon/fold/xml-fold.js'
             ), array('codemirror-fold.css','codemirror'))
-            ,array('scripts-composite', 'codemirror-htmlmixed', array(
+            ,array('scripts-composite', 'codemirror-htmlmixed', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/xml/xml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/css/css.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/htmlmixed/htmlmixed.min.js'
+            )
+            : array(
                 $asset_base.'codemirror/mode/xml/xml.js',
                 $asset_base.'codemirror/mode/javascript/javascript.js',
                 $asset_base.'codemirror/mode/css/css.js',
                 $asset_base.'codemirror/mode/htmlmixed/htmlmixed.js'
             ), array('codemirror'))
-            ,array('scripts-composite', 'codemirror', array(
+            ,array('scripts-composite', 'codemirror', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/mode/multiplex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.min.js'
+            )
+            : array(
                 $asset_base.'codemirror/lib/codemirror.js',
                 $asset_base.'codemirror/addon/mode/multiplex.js',
                 $asset_base.'codemirror/addon/comment/comment.js'
             ), array('codemirror.css'))
+            
+            // ACE
+            //..
             ));
         }
         return $assets;
@@ -504,6 +668,8 @@ class HtmlWidget
             case 'menu_end':    $out = self::w_menu_end($attr, $data); break;
             case 'datatable':
             case 'table':       $out = self::w_table($attr, $data); break;
+            case 'graph':
+            case 'chart':       $out = self::w_chart($attr, $data); break;
             case 'animation':   $out = self::w_animation($attr, $data); break;
             case 'flash':
             case 'swf':         $out = self::w_swf($attr, $data); break;
@@ -1447,6 +1613,22 @@ class HtmlWidget
             self::enqueue('scripts', 'htmlwidgets');
         }
         return "<table id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
+    }
+    
+    public static function w_chart( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
+        $wclass = 'w-widget w-chart'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wdata = self::data($attr);
+        $wopts = 'w-opts="htmlw_'.$wid.'_options"';
+        $data = (array)$data; $data['bindto'] = '#'.$wid;
+        self::enqueue('scripts', 'w-chart-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($data).';'));
+        self::enqueue('scripts', 'c3');
+        self::enqueue('scripts', 'htmlwidgets');
+        return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata></div>";
     }
     
     public static function w_menu( $attr, $data )

@@ -15,7 +15,13 @@ require('../HtmlWidget.php');
 global $importer;
 
 $importer = new Importer( );
-$importer->register( 'assets', HtmlWidget::assets( '../', true, true, true ) );
+$importer->register( 'assets', HtmlWidget::assets( array(
+            'base'      => '../',
+            'full'      => true,
+            'jquery'    => true,
+            'dev'       => true,
+            'cdn'       => false
+        ) ) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
 function widget( $widget, $attr=array(), $data=array() )
@@ -57,6 +63,7 @@ function scripts( )
 <html lang="en" class="no-ie">
 <!--<![endif]-->
 <head>
+    <meta charset="utf-8"/>
     <style type="text/css">
     #forkongithub  a {
         background: #aa0000;
@@ -443,13 +450,22 @@ function scripts( )
     <hr />
     
     <fieldset><legend>Wysiwyg Editor</legend>
-    <?php widget('wysiwyg-editor',array('placeholder'=>'rich text..'),array('value'=>'<i>hello</i>')); ?>
+    <?php widget('wysiwyg-editor',array(
+        'placeholder'=>'rich text..'
+    ),array(
+        'value'=>'<i>hello</i>'
+    )); ?>
     </fieldset>
     
     <hr />
     
     <fieldset><legend>Syntax Editor</legend>
-    <?php widget('syntax-editor',array('placeholder'=>'source text..','data'=>array('cm-mode'=>'text/html')),array('value'=>'<p>Hello</p>')); ?>
+    <?php widget('syntax-editor',array(
+        'placeholder'=>'source text..',
+        'data'=>array('cm-mode'=>'text/html')
+    ),array(
+        'value'=>'<p>Hello</p>'
+    )); ?>
     </fieldset>
     
     <hr />
@@ -504,6 +520,19 @@ function scripts( )
         './video.ogv' => 'video/ogv'
         ),-1)
     ));*/ ?>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Chart</legend>
+    <?php widget('chart', array(),array(
+        'data'=> array(
+          'columns'=> array(
+            array('data1', 30, 200, 100, 400, 150, 250),
+            array('data2', 50, 20, 10, 40, 15, 25)
+          ),
+        )
+      )); ?>
     </fieldset>
     
     <hr />
