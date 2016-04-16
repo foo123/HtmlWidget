@@ -432,7 +432,8 @@ var HtmlWidget = self = {
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.10/tinymce.min.js'
                 : asset_base+'tinymce/tinymce.min.js'
             ]
-             
+             ,['scripts', 'tinymce-plugin-placeholder', asset_base+'tinymce/plugins/placeholderalt/plugin.min.js',['tinymce']]
+
             // CKEditor
             ,['scripts', 'ckeditor', cdn
                 ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
@@ -1388,6 +1389,7 @@ var HtmlWidget = self = {
                 self.enqueue('scripts', 'w-tinymce-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
             }
             self.enqueue('scripts', 'tinymce');
+            self.enqueue('scripts', 'tinymce-plugin-placeholder');
             self.enqueue('scripts', 'htmlwidgets');
         }
         else

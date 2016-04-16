@@ -358,6 +358,7 @@ class HtmlWidget
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.10/tinymce.min.js'
                 : $asset_base.'tinymce/tinymce.min.js'
             )
+            ,array('scripts', 'tinymce-plugin-placeholder', $asset_base.'tinymce/plugins/placeholderalt/plugin.min.js',array('tinymce'))
              
             // CKEditor
             ,array('scripts', 'ckeditor', $cdn
@@ -1269,6 +1270,7 @@ class HtmlWidget
                 self::enqueue('scripts', 'w-tinymce-'.$wid, array('window["htmlw_'.$wid.'_options"] = '.json_encode($attr["options"]).';'));
             }
             self::enqueue('scripts', 'tinymce');
+            self::enqueue('scripts', 'tinymce-plugin-placeholder');
             self::enqueue('scripts', 'htmlwidgets');
         }
         else

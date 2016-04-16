@@ -20,7 +20,7 @@ $importer->register( 'assets', HtmlWidget::assets( array(
             'full'      => true,
             'jquery'    => true,
             'dev'       => true,
-            'cdn'       => false
+            'cdn'       => true
         ) ) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
