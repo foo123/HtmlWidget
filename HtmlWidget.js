@@ -314,7 +314,7 @@ var HtmlWidget = self = {
             ,['styles-composite', 'datatables-reorder.css', cdn
             ? [
                 'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
-                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+                'https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css'
             ]
             : [
                 asset_base+'datatables/css/colreorder.css',
@@ -323,7 +323,7 @@ var HtmlWidget = self = {
             ,['scripts-composite', 'datatables-reorder', cdn
             ? [
                 'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
-                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+                'https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js'
             ]
             : [
                 asset_base+'datatables/js/colreorder.js',
@@ -335,7 +335,7 @@ var HtmlWidget = self = {
                 'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
                 'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
                 'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
-                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css'
+                'https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css'
             ]
             : [
                 asset_base+'datatables/css/responsive.css',
@@ -354,7 +354,7 @@ var HtmlWidget = self = {
                 'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
                 'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
                 'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
-                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js'
+                'https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js'
             ]
             : [
                 asset_base+'datatables/js/responsive.js',
@@ -373,7 +373,7 @@ var HtmlWidget = self = {
                 'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css',
                 'https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css',
                 'https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css',
-                'https://cdn.datatables.net/colreorder/1.3.1/css/rowReorder.dataTables.min.css',
+                'https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css',
                 'https://cdn.datatables.net/autofill/2.1.1/css/autoFill.dataTables.min.css',
                 'https://cdn.datatables.net/fixedcolumns/3.2.1/css/fixedColumns.dataTables.min.css',
                 'https://cdn.datatables.net/fixedheader/3.1.1/css/fixedHeader.dataTables.min.css',
@@ -402,7 +402,7 @@ var HtmlWidget = self = {
                 'https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js',
                 'https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js',
                 'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js',
-                'https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.rowReorder.min.js',
+                'https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js',
                 'https://cdn.datatables.net/autofill/2.1.1/js/dataTables.autoFill.min.js',
                 'https://cdn.datatables.net/fixedcolumns/3.2.1/js/dataTables.fixedColumns.min.js',
                 'https://cdn.datatables.net/fixedheader/3.1.1/js/dataTables.fixedHeader.min.js',
@@ -429,7 +429,7 @@ var HtmlWidget = self = {
             
             // Tinymce
             ,['scripts', 'tinymce', cdn
-                ? 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.10/tinymce.min.js'
+                ? '//cdn.tinymce.com/4/tinymce.min.js'
                 : asset_base+'tinymce/tinymce.min.js'
             ]
              ,['scripts', 'tinymce-plugin-placeholder', asset_base+'tinymce/plugins/placeholderalt/plugin.min.js',['tinymce']]

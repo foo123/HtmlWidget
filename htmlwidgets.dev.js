@@ -1574,21 +1574,26 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
     }*/
     if ( 'undefined' === typeof tinymce ) return;
     if ( pre_init ) pre_init( el, opts );
-    var locale = null;
+    var locale = null, locale_url = null;
     if ( htmlwidget.locale['tinymce'] )
     {
-        if ( ('object' === typeof htmlwidget.locale['tinymce']) && !opts["i18n"] )
+        if ( ('object' === typeof htmlwidget.locale['tinymce'].lang) && !opts["i18n"] )
         {
-            opts["i18n"] = htmlwidget.locale['tinymce'];
+            opts["i18n"] = htmlwidget.locale['tinymce'].lang;
         }
-        else if ( 'string' === typeof htmlwidget.locale['tinymce'] )
+        else if ( 'string' === typeof htmlwidget.locale['tinymce'].lang )
         {
-            locale = htmlwidget.locale['tinymce'];
+            locale = htmlwidget.locale['tinymce'].lang;
+        }
+        if ( null != htmlwidget.locale['tinymce'].uri )
+        {
+            locale_url = htmlwidget.locale['tinymce'].uri;
         }
     }
     if ( opts["i18n"] )
     {
         locale = 'custom_locale';
+        locale_url = null;
         tinymce.util.I18n.add('custom_locale', opts["i18n"]);
     }
     var delayed_init = parseInt(el[HAS_ATTR]('data-tinymce-delayedinit') ? el[ATTR]('data-tinymce-delayedinit') : (opts.delayedInit||0),10);
@@ -1667,6 +1672,18 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
     else if ( !!locale )
     {
         tinymce_opts.language = locale;
+    }
+    if ( el[HAS_ATTR]('data-tinymce-languri') )
+    {
+        tinymce_opts.language_url = el[ATTR]('data-tinymce-languri');
+    }
+    else if ( !!opts.language_url )
+    {
+        tinymce_opts.language_url = opts.language_url;
+    }
+    else if ( !!locale_url )
+    {
+        tinymce_opts.language_url = locale_url;
     }
     if ( 'object' === typeof opts.options_extra )
         for (var o in opts.options_extra )
