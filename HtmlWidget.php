@@ -203,6 +203,16 @@ class HtmlWidget
                 : $asset_base.'masonry.js'
             )
              
+            // Raphael
+            ,array('scripts', 'raphael', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
+                : $asset_base.'raphael.js'
+            )
+             
+            // VexTab
+            ,array('styles', 'vextab.css', $asset_base.'vex/vextab.css')
+            ,array('scripts', 'vextab', $asset_base.'vex/vextab-div.js',array('vextab.css'))
+             
             // D3
             ,array('scripts', 'd3', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
@@ -632,6 +642,10 @@ class HtmlWidget
             case 'highlight-editor':
             case 'highlighter':
             case 'textarea':    $out = self::w_textarea($attr, $data); break;
+            case 'music':       
+            case 'score':       
+            case 'tab':       
+            case 'tablature':   $out = self::w_vextab($attr, $data); break;
             case 'datetimepicker':
             case 'datepicker':
             case 'datetime':
@@ -1279,6 +1293,18 @@ class HtmlWidget
             self::enqueue('styles', 'htmlwidgets.css');
         }
         return "<textarea id=\"$wid\" $winit $wopts $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" $wextra>$wvalue</textarea>";
+    }
+    
+    public static function w_vextab( $attr, $data )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'w-vextab vex-tabdiv'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = self::attributes($attr,array('title','width','height','scale','editor','editor_width','editor_height','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wtablature = empty($data['notes']) ? '' : $data['notes'];
+        if ( !empty($attr['render']) && ('svg' === $attr['render']) ) self::enqueue('scripts', 'raphael');
+        self::enqueue('scripts', 'vextab');
+        return "<div id=\"{$wid}\" class=\"{$wclass}\" {$wextra}>{$wtablature}</div>";
     }
     
     public static function w_translator( $attr, $data )

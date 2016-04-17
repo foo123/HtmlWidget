@@ -277,6 +277,16 @@ var HtmlWidget = self = {
                 : asset_base+'masonry.js'
             ]
              
+            // Raphael
+            ,['scripts', 'raphael', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
+                : asset_base+'raphael.js'
+            ]
+             
+            // VexTab
+            ,['styles', 'vextab.css', asset_base+'vex/vextab.css']
+            ,['scripts', 'vextab', asset_base+'vex/vextab-div.js',['vextab.css']]
+             
             // D3
             ,['scripts', 'd3', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
@@ -727,6 +737,10 @@ var HtmlWidget = self = {
             case 'highlight-editor':
             case 'highlighter':
             case 'textarea':    out = self.w_textarea(attr, data); break;
+            case 'music':       
+            case 'score':       
+            case 'tab':       
+            case 'tablature':   out = self.w_vextab(attr, data); break;
             case 'datetimepicker':
             case 'datepicker':
             case 'datetime':
@@ -1399,6 +1413,19 @@ var HtmlWidget = self = {
             self.enqueue('styles', 'htmlwidgets.css');
         }
         return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>';
+    }
+    
+    ,w_vextab: function( attr, data ) {
+        var wid, wclass, wstyle, wextra, wtablature;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'w-vextab vex-tabdiv'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = self.attributes(attr,['title','width','height','scale','editor','editor_width','editor_height','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wtablature = empty(data,'notes') ? '' : data['notes'];
+        if ( !empty(attr,'render') && ('svg' === attr['render']) ) self.enqueue('scripts', 'raphael');
+        self.enqueue('scripts', 'vextab');
+        return '<div id="'+wid+'" class="'+wclass+'" '+wextra+'>'+wtablature+'</div>';
     }
     
     ,w_translator: function( attr, data ) {

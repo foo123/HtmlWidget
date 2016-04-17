@@ -1757,6 +1757,13 @@ htmlwidget._handle['c3'] = function( type, el, opts, pre_init, post_init ) {
     if ( post_init ) post_init( el, opts );
 };
 
+htmlwidget._handle['vextab'] = function( type, el, opts, pre_init, post_init ) {
+    if ( 'undefined' === typeof Vex || 'undefined' === typeof Vex.Flow ) return;
+    if ( pre_init ) pre_init( el, opts );
+    var vextab = new Vex.Flow.TabDiv( el );
+    if ( post_init ) post_init( el, opts );
+};
+
 $.fn.htmlwidget = function( type, options ) {
     var widget_handler;
     options = options || { };
@@ -1825,6 +1832,10 @@ $.fn.htmlwidget = function( type, options ) {
             case 'graph':
             case 'chart':
                 type = 'c3'; break;
+            case 'tab':
+            case 'tablature':
+            case 'vextab':
+                type = 'vextab'; break;
             case 'packery':
                 pluginClass = 'Packery'; break;
             case 'masonry':
@@ -1908,6 +1919,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-sortable') || $node.hasClass('w-rearrangeable') ) $node.htmlwidget('sortable');
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
     if ( $node.hasClass('w-areaselectable') ) $node.htmlwidget('areaselect');
+    if ( $node.hasClass('w-vextab') ) $node.htmlwidget('vextab');
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -2048,8 +2060,8 @@ if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added', widget_able)
-        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable)', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added,.w-vextab::added', widget_able)
+        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable),:class-added(.w-vextab)', widget_able)
     ;
 }
 // dynamic tooltips

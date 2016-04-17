@@ -524,7 +524,7 @@ function scripts( )
     
     <hr />
     
-    <fieldset><legend>Chart</legend>
+    <fieldset><legend>Chart / Graph</legend>
     <?php widget('chart', array(),array(
         'data'=> array(
           'columns'=> array(
@@ -532,6 +532,25 @@ function scripts( )
             array('data2', 50, 20, 10, 40, 15, 25)
           ),
         )
+      )); ?>
+    </fieldset>
+    
+    <hr />
+    
+    <fieldset><legend>Music Notation / Tablature</legend>
+    <?php widget('tablature', array(
+        //'id'    => 'late_init',
+        //'render' => 'svg',
+        'width' => 500,
+        'scale' => 1.5,
+        'editor' => "true",
+        'editor_height' => 110
+    ),array(
+        'notes'=> "
+tabstave notation=true key=A
+notes :q (5/2.5/3.7/4) \$.big.A7#9\$ 5h6/3 7/4 |
+notes :8 7/4 \$.italic.sweep\$ 6/3 5/2 3v/1 :q 7v/5 \$.Arial-10-bold.P.H\$ :8 3s5/5
+"
       )); ?>
     </fieldset>
     
@@ -756,6 +775,9 @@ function scripts( )
     ?>
     <script>
     jQuery(function($){
+       /*setTimeout(function(){
+       $('#late_init').addClass('w-vextab');
+       }, 10000);*/
        $('#submit_form').on('click', function( evt ){
            evt.preventDefault( );
            evt.stopPropagation( );
