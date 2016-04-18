@@ -651,9 +651,19 @@ var HtmlWidget = self = {
         return options;
     }
     
-    ,shuffle: function( arr ) {
-        shuffle( arr );
-        return arr;
+    ,shuffle: function( arr, assoc ) {
+        var shuffled;
+        if ( true === assoc )
+        {
+            var keys = shuffle( KEYS(arr) );
+            shuffled = {};
+            for(var i=0,l=keys.length; i<l; i++) shuffled[keys[i]] = arr[keys[i]];
+        }
+        else
+        {
+            shuffled = shuffle( arr );
+        }
+        return shuffled;
     }
     
     ,addWidget: function( widget, renderer ) {

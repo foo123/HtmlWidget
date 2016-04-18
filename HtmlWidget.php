@@ -555,10 +555,22 @@ class HtmlWidget
         return $options;
     }
     
-    public static function &shuffle( &$arr )
+    public static function shuffle( $arr, $assoc=false )
     {
-        shuffle( $arr );
-        return $arr;
+        // shuffle an asociative array as well
+        if ( true === $assoc )
+        {
+            $keys = array_keys( $arr );
+            $shuffled = array( );
+            shuffle( $keys );
+            foreach($keys as $key) $shuffled[$key] = $arr[$key];
+        }
+        else
+        {
+            $shuffled = $arr;
+            shuffle( $shuffled );
+        }
+        return $shuffled;
     }
     
     public static function addWidget( $widget, $renderer )
