@@ -541,15 +541,37 @@ function scripts( )
     <?php widget('tablature', array(
         //'id'    => 'late_init',
         //'render' => 'svg',
-        'width' => 500,
-        'scale' => 1.5,
+        'width' => 700,
+        'scale' => 1.0,
         'editor' => "true",
         'editor_height' => 110
     ),array(
         'notes'=> "
-tabstave notation=true key=A
-notes :q (5/2.5/3.7/4) \$.big.A7#9\$ 5h6/3 7/4 |
-notes :8 7/4 \$.italic.sweep\$ 6/3 5/2 3v/1 :q 7v/5 \$.Arial-10-bold.P.H\$ :8 3s5/5
+options player=true
+options space=20
+
+tabstave
+  notation=true
+  key=A time=4/4
+
+  notes :q =|: (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 |
+  notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4
+  text :w, |#segno, ,|, :hd, , #tr
+
+
+options space=25
+
+tabstave
+  notation=true
+
+  notes :q (5/4.5/5) (7/4.7/5)s(5/4.5/5) ^3^
+  notes :8 7-5/4 $.a./b.$ (5/4.5/5)h(7/5) =:|
+  notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5
+  notes :h (5V/6.5/4.6/3.7/2) $.italic.let ring$ =|=
+
+  text :h, ,.font=Times-12-italic, D.S. al coda, |#coda
+  text :h, ,.-1, .font=Arial-14-bold,A13
+  text ++, .23, #f
 "
       )); ?>
     </fieldset>

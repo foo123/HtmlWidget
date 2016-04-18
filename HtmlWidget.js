@@ -284,8 +284,8 @@ var HtmlWidget = self = {
             ]
              
             // VexTab
-            ,['styles', 'vextab.css', asset_base+'vex/vextab.css']
-            ,['scripts', 'vextab', asset_base+'vex/vextab-div.js',['vextab.css']]
+            ,['styles', 'vextab.css', asset_base+'vex/tab/vextab.css']
+            ,['scripts', 'vextab', asset_base+'vex/tab/vextab-div.js',['vextab.css']]
              
             // D3
             ,['scripts', 'd3', cdn
@@ -649,6 +649,11 @@ var HtmlWidget = self = {
             }
         }
         return options;
+    }
+    
+    ,shuffle: function( arr ) {
+        shuffle( arr );
+        return arr;
     }
     
     ,addWidget: function( widget, renderer ) {

@@ -210,8 +210,8 @@ class HtmlWidget
             )
              
             // VexTab
-            ,array('styles', 'vextab.css', $asset_base.'vex/vextab.css')
-            ,array('scripts', 'vextab', $asset_base.'vex/vextab-div.js',array('vextab.css'))
+            ,array('styles', 'vextab.css', $asset_base.'vex/tab/vextab.css')
+            ,array('scripts', 'vextab', $asset_base.'vex/tab/vextab-div.js',array('vextab.css'))
              
             // D3
             ,array('scripts', 'd3', $cdn
@@ -553,6 +553,12 @@ class HtmlWidget
             $options[] = array($o_key, $o_val);
         }
         return $options;
+    }
+    
+    public static function &shuffle( &$arr )
+    {
+        shuffle( $arr );
+        return $arr;
     }
     
     public static function addWidget( $widget, $renderer )
