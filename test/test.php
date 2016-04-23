@@ -20,7 +20,7 @@ $importer->register( 'assets', HtmlWidget::assets( array(
             'full'      => true,
             'jquery'    => true,
             'dev'       => true,
-            'cdn'       => true
+            'cdn'       => false
         ) ) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
@@ -98,7 +98,6 @@ function scripts( )
         bottom: 1px;
         top: auto;
     }
-
     @media screen and (min-width:800px) {
         #forkongithub {
             position: absolute;
@@ -140,7 +139,20 @@ function scripts( )
         color: #fff;
         font-weight: bold;
     }
+    fieldset:not(.w-rating) {
+        position: relative; display: block;
+        font-size: 1em;
+        padding: 0; width: 100%;
+        float: none;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        -o-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 40px 0;
+    }
     legend {
+        position: relative;
         font-size: 2em;
         font-weight: bold;
         padding: 20px;
@@ -307,23 +319,141 @@ function scripts( )
     
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Buttons</legend>
-    <?php widget('button',array('class'=>'w-small','icon'=>'plus'),array('text'=>'small')); ?>
-    <?php widget('button',array('class'=>'','icon'=>'plus'),array('text'=>'button')); ?>
-    <?php widget('button',array('class'=>'w-large','icon'=>'times-circle','disabled'=>1),array('text'=>'large')); ?>
-    <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    <?php widget('button',array('class'=>'','icon'=>'plus')); ?>
+    <?php widget('button',array('class'=>'w-xsmall','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle')); ?>
-    <?php widget('button',array('class'=>'w-primary','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
-    <?php widget('button',array('class'=>'w-green','icon'=>'plus','readonly'=>1),array('text'=>'button')); ?>
-    <?php widget('button',array('class'=>'w-large w-orange','icon'=>'times-circle'),array('text'=>'large')); ?>
-    <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
-    </fieldset>
     
-    <hr />
+    <?php widget('button',array('class'=>'w-xsmall','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-primary','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-primary','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-primary','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-primary','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-primary','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-primary','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-primary','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-primary','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-primary','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-primary','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-red','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-red','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-red','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-red','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-red','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-red','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-red','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-red','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-red','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-red','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-blue','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-blue','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-blue','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-blue','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-blue','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-blue','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-blue','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-blue','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-blue','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-blue','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-orange','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-orange','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-orange','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-orange','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-orange','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-orange','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-orange','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-orange','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-orange','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-orange','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-green','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-green','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-green','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-green','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-green','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-green','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-green','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-green','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-green','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-green','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-yellow','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-yellow','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-yellow','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-yellow','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-yellow','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-yellow','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-yellow','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-yellow','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-yellow','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-yellow','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-purple','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-purple','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-purple','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-purple','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-purple','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-purple','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-purple','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-purple','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-purple','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-purple','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    </fieldset>
     
     <fieldset><legend>Dropdowns</legend>
     <?php widget('dropdown',array('placeholder'=>'select..'),array('options'=>options(array(
@@ -355,9 +485,7 @@ function scripts( )
     ),-1))); ?>
     </fieldset>
     
-    <hr />
-    
-    <fieldset><legend>Colorpicker</legend>
+    <fieldset><legend>Color Picker</legend>
     <?php widget('colorpicker',array(
         'title'=>'Select color',
         'data'=>array(
@@ -386,9 +514,7 @@ function scripts( )
     )); ?>
     </fieldset>
     
-    <hr />
-    
-    <fieldset><legend>Datetimepicker</legend>
+    <fieldset><legend>Date-Time Picker</legend>
     <?php widget('datetimepicker',array(
         'title'=>'Select date-time',
         'data'=>array(
@@ -425,15 +551,11 @@ function scripts( )
     )); ?>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Ratings</legend>
     <?php widget('rating',array('title'=>'Please rate:','icon'=>'star'),array('value'=>'3')); ?>
     <?php widget('rating',array('title'=>'Please rate:','class'=>'w-large','icon'=>'star','disabled'=>1),array('value'=>'3')); ?>
     <?php widget('rating',array('title'=>'Please rate:','class'=>'w-xlarge','icon'=>'star','readonly'=>1),array('value'=>'3')); ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Textboxes</legend>
     <?php widget('textbox',array('title'=>'text..','icon'=>'pencil'),array('value'=>'')); ?>
@@ -447,7 +569,285 @@ function scripts( )
     <?php widget('textarea',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
     </fieldset>
     
-    <hr />
+    <fieldset style="overflow:hidden;"><legend>Panels</legend>
+    <?php widget("button", array(
+        "class" => "w-orange",
+        "for"   => "controller_a_panel",
+        "title" => "Open/Close Panel",
+        "icon"  => "check-circle-o"
+    ),array(
+        "text"  => "Toggle"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange",
+        "for"   => "controller_a_left_panel",
+        "title" => "Open/Close Panel",
+        "icon"  => "check-circle-o"
+    ),array(
+        "text"  => "Toggle Left"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange",
+        "for"   => "controller_a_right_panel",
+        "title" => "Open/Close Panel",
+        "icon"  => "check-circle-o"
+    ),array(
+        "text"  => "Toggle Right"
+    )); ?>
+    
+    <br />
+    
+    
+    <?php widget("panel",array("id"=>"a_panel","class"=>"w-panel-no-header")); ?>
+    <div class="fluid col-1-1 text-right">
+    <?php widget("button", array(
+        "class" => "w-red w-large",
+        "for"   => "controller_a_panel",
+        "title" => "Close Panel",
+        "icon"  => "minus"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange w-large",
+        "href"  => "#",
+        "title" => "Clear Filters",
+        "icon"  => "square"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-green w-large",
+        "href"  => "#",
+        "title" => "Apply Filters",
+        "icon"  => "play"
+    )); ?>
+    </div>
+    
+    <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-red">Questions</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'Q1','2'=>'Q2','3'=>'Q3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_question_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_question_".$qid,"name"=>"question[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'A1','2'=>'A2','3'=>'A3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_answer_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_answer_".$qid,"name"=>"answer[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'V1','2'=>'V2','3'=>'V3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_var_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_var_".$qid,"name"=>"var[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-green">Values</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'T1','2'=>'T2','3'=>'T3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_val_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_val_".$qid,"name"=>"val[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    </div>
+    <?php widget("panel_end"); ?>
+    
+    <?php widget("panel",array("id"=>"a_left_panel","class"=>"w-side-panel-left w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
+    <div class="fluid col-1-1 text-right">
+    <?php widget("button", array(
+        "class" => "w-red w-large",
+        "for"   => "controller_a_left_panel",
+        "title" => "Close Panel",
+        "icon"  => "minus"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange w-large",
+        "href"  => "#",
+        "title" => "Clear Filters",
+        "icon"  => "square"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-green w-large",
+        "href"  => "#",
+        "title" => "Apply Filters",
+        "icon"  => "play"
+    )); ?>
+    </div>
+    
+    <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-red">Questions</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'Q1','2'=>'Q2','3'=>'Q3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_question2_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_question2_".$qid,"name"=>"question2[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'A1','2'=>'A2','3'=>'A3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_answer2_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_answer2_".$qid,"name"=>"answer2[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'V1','2'=>'V2','3'=>'V3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_var2_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_var2_".$qid,"name"=>"var2[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-green">Values</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'T1','2'=>'T2','3'=>'T3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_val2_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_val2_".$qid,"name"=>"val2[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    </div>
+    <?php widget("panel_end"); ?>
+    
+    <br />
+    <?php widget("panel",array("id"=>"a_right_panel","class"=>"w-side-panel-right w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
+    <div class="fluid col-1-1 text-right">
+    <?php widget("button", array(
+        "class" => "w-red w-large",
+        "for"   => "controller_a_right_panel",
+        "title" => "Close Panel",
+        "icon"  => "minus"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange w-large",
+        "href"  => "#",
+        "title" => "Clear Filters",
+        "icon"  => "square"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-green w-large",
+        "href"  => "#",
+        "title" => "Apply Filters",
+        "icon"  => "play"
+    )); ?>
+    </div>
+    
+    <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-red">Questions</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'Q1','2'=>'Q2','3'=>'Q3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_question3_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_question3_".$qid,"name"=>"question3[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'A1','2'=>'A2','3'=>'A3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_answer3_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_answer3_".$qid,"name"=>"answer3[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'V1','2'=>'V2','3'=>'V3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_var3_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_var3_".$qid,"name"=>"var3[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
+    <tr>
+    <td><span class="w-tag w-tag3 w-green">Values</span></td>
+    <td><?php widget("button",array("href"=>"#","icon"=>"square","title"=>"Clear","class"=>"w-red w-xsmall"));?>
+    <?php widget("button",array("href"=>"#","icon"=>"check-square","title"=>"Invert","class"=>"w-blue w-xsmall"));?></td>
+    </tr>
+    <?php foreach(array('1'=>'T1','2'=>'T2','3'=>'T3') as $qid=>$q) { ?>
+    <tr>
+    <td><label for="filter_val3_<?php echo $qid; ?>" class="w-label"><?php echo $q; ?></label></td>
+    <td><?php widget("checkbox",array("title"=>$q,"id"=>"filter_val3_".$qid,"name"=>"val3[]"),array("value"=>$qid));?></td>
+    </tr>
+    <?php } ?>
+    </tbody></table></div>
+    
+    </div>
+    <?php widget("panel_end"); ?>
+    </fieldset>
     
     <fieldset><legend>Wysiwyg Editor</legend>
     <?php widget('wysiwyg-editor',array(
@@ -456,8 +856,6 @@ function scripts( )
         'value'=>'<i>hello</i>'
     )); ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Syntax Editor</legend>
     <?php widget('syntax-editor',array(
@@ -468,13 +866,9 @@ function scripts( )
     )); ?>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Translator</legend>
     <?php /*widget('translator');*/ ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Google Map</legend>
     <?php /*widget('map', array(
@@ -490,8 +884,6 @@ function scripts( )
     ));*/ ?>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Flash Video</legend>
     <?php /*widget('swf', array(
         'width' => '600', 'height' => '400'
@@ -499,8 +891,6 @@ function scripts( )
         'swf'    => 'https://www.youtube.com/v/g_2regfwgggreggeW40'
     ));*/ ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Html5 Audio</legend>
     <?php /*widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
@@ -511,8 +901,6 @@ function scripts( )
     ));*/ ?>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Html5 Video</legend>
     <?php /*widget('video', array('autoplay'=>1,'controls'=>1),array(
         'sources'    => options(array(
@@ -521,8 +909,6 @@ function scripts( )
         ),-1)
     ));*/ ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Chart / Graph</legend>
     <?php widget('chart', array(),array(
@@ -534,8 +920,6 @@ function scripts( )
         )
       )); ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Music Notation / Tablature</legend>
     <?php widget('tablature', array(
@@ -575,8 +959,6 @@ tabstave
 "
       )); ?>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Checkboxes</legend>
     <?php widget('checkbox',array('title'=>'Check'),array('value'=>'1')); ?>
@@ -660,8 +1042,6 @@ tabstave
     
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Uploads</legend>
     <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
     <?php widget('dnd-upload',array('name'=>'foo','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
@@ -670,8 +1050,6 @@ tabstave
     <?php widget('dnd-upload',array('name'=>'bar2[foo2][]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
     </fieldset>
     
-    
-    <hr />
     
     <fieldset><legend>Tooltips</legend>
     <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
@@ -683,14 +1061,10 @@ tabstave
     <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
     </fieldset>
     
-    <hr /><br /><br />
-    
     <fieldset><legend>Spinners</legend>
     <div class="box w-delayable w-delayed"></div>
     <div class="box"><div class="w-spinner w-spinner-dots2 active"></div></div>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Ribbons</legend>
     <div class="box">
@@ -699,15 +1073,11 @@ tabstave
     </div>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Popup Menus</legend>
     <div class="popr inline-block w-popr" data-popr="popr_1"><i class="fa fa-list-alt"></i> Feugait nostrud</div>
     <div class="popr inline-block w-popr" data-popr="popr_2"><i class="fa fa-cog"></i></div>
     <div class="popr inline-block w-popr" data-popr="popr_3" data-popr-mode="top"><i class="fa fa-list-alt"></i> Dolore</div>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>(Speech) Bubbles</legend>
     <div class="w-bubble w-bubble-up">Bubble Up</div>
@@ -720,15 +1090,15 @@ tabstave
     <div class="w-bubble w-bubble2-right">Bubble Right</div>
     </fieldset>
     
-    <hr />
-    
     <fieldset><legend>Tags</legend>
     <span class="w-tag w-orange">Tag 1</span>
+    <span class="w-tag w-purple">Tag 1</span>
     <span class="w-tag w-large w-green">Tag 2</span>
     <span class="w-tag w-xlarge w-red w-tag2">Tag 3</span>
     <span class="w-tag w-primary w-tag2">Tag 4</span>
     <span class="w-tag w-blue w-tag3">Tag 5</span>
     <span class="w-tag w-green w-large w-tag3">Tag 6</span>
+    <span class="w-tag w-yellow w-large w-tag2">Tag 7</span>
     <br />
     <span class="w-tag w-orange w-large"><?php widget('select',array(
     ),array(
@@ -740,8 +1110,6 @@ tabstave
     <option value="2">Option 3</option>
     </select></span>
     </fieldset>
-    
-    <hr />
     
     <fieldset><legend>Messages</legend>
     <div class="w-msg w-msg-ok">

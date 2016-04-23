@@ -83,26 +83,44 @@ class HtmlWidget
             ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
             
             // History
-            ,array('scripts', 'history', $asset_base.'history.js')
+            ,array('scripts', 'history', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
+            : $asset_base.'history.js'
+            )
             
             // Cookie
-            ,array('scripts', 'cookie', $asset_base.'cookie.js')
+            ,array('scripts', 'cookie', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
+            : $asset_base.'cookie.js'
+            )
             
             // isMobile
             ,array('scripts', 'ismobile', $asset_base.'ismobile.js')
             
             // Modernizr
-            ,array('scripts', 'modernizr', $asset_base.'modernizr.js')
+            ,array('scripts', 'modernizr', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
+            : $asset_base.'modernizr.js'
+            )
             
             // Typo
             ,array('scripts', 'typo', $asset_base.'typo/typo.js')
             
             // html5media
-            ,array('scripts', 'html5media', $asset_base.'html5media/html5media.js')
+            ,array('scripts', 'html5media', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js'
+            : $asset_base.'html5media/html5media.js'
+            )
             
             // video.js
-            ,array('styles', 'video-js.css', $asset_base.'video.js/video-js.css')
-            ,array('scripts', 'video.js', $asset_base.'video.js/video.js', array('video-js.css'))
+            ,array('styles', 'video-js.css', $cdn
+            ? 'http://vjs.zencdn.net/vjs-version/video-js.css'
+            : $asset_base.'video.js/video-js.css'
+            )
+            ,array('scripts', 'video.js', $cdn
+            ? 'http://vjs.zencdn.net/vjs-version/video.js'
+            : $asset_base.'video.js/video.js'
+            , array('video-js.css'))
             
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer.js')
@@ -130,14 +148,23 @@ class HtmlWidget
             ,array('scripts', 'rangeslider', $asset_base.'rangeslider.js', array('rangeslider.css','jquery'))
              
             // Sortable
-            ,array('scripts', 'sortable', $asset_base.'sortable.js')
+            ,array('scripts', 'sortable', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
+            : $asset_base.'sortable.js'
+            )
              
             // TinyDraggable
             ,array('scripts', 'tinydraggable', $asset_base.'tinydraggable.js')
              
             // Select2
-            ,array('styles', 'select2.css', $asset_base.'select2.css')
-            ,array('scripts', 'select2', $asset_base.'select2.js', array('select2.css','jquery'))
+            ,array('styles', 'select2.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
+            : $asset_base.'select2.css'
+            )
+            ,array('scripts', 'select2', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
+            : $asset_base.'select2.js'
+            , array('select2.css','jquery'))
              
             // Awesomplete
             ,array('styles', 'awesomplete.css', $asset_base.'awesomplete.css')
@@ -153,8 +180,14 @@ class HtmlWidget
             ,array('scripts', 'tageditor', $asset_base.'tageditor.js', array('tageditor.css','jquery','caret'))
              
             // Tooltipster
-            ,array('styles', 'tooltipster.css', $asset_base.'tooltipster.css')
-            ,array('scripts', 'tooltipster', $asset_base.'tooltipster.js', array('tooltipster.css','jquery'))
+            ,array('styles', 'tooltipster.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
+            : $asset_base.'tooltipster.css'
+            )
+            ,array('scripts', 'tooltipster', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
+            : $asset_base.'tooltipster.js'
+            , array('tooltipster.css','jquery'))
              
             // Popr2
             ,array('styles', 'popr2.css', $asset_base.'popr2.css')
@@ -437,6 +470,7 @@ class HtmlWidget
                 $asset_base.'codemirror/addon/mode/multiplex.js',
                 $asset_base.'codemirror/addon/comment/comment.js'
             ), array('codemirror.css'))
+            ,array('scripts', 'codemirror-grammar', $asset_base.'codemirror/addon/grammar/codemirror_grammar.js')
             
             // ACE
             //..
@@ -445,12 +479,13 @@ class HtmlWidget
         return $assets;
     }
     
-    public static function i18n( $locale, $base='', $all=false )
+    public static function i18n( $locale, $base='', $all=false, $cdn=false )
     {
         if ( empty($locale) ) return array();
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
         $asset_base = $base . 'assets/';
+        $cdn = true === $cdn;
         $i18n = array(
          array('pikadaytime', $asset_base.'i18n/pikadaytime/'.$locale.'.json')
         ,array('datex', $asset_base.'i18n/datex/'.$locale.'.json')
@@ -460,7 +495,10 @@ class HtmlWidget
         {
             $i18n = array_merge($i18n, array(
              array('tinymce', $asset_base.'tinymce/langs/'.$locale.'.js')
-            ,array('video-js', $asset_base.'video.js/lang/'.$locale.'.js')
+            ,array('video-js', $cdn
+            ? 'http://vjs.zencdn.net/vjs-version/lang/'.$locale.'.js'
+            : $asset_base.'video.js/lang/'.$locale.'.js'
+            )
             ));
         }
         return $i18n;
@@ -577,7 +615,7 @@ class HtmlWidget
     {
         if ( $widget && $renderer && is_callable($renderer) )
             self::$widgets['w_'.$widget] = $renderer;
-        elseif ( $widget && false === $renderer && isset(self::$widgets['w_'.$widget]) )
+        elseif ( $widget && (false === $renderer) && isset(self::$widgets['w_'.$widget]) )
             unset(self::$widgets['w_'.$widget]);
     }
     
@@ -589,22 +627,22 @@ class HtmlWidget
             if ( isset(self::$widgets['w_'.$widget]) ) 
                 return call_user_func(self::$widgets['w_'.$widget], $attr, $data);
             
-            if ( "audio" === $widget ) $attr["type"] = "audio";
-            elseif ( "video" === $widget ) $attr["type"] = "video";
-            elseif ( "checkbox-array" === $widget || "check-array" === $widget ) $attr["type"] = "checkbox";
-            elseif ( "radiobox-array" === $widget || "radio-array" === $widget ) $attr["type"] = "radio";
-            elseif ( "checkbox-list" === $widget || "checklist" === $widget ) $attr["type"] = "checkbox";
-            elseif ( "radiobox-list" === $widget || "radio-list" === $widget || "radiolist" === $widget ) $attr["type"] = "radio";
-            elseif ( "checkbox-image" === $widget ) $attr["type"] = "checkbox";
-            elseif ( "radio-image" === $widget ) $attr["type"] = "radio";
-            elseif ( "checkbox" === $widget ) $attr["type"] = "checkbox";
-            elseif ( "radio" === $widget ) $attr["type"] = "radio";
-            elseif ( "datetime" === $widget || 'datetimepicker' === $widget ) $attr["time"] = true;
-            elseif ( "select2" === $widget ) $attr["select2"] = true;
-            elseif ( "dropdown" === $widget ) $attr["dropdown"] = true;
-            elseif ( "datatable" === $widget ) $attr["datatable"] = true;
-            elseif ( "syntax-editor" === $widget || "source-editor" === $widget || "syntax" === $widget || "source" === $widget || "highlight-editor" === $widget || "highlighter" === $widget ) $attr["syntax-editor"] = true;
-            elseif ( "wysiwyg-editor" === $widget || "wysiwyg" === $widget || "rich-editor" === $widget || "rich" === $widget || "editor" === $widget ) $attr["wysiwyg-editor"] = true;
+            if ( 'audio' === $widget ) $attr['type'] = 'audio';
+            elseif ( 'video' === $widget ) $attr['type'] = 'video';
+            elseif ( 'checkbox-array' === $widget || 'check-array' === $widget ) $attr['type'] = 'checkbox';
+            elseif ( 'radiobox-array' === $widget || 'radio-array' === $widget ) $attr['type'] = 'radio';
+            elseif ( 'checkbox-list' === $widget || 'checklist' === $widget ) $attr['type'] = 'checkbox';
+            elseif ( 'radiobox-list' === $widget || 'radio-list' === $widget || 'radiolist' === $widget ) $attr['type'] = 'radio';
+            elseif ( 'checkbox-image' === $widget ) $attr['type'] = 'checkbox';
+            elseif ( 'radio-image' === $widget ) $attr['type'] = 'radio';
+            elseif ( 'checkbox' === $widget ) $attr['type'] = 'checkbox';
+            elseif ( 'radio' === $widget ) $attr['type'] = 'radio';
+            elseif ( 'datetime' === $widget || 'datetimepicker' === $widget ) $attr['time'] = true;
+            elseif ( 'select2' === $widget ) $attr['select2'] = true;
+            elseif ( 'dropdown' === $widget ) $attr['dropdown'] = true;
+            elseif ( 'datatable' === $widget ) $attr['datatable'] = true;
+            elseif ( 'codemirror' === $widget || 'syntax-editor' === $widget || 'source-editor' === $widget || 'syntax' === $widget || 'source' === $widget || 'highlight-editor' === $widget || 'highlighter' === $widget ) $attr['syntax-editor'] = true;
+            elseif ( 'tinymce' === $widget || 'wysiwyg-editor' === $widget || 'wysiwyg' === $widget || 'rich-editor' === $widget || 'rich' === $widget || 'editor' === $widget ) $attr['wysiwyg-editor'] = true;
             
             switch( $widget )
             {
@@ -648,11 +686,13 @@ class HtmlWidget
             case 'text':        $out = self::w_text($attr, $data); break;
             case 'imtranslator':
             case 'translator':  $out = self::w_translator($attr, $data); break;
+            case 'tinymce':
             case 'editor':
             case 'rich-editor':
             case 'rich':
             case 'wysiwyg-editor':
             case 'wysiwyg':
+            case 'codemirror':
             case 'source-editor':
             case 'source':
             case 'syntax-editor':
@@ -662,6 +702,7 @@ class HtmlWidget
             case 'textarea':    $out = self::w_textarea($attr, $data); break;
             case 'music':       
             case 'score':       
+            case 'vextab':       
             case 'tab':       
             case 'tablature':   $out = self::w_vextab($attr, $data); break;
             case 'datetimepicker':
@@ -1800,13 +1841,13 @@ class HtmlWidget
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
         
+        self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
-        return "<div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><input type=\"checkbox\" id=\"controller_{$wid}\" class=\"w-panel-controller\" value=\"1\" $wchecked/><div class=\"w-panel-header\">$wtitle<label class=\"w-panel-controller-button\" for=\"controller_{$wid}\" onclick=\"\"><i class=\"fa fa-2x\"></i></label></div><div class=\"w-panel-content\">";
+        return "<input type=\"checkbox\" id=\"controller_{$wid}\" class=\"w-panel-controller\" value=\"1\" $wchecked/><div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-panel-header\">$wtitle<label class=\"w-panel-controller-button fa fa-2x\" for=\"controller_{$wid}\" onclick=\"\"></label></div><div class=\"w-panel-content\">";
     }
     
     public static function w_panel_end( $attr, $data )
     {
-        self::enqueue('styles', 'htmlwidgets.css');
         return "</div></div>";
     }
     
@@ -2062,6 +2103,7 @@ OUT;
         $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
         $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="w-modal-overlay" onclick=\"\"></label>' : '<div class="w-modal-overlay"></div>';
         $wdata = self::data($attr);
+        self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
     }
@@ -2069,7 +2111,6 @@ OUT;
     public static function w_modal_end( $attr, $data )
     {
         $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
-        self::enqueue('styles', 'htmlwidgets.css');
         return "</div><div class=\"w-dialog-buttons\">$wbuttons</div></div>";
     }
     

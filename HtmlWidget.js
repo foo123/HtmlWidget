@@ -157,26 +157,44 @@ var HtmlWidget = self = {
             ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
             
             // History
-            ,['scripts', 'history', asset_base+'history.js']
+            ,['scripts', 'history', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
+            : asset_base+'history.js'
+            ]
             
             // Cookie
-            ,['scripts', 'cookie', asset_base+'cookie.js']
+            ,['scripts', 'cookie', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
+            : asset_base+'cookie.js'
+            ]
             
             // isMobile
             ,['scripts', 'ismobile', asset_base+'ismobile.js']
             
             // Modernizr
-            ,['scripts', 'modernizr', asset_base+'modernizr.js']
+            ,['scripts', 'modernizr', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
+            : asset_base+'modernizr.js'
+            ]
             
             // Typo
             ,['scripts', 'typo', asset_base+'typo/typo.js']
             
             // html5media
-            ,['scripts', 'html5media', asset_base+'html5media/html5media.js']
+            ,['scripts', 'html5media', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js'
+            : asset_base+'html5media/html5media.js'
+            ]
             
             // video.js
-            ,['styles', 'video-js.css', asset_base+'video.js/video-js.css']
-            ,['scripts', 'video.js', asset_base+'video.js/video.js', ['video-js.css']]
+            ,['styles', 'video-js.css', cdn
+            ? 'http://vjs.zencdn.net/vjs-version/video-js.css'
+            : asset_base+'video.js/video-js.css'
+            ]
+            ,['scripts', 'video.js', cdn
+            ? 'http://vjs.zencdn.net/vjs-version/video.js'
+            : asset_base+'video.js/video.js'
+            , ['video-js.css']]
             
             // Timer
             ,['scripts', 'timer', asset_base+'timer.js']
@@ -204,14 +222,23 @@ var HtmlWidget = self = {
             ,['scripts', 'rangeslider', asset_base+'rangeslider.js', ['rangeslider.css','jquery']]
              
             // Sortable
-            ,['scripts', 'sortable', asset_base+'sortable.js']
+            ,['scripts', 'sortable', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
+            : asset_base+'sortable.js'
+            ]
              
             // TinyDraggable
             ,['scripts', 'tinydraggable', asset_base+'tinydraggable.js']
              
             // Select2
-            ,['styles', 'select2.css', asset_base+'select2.css']
-            ,['scripts', 'select2', asset_base+'select2.js', ['select2.css','jquery']]
+            ,['styles', 'select2.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
+            : asset_base+'select2.css'
+            ]
+            ,['scripts', 'select2', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
+            : asset_base+'select2.js'
+            , ['select2.css','jquery']]
              
             // Awesomplete
             ,['styles', 'awesomplete.css', asset_base+'awesomplete.css']
@@ -227,8 +254,14 @@ var HtmlWidget = self = {
             ,['scripts', 'tageditor', asset_base+'tageditor.js', ['tageditor.css','jquery','caret']]
              
             // Tooltipster
-            ,['styles', 'tooltipster.css', asset_base+'tooltipster.css']
-            ,['scripts', 'tooltipster', asset_base+'tooltipster.js', ['tooltipster.css','jquery']]
+            ,['styles', 'tooltipster.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
+            : asset_base+'tooltipster.css'
+            ]
+            ,['scripts', 'tooltipster', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
+            : asset_base+'tooltipster.js'
+            , ['tooltipster.css','jquery']]
              
             // Popr2
             ,['styles', 'popr2.css', asset_base+'popr2.css']
@@ -511,6 +544,7 @@ var HtmlWidget = self = {
                 asset_base+'codemirror/addon/mode/multiplex.js',
                 asset_base+'codemirror/addon/comment/comment.js'
             ], ['codemirror.css']]
+            ,['scripts', 'codemirror-grammar', asset_base+'codemirror/addon/grammar/codemirror_grammar.js']
             
             // ACE
             //..
@@ -519,11 +553,12 @@ var HtmlWidget = self = {
         return assets;
     }
     
-    ,i18n: function( locale, base, all ) {
+    ,i18n: function( locale, base, all, cdn ) {
         if ( !locale ) return [];
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
+        cdn = true === cdn;
         var i18n = [
          ['pikadaytime', asset_base+'i18n/pikadaytime/'+locale+'.json']
         ,['datex', asset_base+'i18n/datex/'+locale+'.json']
@@ -533,7 +568,10 @@ var HtmlWidget = self = {
         {
             i18n = i18n.concat([
              ['tinymce', asset_base+'tinymce/langs/'+locale+'.js']
-            ,['video-js', asset_base+'video.js/lang/'+locale+'.js']
+            ,['video-js', cdn
+            ? 'http://vjs.zencdn.net/vjs-version/lang/'+locale+'.js'
+            : asset_base+'video.js/lang/'+locale+'.js'
+            ]
             ]);
         }
         return i18n;
@@ -669,7 +707,7 @@ var HtmlWidget = self = {
     ,addWidget: function( widget, renderer ) {
         if ( widget && "function"===typeof renderer )
             widgets['w_'+widget] = renderer;
-        else if ( widget && false === renderer && widgets[HAS]('w_'+widget) )
+        else if ( widget && (false === renderer) && widgets[HAS]('w_'+widget) )
             delete widgets['w_'+widget];
     }
     
@@ -681,22 +719,22 @@ var HtmlWidget = self = {
             if ( widgets[HAS]('w_'+widget) )
                 return widgets['w_'+widget](attr, data);
             
-            if ( "audio" === widget ) attr["type"] = "audio";
-            else if ( "video" === widget ) attr["type"] = "video";
-            else if ( "checkbox-array" === widget || "check-array" === widget ) attr["type"] = "checkbox";
-            else if ( "radiobox-array" === widget || "radio-array" === widget ) attr["type"] = "radio";
-            else if ( "checkbox-list" === widget || "checklist" === widget ) attr["type"] = "checkbox";
-            else if ( "radiobox-list" === widget || "radio-list" === widget || "radiolist" === widget ) attr["type"] = "radio";
-            else if ( "checkbox-image" === widget ) attr["type"] = "checkbox";
-            else if ( "radio-image" === widget ) attr["type"] = "radio";
-            else if ( "checkbox" === widget ) attr["type"] = "checkbox";
-            else if ( "radio" === widget ) attr["type"] = "radio";
-            else if ( "datetime" === widget || 'datetimepicker' === widget ) attr["time"] = true;
-            else if ( "select2" === widget ) attr["select2"] = true;
-            else if ( "dropdown" === widget ) attr["dropdown"] = true;
-            else if ( "datatable" === widget ) attr["datatable"] = true;
-            else if ( "syntax-editor" === widget || "source-editor" === widget || "syntax" === widget || "source" === widget || "highlight-editor" === widget || "highlighter" === widget ) attr["syntax-editor"] = true;
-            else if ( "wysiwyg-editor" === widget || "wysiwyg" === widget || "rich-editor" === widget || "rich" === widget || "editor" === widget ) attr["wysiwyg-editor"] = true;
+            if ( 'audio' === widget ) attr['type'] = 'audio';
+            else if ( 'video' === widget ) attr['type'] = 'video';
+            else if ( 'checkbox-array' === widget || 'check-array' === widget ) attr['type'] = 'checkbox';
+            else if ( 'radiobox-array' === widget || 'radio-array' === widget ) attr['type'] = 'radio';
+            else if ( 'checkbox-list' === widget || 'checklist' === widget ) attr['type'] = 'checkbox';
+            else if ( 'radiobox-list' === widget || 'radio-list' === widget || 'radiolist' === widget ) attr['type'] = 'radio';
+            else if ( 'checkbox-image' === widget ) attr['type'] = 'checkbox';
+            else if ( 'radio-image' === widget ) attr['type'] = 'radio';
+            else if ( 'checkbox' === widget ) attr['type'] = 'checkbox';
+            else if ( 'radio' === widget ) attr['type'] = 'radio';
+            else if ( 'datetime' === widget || 'datetimepicker' === widget ) attr['time'] = true;
+            else if ( 'select2' === widget ) attr['select2'] = true;
+            else if ( 'dropdown' === widget ) attr['dropdown'] = true;
+            else if ( 'datatable' === widget ) attr['datatable'] = true;
+            else if ( 'codemirror' === widget || 'syntax-editor' === widget || 'source-editor' === widget || 'syntax' === widget || 'source' === widget || 'highlight-editor' === widget || 'highlighter' === widget ) attr['syntax-editor'] = true;
+            else if ( 'tinymce' === widget || 'wysiwyg-editor' === widget || 'wysiwyg' === widget || 'rich-editor' === widget || 'rich' === widget || 'editor' === widget ) attr['wysiwyg-editor'] = true;
             
             switch( widget )
             {
@@ -740,11 +778,13 @@ var HtmlWidget = self = {
             case 'text':        out = self.w_text(attr, data); break;
             case 'imtranslator':
             case 'translator':  out = self.w_translator(attr, data); break;
+            case 'tinymce':
             case 'editor':
             case 'rich-editor':
             case 'rich':
             case 'wysiwyg-editor':
             case 'wysiwyg':
+            case 'codemirror':
             case 'source-editor':
             case 'source':
             case 'syntax-editor':
@@ -754,6 +794,7 @@ var HtmlWidget = self = {
             case 'textarea':    out = self.w_textarea(attr, data); break;
             case 'music':       
             case 'score':       
+            case 'vextab':       
             case 'tab':       
             case 'tablature':   out = self.w_vextab(attr, data); break;
             case 'datetimepicker':
@@ -1957,12 +1998,12 @@ var HtmlWidget = self = {
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
         
+        self.enqueue('styles', 'htmlwidgets.css');
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
-        return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button" for="controller_'+wid+'" onclick=""><i class="fa fa-2x"></i></label></div><div class="w-panel-content">';
+        return '<input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button fa fa-2x" for="controller_'+wid+'" onclick=""></label></div><div class="w-panel-content">';
     }
     
     ,w_panel_end: function( attr, data ) {
-        self.enqueue('styles', 'htmlwidgets.css');
         return '</div></div>';
     }
     
@@ -2213,6 +2254,7 @@ var HtmlWidget = self = {
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
         woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick=""></label>' : '<div class="w-modal-overlay"></div>';
         wdata = self.data(attr);
+        self.enqueue('styles', 'htmlwidgets.css');
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
@@ -2220,7 +2262,6 @@ var HtmlWidget = self = {
     ,w_modal_end: function( attr, data ) {
         var wbuttons;
         wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
-        self.enqueue('styles', 'htmlwidgets.css');
         return '</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
