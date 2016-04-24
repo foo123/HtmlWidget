@@ -1040,6 +1040,11 @@ tabstave
     <?php widget('radio-image',array('image'=>'./luxury.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px'),array()); ?>
     <?php widget('radio-image',array('image'=>'./comfort.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px','checked'=>1),array()); ?>
     
+    <hr />
+    <?php widget('checkbox-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
+    <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_2')); ?>
+    <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_2','checked'=>1)); ?>
+    
     </fieldset>
     
     <fieldset><legend>Uploads</legend>

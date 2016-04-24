@@ -725,10 +725,8 @@ var HtmlWidget = self = {
             else if ( 'radiobox-array' === widget || 'radio-array' === widget ) attr['type'] = 'radio';
             else if ( 'checkbox-list' === widget || 'checklist' === widget ) attr['type'] = 'checkbox';
             else if ( 'radiobox-list' === widget || 'radio-list' === widget || 'radiolist' === widget ) attr['type'] = 'radio';
-            else if ( 'checkbox-image' === widget ) attr['type'] = 'checkbox';
-            else if ( 'radio-image' === widget ) attr['type'] = 'radio';
-            else if ( 'checkbox' === widget ) attr['type'] = 'checkbox';
-            else if ( 'radio' === widget ) attr['type'] = 'radio';
+            else if ( 'checkbox' === widget || 'checkbox-image' === widget || 'checkbox-label' === widget ) attr['type'] = 'checkbox';
+            else if ( 'radio' === widget|| 'radio-image' === widget || 'radio-label' === widget ) attr['type'] = 'radio';
             else if ( 'datetime' === widget || 'datetimepicker' === widget ) attr['time'] = true;
             else if ( 'select2' === widget ) attr['select2'] = true;
             else if ( 'dropdown' === widget ) attr['dropdown'] = true;
@@ -820,6 +818,8 @@ var HtmlWidget = self = {
             case 'checklist':   out = self.w_control_list(attr, data); break;
             case 'checkbox-image':
             case 'radio-image':
+            case 'checkbox-label':
+            case 'radio-label':
             case 'checkbox':
             case 'radio':
             case 'control':     out = self.w_control(attr, data); break;
@@ -973,32 +973,41 @@ var HtmlWidget = self = {
     }
     
     ,w_control: function( attr, data ) {
-        var wid, wclass, wstyle, wctrl, wextra, wtitle, wchecked, wvalue, wname, wtype, wstate, wimg;
+        var wid, wclass, wstyle, wctrl, wextra, wtitle, wchecked, wvalue, wname, wtype, wstate, wtext;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
         wvalue = isset(data,"value") ? data["value"] : "1"; 
-        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
+        wstate = '';
         if ( !empty(attr,'image') )
         {
-            wctrl = "checkbox" === wtype ? 'w-checkbox-image' : 'w-radio-image';
-            wimg = '<span style="background-image:url('+attr['image']+');"></span>';
+            wctrl = 'radio' === wtype ? 'w-radio-image' : 'w-checkbox-image';
+            wtext = '<span style="background-image:url('+attr['image']+');"></span>';
+            wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
+            if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
+            if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
+        }
+        else if ( !empty(attr,'label') )
+        {
+            wctrl = 'radio' === wtype ? 'w-radio-label' : 'w-checkbox-label';
+            wtext = attr['label'];
+            wtitle = 'title="'+(isset(attr,'title') ? attr['title'] : wtext)+'"';
         }
         else
         {
-            wctrl = "checkbox" === wtype ? 'w-checkbox' : 'w-radio';
-            wimg = '&nbsp;';
+            wctrl = 'radio' === wtype ? 'w-radio' : 'w-checkbox';
+            wtext = '&nbsp;';
+            wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
+            if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
+            if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         }
         wclass = 'w-widget w-control'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
-        wstate = '';
-        if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
-        if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" value="'+wvalue+'" '+wextra+' '+wchecked+' /><label for="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wimg+'</label>';
+        return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" value="'+wvalue+'" '+wextra+' '+wchecked+' /><label for="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wtext+'</label>';
     }
     
     ,w_control_list: function( attr, data ) {

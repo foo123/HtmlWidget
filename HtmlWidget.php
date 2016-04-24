@@ -633,10 +633,8 @@ class HtmlWidget
             elseif ( 'radiobox-array' === $widget || 'radio-array' === $widget ) $attr['type'] = 'radio';
             elseif ( 'checkbox-list' === $widget || 'checklist' === $widget ) $attr['type'] = 'checkbox';
             elseif ( 'radiobox-list' === $widget || 'radio-list' === $widget || 'radiolist' === $widget ) $attr['type'] = 'radio';
-            elseif ( 'checkbox-image' === $widget ) $attr['type'] = 'checkbox';
-            elseif ( 'radio-image' === $widget ) $attr['type'] = 'radio';
-            elseif ( 'checkbox' === $widget ) $attr['type'] = 'checkbox';
-            elseif ( 'radio' === $widget ) $attr['type'] = 'radio';
+            elseif ( 'checkbox' === $widget || 'checkbox-image' === $widget || 'checkbox-label' === $widget ) $attr['type'] = 'checkbox';
+            elseif ( 'radio' === $widget|| 'radio-image' === $widget || 'radio-label' === $widget ) $attr['type'] = 'radio';
             elseif ( 'datetime' === $widget || 'datetimepicker' === $widget ) $attr['time'] = true;
             elseif ( 'select2' === $widget ) $attr['select2'] = true;
             elseif ( 'dropdown' === $widget ) $attr['dropdown'] = true;
@@ -728,6 +726,8 @@ class HtmlWidget
             case 'checklist':   $out = self::w_control_list($attr, $data); break;
             case 'checkbox-image':
             case 'radio-image':
+            case 'checkbox-label':
+            case 'radio-label':
             case 'checkbox':
             case 'radio':
             case 'control':     $out = self::w_control($attr, $data); break;
@@ -884,26 +884,35 @@ class HtmlWidget
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
-        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wchecked = !empty($attr['checked']) ? 'checked' : '';
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wstate = '';
         if ( !empty($attr['image']) )
         {
-            $wctrl = "checkbox" === $wtype ? 'w-checkbox-image' : 'w-radio-image';
-            $wimg = '<span style="background-image:url('.$attr['image'].');"></span>';
+            $wctrl = 'radio' === $wtype ? 'w-radio-image' : 'w-checkbox-image';
+            $wtext = '<span style="background-image:url('.$attr['image'].');"></span>';
+            $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
+            if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
+            if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
+        }
+        elseif ( !empty($attr['label']) )
+        {
+            $wctrl = 'radio' === $wtype ? 'w-radio-label' : 'w-checkbox-label';
+            $wtext = $attr['label'];
+            $wtitle = 'title="'.(isset($attr['title']) ? $attr['title'] : $wtext).'"';
         }
         else
         {
-            $wctrl = "checkbox" === $wtype ? 'w-checkbox' : 'w-radio';
-            $wimg = '&nbsp;';
+            $wctrl = 'radio' === $wtype ? 'w-radio' : 'w-checkbox';
+            $wtext = '&nbsp;';
+            $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
+            if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
+            if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
         }
         $wclass = 'w-widget w-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wstate = '';
-        if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
-        if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
-        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wimg</label>";
+        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
     }
     
     public static function w_control_list( $attr, $data )

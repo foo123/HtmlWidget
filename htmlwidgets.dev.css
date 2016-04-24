@@ -20,6 +20,8 @@
 .w-link, .w-label, .w-button, .w-switch,
 input.w-radio-image + label,
 input.w-checkbox-image + label,
+input.w-radio-label + label,
+input.w-checkbox-label + label,
 input.w-radio + label,
 input.w-checkbox + label
 {
@@ -479,6 +481,8 @@ input.w-radio + label:active,
 input.w-checkbox + label:active,
 input.w-radio-image + label,
 input.w-checkbox-image + label,
+input.w-radio-label + label,
+input.w-checkbox-label + label,
 input.w-radio + label,
 input.w-checkbox + label
 {
@@ -489,6 +493,8 @@ input.w-checkbox + label
 .w-switch > input.w-switch-state,
 input[type=radio].w-radio-image,
 input[type=checkbox].w-checkbox-image,
+input[type=radio].w-radio-label,
+input[type=checkbox].w-checkbox-label,
 input[type=radio].w-radio,
 input[type=checkbox].w-checkbox
 {
@@ -3720,6 +3726,11 @@ input.w-checkbox-image + label
 {
     border-radius: 6px;
 }
+input.w-radio-label + label,
+input.w-checkbox-label + label
+{
+    padding: 6px 12px;
+}
 input.w-radio + label,
 input.w-checkbox + label
 {
@@ -4330,6 +4341,32 @@ select.w-select option.w-option-placeholder,
 {
     opacity: 0.6;
 }
+input.w-radio-label + label ,
+input.w-checkbox-label + label 
+{
+    /*background-color: none;*/
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    background-clip: padding-box !important;
+}
+input.w-radio-label + label:active,
+input.w-checkbox-label + label:active,
+input.w-radio-label + label:hover,
+input.w-checkbox-label + label:hover
+{
+    border-color: #1190d1 !important;
+}
+input.w-radio-label + label.on-hover:hover,
+input.w-checkbox-label + label.on-hover:hover,
+input.w-radio-label:checked + label ,
+input.w-checkbox-label:checked + label 
+{
+    background-color: #1190d1 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    /*border-color: #1190d1 !important;*/
+}
 input.w-radio-image + label ,
 input.w-checkbox-image + label 
 {
@@ -4358,6 +4395,8 @@ input.w-checkbox + label:before
 {
     color: inherit;
 }
+input.w-checkbox-label:disabled + label,
+input.w-radio-label:disabled + label,
 input.w-checkbox-image:disabled + label,
 input.w-radio-image:disabled + label,
 input.w-checkbox:disabled + label,

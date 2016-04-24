@@ -28,7 +28,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 **included widgets:**
 
 
-1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-list, radio-list, radio-array, checkbox-array, selectbox, multi-selectbox, textbox, textarea, file, range/slider, rating
+1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-label, radio-label, checkbox-list, radio-list, radio-array, checkbox-array, selectbox, multi-selectbox, textbox, textarea, file, range/slider, rating
 2. buttons, labels, links, icons, tooltips, tags, speech bubbles, spinners
 3. table, accordeon, tab, page, collapsable panels, side panels, modals, dialogs, hierarchical responsive horizontal menus, hierarchical responsive vertical menus
 4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable (drag-n-drop with preview)
