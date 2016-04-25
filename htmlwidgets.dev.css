@@ -198,7 +198,7 @@ input.w-checkbox + label
     color: #fff;
     font-size: 1em;
     font-weight: bold;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    /*text-shadow: 0 1px 2px rgba(0,0,0,0.2);*/
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1821,7 +1821,7 @@ select.w-select option.w-option-placeholder,
     vertical-align: middle;
     margin-right: 8px;
 }
-@media all and (max-width : 780px){
+@media all and (max-width : 48.75em){
 
 .w-vertical-menu.w-mobile,
 .w-vertical-menu.w-mobile > ul,
@@ -1921,7 +1921,7 @@ select.w-select option.w-option-placeholder,
 
 }
 
-@media all and (max-width : 330px){
+@media all and (max-width : 20.625em){
 .w-vertical-menu.w-mobile li > ul,
 .w-dropdown-menu.w-mobile ul  > li > ul,
 .w-dropdown-menu.w-mobile > ul  > li > ul
@@ -3729,7 +3729,40 @@ input.w-checkbox-image + label
 input.w-radio-label + label,
 input.w-checkbox-label + label
 {
-    padding: 6px 12px;
+    padding: 6px 2em 6px 12px;
+}
+input.w-radio-label + label.w-icon-left,
+input.w-checkbox-label + label.w-icon-left
+{
+    padding: 6px 12px 6px 2em;
+}
+input.w-radio-label + label:after,
+input.w-checkbox-label + label:after
+{
+    position: absolute; display: inline-block;
+    right: 10px; top: 8px;
+    font-family: FontAwesome;
+    content: "\f096";
+}
+input.w-radio-label + label.w-icon-left:after,
+input.w-checkbox-label + label.w-icon-left:after
+{
+    right: auto; left: 10px;
+}
+input.w-radio-label + label[data-wstate-off]:after,
+input.w-checkbox-label + label[data-wstate-off]:after
+{
+    content: attr(data-wstate-off) !important;
+}
+input.w-radio-label:checked + label:after,
+input.w-checkbox-label:checked + label:after
+{
+    content: "\f046";
+}
+input.w-radio-label:checked + label[data-wstate-on]:after,
+input.w-checkbox-label:checked + label[data-wstate-on]:after
+{
+    content: attr(data-wstate-on) !important;
 }
 input.w-radio + label,
 input.w-checkbox + label
@@ -3896,45 +3929,55 @@ input.w-checkbox + label.w-xlarge
 {
     margin-right: 5px;
 }
-/*
+.w-ribbon-dtl.w-large
+{
+    left: -6px; top: -6px;
+}
+.w-ribbon-dtr.w-large
+{
+    left: auto; right: -6px;
+    top: -6px;
+}
 .w-ribbon-dtr.w-large,
 .w-ribbon-dtl.w-large
 {
-    width: 90px; height: 90px;
-    font-size: 0.8em;
+    width: 100px; height: 100px;
+    font-size: 1em;
 }
 .w-ribbon-dtr.w-large  > span,
 .w-ribbon-dtl.w-large  > span
 {
-    line-height: 40px; width: 150px;
-}
-.w-ribbon-dtl.w-large
-{
-    left: -5px; top: -5px;
+    line-height: 30px; width: 140px;
 }
 .w-ribbon-dtl.w-large > span
 {
-    top: 19px; left: -21px;
-}
-.w-ribbon-dtr.w-large
-{
-    left: auto; right: -5px; top: -5px;
+    left: -30px; top: 26px;
 }
 .w-ribbon-dtr.w-large > span
 {
-    top: 19px; left: auto; right: -21px;
+    left: auto; right: -30px;
 }
-.w-ribbon-dtr.w-large.w-ribbon-fold  > span::before,
-.w-ribbon-dtl.w-large.w-ribbon-fold  > span::before
+.w-ribbon-dtl.w-ribbon-fold.w-large  > span::before
 {
-    border-width: 3px;
+    border-width: 7px;
+    left: -4px; top: 100%;
 }
-.w-ribbon-dtr.w-large.w-ribbon-fold  > span::after,
-.w-ribbon-dtl.w-large.w-ribbon-fold  > span::after
+.w-ribbon-dtr.w-ribbon-fold.w-large  > span::before
 {
-    border-width: 3px;
+    border-width: 7px;
+    left: -1px; top: 100%;
 }
-*/
+.w-ribbon-dtl.w-ribbon-fold.w-large  > span::after
+{
+    border-width: 7px;
+    right: -8px; top: 100%;
+}
+.w-ribbon-dtr.w-ribbon-fold.w-large  > span::after
+{
+    border-width: 7px;
+    right: -8px; top: 100%;
+}
+
 .w-tag
 {
     height: 24px; line-height: 23px;
@@ -4350,22 +4393,28 @@ input.w-checkbox-label + label
     border-color: transparent;
     background-clip: padding-box !important;
 }
-input.w-radio-label + label:active,
-input.w-checkbox-label + label:active,
-input.w-radio-label + label:hover,
-input.w-checkbox-label + label:hover
+input.w-radio-label:not(:checked) + label:active,
+input.w-checkbox-label:not(:checked) + label:active,
+input.w-radio-label:not(:checked) + label:hover,
+input.w-checkbox-label:not(:checked) + label:hover
+{
+    background-color: #477b96 !important;
+    border-color: #477b96 !important;
+    color: #fff !important;
+}
+input.w-radio-label:checked + label:active,
+input.w-checkbox-label:checked + label:active,
+input.w-radio-label:checked + label:hover,
+input.w-checkbox-label:checked + label:hover
 {
     border-color: #1190d1 !important;
 }
-input.w-radio-label + label.on-hover:hover,
-input.w-checkbox-label + label.on-hover:hover,
 input.w-radio-label:checked + label ,
 input.w-checkbox-label:checked + label 
 {
     background-color: #1190d1 !important;
     color: #fff !important;
     font-weight: bold !important;
-    /*border-color: #1190d1 !important;*/
 }
 input.w-radio-image + label ,
 input.w-checkbox-image + label 
@@ -4408,23 +4457,53 @@ input.w-radio:disabled + label
     background-image: -o-linear-gradient(top, rgba(255,255,255,.6), rgba(255,255,255,.6));
     background-image: linear-gradient(to bottom, rgba(255,255,255,.6), rgba(255,255,255,.6));
 }
+.w-button.w-white,
 .w-button
 {
     background-color: #fff;
     border-color: #ccc;
     color: #333;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    box-shadow: 0 1px 3px 2px rgba(255, 255, 255, 0.12) inset;
 }
+.w-button.w-white:hover,
+.w-button.w-white:focus,
 .w-button:hover,
 .w-button:focus
 {
     border-color: #999;
 }
+.w-button.w-white:active,
 .w-button:active
 {
     color: #1190d1;
     border-color: #1190d1;
+}
+.w-button.w-black
+{
+    background-color: #3a3a3a;
+    border-color: transparent;
+    color: #efefef;
+}
+.w-button.w-black:hover,
+.w-button.w-black:focus,
+.w-button.w-black:active
+{
+    color: #fff;
+    border-color: #292929 !important;
+}
+.w-button.w-aqua
+{
+    background-color: #477b96;
+    border-color: transparent;
+    color: #efefef;
+}
+.w-button.w-aqua:hover,
+.w-button.w-aqua:focus,
+.w-button.w-aqua:active
+{
+    color: #fff;
+    border-color: #365363 !important;
 }
 .w-button.w-blue,
 .w-button.w-primary
@@ -4486,7 +4565,8 @@ input.w-radio:disabled + label
 {
     background-color: rgb(214, 212, 24);
     border-color: transparent;
-    color: #efefef;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 .w-button.w-yellow:hover,
 .w-button.w-yellow:focus,
@@ -4978,7 +5058,21 @@ table.w-table th
 .w-tag.w-tag2.w-blue:after
 {
     border-color: transparent #00a6df transparent transparent;
+}
+.w-tag.w-aqua  select,
+.w-tag.w-aqua  select option,
+.w-tag.w-aqua
+{
+    background-color: #477b96;
+}
+.w-tag.w-aqua:after
+{
+    border-color: transparent transparent transparent #477b96;
 }	
+.w-tag.w-tag2.w-aqua:after
+{
+    border-color: transparent #477b96 transparent transparent;
+}
 .w-tag.w-primary  select,
 .w-tag.w-primary  select option,
 .w-tag.w-primary

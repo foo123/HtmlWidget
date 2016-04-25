@@ -52,10 +52,10 @@ class HtmlWidget
         
         $assets = array(
          array('styles', 'htmlwidgets.css', $dev ? $base.'htmlwidgets.dev.css' : $base.'htmlwidgets.css')
-        ,array('styles', 'normalize.css', $asset_base.'normalize.css')
-        ,array('styles', 'responsive.css', $asset_base.'responsive.css')
-        ,array('styles', 'fontawesome.css', $asset_base.'fontawesome.css')
-        ,array('scripts', 'selectorlistener', $asset_base.'selectorlistener.js')
+        ,array('styles', 'normalize.css', $asset_base.'responsive/normalize.css')
+        ,array('styles', 'responsive.css', $asset_base.'responsive/responsive.css')
+        ,array('styles', 'fontawesome.css', $asset_base.'fontawesome/fontawesome.css')
+        ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         );
         if ( true === $opts['jquery'] )
@@ -67,9 +67,9 @@ class HtmlWidget
                 ,array('scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', array('jquery'))
             )
             : array(
-                 array('scripts', 'jquery', $asset_base.'jquery.js')
-                ,array('scripts', 'jquery-ui', $asset_base.'jquery-ui.js', array('jquery'))
-                //,array('scripts', 'jquery-iframe-transport', $asset_base.'jquery.iframe-transport.js', array('jquery'))
+                 array('scripts', 'jquery', $asset_base.'jquery/jquery.js')
+                ,array('scripts', 'jquery-ui', $asset_base.'jquery/jquery-ui.js', array('jquery'))
+                //,array('scripts', 'jquery-iframe-transport', $asset_base.'jquery/jquery.iframe-transport.js', array('jquery'))
             )
             );
         }
@@ -79,28 +79,28 @@ class HtmlWidget
              array('scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places')
             
             // Humane
-            ,array('styles', 'humane.css', $asset_base.'humane.css')
-            ,array('scripts', 'humane', $asset_base.'humane.js', array('humane.css'))
+            ,array('styles', 'humane.css', $asset_base.'humane/humane.css')
+            ,array('scripts', 'humane', $asset_base.'humane/humane.js', array('humane.css'))
             
             // History
             ,array('scripts', 'history', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
-            : $asset_base.'history.js'
+            : $asset_base.'utils/history.js'
             )
             
             // Cookie
             ,array('scripts', 'cookie', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
-            : $asset_base.'cookie.js'
+            : $asset_base.'utils/cookie.js'
             )
             
             // isMobile
-            ,array('scripts', 'ismobile', $asset_base.'ismobile.js')
+            ,array('scripts', 'ismobile', $asset_base.'utils/ismobile.js')
             
             // Modernizr
             ,array('scripts', 'modernizr', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
-            : $asset_base.'modernizr.js'
+            : $asset_base.'utils/modernizr.js'
             )
             
             // Typo
@@ -123,123 +123,123 @@ class HtmlWidget
             , array('video-js.css'))
             
             // Timer
-            ,array('scripts', 'timer', $asset_base.'timer.js')
+            ,array('scripts', 'timer', $asset_base.'timer/timer.js')
             
             // DateX
-            ,array('scripts', 'datex', $asset_base.'datex.js')
+            ,array('scripts', 'datex', $asset_base.'utils/datex.js')
             
             // Pikadaytime
-            ,array('styles', 'pikadaytime.css', $asset_base.'pikadaytime.css')
-            ,array('scripts', 'pikadaytime', $asset_base.'pikadaytime.js', array('pikadaytime.css','datex'))
+            ,array('styles', 'pikadaytime.css', $asset_base.'pikadaytime/pikadaytime.css')
+            ,array('scripts', 'pikadaytime', $asset_base.'pikadaytime/pikadaytime.js', array('pikadaytime.css','datex'))
              
             // ColorPicker
-            ,array('styles', 'colorpicker.css', $asset_base.'colorpicker.css')
-            ,array('scripts', 'colorpicker', $asset_base.'colorpicker.js', array('colorpicker.css'))
+            ,array('styles', 'colorpicker.css', $asset_base.'colorpicker/colorpicker.css')
+            ,array('scripts', 'colorpicker', $asset_base.'colorpicker/colorpicker.js', array('colorpicker.css'))
              
             // LocationPicker
-            ,array('scripts', 'locationpicker', $asset_base.'locationpicker.js', array('cdn--google-maps','jquery'))
+            ,array('scripts', 'locationpicker', $asset_base.'locationpicker/locationpicker.js', array('cdn--google-maps','jquery'))
              
             // AreaSelect
-            ,array('styles', 'areaselect.css', $asset_base.'areaselect.css')
-            ,array('scripts', 'areaselect', $asset_base.'areaselect.js', array('areaselect.css'))
+            ,array('styles', 'areaselect.css', $asset_base.'areaselect/areaselect.css')
+            ,array('scripts', 'areaselect', $asset_base.'areaselect/areaselect.js', array('areaselect.css'))
              
             // RangeSlider
-            ,array('styles', 'rangeslider.css', $asset_base.'rangeslider.css')
-            ,array('scripts', 'rangeslider', $asset_base.'rangeslider.js', array('rangeslider.css','jquery'))
+            ,array('styles', 'rangeslider.css', $asset_base.'rangeslider/rangeslider.css')
+            ,array('scripts', 'rangeslider', $asset_base.'rangeslider/rangeslider.js', array('rangeslider.css','jquery'))
              
             // Sortable
             ,array('scripts', 'sortable', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
-            : $asset_base.'sortable.js'
+            : $asset_base.'sortable/sortable.js'
             )
              
             // TinyDraggable
-            ,array('scripts', 'tinydraggable', $asset_base.'tinydraggable.js')
+            ,array('scripts', 'tinydraggable', $asset_base.'tinydraggable/tinydraggable.js')
              
             // Select2
             ,array('styles', 'select2.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
-            : $asset_base.'select2.css'
+            : $asset_base.'select2/select2.css'
             )
             ,array('scripts', 'select2', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
-            : $asset_base.'select2.js'
+            : $asset_base.'select2/select2.js'
             , array('select2.css','jquery'))
              
             // Awesomplete
-            ,array('styles', 'awesomplete.css', $asset_base.'awesomplete.css')
-            ,array('scripts', 'awesomplete', $asset_base.'awesomplete.js', array('awesomplete.css'))
+            ,array('styles', 'awesomplete.css', $asset_base.'awesomplete/awesomplete.css')
+            ,array('scripts', 'awesomplete', $asset_base.'awesomplete/awesomplete.js', array('awesomplete.css'))
              
             // AutoComplete
-            ,array('styles', 'autocomplete.css', $asset_base.'autocomplete.css')
-            ,array('scripts', 'autocomplete', $asset_base.'autocomplete.js', array('autocomplete.css','jquery'))
+            ,array('styles', 'autocomplete.css', $asset_base.'autocomplete/autocomplete.css')
+            ,array('scripts', 'autocomplete', $asset_base.'autocomplete/autocomplete.js', array('autocomplete.css','jquery'))
              
             // TagEditor
-            ,array('scripts', 'caret', $asset_base.'caret.js')
-            ,array('styles', 'tageditor.css', $asset_base.'tageditor.css')
-            ,array('scripts', 'tageditor', $asset_base.'tageditor.js', array('tageditor.css','jquery','caret'))
+            ,array('scripts', 'caret', $asset_base.'tageditor/caret.js')
+            ,array('styles', 'tageditor.css', $asset_base.'tageditor/tageditor.css')
+            ,array('scripts', 'tageditor', $asset_base.'tageditor/tageditor.js', array('tageditor.css','jquery','caret'))
              
             // Tooltipster
             ,array('styles', 'tooltipster.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
-            : $asset_base.'tooltipster.css'
+            : $asset_base.'tooltipster/tooltipster.css'
             )
             ,array('scripts', 'tooltipster', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
-            : $asset_base.'tooltipster.js'
+            : $asset_base.'tooltipster/tooltipster.js'
             , array('tooltipster.css','jquery'))
              
             // Popr2
-            ,array('styles', 'popr2.css', $asset_base.'popr2.css')
-            ,array('scripts', 'popr2', $asset_base.'popr2.js', array('popr2.css','jquery'))
+            ,array('styles', 'popr2.css', $asset_base.'popr2/popr2.css')
+            ,array('scripts', 'popr2', $asset_base.'popr2/popr2.js', array('popr2.css','jquery'))
             
             // Modal
-            ,array('styles', 'modal.css', $asset_base.'modal.css')
-            ,array('scripts', 'modal', $asset_base.'modal.js', array('modal.css','jquery'))
+            ,array('styles', 'modal.css', $asset_base.'modal/modal.css')
+            ,array('scripts', 'modal', $asset_base.'modal/modal.js', array('modal.css','jquery'))
             
             // List.js
-            ,array('scripts', 'list', $asset_base.'list.js')
+            ,array('scripts', 'list', $asset_base.'utils/list.js')
             
             // NodeList
-            ,array('scripts', 'nodelist', $asset_base.'nodelist.js')
+            ,array('scripts', 'nodelist', $asset_base.'utils/nodelist.js')
             
             // Tao
-            ,array('scripts', 'tao', $asset_base.'tao.js')
+            ,array('scripts', 'tao', $asset_base.'utils/tao.js')
             
             // Serialiser
-            ,array('scripts', 'serialiser', $asset_base.'serialiser.js')
+            ,array('scripts', 'serialiser', $asset_base.'utils/serialiser.js')
             
             // ModelView
-            ,array('scripts', 'modelview', $asset_base.'modelview.js')
+            ,array('scripts', 'modelview', $asset_base.'modelview/modelview.js')
             
             // ModelViewForm
-            ,array('scripts', 'modelviewform', $asset_base.'modelview.form.js', array('jquery','datex','modelview'))
+            ,array('scripts', 'modelviewform', $asset_base.'modelview/modelview.form.js', array('jquery','datex','modelview'))
              
             // smoothState
-            ,array('scripts', 'smoothstate', $asset_base.'smoothState.js', array('jquery'))
+            ,array('scripts', 'smoothstate', $asset_base.'utils/smoothState.js', array('jquery'))
              
             // Packery
             ,array('scripts', 'packery', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
-                : $asset_base.'packery.js'
+                : $asset_base.'packery/packery.js'
             )
              
             // Isotope
             ,array('scripts', 'isotope', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
-                : $asset_base.'isotope.js'
+                : $asset_base.'isotope/isotope.js'
             )
              
             // Masonry
             ,array('scripts', 'masonry', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
-                : $asset_base.'masonry.js'
+                : $asset_base.'masonry/masonry.js'
             )
              
             // Raphael
             ,array('scripts', 'raphael', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
-                : $asset_base.'raphael.js'
+                : $asset_base.'raphael/raphael.js'
             )
              
             // VexTab
@@ -487,7 +487,7 @@ class HtmlWidget
         $asset_base = $base . 'assets/';
         $cdn = true === $cdn;
         $i18n = array(
-         array('pikadaytime', $asset_base.'i18n/pikadaytime/'.$locale.'.json')
+         array('pikadaytime', $asset_base.'pikadaytime/langs/'.$locale.'.json')
         ,array('datex', $asset_base.'i18n/datex/'.$locale.'.json')
         ,array('datatables', $asset_base.'datatables/langs/'.$locale.'.json')
         );
@@ -886,29 +886,25 @@ class HtmlWidget
         $wvalue = isset($data['value']) ? $data['value'] : "1";
         $wchecked = !empty($attr['checked']) ? 'checked' : '';
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $wstate = '';
+        if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
+        if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
         if ( !empty($attr['image']) )
         {
             $wctrl = 'radio' === $wtype ? 'w-radio-image' : 'w-checkbox-image';
             $wtext = '<span style="background-image:url('.$attr['image'].');"></span>';
-            $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
-            if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
-            if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
         }
         elseif ( !empty($attr['label']) )
         {
             $wctrl = 'radio' === $wtype ? 'w-radio-label' : 'w-checkbox-label';
             $wtext = $attr['label'];
-            $wtitle = 'title="'.(isset($attr['title']) ? $attr['title'] : $wtext).'"';
         }
         else
         {
             $wctrl = 'radio' === $wtype ? 'w-radio' : 'w-checkbox';
             $wtext = '&nbsp;';
-            $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
-            if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
-            if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
         }
         $wclass = 'w-widget w-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         self::enqueue('styles', 'htmlwidgets.css');

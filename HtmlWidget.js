@@ -126,10 +126,10 @@ var HtmlWidget = self = {
         var asset_base = base + 'assets/';
         var assets = [
          ['styles', 'htmlwidgets.css', dev ? base+'htmlwidgets.dev.css' : base+'htmlwidgets.css']
-        ,['styles', 'normalize.css', asset_base+'normalize.css']
-        ,['styles', 'responsive.css', asset_base+'responsive.css']
-        ,['styles', 'fontawesome.css', asset_base+'fontawesome.css']
-        ,['scripts', 'selectorlistener', asset_base+'selectorlistener.js']
+        ,['styles', 'normalize.css', asset_base+'responsive/normalize.css']
+        ,['styles', 'responsive.css', asset_base+'responsive/responsive.css']
+        ,['styles', 'fontawesome.css', asset_base+'fontawesome/fontawesome.css']
+        ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         ];
         if ( true === opts['jquery'] )
@@ -141,9 +141,9 @@ var HtmlWidget = self = {
                 ,['scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', ['jquery']]
             ]
             : [
-                 ['scripts', 'jquery', asset_base+'jquery.js']
-                ,['scripts', 'jquery-ui', asset_base+'jquery-ui.js', ['jquery']]
-                //,['scripts', 'jquery-iframe-transport', asset_base+'jquery.iframe-transport.js', ['jquery']]
+                 ['scripts', 'jquery', asset_base+'jquery/jquery.js']
+                ,['scripts', 'jquery-ui', asset_base+'jquery/jquery-ui.js', ['jquery']]
+                //,['scripts', 'jquery-iframe-transport', asset_base+'jquery/jquery.iframe-transport.js', ['jquery']]
             ]
             );
         }
@@ -153,28 +153,28 @@ var HtmlWidget = self = {
              ['scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places']
             
             // Humane
-            ,['styles', 'humane.css', asset_base+'humane.css']
-            ,['scripts', 'humane', asset_base+'humane.js', ['humane.css']]
+            ,['styles', 'humane.css', asset_base+'humane/humane.css']
+            ,['scripts', 'humane', asset_base+'humane/humane.js', ['humane.css']]
             
             // History
             ,['scripts', 'history', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
-            : asset_base+'history.js'
+            : asset_base+'utils/history.js'
             ]
             
             // Cookie
             ,['scripts', 'cookie', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
-            : asset_base+'cookie.js'
+            : asset_base+'utils/cookie.js'
             ]
             
             // isMobile
-            ,['scripts', 'ismobile', asset_base+'ismobile.js']
+            ,['scripts', 'ismobile', asset_base+'utils/ismobile.js']
             
             // Modernizr
             ,['scripts', 'modernizr', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
-            : asset_base+'modernizr.js'
+            : asset_base+'utils/modernizr.js'
             ]
             
             // Typo
@@ -197,123 +197,123 @@ var HtmlWidget = self = {
             , ['video-js.css']]
             
             // Timer
-            ,['scripts', 'timer', asset_base+'timer.js']
+            ,['scripts', 'timer', asset_base+'timer/timer.js']
             
             // DateX
-            ,['scripts', 'datex', asset_base+'datex.js']
+            ,['scripts', 'datex', asset_base+'utils/datex.js']
             
             // Pikadaytime
-            ,['styles', 'pikadaytime.css', asset_base+'pikadaytime.css']
-            ,['scripts', 'pikadaytime', asset_base+'pikadaytime.js', ['pikadaytime.css','datex']]
+            ,['styles', 'pikadaytime.css', asset_base+'pikadaytime/pikadaytime.css']
+            ,['scripts', 'pikadaytime', asset_base+'pikadaytime/pikadaytime.js', ['pikadaytime.css','datex']]
              
             // ColorPicker
-            ,['styles', 'colorpicker.css', asset_base+'colorpicker.css']
-            ,['scripts', 'colorpicker', asset_base+'colorpicker.js', ['colorpicker.css']]
+            ,['styles', 'colorpicker.css', asset_base+'colorpicker/colorpicker.css']
+            ,['scripts', 'colorpicker', asset_base+'colorpicker/colorpicker.js', ['colorpicker.css']]
              
             // LocationPicker
-            ,['scripts', 'locationpicker', asset_base+'locationpicker.js', ['cdn--google-maps','jquery']]
+            ,['scripts', 'locationpicker', asset_base+'locationpicker/locationpicker.js', ['cdn--google-maps','jquery']]
              
             // AreaSelect
-            ,['styles', 'areaselect.css', asset_base+'areaselect.css']
-            ,['scripts', 'areaselect', asset_base+'areaselect.js', ['areaselect.css']]
+            ,['styles', 'areaselect.css', asset_base+'areaselect/areaselect.css']
+            ,['scripts', 'areaselect', asset_base+'areaselect/areaselect.js', ['areaselect.css']]
              
             // RangeSlider
-            ,['styles', 'rangeslider.css', asset_base+'rangeslider.css']
-            ,['scripts', 'rangeslider', asset_base+'rangeslider.js', ['rangeslider.css','jquery']]
+            ,['styles', 'rangeslider.css', asset_base+'rangeslider/rangeslider.css']
+            ,['scripts', 'rangeslider', asset_base+'rangeslider/rangeslider.js', ['rangeslider.css','jquery']]
              
             // Sortable
             ,['scripts', 'sortable', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
-            : asset_base+'sortable.js'
+            : asset_base+'sortable/sortable.js'
             ]
              
             // TinyDraggable
-            ,['scripts', 'tinydraggable', asset_base+'tinydraggable.js']
+            ,['scripts', 'tinydraggable', asset_base+'tinydraggable/tinydraggable.js']
              
             // Select2
             ,['styles', 'select2.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
-            : asset_base+'select2.css'
+            : asset_base+'select2/select2.css'
             ]
             ,['scripts', 'select2', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
-            : asset_base+'select2.js'
+            : asset_base+'select2/select2.js'
             , ['select2.css','jquery']]
              
             // Awesomplete
-            ,['styles', 'awesomplete.css', asset_base+'awesomplete.css']
-            ,['scripts', 'awesomplete', asset_base+'awesomplete.js', ['awesomplete.css']]
+            ,['styles', 'awesomplete.css', asset_base+'awesomplete/awesomplete.css']
+            ,['scripts', 'awesomplete', asset_base+'awesomplete/awesomplete.js', ['awesomplete.css']]
              
             // AutoComplete
-            ,['styles', 'autocomplete.css', asset_base+'autocomplete.css']
-            ,['scripts', 'autocomplete', asset_base+'autocomplete.js', ['autocomplete.css','jquery']]
+            ,['styles', 'autocomplete.css', asset_base+'autocomplete/autocomplete.css']
+            ,['scripts', 'autocomplete', asset_base+'autocomplete/autocomplete.js', ['autocomplete.css','jquery']]
              
             // TagEditor
-            ,['scripts', 'caret', asset_base+'caret.js']
-            ,['styles', 'tageditor.css', asset_base+'tageditor.css']
-            ,['scripts', 'tageditor', asset_base+'tageditor.js', ['tageditor.css','jquery','caret']]
+            ,['scripts', 'caret', asset_base+'tageditor/caret.js']
+            ,['styles', 'tageditor.css', asset_base+'tageditor/tageditor.css']
+            ,['scripts', 'tageditor', asset_base+'tageditor/tageditor.js', ['tageditor.css','jquery','caret']]
              
             // Tooltipster
             ,['styles', 'tooltipster.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
-            : asset_base+'tooltipster.css'
+            : asset_base+'tooltipster/tooltipster.css'
             ]
             ,['scripts', 'tooltipster', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
-            : asset_base+'tooltipster.js'
+            : asset_base+'tooltipster/tooltipster.js'
             , ['tooltipster.css','jquery']]
              
             // Popr2
-            ,['styles', 'popr2.css', asset_base+'popr2.css']
-            ,['scripts', 'popr2', asset_base+'popr2.js', ['popr2.css','jquery']]
+            ,['styles', 'popr2.css', asset_base+'popr2/popr2.css']
+            ,['scripts', 'popr2', asset_base+'popr2/popr2.js', ['popr2.css','jquery']]
             
             // Modal
-            ,['styles', 'modal.css', asset_base+'modal.css']
-            ,['scripts', 'modal', asset_base+'modal.js', ['modal.css','jquery']]
+            ,['styles', 'modal.css', asset_base+'modal/modal.css']
+            ,['scripts', 'modal', asset_base+'modal/modal.js', ['modal.css','jquery']]
             
             // List.js
-            ,['scripts', 'list', asset_base+'list.js']
+            ,['scripts', 'list', asset_base+'utils/list.js']
             
             // NodeList
-            ,['scripts', 'nodelist', asset_base+'nodelist.js']
+            ,['scripts', 'nodelist', asset_base+'utils/nodelist.js']
             
             // Tao
-            ,['scripts', 'tao', asset_base+'tao.js']
+            ,['scripts', 'tao', asset_base+'utils/tao.js']
             
             // Serialiser
-            ,['scripts', 'serialiser', asset_base+'serialiser.js']
+            ,['scripts', 'serialiser', asset_base+'utils/serialiser.js']
             
             // ModelView
-            ,['scripts', 'modelview', asset_base+'modelview.js']
+            ,['scripts', 'modelview', asset_base+'modelview/modelview.js']
             
             // ModelViewForm
-            ,['scripts', 'modelviewform', asset_base+'modelview.form.js', ['jquery','datex','modelview']]
+            ,['scripts', 'modelviewform', asset_base+'modelview/modelview.form.js', ['jquery','datex','modelview']]
              
             // smoothState
-            ,['scripts', 'smoothstate', asset_base+'smoothState.js', ['jquery']]
+            ,['scripts', 'smoothstate', asset_base+'utils/smoothState.js', ['jquery']]
              
             // Packery
             ,['scripts', 'packery', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
-                : asset_base+'packery.js'
+                : asset_base+'packery/packery.js'
             ]
              
             // Isotope
             ,['scripts', 'isotope', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
-                : asset_base+'isotope.js'
+                : asset_base+'isotope/isotope.js'
             ]
              
             // Masonry
             ,['scripts', 'masonry', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
-                : asset_base+'masonry.js'
+                : asset_base+'masonry/masonry.js'
             ]
              
             // Raphael
             ,['scripts', 'raphael', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
-                : asset_base+'raphael.js'
+                : asset_base+'raphael/raphael.js'
             ]
              
             // VexTab
@@ -560,7 +560,7 @@ var HtmlWidget = self = {
         var asset_base = base + 'assets/';
         cdn = true === cdn;
         var i18n = [
-         ['pikadaytime', asset_base+'i18n/pikadaytime/'+locale+'.json']
+         ['pikadaytime', asset_base+'pikadaytime/langs/'+locale+'.json']
         ,['datex', asset_base+'i18n/datex/'+locale+'.json']
         ,['datatables', asset_base+'datatables/langs/'+locale+'.json']
         ];
@@ -980,29 +980,25 @@ var HtmlWidget = self = {
         wvalue = isset(data,"value") ? data["value"] : "1"; 
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wstate = '';
+        if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
+        if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         if ( !empty(attr,'image') )
         {
             wctrl = 'radio' === wtype ? 'w-radio-image' : 'w-checkbox-image';
             wtext = '<span style="background-image:url('+attr['image']+');"></span>';
-            wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-            if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
-            if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         }
         else if ( !empty(attr,'label') )
         {
             wctrl = 'radio' === wtype ? 'w-radio-label' : 'w-checkbox-label';
             wtext = attr['label'];
-            wtitle = 'title="'+(isset(attr,'title') ? attr['title'] : wtext)+'"';
         }
         else
         {
             wctrl = 'radio' === wtype ? 'w-radio' : 'w-checkbox';
             wtext = '&nbsp;';
-            wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-            if ( isset(attr,'state-on') ) wstate += ' data-state-on="'+attr['state-on']+'"';
-            if ( isset(attr,'state-off') ) wstate += ' data-state-off="'+attr['state-off']+'"';
         }
         wclass = 'w-widget w-control'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];

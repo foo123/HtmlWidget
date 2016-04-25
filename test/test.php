@@ -337,6 +337,23 @@ function scripts( )
     
     <br />
     
+    <?php widget('button',array('class'=>'w-xsmall w-black','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-black','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-black','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-black','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-black','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-black','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-black','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-black','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-black','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-black','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
     <?php widget('button',array('class'=>'w-xsmall w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-primary','icon'=>'times-circle')); ?>
@@ -419,6 +436,23 @@ function scripts( )
     <?php widget('button',array('class'=>'w-large w-green','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    
+    <br />
+    
+    <?php widget('button',array('class'=>'w-xsmall w-aqua','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-small w-aqua','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-aqua','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-large w-aqua','icon'=>'times-circle')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle')); ?>
+    
+    <?php widget('button',array('class'=>'w-xsmall w-aqua','icon'=>'plus'),array('text'=>'xsmall')); ?>
+    <?php widget('button',array('class'=>'w-small w-aqua','icon'=>'plus'),array('text'=>'small')); ?>
+    <?php widget('button',array('class'=>'w-aqua','icon'=>'plus'),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-aqua','icon'=>'plus','disabled'=>1),array('text'=>'button')); ?>
+    <?php widget('button',array('class'=>'w-large w-aqua','icon'=>'plus','readonly'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-large w-aqua','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
+    <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
     
     <br />
     
@@ -1074,7 +1108,7 @@ tabstave
     <fieldset><legend>Ribbons</legend>
     <div class="box">
        <div class="w-ribbon-dtl w-red w-ribbon-fold w-large"><span>Ribbon</span></div>
-       <div class="w-ribbon-dtr w-blue"><span>Ribbon</span></div>
+       <div class="w-ribbon-dtr w-blue w-ribbon-fold"><span>Ribbon</span></div>
     </div>
     </fieldset>
     
@@ -1098,6 +1132,7 @@ tabstave
     <fieldset><legend>Tags</legend>
     <span class="w-tag w-orange">Tag 1</span>
     <span class="w-tag w-purple">Tag 1</span>
+    <span class="w-tag w-aqua">Tag 2</span>
     <span class="w-tag w-large w-green">Tag 2</span>
     <span class="w-tag w-xlarge w-red w-tag2">Tag 3</span>
     <span class="w-tag w-primary w-tag2">Tag 4</span>
