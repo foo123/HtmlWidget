@@ -99,14 +99,14 @@ var HtmlWidget = self = {
         enqueuer = _enqueuer && 'function' === typeof _enqueuer ? _enqueuer : null;
     }
     
-    ,enqueue: function( type, id, asset, deps ) {
+    ,enqueue: function( type, id, asset, deps, props ) {
         if ( enqueuer )
         {            
             /*if ( isBrowser )
                 // add a small delay for browser to load asset after widget has been output
                 setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
             else*/
-                enqueuer(type, id, asset||null, deps||[]);
+                enqueuer(type, id, asset||null, deps||[], props);
         }
     }
     
@@ -124,6 +124,7 @@ var HtmlWidget = self = {
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
+        
         var assets = [
          ['styles', 'htmlwidgets.css', dev ? base+'htmlwidgets.dev.css' : base+'htmlwidgets.css']
         ,['styles', 'normalize.css', asset_base+'responsive/normalize.css']
@@ -132,6 +133,7 @@ var HtmlWidget = self = {
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
         ];
+        
         if ( true === opts['jquery'] )
         {
             assets = assets.concat(cdn
@@ -147,6 +149,7 @@ var HtmlWidget = self = {
             ]
             );
         }
+        
         if ( true === opts['full'] )
         {
             assets = assets.concat([
@@ -344,6 +347,10 @@ var HtmlWidget = self = {
                 ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
                 : asset_base+'mathjax/MathJax.js'
             ]
+            
+            // MathQuill
+            ,['styles', 'mathquill.css', asset_base+'mathquill/mathquill.css']
+            ,['scripts', 'mathquill', asset_base+'mathquill/mathquill.js', ['jquery','mathquill.css']]
             
             // DataTables
             ,['styles', 'datatables.css', cdn
@@ -547,7 +554,31 @@ var HtmlWidget = self = {
             ,['scripts', 'codemirror-grammar', asset_base+'codemirror/addon/grammar/codemirror_grammar.js']
             
             // ACE
-            //..
+            ,['scripts', 'ace', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js'
+            : asset_base+'ace/ace.js'
+            ,null, {'charset':'utf-8','data-ace-base':cdn?'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3':(asset_base+'ace')}]
+            ,['scripts', 'ace-grammar', asset_base+'ace/ace_grammar.js']
+            
+            // Prism
+            ,['scripts', 'prefixfree', asset_base+'prism/prefixfree.min.js']
+            ,['styles', 'prism.css', asset_base+'prism/themes/prism.css']
+            ,['scripts', 'prism', asset_base+'prism/prism.js', ['prism.css','prefixfree']]
+            ,['scripts', 'prism-grammar', asset_base+'prism/prism_grammar.js']
+            
+            // SyntaxHighlighter
+            ,['styles-composite', 'sh.css', [
+                asset_base+'syntaxhighlighter/shCore.css',
+                asset_base+'syntaxhighlighter/shCoreDefault.css',
+                asset_base+'syntaxhighlighter/shThemeDefault.css'
+            ]]
+            ,['scripts', 'sh', asset_base+'syntaxhighlighter/shCore.js', ['sh.css']]
+            ,['scripts', 'syntaxhighlighter-grammar', asset_base+'syntaxhighlighter/syntaxhighlighter_grammar.js']
+            
+            // Highlightjs
+            ,['styles', 'hjs.css', asset_base+'highlightjs/styles/default.css']
+            ,['scripts', 'hjs', asset_base+'highlightjs/highlight.js', ['hjs.css']]
+            ,['scripts', 'highlightjs-grammar', asset_base+'highlightjs/highlightjs_grammar.js']
             ]);
         }
         return assets;
@@ -717,7 +748,7 @@ var HtmlWidget = self = {
         {
             attr = attr || {}; data = data || {};
             if ( widgets[HAS]('w_'+widget) )
-                return widgets['w_'+widget](attr, data);
+                return widgets['w_'+widget](attr, data, widget);
             
             if ( 'audio' === widget ) attr['type'] = 'audio';
             else if ( 'video' === widget ) attr['type'] = 'video';
@@ -731,129 +762,132 @@ var HtmlWidget = self = {
             else if ( 'select2' === widget ) attr['select2'] = true;
             else if ( 'dropdown' === widget ) attr['dropdown'] = true;
             else if ( 'datatable' === widget ) attr['datatable'] = true;
-            else if ( 'codemirror' === widget || 'syntax-editor' === widget || 'source-editor' === widget || 'syntax' === widget || 'source' === widget || 'highlight-editor' === widget || 'highlighter' === widget ) attr['syntax-editor'] = true;
+            else if ( 'ace' === widget || 'ace-editor' === widget || 'codemirror' === widget || 'codemirror-editor' === widget || 'syntax-editor' === widget || 'source-editor' === widget || 'syntax' === widget || 'source' === widget || 'highlight-editor' === widget || 'highlighter' === widget ) attr['syntax-editor'] = true;
             else if ( 'tinymce' === widget || 'wysiwyg-editor' === widget || 'wysiwyg' === widget || 'rich-editor' === widget || 'rich' === widget || 'editor' === widget ) attr['wysiwyg-editor'] = true;
             
             switch( widget )
             {
-            case 'empty':       out = self.w_empty(attr, data); break;
+            case 'empty':       out = self.w_empty(attr, data, widget); break;
             case 'sep':
-            case 'separator':   out = self.w_sep(attr, data); break;
-            case 'icon':        out = self.w_icon(attr, data); break;
-            case 'delayable':   out = self.w_delayable(attr, data); break;
-            case 'disabable':   out = self.w_disabable(attr, data); break;
-            case 'morphable':   out = self.w_morphable(attr, data); break;
-            case 'pages':       out = self.w_pages(attr, data); break;
-            case 'tabs':        out = self.w_tabs(attr, data); break;
-            case 'accordeon':   out = self.w_accordeon(attr, data); break;
-            case 'panel':       out = self.w_panel(attr, data); break;
+            case 'separator':   out = self.w_sep(attr, data, widget); break;
+            case 'icon':        out = self.w_icon(attr, data, widget); break;
+            case 'delayable':   out = self.w_delayable(attr, data, widget); break;
+            case 'disabable':   out = self.w_disabable(attr, data, widget); break;
+            case 'morphable':   out = self.w_morphable(attr, data, widget); break;
+            case 'pages':       out = self.w_pages(attr, data, widget); break;
+            case 'tabs':        out = self.w_tabs(attr, data, widget); break;
+            case 'accordeon':   out = self.w_accordeon(attr, data, widget); break;
+            case 'panel':       out = self.w_panel(attr, data, widget); break;
             case 'endpanel':
             case 'end_panel':
-            case 'panel_end':   out = self.w_panel_end(attr, data); break;
-            case 'dialog':      out = self.w_dialog(attr, data); break;
-            case 'modal':       out = self.w_modal(attr, data); break;
+            case 'panel_end':   out = self.w_panel_end(attr, data, widget); break;
+            case 'dialog':      out = self.w_dialog(attr, data, widget); break;
+            case 'modal':       out = self.w_modal(attr, data, widget); break;
             case 'endmodal':
             case 'end_modal':
-            case 'modal_end':   out = self.w_modal_end(attr, data); break;
-            case 'tooltip':     out = self.w_tooltip(attr, data); break;
-            case 'link':        out = self.w_link(attr, data); break;
-            case 'button':      out = self.w_button(attr, data); break;
-            case 'label':       out = self.w_label(attr, data); break;
+            case 'modal_end':   out = self.w_modal_end(attr, data, widget); break;
+            case 'tooltip':     out = self.w_tooltip(attr, data, widget); break;
+            case 'link':        out = self.w_link(attr, data, widget); break;
+            case 'button':      out = self.w_button(attr, data, widget); break;
+            case 'label':       out = self.w_label(attr, data, widget); break;
             case 'uploader':
             case 'upload':
             case 'dnd-uploader':
             case 'dnd-upload':
             case 'drag-n-drop-uploader':
             case 'drag-n-drop-upload':
-                                out = self.w_dnd_upload(attr, data); break;
+                                out = self.w_dnd_upload(attr, data, widget); break;
             /*case 'uploader':
-            case 'upload':      out = self.w_upload(attr, data); break;*/
-            case 'file':        out = self.w_file(attr, data); break;
+            case 'upload':      out = self.w_upload(attr, data, widget); break;*/
+            case 'file':        out = self.w_file(attr, data, widget); break;
             case 'suggestbox':
-            case 'suggest':     out = self.w_suggest(attr, data); break;
+            case 'suggest':     out = self.w_suggest(attr, data, widget); break;
             case 'textbox':
             case 'textfield':
-            case 'text':        out = self.w_text(attr, data); break;
+            case 'text':        out = self.w_text(attr, data, widget); break;
             case 'imtranslator':
-            case 'translator':  out = self.w_translator(attr, data); break;
+            case 'translator':  out = self.w_translator(attr, data, widget); break;
             case 'tinymce':
             case 'editor':
             case 'rich-editor':
             case 'rich':
             case 'wysiwyg-editor':
             case 'wysiwyg':
+            case 'ace':
+            case 'ace-editor':
             case 'codemirror':
+            case 'codemirror-editor':
             case 'source-editor':
             case 'source':
             case 'syntax-editor':
             case 'syntax':
             case 'highlight-editor':
             case 'highlighter':
-            case 'textarea':    out = self.w_textarea(attr, data); break;
+            case 'textarea':    out = self.w_textarea(attr, data, widget); break;
             case 'music':       
             case 'score':       
             case 'vextab':       
             case 'tab':       
-            case 'tablature':   out = self.w_vextab(attr, data); break;
+            case 'tablature':   out = self.w_vextab(attr, data, widget); break;
             case 'datetimepicker':
             case 'datepicker':
             case 'datetime':
-            case 'date':        out = self.w_date(attr, data); break;
-            case 'time':        out = self.w_time(attr, data); break;
-            case 'timer':       out = self.w_timer(attr, data); break;
+            case 'date':        out = self.w_date(attr, data, widget); break;
+            case 'time':        out = self.w_time(attr, data, widget); break;
+            case 'timer':       out = self.w_timer(attr, data, widget); break;
             case 'colorpicker':
             case 'colorselector':
-            case 'color':       out = self.w_color(attr, data); break;
-            case 'rating':      out = self.w_rating(attr, data); break;
+            case 'color':       out = self.w_color(attr, data, widget); break;
+            case 'rating':      out = self.w_rating(attr, data, widget); break;
             case 'map':
-            case 'gmap':        out = self.w_gmap(attr, data); break;
+            case 'gmap':        out = self.w_gmap(attr, data, widget); break;
             case 'radiobox-array':
             case 'radio-array':
             case 'checkbox-array':
-            case 'check-array': out = self.w_control_array(attr, data); break;
+            case 'check-array': out = self.w_control_array(attr, data, widget); break;
             case 'radiobox-list':
             case 'radio-list':
             case 'radiolist':
             case 'checkbox-list':
-            case 'checklist':   out = self.w_control_list(attr, data); break;
+            case 'checklist':   out = self.w_control_list(attr, data, widget); break;
             case 'checkbox-image':
             case 'radio-image':
             case 'checkbox-label':
             case 'radio-label':
             case 'checkbox':
             case 'radio':
-            case 'control':     out = self.w_control(attr, data); break;
-            case 'switch':      out = self.w_switch(attr, data); break;
+            case 'control':     out = self.w_control(attr, data, widget); break;
+            case 'switch':      out = self.w_switch(attr, data, widget); break;
             case 'dropdown':
             case 'selectbox':
             case 'select2':
-            case 'select':      out = self.w_select(attr, data); break;
-            case 'menu':        out = self.w_menu(attr, data); break;
+            case 'select':      out = self.w_select(attr, data, widget); break;
+            case 'menu':        out = self.w_menu(attr, data, widget); break;
             case 'endmenu':
             case 'end_menu':
-            case 'menu_end':    out = self.w_menu_end(attr, data); break;
+            case 'menu_end':    out = self.w_menu_end(attr, data, widget); break;
             case 'datatable':
-            case 'table':       out = self.w_table(attr, data); break;
+            case 'table':       out = self.w_table(attr, data, widget); break;
             case 'graph':
-            case 'chart':       out = self.w_chart(attr, data); break;
-            case 'animation':   out = self.w_animation(attr, data); break;
+            case 'chart':       out = self.w_chart(attr, data, widget); break;
+            case 'animation':   out = self.w_animation(attr, data, widget); break;
             case 'flash':
-            case 'swf':         out = self.w_swf(attr, data); break;
+            case 'swf':         out = self.w_swf(attr, data, widget); break;
             case 'video':
             case 'audio':
-            case 'media':       out = self.w_media(attr, data); break;
+            case 'media':       out = self.w_media(attr, data, widget); break;
             default: out = ''; break;
             }
         }
         return out;
     }
     
-    ,w_empty: function( attr, data ) {
+    ,w_empty: function( attr, data, widgetName ) {
         self.enqueue('styles', 'htmlwidgets.css');
         return '';
     }
     
-    ,w_sep: function( attr, data ) {
+    ,w_sep: function( attr, data, widgetName ) {
         var wclass, wstyle;
         wclass = 'w-separator'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -862,7 +896,7 @@ var HtmlWidget = self = {
         return '<div class="'+wclass+'" '+wstyle+'></div>';
     }
     
-    ,w_icon: function( attr, data ) {
+    ,w_icon: function( attr, data, widgetName ) {
         var wclass, wstyle, wextra, wtitle;
         wclass = 'fa'; 
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -874,7 +908,7 @@ var HtmlWidget = self = {
         return '<i class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+'></i>';
     }
     
-    ,w_label: function( attr, data ) {
+    ,w_label: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wfor, wtext, wtitle;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wfor = isset(attr,"for") ? 'for="'+attr['for']+'"' : '';
@@ -899,7 +933,7 @@ var HtmlWidget = self = {
         return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+'>'+wtext+'</label>';
     }
     
-    ,w_link: function( attr, data ) {
+    ,w_link: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, whref, wfor, wtext;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
@@ -932,7 +966,7 @@ var HtmlWidget = self = {
         }
     }
     
-    ,w_button: function( attr, data ) {
+    ,w_button: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtype, wtitle, wtext, whref, wfor;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
@@ -972,7 +1006,7 @@ var HtmlWidget = self = {
         }
     }
     
-    ,w_control: function( attr, data ) {
+    ,w_control: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wctrl, wextra, wtitle, wchecked, wvalue, wname, wtype, wstate, wtext;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1006,7 +1040,7 @@ var HtmlWidget = self = {
         return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" value="'+wvalue+'" '+wextra+' '+wchecked+' /><label for="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wtext+'</label>';
     }
     
-    ,w_control_list: function( attr, data ) {
+    ,w_control_list: function( attr, data, widgetName ) {
         var wid, wname, wclass, wstyle, wextra, wvalue, woptions,
             w_item_atts, w_item_class, w_large, w_xlarge, i, l, opt, widget;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
@@ -1083,7 +1117,7 @@ var HtmlWidget = self = {
         return widget;
     }
     
-    ,w_control_array: function( attr, data ) {
+    ,w_control_array: function( attr, data, widgetName ) {
         var wid, wname, wclass, wstyle, wextra, wvalues, wvalue, woptions, wfields, fields, field, f,fl,
             w_item_atts, w_item_class, w_item_name, w_large, w_xlarge, i, l, opt, widget;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
@@ -1178,7 +1212,7 @@ var HtmlWidget = self = {
         return widget;
     }
     
-    ,w_switch: function( attr, data ) {
+    ,w_switch: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wchecked, wiconon, wiconoff, wvalue, wvalue2, wdual, wname, wtype, wreverse, wstates, wswitches;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1251,7 +1285,7 @@ var HtmlWidget = self = {
         return '<span class="'+wclass+'" '+wtitle+' '+wstyle+'>'+wstates+wswitches+'<span class="w-switch-handle"></span></span>';
     }
     
-    ,w_rating: function( attr, data ) {
+    ,w_rating: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wratings, wname, wtitle, wtext, wicon,
             r, rate, label, widget, wchecked, w_item_atts, w_icon;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1288,7 +1322,7 @@ var HtmlWidget = self = {
         return widget;
     }
     
-    ,w_select: function( attr, data ) {
+    ,w_select: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wname, wdropdown, woptions, wselected, 
             opts, o, opt, l, key, val, selected, has_selected, winit, wopts, wtitle;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1340,7 +1374,7 @@ var HtmlWidget = self = {
         : '<select id="'+wid+'" '+winit+' '+wopts+' '+wname+' class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+'>'+woptions+'</select>';
     }
     
-    ,w_text: function( attr, data ) {
+    ,w_text: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtype, wicon, wautocomplete, wplaceholder, wvalue, wname, wtitle, wrapper_class, winit, titl;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
@@ -1384,7 +1418,7 @@ var HtmlWidget = self = {
         : '<input type="'+wtype+'" id="'+wid+'" '+winit+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wautocomplete;
     }
     
-    ,w_suggest: function( attr, data ) {
+    ,w_suggest: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wajax, wicon, wplaceholder,
             wvalue, wname, wtitle, wrapper_class, winit, wopts, titl;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1426,8 +1460,8 @@ var HtmlWidget = self = {
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wextra+' />'+wicon+'</span>';
     }
     
-    ,w_textarea: function( attr, data ) {
-        var wid, wclass, wstyle, wextra, wplaceholder, wvalue, wname, wtitle, weditor, defaults, winit, wopts, titl;
+    ,w_textarea: function( attr, data, widgetName ) {
+        var wid, wclass, wstyle, wextra, wplaceholder, wvalue, wname, wtitle, weditor, defaults, winit, wopts, titl, wrep, wrep_id;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1437,20 +1471,38 @@ var HtmlWidget = self = {
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
-        wopts = "";
+        wopts = ""; wrep = '';
         if ( !!attr['syntax-editor'] ) 
         {
             if ( !winit ) winit = 'w-init="1"';
-            wclass = 'w-widget w-syntax-editor';
-            if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-            if ( 'object'===typeof attr['options'] )
+            if ( 'ace' === widgetName || 'ace-editor' === widgetName )
             {
-                wopts = 'w-opts="htmlw_'+wid+'_options"';
-                self.enqueue('scripts', 'w-codemirror-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+                wrep_id = self.uuid();
+                winit += ' data-ace-editor="'+wrep_id+'"';
+                wrep = '<pre id="'+wrep_id+'" '+wstyle+'></pre>';
+                wclass = 'w-widget w-syntax-editor w-ace-editor';
+                if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+                wstyle = 'style="display:none !important"';
+                if ( 'object'===typeof attr['options'] )
+                {
+                    wopts = 'w-opts="htmlw_'+wid+'_options"';
+                    self.enqueue('scripts', 'w-ace-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+                }
+                self.enqueue('scripts', 'ace');
             }
-            self.enqueue('scripts', 'codemirror');
-            self.enqueue('scripts', 'codemirror-fold');
-            self.enqueue('scripts', 'codemirror-htmlmixed');
+            else
+            {
+                wclass = 'w-widget w-syntax-editor w-codemirror-editor';
+                if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+                if ( 'object'===typeof attr['options'] )
+                {
+                    wopts = 'w-opts="htmlw_'+wid+'_options"';
+                    self.enqueue('scripts', 'w-codemirror-'+wid, ['window["htmlw_'+wid+'_options"] = '+json_encode(attr["options"])+';']);
+                }
+                self.enqueue('scripts', 'codemirror');
+                self.enqueue('scripts', 'codemirror-fold');
+                self.enqueue('scripts', 'codemirror-htmlmixed');
+            }
             self.enqueue('scripts', 'htmlwidgets');
         }
         else if ( !!attr['wysiwyg-editor'] ) 
@@ -1473,10 +1525,10 @@ var HtmlWidget = self = {
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             self.enqueue('styles', 'htmlwidgets.css');
         }
-        return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>';
+        return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>'+wrep;
     }
     
-    ,w_vextab: function( attr, data ) {
+    ,w_vextab: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtablature;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'w-vextab vex-tabdiv'; 
@@ -1489,7 +1541,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" class="'+wclass+'" '+wextra+'>'+wtablature+'</div>';
     }
     
-    ,w_translator: function( attr, data ) {
+    ,w_translator: function( attr, data, widgetName ) {
         var wtype, wclass, wstyle, wextra, wdims, wsource, wtarget, wlocale;
         wtype = !empty(attr,'type') ? attr['type'] : "iframe";
         wdims = !empty(attr,'dimensions') ? attr['dimensions'] : "510x510";
@@ -1505,7 +1557,7 @@ var HtmlWidget = self = {
         return '<div id="TranslatorBuilder" class="'+wclass+'" '+wstyle+' '+wextra+'><a href="http://imtranslator.net/translation/" id="ImTranslator" target="_top" title="Translator - imtranslator.net">Translator</a></div><div id="ImBack"></div>';
     }
     
-    ,w_date: function( attr, data ) {
+    ,w_date: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wplaceholder, wicon, wvalue, wname, wtime, wtitle, wformat, wrapper_class, winit, wopts, titl;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1550,7 +1602,7 @@ var HtmlWidget = self = {
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" data-datepicker-format="'+wformat+'" '+wtime+' '+wextra+' />'+wicon+'</span>';
     }
     
-    ,w_time: function( attr, data ) {
+    ,w_time: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wtitle, wname, wnam, wformat, wtimes,
             time_options, i, tt, t, p, f, selected, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1600,7 +1652,7 @@ var HtmlWidget = self = {
         return '<span class="'+wclass+'" '+winit+' '+wstyle+'>'+wtimes+'</span>';
     }
     
-    ,w_timer: function( attr, data ) {
+    ,w_timer: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wduration, wname, wformat, wtype, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1624,7 +1676,7 @@ var HtmlWidget = self = {
         return '<span id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
     
-    ,w_color: function( attr, data ) {
+    ,w_color: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wopacity, winput, winputref, wname, wtitle, wformat, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1658,7 +1710,7 @@ var HtmlWidget = self = {
         return winput+'<div id="'+wid+'" '+winit+' '+wopts+' '+wtitle+' class="'+wclass+'" '+wstyle+'  data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wextra+'></div>';
     }
     
-    ,w_gmap: function( attr, data ) {
+    ,w_gmap: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wcenter, wzoom, wmarkers, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1679,7 +1731,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
     }
     
-    ,w_file: function( attr, data ) {
+    ,w_file: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, titl;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1707,7 +1759,7 @@ var HtmlWidget = self = {
         return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
     }
     
-    ,w_dnd_upload: function( attr, data ) {
+    ,w_dnd_upload: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wname, wtitle,
             msg_upload, msg_delete, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
@@ -1734,7 +1786,7 @@ var HtmlWidget = self = {
         return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
     
-    /*,w_upload: function( attr, data ) {
+    /*,w_upload: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wupload_base, wvalue, wname,
             msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
@@ -1784,7 +1836,7 @@ var HtmlWidget = self = {
         }
     }*/
     
-    ,w_table: function( attr, data ) {
+    ,w_table: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wcolumns, wrows, wheader, wfooter,
             column_values, column_keys, row, rowid, rowk, rowv, r, c, rl, cl, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -1842,7 +1894,7 @@ var HtmlWidget = self = {
         return '<table id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
     
-    ,w_chart: function( attr, data ) {
+    ,w_chart: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, winit, wopts;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1859,7 +1911,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></div>';
     }
     
-    ,w_menu: function( attr, data ) {
+    ,w_menu: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
@@ -1871,12 +1923,12 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>';
     }
     
-    ,w_menu_end: function( attr, data ) {
+    ,w_menu_end: function( attr, data, widgetName ) {
         self.enqueue('styles', 'htmlwidgets.css');
         return '</div>';
     }
     
-    ,w_swf: function( attr, data ) {
+    ,w_swf: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wswf, wquality, wmode, wscale, wflashvars, wallowfullscreen;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wclass = 'w-swf'; 
@@ -1892,7 +1944,7 @@ var HtmlWidget = self = {
         return '<object id="'+wid+'" type="application/x-shockwave-flash" '+wextra+' data="'+wswf+'" class="'+wclass+'" '+wstyle+'><param name="movie" value="'+wswf+'" /><param name="quality" value="'+wquality+'" /><param name="wmode" value="'+wmode+'" /><param name="scale" value="'+wscale+'" /><param name="FlashVars" value="'+wflashvars+'" /><param name="allowFullScreen" value="'+wallowfullscreen+'" /></object>';
     }
     
-    ,w_media: function( attr, data ) {
+    ,w_media: function( attr, data, widgetName ) {
         var wid, wtype, wclass, wstyle, wextra, wtext, wsources, wsource, source, src, src_type;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtype = empty(attr,'type') ? "video" : attr['type'];
@@ -1913,7 +1965,7 @@ var HtmlWidget = self = {
         return '<'+wtype+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>'+wsource+wtext+'</'+wtype+'>';
     }
     
-    ,w_delayable: function( attr, data ) {
+    ,w_delayable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, winit, wspinner;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1927,7 +1979,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+'><div class="'+wspinner+'"></div></div>';
     }
     
-    ,w_disabable: function( attr, data ) {
+    ,w_disabable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
@@ -1939,7 +1991,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
     }
     
-    ,w_morphable: function( attr, data ) {
+    ,w_morphable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wclass = 'w-morphable'; 
@@ -1991,7 +2043,7 @@ var HtmlWidget = self = {
         return '';
     }
     
-    ,w_panel: function( attr, data ) {
+    ,w_panel: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wchecked, wdata, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
@@ -2008,11 +2060,11 @@ var HtmlWidget = self = {
         return '<input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button fa fa-2x" for="controller_'+wid+'" onclick=""></label></div><div class="w-panel-content">';
     }
     
-    ,w_panel_end: function( attr, data ) {
+    ,w_panel_end: function( attr, data, widgetName ) {
         return '</div></div>';
     }
     
-    ,w_accordeon: function( attr, data ) {
+    ,w_accordeon: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wtype, witems, i, l, wcontrollers, wctrl, wselector, wselected, wheight;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
@@ -2059,7 +2111,7 @@ var HtmlWidget = self = {
         return wcontrollers;
     }
     
-    ,w_tabs: function( attr, data ) {
+    ,w_tabs: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wtabs, i, l, wcontrollers, wctrl, wselector, wselected, wtransform1, wtransform2;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
@@ -2130,7 +2182,7 @@ var HtmlWidget = self = {
         return wcontrollers;
     }
     
-    ,w_pages: function( attr, data ) {
+    ,w_pages: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wpages, main_page, i, l, wcontrollers, wselector, wtransform1, wtransform2, wtransform3;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
@@ -2221,7 +2273,7 @@ var HtmlWidget = self = {
         return wcontrollers;
     }
     
-    ,w_dialog: function( attr, data ) {
+    ,w_dialog: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wbuttons, wcontent, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
@@ -2247,7 +2299,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'</div><div class="w-dialog-content">'+wcontent+'</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
-    ,w_modal: function( attr, data ) {
+    ,w_modal: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
@@ -2264,13 +2316,13 @@ var HtmlWidget = self = {
         return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
     
-    ,w_modal_end: function( attr, data ) {
+    ,w_modal_end: function( attr, data, widgetName ) {
         var wbuttons;
         wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
         return '</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
     
-    ,w_tooltip: function( attr, data ) {
+    ,w_tooltip: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
         wtext = isset(data,'text') ? data['text'] : '';
@@ -2307,7 +2359,7 @@ var HtmlWidget = self = {
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+warrow+'</div>';
     }
     
-    ,w_animation: function( attr, data )  {
+    ,w_animation: function( attr, data, widgetName )  {
         var wid, wselector, wanimation, wtransition, wduration, wdelay, wtiming_function, weasing, witeration_count, wfill_mode, wanimation_def;
         wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_animation');
         wselector = isset(attr,"selector") ? attr["selector"] : '.animate-'+wid;

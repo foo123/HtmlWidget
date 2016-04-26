@@ -45,6 +45,22 @@ input.w-checkbox + label
     clear: both;
 }
 
+.w-syntax-editor,
+.w-syntax-editor + .CodeMirror,
+.w-syntax-editor + .ace_editor
+{
+    position: relative; display: inline-block;
+    vertical-align: top; outline: 0;
+    padding: 0; width: 100%;
+    max-width: 100%;
+    min-height: 400px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 .w-widget.w-chart,
 .w-chart
 {
@@ -587,6 +603,8 @@ input[type=checkbox].w-checkbox
 .w-text,
 .w-textarea,
 .w-syntax-editor,
+.w-syntax-editor + .CodeMirror,
+.w-syntax-editor + .ace_editor,
 .w-wysiwyg-editor,
 input.w-radio + label,
 input.w-checkbox + label
@@ -3531,6 +3549,8 @@ input.w-checkbox-image + label > span
 .w-text,
 .w-textarea,
 .w-syntax-editor,
+.w-syntax-editor + .CodeMirror,
+.w-syntax-editor + .ace_editor,
 .w-wysiwyg-editor,
 input.w-radio + label,
 input.w-checkbox + label
@@ -4234,13 +4254,19 @@ input.w-checkbox + label.w-xlarge
 .w-select,
 .w-text,
 .w-textarea,
-.w-syntax-editor,
 .w-wysiwyg-editor
 {
     border-color: #ccc;
     background-color: #fff;
     color: #333;
 }
+.w-syntax-editor,
+.w-syntax-editor + .CodeMirror,
+.w-syntax-editor + .ace_editor
+{
+    border-color: #ccc;
+}
+
 textarea.w-textarea::-webkit-input-placeholder,
 input.w-date::-webkit-input-placeholder,
 input.w-text::-webkit-input-placeholder

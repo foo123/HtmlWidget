@@ -1733,21 +1733,46 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
     }
 };
 
-htmlwidget._handle['codemirror'] = function( type, el, opts, pre_init, post_init ) {
-    if ( 'function' !== typeof CodeMirror ) return;
-    if ( pre_init ) pre_init( el, opts );
-    CodeMirror.fromTextArea(el, {
-     mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
-    ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
-    ,lineWrapping     : null != opts.lineWrapping ? opts.lineWrapping : false
-    ,lineNumbers      : null != opts.lineNumbers ? opts.lineNumbers : true
-    ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
-    ,indentWithTabs   : null != opts.indentWithTabs ? opts.indentWithTabs : false
-    ,lint             : null != opts.lint ? opts.lint : false
-    ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
-    ,gutters          : null != opts.gutters ? opts.gutters : ['CodeMirror-lint-markers','CodeMirror-linenumbers','CodeMirror-foldgutter']
-    });
-    if ( post_init ) post_init( el, opts );
+htmlwidget._handle['syntax'] = function( type, el, opts, pre_init, post_init ) {
+    if ( $(el).hasClass('w-ace-editor') )
+    {
+        if ( 'undefined' === typeof ace ) return;
+        if ( pre_init ) pre_init( el, opts );
+        var editor = ace.edit( el[ATTR]('data-ace-editor') ), session = editor.getSession();
+        if ( el[HAS_ATTR]('data-ace-theme') || opts.theme )
+            editor.setTheme('ace/theme/'+(el[HAS_ATTR]('data-ace-theme') ? el[ATTR]('data-ace-theme') : opts.theme));
+        session.setMode('ace/mode/'+(el[HAS_ATTR]('data-ace-mode') ? el[ATTR]('data-ace-mode') : (opts.mode || 'html')));
+        session.setTabSize(parseInt(el[HAS_ATTR]('data-ace-indent') ? el[ATTR]('data-ace-indent') : (opts.indentUnit || 4),10));
+        session.setUseWrapMode( null != opts.lineWrapping ? !!opts.lineWrapping : false );
+        editor.setReadOnly( !!el.readOnly );
+        editor.setShowFoldWidgets( null != opts.foldGutter ? !!opts.foldGutter : true );
+        editor.setValue( el.value, -1 );
+        //$(el).next('.ace_editor').find('.ace_text-layer').append('<div class="ace-placeholder">'+el[ATTR]('placeholder')+'</div>');
+        //Update the textarea control (This is the way used by github)
+        /*session.on('change', function( ){
+            el.value = session.getValue();
+        });*/
+        if ( post_init ) post_init( el, opts );
+    }
+    else
+    {
+        if ( 'function' !== typeof CodeMirror ) return;
+        if ( pre_init ) pre_init( el, opts );
+        CodeMirror.fromTextArea(el, {
+         mode             : el[HAS_ATTR]('data-cm-mode') ? el[ATTR]('data-cm-mode') : (opts.mode || 'text/html')
+        ,theme            : el[HAS_ATTR]('data-cm-theme') ? el[ATTR]('data-cm-theme') : (opts.theme || 'default')
+        ,readOnly         : !!el.readOnly
+        ,lineWrapping     : null != opts.lineWrapping ? opts.lineWrapping : false
+        ,lineNumbers      : null != opts.lineNumbers ? opts.lineNumbers : true
+        ,indentUnit       : parseInt(el[HAS_ATTR]('data-cm-indent') ? el[ATTR]('data-cm-indent') : (opts.indentUnit || 4),10)
+        ,indentWithTabs   : null != opts.indentWithTabs ? opts.indentWithTabs : false
+        ,lint             : null != opts.lint ? opts.lint : false
+        ,foldGutter       : null != opts.foldGutter ? opts.foldGutter : true
+        ,gutters          : null != opts.gutters ? opts.gutters : ['CodeMirror-lint-markers','CodeMirror-linenumbers','CodeMirror-foldgutter']
+        });
+        //$(el).next('.CodeMirror').find('.CodeMirror-code > div').append('<div class="cm-placeholder">'+el[ATTR]('placeholder')+'</div>');
+        if ( post_init ) post_init( el, opts );
+    }
 };
 
 htmlwidget._handle['c3'] = function( type, el, opts, pre_init, post_init ) {
@@ -1828,7 +1853,7 @@ $.fn.htmlwidget = function( type, options ) {
             case 'wysiwyg-editor':
                 type = 'tinymce'; break;
             case 'syntax-editor':
-                type = 'codemirror'; break;
+                type = 'syntax'; break;
             case 'graph':
             case 'chart':
                 type = 'c3'; break;
@@ -1875,7 +1900,7 @@ htmlwidget.init = function( node, current, deep ) {
         $node.find('.w-map').htmlwidget('map');
         $node.find('.w-select2').htmlwidget('select2');
         $node.find('.w-datatable').htmlwidget('datatable');
-        $node.find('.w-syntax-editor').htmlwidget('syntax-editor');
+        $node.find('.w-syntax-editor.w-codemirror-editor,.w-syntax-editor.w-ace-editor').htmlwidget('syntax-editor');
         $node.find('.w-wysiwyg-editor').htmlwidget('wysiwyg-editor');
         $node.find('.w-chart').htmlwidget('chart');
     }
@@ -1891,7 +1916,7 @@ htmlwidget.init = function( node, current, deep ) {
         else if ( $node.hasClass('w-map') ) $node.htmlwidget('map');
         else if ( $node.hasClass('w-select2') ) $node.htmlwidget('select2');
         else if ( $node.hasClass('w-datatable') ) $node.htmlwidget('datatable');
-        else if ( $node.hasClass('w-syntax-editor') ) $node.htmlwidget('syntax-editor');
+        else if ( $node.hasClass('w-syntax-editor w-codemirror-editor') || $node.hasClass('w-syntax-editor w-ace-editor') ) $node.htmlwidget('syntax-editor');
         else if ( $node.hasClass('w-wysiwyg-editor') ) $node.htmlwidget('wysiwyg-editor');
         else if ( $node.hasClass('w-chart') ) $node.htmlwidget('chart');
     }

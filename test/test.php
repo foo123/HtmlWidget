@@ -883,25 +883,87 @@ function scripts( )
     <?php widget("panel_end"); ?>
     </fieldset>
     
-    <fieldset><legend>Wysiwyg Editor</legend>
+    <fieldset><legend>Wysiwyg Editor(s)</legend>
     <?php widget('wysiwyg-editor',array(
         'placeholder'=>'rich text..'
     ),array(
-        'value'=>'<i>hello</i>'
+        'value'=>'<i>Hello Tinymce</i>'
     )); ?>
     </fieldset>
     
-    <fieldset><legend>Syntax Editor</legend>
-    <?php widget('syntax-editor',array(
+    <fieldset><legend>Syntax Editor(s)</legend>
+    <?php widget('codemirror',array(
         'placeholder'=>'source text..',
-        'data'=>array('cm-mode'=>'text/html')
+        //'readonly' => 1,
+        'data'=>array('cm-mode'=>'xml')
     ),array(
-        'value'=>'<p>Hello</p>'
+        'value'=>'<i>Hello Codemirror</i>'
     )); ?>
+    <br />
+    <?php widget('ace',array(
+        'placeholder'=>'source text..',
+        //'readonly' => 1,
+        'data'=>array('ace-mode'=>'xml')
+    ),array(
+        'value'=>'<i>Hello Ace</i>'
+    )); ?>
+    </fieldset>
+    
+    <fieldset><legend>Syntax Highlighter(s)</legend>
     </fieldset>
     
     <fieldset><legend>Translator</legend>
     <?php /*widget('translator');*/ ?>
+    </fieldset>
+    
+    <fieldset><legend>Music Notation / Tablature</legend>
+    <?php widget('tablature', array(
+        //'id'    => 'late_init',
+        //'render' => 'svg',
+        'width' => 700,
+        'scale' => 1.0,
+        'editor' => "true",
+        'editor_height' => 110
+    ),array(
+        'notes'=> "
+options player=true
+options space=20
+
+tabstave
+  notation=true
+  key=A time=4/4
+
+  notes :q =|: (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 |
+  notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4
+  text :w, |#segno, ,|, :hd, , #tr
+
+
+options space=25
+
+tabstave
+  notation=true
+
+  notes :q (5/4.5/5) (7/4.7/5)s(5/4.5/5) ^3^
+  notes :8 7-5/4 $.a./b.$ (5/4.5/5)h(7/5) =:|
+  notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5
+  notes :h (5V/6.5/4.6/3.7/2) $.italic.let ring$ =|=
+
+  text :h, ,.font=Times-12-italic, D.S. al coda, |#coda
+  text :h, ,.-1, .font=Arial-14-bold,A13
+  text ++, .23, #f
+"
+      )); ?>
+    </fieldset>
+    
+    <fieldset><legend>Chart / Graph</legend>
+    <?php widget('chart', array(),array(
+        'data'=> array(
+          'columns'=> array(
+            array('data1', 30, 200, 100, 400, 150, 250),
+            array('data2', 50, 20, 10, 40, 15, 25)
+          ),
+        )
+      )); ?>
     </fieldset>
     
     <fieldset><legend>Google Map</legend>
@@ -942,56 +1004,6 @@ function scripts( )
         './video.ogv' => 'video/ogv'
         ),-1)
     ));*/ ?>
-    </fieldset>
-    
-    <fieldset><legend>Chart / Graph</legend>
-    <?php widget('chart', array(),array(
-        'data'=> array(
-          'columns'=> array(
-            array('data1', 30, 200, 100, 400, 150, 250),
-            array('data2', 50, 20, 10, 40, 15, 25)
-          ),
-        )
-      )); ?>
-    </fieldset>
-    
-    <fieldset><legend>Music Notation / Tablature</legend>
-    <?php widget('tablature', array(
-        //'id'    => 'late_init',
-        //'render' => 'svg',
-        'width' => 700,
-        'scale' => 1.0,
-        'editor' => "true",
-        'editor_height' => 110
-    ),array(
-        'notes'=> "
-options player=true
-options space=20
-
-tabstave
-  notation=true
-  key=A time=4/4
-
-  notes :q =|: (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 |
-  notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4
-  text :w, |#segno, ,|, :hd, , #tr
-
-
-options space=25
-
-tabstave
-  notation=true
-
-  notes :q (5/4.5/5) (7/4.7/5)s(5/4.5/5) ^3^
-  notes :8 7-5/4 $.a./b.$ (5/4.5/5)h(7/5) =:|
-  notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5
-  notes :h (5V/6.5/4.6/3.7/2) $.italic.let ring$ =|=
-
-  text :h, ,.font=Times-12-italic, D.S. al coda, |#coda
-  text :h, ,.-1, .font=Arial-14-bold,A13
-  text ++, .23, #f
-"
-      )); ?>
     </fieldset>
     
     <fieldset><legend>Checkboxes</legend>
