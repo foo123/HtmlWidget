@@ -442,9 +442,9 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
 widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options ){
     var self = this;
     if ( !(self instanceof morphable) ) return new morphable(el, options);
-    var cur_mode = null, style_sheet = null, css_styles = null;
+    var cur_mode = null, style_sheet = null, css_styles = null, mode_class;
     
-    self.create = function( ) {
+    /*self.create = function( ) {
         var $el = $(el), cssStyles = {}, hideSelector, showSelector, mainSelector,
             modes = !!$el.attr('data-morphable-modes') ? $el.attr('data-morphable-modes').split(',') : [].concat(options.modes||[]),
             show_class = $el.attr('data-morphable-show') || options.showClass,
@@ -508,17 +508,16 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
             }
         }
         style_sheet = create_style( document, 'all', css_styles = cssStyles );
-    },
+    };*/
     self.init = function( ) {
-        if ( !$(el).hasClass('w-morphable') )
-            self.create( );
+        /*if ( !$(el).hasClass('w-morphable') )
+            self.create( );*/
+        mode_class = el[ATTR]('data-morphable-mode')||options.modeClass||'mode-${MODE}';
     };
     self.morph = function( mode ) {
         if ( mode != cur_mode )
         {
-            var $el = $(el),
-                mode_class = el[ATTR]('data-morphable-mode')||options.modeClass
-            ;
+            var $el = $(el);
             if ( cur_mode ) $el.removeClass( mode_class.split('${MODE}').join(cur_mode) );
             cur_mode = mode;
             if ( cur_mode ) $el.addClass( mode_class.split('${MODE}').join(cur_mode) );
@@ -2108,13 +2107,26 @@ if ( 'function' === typeof $.fn.popr2 )
      });
 }
 
-// w-file controls
 $body
+    // w-file controls
     .on('change.htmlwidget', 'input[type=file].w-file-input', function( ){
         this.nextSibling.value = this.value;
     })
     .on('click.htmlwidget', 'input[type=file].w-file-input+input.w-file', function( ){
         $(this.previousSibling).trigger('click');
+        return false;
+    })
+    // new window popups
+    .on('click.htmlwidget', '[href].w-open-window', function( evt ){
+        evt.preventDefault();
+        var el = this, href = el.href,
+            opts = el[HAS_ATTR]('data-window-options')
+            ? el[ATTR]('data-window-options')
+            : 'resizable=yes,width=400,height=400'
+        ;
+        setTimeout(function(){
+            window.open(href, el.id||'new_win', opts);
+        }, 10);
         return false;
     })
 ;

@@ -125,6 +125,10 @@ function scripts( )
         background: #EEE;
         margin-left: 100px;
     }
+    .boxaki {
+        border: 2px solid #ccc;
+        min-height: 200px;
+    }
     .w-menu-controller-bt {
         cursor: pointer;
         display: none;
@@ -1087,10 +1091,28 @@ tabstave
     <?php widget('radio-image',array('image'=>'./comfort.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px','checked'=>1),array()); ?>
     
     <hr />
-    <?php widget('checkbox-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
-    <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_2')); ?>
-    <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_2','checked'=>1)); ?>
+    <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
+    <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_1')); ?>
     
+    <?php widget('checkbox-label',array('label'=>'Red','name'=>'demo_label_2','data'=>array('morphable-mode'=>'mode-red','morphable'=>'a-morphable'))); ?>
+    <?php widget('checkbox-label',array('label'=>'Green','name'=>'demo_label_2','checked'=>1,'data'=>array('morphable-mode'=>'mode-green','morphable'=>'a-morphable'))); ?>
+    
+    <hr />
+    <?php widget('morphable',array('id'=>'a-morphable','modes'=>array('red','green'))); ?>
+    <div id="a-morphable" class="fluid col-1-1 w-morphable w-animated-morphable w-morphable-level-1">
+    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
+    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
+    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
+    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
+    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
+    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
+    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
+    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
+    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
+    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
+    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
+    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
+    </div>
     </fieldset>
     
     <fieldset><legend>Uploads</legend>
