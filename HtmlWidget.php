@@ -1863,70 +1863,145 @@ class HtmlWidget
         $wmode_class = !empty($attr['mode']) ? $attr['mode'] : 'mode-${MODE}';
         $wshow_class = !empty($attr['show']) ? $attr['show'] : 'show-if-${MODE}';
         $whide_class = !empty($attr['hide']) ? $attr['hide'] : 'hide-if-${MODE}';
-        $wselector = "#{$wid}.w-morphable";
+        $wselector = "#{$wid}.w-morphable:not(.w-animated-morphable)";
+        $wselector_animated = "#{$wid}.w-morphable.w-animated-morphable";
         $wshow_selector = array();
         $whide_selector = array();
+        $wshow_selector__important = array();
+        $whide_selector__important = array();
         $wshow_selector_animated = array();
         $whide_selector_animated = array();
+        $wshow_selector_animated__important = array();
+        $whide_selector_animated__important = array();
         foreach($wmodes as $mode)
         {
             $mode_class = str_replace('${MODE}', $mode, $wmode_class);
-            $whide_sel = ' .' . str_replace('${MODE}', $mode, $whide_class);
-            $wshow_sel = ' .' . str_replace('${MODE}', $mode, $wshow_class);
+            $whide_sel = ' .w-morphable-item.' . str_replace('${MODE}', $mode, $whide_class);
+            $whide_not_sel = ' .w-morphable-item.' . str_replace('${MODE}', 'not-'.$mode, $whide_class);
+            $wshow_sel = ' .w-morphable-item.' . str_replace('${MODE}', $mode, $wshow_class);
+            $wshow_not_sel = ' .w-morphable-item.' . str_replace('${MODE}', 'not-'.$mode, $wshow_class);
             
-            $whide_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . ':not(.w-animated-morphable).w-morphable-level-1 >' . $whide_sel;
-            $whide_selector[] = $wselector . ':not(.w-animated-morphable).' . $mode_class . '.w-morphable-level-1 >' . $whide_sel;
-            $wshow_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . ':not(.w-animated-morphable).w-morphable-level-1 >' . $wshow_sel;
-            $wshow_selector[] = $wselector . ':not(.w-animated-morphable).' . $mode_class . '.w-morphable-level-1 >' . $wshow_sel;
+            /*
+            SHOW < HIDE, SHOW default
             
-            $whide_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . ':not(.w-animated-morphable).w-morphable-level-1 >' . $wshow_sel;
-            $wshow_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . ':not(.w-animated-morphable).w-morphable-level-1 >' . $whide_sel;
+            mode + show                 =====> SHOW !important
+            mode + hide                 =====> HIDE !important
             
-            $whide_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . '.w-animated-morphable.w-morphable-level-1 >' . $whide_sel;
-            $whide_selector_animated[] = $wselector . '.w-animated-morphable.' . $mode_class . '.w-morphable-level-1 >' . $whide_sel;
-            $wshow_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . '.w-animated-morphable.w-morphable-level-1 >' . $wshow_sel;
-            $wshow_selector_animated[] = $wselector . '.w-animated-morphable.' . $mode_class . '.w-morphable-level-1 >' . $wshow_sel;
+            !mode + hide_not            =====> HIDE
+            !mode + show_not            =====> SHOW
+            !mode + show                =====> HIDE
+            !mode + hide                =====> SHOW
+            mode + hide_not             =====> SHOW
+            mode + show_not             =====> HIDE
             
-            $whide_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . '.w-animated-morphable.w-morphable-level-1 >' . $wshow_sel;
-            $wshow_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . '.w-animated-morphable.w-morphable-level-1 >' . $whide_sel;
+            else                        =====> LEAVE AS IS
             
-            $whide_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1)' . $whide_sel;
-            $whide_selector[] = $wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1).' . $mode_class . $whide_sel;
-            $wshow_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1)' . $wshow_sel;
-            $wshow_selector[] = $wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1).' . $mode_class . $wshow_sel;
+            CSS selectors are LINEAR O(n) in the number of options/modes
+            inluding AND/OR operations between modes
+            */
             
-            $whide_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1)' . $wshow_sel;
-            $wshow_selector[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1)' . $whide_sel;
+            // 1st level only
+            $wshow_selector[] = $wselector.'.w-morphable-level-1 > .w-morphable-item';
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-level-1 > .w-morphable-item';
             
-            $whide_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . '.w-animated-morphable:not(.w-morphable-level-1)' . $whide_sel;
-            $whide_selector_animated[] = $wselector . '.w-animated-morphable:not(.w-morphable-level-1).' . $mode_class . $whide_sel;
-            $wshow_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:checked ~ '.$wselector . '.w-animated-morphable:not(.w-morphable-level-1)' . $wshow_sel;
-            $wshow_selector_animated[] = $wselector . '.w-animated-morphable:not(.w-morphable-level-1).' . $mode_class . $wshow_sel;
+            $whide_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$whide_sel;
+            $whide_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_sel;
             
-            $whide_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . '.w-animated-morphable:not(.w-morphable-level-1)' . $wshow_sel;
-            $wshow_selector_animated[] = 'input[data-morphable-mode='.$mode_class.'][data-morphable='.$wid.']:not(:checked) ~ '.$wselector . '.w-animated-morphable:not(.w-morphable-level-1)' . $whide_sel;
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_sel;
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$whide_not_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_not_sel;
             
-            foreach($wmodes as $mode2)
-            {
-                if ( $mode === $mode2 ) continue;
-                
-                $whide_sel = ' .' . str_replace('${MODE}', $mode2, $wshow_class) . ':not(.' . str_replace('${MODE}', $mode, $wshow_class) . ')';
-                $wshow_sel = ' .' . str_replace('${MODE}', $mode2, $whide_class) . ':not(.' . str_replace('${MODE}', $mode, $whide_class) . ')';
-                
-                $whide_selector[] = $wselector . ':not(.w-animated-morphable).' . $mode_class . '.w-morphable-level-1 >' . $whide_sel;
-                $wshow_selector[] = $wselector . ':not(.w-animated-morphable).' . $mode_class . '.w-morphable-level-1 >' . $wshow_sel;
-                
-                $whide_selector_animated[] = $wselector . '.w-animated-morphable.' . $mode_class . '.w-morphable-level-1 >' . $whide_sel;
-                $wshow_selector_animated[] = $wselector . '.w-animated-morphable.' . $mode_class . '.w-morphable-level-1 >' . $wshow_sel;
-                
-                $whide_selector[] = $wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1).' . $mode_class . $whide_sel;
-                $wshow_selector[] = $wselector . ':not(.w-animated-morphable):not(.w-morphable-level-1).' . $mode_class . $wshow_sel;
-                
-                $whide_selector_animated[] = $wselector . '.w-animated-morphable:not(.w-morphable-level-1).' . $mode_class . $whide_sel;
-                $wshow_selector_animated[] = $wselector . '.w-animated-morphable:not(.w-morphable-level-1).' . $mode_class . $wshow_sel;
-            }
+            
+            $wshow_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_sel;
+            $wshow_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_sel;
+            
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$whide_sel;
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$whide_not_sel;
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_not_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_not_sel;
+            
+            
+            $whide_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_sel;
+            $whide_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_sel;
+            
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_sel;
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_not_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_not_sel;
+            
+            
+            $wshow_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_sel;
+            $wshow_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_sel;
+            
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_sel;
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_not_sel;
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_not_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_not_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_not_sel;
+            
+            
+            // any level
+            $wshow_selector[] = $wselector.':not(.w-morphable-level-1) .w-morphable-item';
+            $wshow_selector_animated[] = $wselector_animated.':not(.w-morphable-level-1) .w-morphable-item';
+            
+            $whide_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_sel;
+            $whide_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_sel;
+            
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_sel;
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_not_sel;
+            
+            
+            $wshow_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_sel;
+            $wshow_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_sel;
+            
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_sel;
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_not_sel;
+            
+            
+            $whide_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_sel;
+            $whide_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_sel;
+            
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_sel;
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_not_sel;
+            
+            
+            $wshow_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_sel;
+            $wshow_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_sel;
+            
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_sel;
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_not_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_not_sel;
+            $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_not_sel;
         }
         $wstyle = '';
+        
+        $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
+        $wstyle .= implode(',',$wshow_selector) . '{display: block}';
+        $wstyle .= implode(',',$whide_selector__important) . '{display: none !important}';
+        $wstyle .= implode(',',$wshow_selector__important) . '{display: block !important}';
+        
         $wstyle .= implode(',',$whide_selector_animated) . "{
 pointer-events: none !important; overflow: hidden !important;
 min-width: 0 !important; max-width: 0 !important;
@@ -1946,8 +2021,25 @@ min-width: 0 !important; max-width: 5000px; min-height: 0 !important; max-height
 -o-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
 transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
 }";
-        $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
-        $wstyle .= implode(',',$wshow_selector) . '{display: block}';
+        $wstyle .= implode(',',$whide_selector_animated__important) . "{
+pointer-events: none !important; overflow: hidden !important;
+min-width: 0 !important; max-width: 0 !important;
+min-height: 0 !important; max-height: 0 !important; opacity: 0 !important;
+-webkit-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;
+-moz-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;
+-ms-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;
+-o-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;
+transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;
+}";
+        $wstyle .= implode(',',$wshow_selector_animated__important) . "{
+overflow: hidden !important;
+min-width: 0 !important; max-width: 5000px !important; min-height: 0 !important; max-height: 5000px !important; opacity: 1 !important;
+-webkit-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
+-moz-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
+-ms-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
+-o-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
+transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
+}";
         self::enqueue('styles', "w-morphable-$wid", array($wstyle), array('htmlwidgets.css'));
         return '';
     }

@@ -439,7 +439,7 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
         $(el).off('.removable');
     };
 });
-widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options ){
+/*widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options ){
     var self = this;
     if ( !(self instanceof morphable) ) return new morphable(el, options);
     var cur_mode = null, style_sheet = null, css_styles = null, mode_class;
@@ -508,10 +508,10 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
             }
         }
         style_sheet = create_style( document, 'all', css_styles = cssStyles );
-    };*/
+    };* /
     self.init = function( ) {
         /*if ( !$(el).hasClass('w-morphable') )
-            self.create( );*/
+            self.create( );* /
         mode_class = el[ATTR]('data-morphable-mode')||options.modeClass||'mode-${MODE}';
     };
     self.morph = function( mode ) {
@@ -532,7 +532,7 @@ widget2jquery('morphable', htmlwidget.morphable=function morphable( el, options 
         if ( style_sheet ) dispose_style( document, style_sheet );
         style_sheet = null;
     };
-});
+});*/
 widget2jquery('delayable', htmlwidget.delayable=function delayable( el, options ){
     var self = this;
     if ( !(self instanceof delayable) ) return new delayable(el, options);
@@ -1935,7 +1935,7 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-dropdown-menu') || $node.hasClass('w-vertical-menu') ) $node.htmlwidget('menu');
     if ( $node.hasClass('w-selectable') ) $node.htmlwidget('selectable');
     if ( $node.hasClass('w-removable') ) $node.htmlwidget('removable');
-    if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
+    //if ( $node.hasClass('w-morphable') ) $node.htmlwidget('morphable');
     if ( $node.hasClass('w-delayable') ) $node.htmlwidget('delayable');
     if ( $node.hasClass('w-disabable') ) $node.htmlwidget('disabable');
     if ( $node.hasClass('w-draggable') ) $node.htmlwidget('draggable');
@@ -2077,15 +2077,15 @@ var $body = $(document.body),
 
 // already existing elements
 $body.find('[w-init]').each( widget_init );
-$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-morphable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
+$body.find('.w-dropdown-menu,.w-vertical-menu,.w-templateable,.w-rearrangeable,.w-resizeable,.w-resiseable,.w-selectable,.w-removable,.w-delayable,.w-disabable,.w-sortable,.w-draggable,.w-areaselectable').each( widget_able );
 
 // dynamicaly added elements and/or dynamicaly altered elements
 if ( 'function' === typeof $.fn.onSelector )
 {
     $body
         .onSelector('[w-init]::added', widget_init)
-        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-morphable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added,.w-vextab::added', widget_able)
-        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-morphable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable),:class-added(.w-vextab)', widget_able)
+        .onSelector('.w-dropdown-menu::added,.w-vertical-menu::added,.w-templateable::added,.w-rearrangeable::added,.w-resizeable::added,.w-resiseable::added,.w-selectable::added,.w-removable::added,.w-delayable::added,.w-disabable::added,.w-sortable::added,.w-draggable::added,.w-areaselectable::added,.w-vextab::added', widget_able)
+        .onSelector(':class-added(.w-dropdown-menu),:class-added(.w-vertical-menu),:class-added(.w-templateable),:class-added(.w-rearrangeable),:class-added(.w-resizeable),:class-added(.w-resiseable),:class-added(.w-selectable),:class-added(.w-removable),:class-added(.w-delayable),:class-added(.w-disabable),:class-added(.w-sortable),:class-added(.w-draggable),:class-added(.w-areaselectable),:class-added(.w-vextab)', widget_able)
     ;
 }
 // dynamic tooltips

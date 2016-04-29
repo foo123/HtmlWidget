@@ -1094,24 +1094,99 @@ tabstave
     <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
     <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_1')); ?>
     
-    <?php widget('checkbox-label',array('label'=>'Red','name'=>'demo_label_2','data'=>array('morphable-mode'=>'mode-red','morphable'=>'a-morphable'))); ?>
-    <?php widget('checkbox-label',array('label'=>'Green','name'=>'demo_label_2','checked'=>1,'data'=>array('morphable-mode'=>'mode-green','morphable'=>'a-morphable'))); ?>
+    <?php widget('checkbox-label',array('label'=>'Red','name'=>'demo_label_2','data'=>array('morph-a-morphable'=>'mode-red'))); ?>
+    <?php widget('checkbox-label',array('label'=>'Green','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-green'))); ?>
+    <?php widget('checkbox-label',array('label'=>'Blue','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-blue'))); ?>
     
     <hr />
-    <?php widget('morphable',array('id'=>'a-morphable','modes'=>array('red','green'))); ?>
+    <?php widget('morphable',array('id'=>'a-morphable','modes'=>array('red','green','blue'))); ?>
     <div id="a-morphable" class="fluid col-1-1 w-morphable w-animated-morphable w-morphable-level-1">
-    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
-    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
-    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
-    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
-    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
-    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
-    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
-    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
-    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
-    <div class="fluid col-1-6 show-if-red"><div class="fluid col-1-1 boxaki" style="background:red;"></div></div>
-    <div class="fluid col-1-6 show-if-green"><div class="fluid col-1-1 boxaki" style="background:green;"></div></div>
-    <div class="fluid col-1-6"><div class="fluid col-1-1 boxaki" style="background:blue;"></div></div>
+    
+    <!-- red and green and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#fff;"></div>
+    </div>
+    
+    <!-- neither red nor green nor blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-not-red show-if-not-green show-if-not-blue">
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    </div>
+    
+    <!-- red or green -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    </div>
+    
+    <!-- red or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+    
+    <!-- green or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-blue show-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+    
+    <!-- red or green or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green show-if-blue">
+    <div class="fluid col-1-3 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#00f;"></div>
+    </div>
+    
+    <!-- red and green -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green">
+    <div class="fluid col-1-1 boxaki" style="background:#ff0;"></div>
+    </div>
+    
+    <!-- red and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#f0f;"></div>
+    </div>
+    
+    <!-- green and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-green hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#0ff;"></div>
+    </div>
+    
+    <!-- neither red nor green -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+    
+    <!-- neither red nor blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    </div>
+    
+    <!-- neither green nor blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-green hide-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    </div>
+    
+    <!-- red -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red">
+    <div class="fluid col-1-1 boxaki" style="background:#f00;"></div>
+    </div>
+    
+    <!-- green -->
+    <div class="fluid col-1-6 w-morphable-item show-if-green">
+    <div class="fluid col-1-1 boxaki" style="background:#0f0;"></div>
+    </div>
+    
+    <!-- blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#00f;"></div>
+    </div>
+    
     </div>
     </fieldset>
     

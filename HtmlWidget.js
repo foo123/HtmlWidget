@@ -1992,143 +1992,289 @@ var HtmlWidget = self = {
     }
     
     ,w_morphable: function( attr, data, widgetName ) {
-        var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wshow_selector, whide_selector, wshow_selector_animated, whide_selector_animated, whide_sel, wshow_sel, mode_class;
+        var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wselector_animated, wshow_selector, whide_selector, wshow_selector_animated, whide_selector_animated, wshow_selector__important, whide_selector__important, wshow_selector_animated__important, whide_selector_animated__important, whide_sel, whide_not_sel, wshow_sel, wshow_not_sel, mode_class;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wclass = 'w-morphable'; 
         wmodes = [].concat(attr['modes']);
         wmode_class = !empty(attr,'mode') ? attr['mode'] : 'mode-${MODE}';
         wshow_class = !empty(attr,'show') ? attr['show'] : 'show-if-${MODE}';
         whide_class = !empty(attr,'hide') ? attr['hide'] : 'hide-if-${MODE}';
-        wselector = "#"+wid+".w-morphable";
+        wselector = '#'+wid+'.w-morphable:not(.w-animated-morphable)';
+        wselector_animated = '#'+wid+'.w-morphable.w-animated-morphable';
         wshow_selector = [];
         whide_selector = [];
+        wshow_selector__important = [];
+        whide_selector__important = [];
         wshow_selector_animated = [];
         whide_selector_animated = [];
+        wshow_selector_animated__important = [];
+        whide_selector_animated__important = [];
         var i, j, l = wmodes.length;
         for(i=0; i<l; i++)
         {
             mode_class = wmode_class.split('${MODE}').join(wmodes[i]);
-            whide_sel = ' .' + whide_class.split('${MODE}').join(wmodes[i]);
-            wshow_sel = ' .' + wshow_class.split('${MODE}').join(wmodes[i]);
+            whide_sel = ' .w-morphable-item.' + whide_class.split('${MODE}').join(wmodes[i]);
+            whide_not_sel = ' .w-morphable-item.' + whide_class.split('${MODE}').join('not-'+wmodes[i]);
+            wshow_sel = ' .w-morphable-item.' + wshow_class.split('${MODE}').join(wmodes[i]);
+            wshow_not_sel = ' .w-morphable-item.' + wshow_class.split('${MODE}').join('not-'+wmodes[i]);
             
-            whide_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + ':not(.w-animated-morphable).w-morphable-level-1 >' + whide_sel
-            );
-            whide_selector.push(
-                wselector + ':not(.w-animated-morphable).' + mode_class + '.w-morphable-level-1 >' + whide_sel
-            );
-            wshow_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + ':not(.w-animated-morphable).w-morphable-level-1 >' + wshow_sel
-            );
-            wshow_selector.push(
-                wselector + ':not(.w-animated-morphable).' + mode_class + '.w-morphable-level-1 >' + wshow_sel
-            );
+            /*
+            SHOW < HIDE, SHOW default
             
-            whide_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + ':not(.w-animated-morphable).w-morphable-level-1 >' + wshow_sel
-            );
-            wshow_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + ':not(.w-animated-morphable).w-morphable-level-1 >' + whide_sel
-            );
+            mode + show                 =====> SHOW !important
+            mode + hide                 =====> HIDE !important
             
-            whide_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + '.w-animated-morphable.w-morphable-level-1 >' + whide_sel
-            );
-            whide_selector_animated.push(
-                wselector + '.w-animated-morphable.' + mode_class + '.w-morphable-level-1 >' + whide_sel
+            !mode + hide_not            =====> HIDE
+            !mode + show_not            =====> SHOW
+            !mode + show                =====> HIDE
+            !mode + hide                =====> SHOW
+            mode + hide_not             =====> SHOW
+            mode + show_not             =====> HIDE
+            
+            else                        =====> LEAVE AS IS
+            
+            CSS selectors are LINEAR O(n) in the number of options/modes
+            inluding AND/OR operations between modes
+            */
+            
+            // 1st level only
+            wshow_selector.push(
+                wselector+'.w-morphable-level-1 > .w-morphable-item'
             );
             wshow_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + '.w-animated-morphable.w-morphable-level-1 >' + wshow_sel
-            );
-            wshow_selector_animated.push(
-                wselector + '.w-animated-morphable.' + mode_class + '.w-morphable-level-1 >' + wshow_sel
+                wselector_animated+'.w-morphable-level-1 > .w-morphable-item'
             );
             
-            whide_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + '.w-animated-morphable.w-morphable-level-1 >' + wshow_sel
+            whide_selector__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+whide_sel
             );
-            wshow_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + '.w-animated-morphable.w-morphable-level-1 >' + whide_sel
-            );
-            
-            
-            whide_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1)' + whide_sel
-            );
-            whide_selector.push(
-                wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1).' + mode_class + whide_sel
-            );
-            wshow_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1)' + wshow_sel
-            );
-            wshow_selector.push(
-                wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1).' + mode_class + wshow_sel
+            whide_selector__important.push(
+                wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_sel
             );
             
             whide_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1)' + wshow_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+wshow_sel
+            );
+            whide_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            whide_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+whide_not_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_not_sel
+            );
+            
+            
+            wshow_selector__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+wshow_sel
+            );
+            wshow_selector__important.push(
+                wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_sel
+            );
+            
+            wshow_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+whide_sel
             );
             wshow_selector.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1)' + whide_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+whide_not_sel
+            );
+            wshow_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_not_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_not_sel
+            );
+            
+            
+            whide_selector_animated__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_sel
+            );
+            whide_selector_animated__important.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_sel
             );
             
             whide_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + '.w-animated-morphable:not(.w-morphable-level-1)' + whide_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_sel
             );
             whide_selector_animated.push(
-                wselector + '.w-animated-morphable:not(.w-morphable-level-1).' + mode_class + whide_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            whide_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_not_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_not_sel
+            );
+            
+            
+            wshow_selector_animated__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_sel
+            );
+            wshow_selector_animated__important.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_sel
+            );
+            
+            wshow_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_sel
             );
             wshow_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:checked ~ '+wselector + '.w-animated-morphable:not(.w-morphable-level-1)' + wshow_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_not_sel
             );
             wshow_selector_animated.push(
-                wselector + '.w-animated-morphable:not(.w-morphable-level-1).' + mode_class + wshow_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_not_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_not_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_not_sel
+            );
+            
+            
+            // any level
+            wshow_selector.push(
+                wselector+':not(.w-morphable-level-1) .w-morphable-item'
+            );
+            wshow_selector_animated.push(
+                wselector_animated+':not(.w-morphable-level-1) .w-morphable-item'
+            );
+            
+            whide_selector__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+whide_sel
+            );
+            whide_selector__important.push(
+                wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_sel
+            );
+            
+            whide_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+wshow_sel
+            );
+            whide_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            whide_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+wshow_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            whide_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_not_sel
+            );
+            
+            
+            wshow_selector__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+wshow_sel
+            );
+            wshow_selector__important.push(
+                wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_sel
+            );
+            
+            wshow_selector.oush(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+whide_sel
+            );
+            wshow_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            wshow_selector.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            wshow_selector.push(
+                wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            
+            
+            whide_selector_animated__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'.$whide_sel
+            );
+            whide_selector_animated__important.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_sel
             );
             
             whide_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + '.w-animated-morphable:not(.w-morphable-level-1)' + wshow_sel
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_sel
             );
-            wshow_selector_animated.push(
-                'input[data-morphable-mode='+mode_class+'][data-morphable='+wid+']:not(:checked) ~ '+wselector + '.w-animated-morphable:not(.w-morphable-level-1)' + whide_sel
+            whide_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            whide_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+wshow_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            whide_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_not_sel
             );
             
-            for (j=0; j<l; j++)
-            {
-                if ( j === i ) continue;
-                
-                whide_sel = ' .' + wshow_class.split('${MODE}').join(wmodes[j]) + ':not(.' + wshow_class.split('${MODE}').join(wmodes[i]) + ')';
-                wshow_sel = ' .' + whide_class.split('${MODE}').join(wmodes[j]) + ':not(.' + whide_class.split('${MODE}').join(wmodes[i]) + ')';
-                
-                whide_selector.push(
-                    wselector + ':not(.w-animated-morphable).' + mode_class + '.w-morphable-level-1 >' + whide_sel
-                );
-                wshow_selector.push(
-                    wselector + ':not(.w-animated-morphable).' + mode_class + '.w-morphable-level-1 >' + wshow_sel
-                );
-                
-                whide_selector_animated.push(
-                    wselector + '.w-animated-morphable.' + mode_class + '.w-morphable-level-1 >' + whide_sel
-                );
-                wshow_selector_animated.push(
-                    wselector + '.w-animated-morphable.' + mode_class + '.w-morphable-level-1 >' + wshow_sel
-                );
-                
-                whide_selector.push(
-                    wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1).' + mode_class + whide_sel
-                );
-                wshow_selector.push(
-                    wselector + ':not(.w-animated-morphable):not(.w-morphable-level-1).' + mode_class + wshow_sel
-                );
-                
-                whide_selector_animated.push(
-                    wselector + '.w-animated-morphable:not(.w-morphable-level-1).' + mode_class + whide_sel
-                );
-                wshow_selector_animated.push(
-                    wselector + '.w-animated-morphable:not(.w-morphable-level-1).' + mode_class + wshow_sel
-                );
-            }
+            
+            wshow_selector_animated__important.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_sel
+            );
+            wshow_selector_animated__important.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_sel
+            );
+            
+            wshow_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+whide_sel
+            );
+            wshow_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            wshow_selector_animated.push(
+                'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_not_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_not_sel
+            );
+            wshow_selector_animated.push(
+                wselector_animated+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+wshow_not_sel
+            );
         }
         wstyle = '';
+        
+        wstyle += whide_selector.join(',') + '{display: none !important}';
+        wstyle += wshow_selector.join(',') + '{display: block}';
+        wstyle += whide_selector__important.join(',') + '{display: none !important}';
+        wstyle += wshow_selector__important.join(',') + '{display: block !important}';
+        
         wstyle += whide_selector_animated.join(',') + '{\
 pointer-events: none !important; overflow: hidden !important;\
 min-width: 0 !important; max-width: 0 !important;\
@@ -2148,8 +2294,25 @@ min-width: 0 !important; max-width: 5000px; min-height: 0 !important; max-height
 -o-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
 transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
 }';
-        wstyle += whide_selector.join(',') + '{display: none !important}';
-        wstyle += wshow_selector.join(',') + '{display: block}';
+        wstyle += whide_selector_animated__important.join(',') + '{\
+pointer-events: none !important; overflow: hidden !important;\
+min-width: 0 !important; max-width: 0 !important;\
+min-height: 0 !important; max-height: 0 !important; opacity: 0 !important;\
+-webkit-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;\
+-moz-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;\
+-ms-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;\
+-o-transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;\
+transition: opacity 0.4s ease, max-width 0.6s ease 0.2s, max-height 0.6s ease 0.2s;\
+}';
+        wstyle += wshow_selector_animated__important.join(',') + '{\
+overflow: hidden !important;\
+min-width: 0 !important; max-width: 5000px; min-height: 0 !important; max-height: 5000px; opacity: 1;\
+-webkit-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
+-moz-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
+-ms-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
+-o-transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
+transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
+}';
         /*wstyle = {
             hide_mode: {
                 selector: whide_selector.join(','),
