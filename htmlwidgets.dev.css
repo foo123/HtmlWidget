@@ -2873,11 +2873,13 @@ table.w-table
     box-sizing: border-box;
 }
 .w-table-top .w-table-controls,
+.w-table-top .dt-buttons,
 .w-table-top .dataTables_filter,
 .w-table-top .dataTables_length,
 .w-table-top .dataTables_paginate,
 .w-table-top .dataTables_info,
 .w-table-bottom .w-table-controls,
+.w-table-bottom .dt-buttons,
 .w-table-bottom .dataTables_filter,
 .w-table-bottom .dataTables_length,
 .w-table-bottom .dataTables_paginate,
@@ -2885,7 +2887,7 @@ table.w-table
 {
     position: relative;
     float: none !important;
-    display: inline-block;
+    display: inline-block !important;
     margin: 0;
     padding: 4px 3px;
     -webkit-box-sizing: border-box;
@@ -2893,6 +2895,15 @@ table.w-table
     -ms-box-sizing: border-box;
     -o-box-sizing: border-box;
     box-sizing: border-box;
+}
+.dt-button-collection > .w-button
+{
+    display: block !important;
+}
+.dt-button-collection > .w-button.active
+{
+    background-color: #1190d1 !important;
+    color: #fff !important;
 }
 table.w-table.dataTable thead td,
 table.w-table.dataTable thead th

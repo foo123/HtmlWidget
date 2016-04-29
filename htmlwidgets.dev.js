@@ -1535,32 +1535,40 @@ htmlwidget._handle['datatable'] = function( type, el, opts, pre_init, post_init 
     if ( 'function' !== typeof $.fn.dataTable ) return;
     if ( pre_init ) pre_init( el, opts );
     var $el = $(el);
-    if ( !opts["language"] && htmlwidget.locale['DataTables'] )
+    if ( !opts['language'] && htmlwidget.locale['DataTables'] )
     {
-        opts["language"] =  htmlwidget.locale['DataTables'];
+        opts['language'] =  htmlwidget.locale['DataTables'];
     }
     $el.dataTable( opts );
-    var dt_wrapper = $el.closest(".dataTables_wrapper");
-    dt_wrapper.addClass("w-table-wrapper");
-    dt_wrapper.find(".dataTables_filter input").addClass("w-widget w-text");
-    dt_wrapper.find(".dataTables_length select").htmlwidget("dropdown");
+    var dt_wrapper = $el.closest('.dataTables_wrapper');
+    if ( el[HAS_ATTR]('data-table-buttons') )
+    {
+        new $.fn.dataTable.Buttons( $el.DataTable(), {
+            buttons: el[ATTR]('data-table-buttons').split(',')
+        } );
+        dt_wrapper.find('.w-table-controls').eq(0).append($el.DataTable().buttons().container());
+    }
     if ( el[HAS_ATTR]('data-table-controls') )
     {
-        dt_wrapper.find(".w-table-controls").eq(0).append($(el[ATTR]('data-table-controls')));
+        dt_wrapper.find('.w-table-controls').eq(0).append($(el[ATTR]('data-table-controls')));
     }
     else if ( !!opts.controls )
     {
         if ( opts.controls.concat )
         {
-            var il, ol, dt_controls = dt_wrapper.find(".w-table-controls").eq(0);
+            var il, ol, dt_controls = dt_wrapper.find('.w-table-controls').eq(0);
             for(il=0,ol=opts.controls.length; il<ol; il++)
                 dt_controls.append($(opts.controls[il]));
         }
         else
         {
-            dt_wrapper.find(".w-table-controls").eq(0).append($(opts.controls));
+            dt_wrapper.find('.w-table-controls').eq(0).append($(opts.controls));
         }
     }
+    dt_wrapper.addClass('w-table-wrapper');
+    dt_wrapper.find('.dataTables_filter input').addClass('w-widget w-text');
+    dt_wrapper.find('.dataTables_length select').htmlwidget('dropdown');
+    //dt_wrapper.find('.dt-button').addClass('w-widget w-button');
     if ( post_init ) post_init( el, opts );
 };
 
