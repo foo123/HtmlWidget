@@ -379,6 +379,18 @@ var HtmlWidget = self = {
                 asset_base+'datatables/js/colreorder.js',
                 asset_base+'datatables/js/rowreorder.js'
             ], ['datatables-reorder.css','datatables']]
+            ,['styles', 'datatables-buttons.css', cdn
+            ? 'https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css'
+            : asset_base+'datatables/css/buttons.css'
+            , ['datatables.css']]
+            ,['scripts', 'datatables-buttons', cdn
+            ? 'https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js'
+            : asset_base+'datatables/js/buttons.js'
+            , ['datatables-buttons.css','datatables']]
+            ,['scripts', 'datatables-colvis', cdn
+            ? 'https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js'
+            : asset_base+'datatables/js/buttons.colvis.js'
+            , ['datatables-buttons']]
             ,['styles-composite', 'datatables-extra.css', cdn
             ? [
                 'https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css',
