@@ -2899,11 +2899,23 @@ table.w-table
 .dt-button-collection > .w-button
 {
     display: block !important;
+    padding-right: 2em;
+}
+.dt-button-collection > .w-button:after
+{
+    position: absolute; display: inline-block;
+    right: 10px; top: 8px;
+    font-family: FontAwesome;
+    content: "\f096";
 }
 .dt-button-collection > .w-button.active
 {
     background-color: #1190d1 !important;
     color: #fff !important;
+}
+.dt-button-collection > .w-button.active:after
+{
+    content: "\f046";
 }
 table.w-table.dataTable thead td,
 table.w-table.dataTable thead th
