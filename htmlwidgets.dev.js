@@ -896,7 +896,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         }
     };
 });
-/*widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
+widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
     var self = this;
     if ( !(self instanceof uploadable) ) return new uploadable(el, options);
     
@@ -910,9 +910,9 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         
             fileSizeMax = (el[HAS_ATTR]('data-upload-size')
                 ? int(el[ATTR]('data-upload-size'))
-                : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB* /,
+                : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB*/,
                 
-            fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')* /,
+            fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')*/,
             
             fileDimensions = el[HAS_ATTR]('data-upload-dimensions')
                 ? el[ATTR]('data-upload-dimensions').split('x').map(int)
@@ -1030,7 +1030,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
         })
         ;
     };
-});*/
+});
 widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicker( el, options ){
     var self = this;
     if ( !(self instanceof datetimepicker) ) return new datetimepicker(el, options);
@@ -1899,7 +1899,7 @@ htmlwidget.init = function( node, current, deep ) {
     {
         $node.find('input[type=range].w-rangeslider').htmlwidget('range');
         $node.find('.w-dnd-upload').htmlwidget('dnd-upload');
-        //$node.find('.w-upload').htmlwidget('upload');
+        $node.find('.w-upload').htmlwidget('upload');
         $node.find('.w-suggest').htmlwidget('suggest');
         $node.find('.w-timer').htmlwidget('timer');
         $node.find('.w-date').htmlwidget('datetimepicker');
@@ -1915,7 +1915,7 @@ htmlwidget.init = function( node, current, deep ) {
     {
         if ( $node.is('input[type=range]') ) $node.htmlwidget('range');
         else if ( $node.hasClass('w-dnd-upload') ) $node.htmlwidget('dnd-upload');
-        //else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
+        else if ( $node.hasClass('w-upload') ) $node.htmlwidget('upload');
         else if ( $node.hasClass('w-suggest') ) $node.htmlwidget('suggest');
         else if ( $node.hasClass('w-timer') ) $node.htmlwidget('timer');
         else if ( $node.hasClass('w-date') ) $node.htmlwidget('datetimepicker');

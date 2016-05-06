@@ -15,13 +15,13 @@ require('../HtmlWidget.php');
 global $importer;
 
 $importer = new Importer( );
-$importer->register( 'assets', HtmlWidget::assets( array(
+$importer->register( 'assets', HtmlWidget::assets(array(
             'base'      => '../',
             'full'      => true,
             'jquery'    => true,
             'dev'       => true,
             'cdn'       => false
-        ) ) );
+        )) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
 function widget( $widget, $attr=array(), $data=array() )

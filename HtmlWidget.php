@@ -54,7 +54,10 @@ class HtmlWidget
          array('styles', 'htmlwidgets.css', $dev ? $base.'htmlwidgets.dev.css' : $base.'htmlwidgets.css')
         ,array('styles', 'normalize.css', $asset_base.'responsive/normalize.css')
         ,array('styles', 'responsive.css', $asset_base.'responsive/responsive.css')
-        ,array('styles', 'fontawesome.css', $asset_base.'fontawesome/fontawesome.css')
+        ,array('styles', 'fontawesome.css', $cdn
+        ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
+        : $asset_base.'fontawesome/fontawesome.css'
+        )
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
         );
@@ -716,8 +719,8 @@ class HtmlWidget
             case 'drag-n-drop-uploader':
             case 'drag-n-drop-upload':
                                 $out = self::w_dnd_upload($attr, $data, $widget); break;
-            /*case 'uploader':
-            case 'upload':      $out = self::w_upload($attr, $data, $widget); break;*/
+            case 'uploader':
+            case 'upload':      $out = self::w_upload($attr, $data, $widget); break;
             case 'file':        $out = self::w_file($attr, $data, $widget); break;
             case 'suggestbox':
             case 'suggest':     $out = self::w_suggest($attr, $data, $widget); break;
@@ -1667,7 +1670,7 @@ class HtmlWidget
         return "<div $winit $wopts $wtitle id=\"{$wid}_wrapper\" class=\"$wclass\" $wstyle><input id=\"$wid\" $wname type=\"file\" class=\"_w-dnd-uploader\" value=\"\" style=\"display:none !important;\" $wextra><label for=\"$wid\" class=\"w-widget w-button w-dnd-upload-upload\" title=\"{$msg_upload}\"><i class=\"fa fa-upload fa-2x\"></i></label><button type=\"button\" class=\"w-widget w-button w-dnd-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times fa-2x\"></i></button></div>";
     }
     
-    /*public static function w_upload( $attr, $data, $widgetName=null )
+    public static function w_upload( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
@@ -1714,7 +1717,7 @@ class HtmlWidget
             self::enqueue('scripts', 'htmlwidgets');
             return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle data-upload-base=\"$wupload_base\" $wextra><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$upload_data</textarea><label class=\"w-widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"w-widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
-    }*/
+    }
     
     public static function w_table( $attr, $data, $widgetName=null )
     {
