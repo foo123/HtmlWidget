@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.8
+*  @version: 0.8.9
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.8";
+    const VERSION = "0.8.9";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -31,7 +31,7 @@ class HtmlWidget
     public static function enqueue( $type, $id, $asset=null, $deps=array(), $props=array() )
     {
         if ( self::$enqueuer ) 
-            call_user_func(self::$enqueuer, $type, $id, $asset, $deps, $props);
+            call_user_func(self::$enqueuer, $type, $id, array($asset, $deps, $props));
     }
     
     public static function assets( $opts=array() )

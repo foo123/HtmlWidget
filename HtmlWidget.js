@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.8
+*  @version: 0.8.9
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -91,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.8"
+    VERSION: "0.8.9"
     
     ,BASE: './'
     
@@ -106,7 +106,7 @@ var HtmlWidget = self = {
                 // add a small delay for browser to load asset after widget has been output
                 setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
             else*/
-                enqueuer(type, id, asset||null, deps||[], props);
+                enqueuer(type, id, [asset||null, deps||[], props]);
         }
     }
     
