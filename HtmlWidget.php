@@ -712,8 +712,8 @@ class HtmlWidget
             case 'link':        $out = self::w_link($attr, $data, $widget); break;
             case 'button':      $out = self::w_button($attr, $data, $widget); break;
             case 'label':       $out = self::w_label($attr, $data, $widget); break;
-            case 'uploader':
-            case 'upload':
+            /*case 'uploader':
+            case 'upload':*/
             case 'dnd-uploader':
             case 'dnd-upload':
             case 'drag-n-drop-uploader':
@@ -2066,7 +2066,7 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
         $wclass = 'w-panel'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wtitle = !empty($attr['title']) ? $attr['title'] : '&nbsp;';
-        $wchecked = !empty($attr['closed']) ? 'checked' : '';
+        $wchecked = !empty($attr['opened']) ? 'checked' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
         
