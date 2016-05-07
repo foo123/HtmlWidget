@@ -108,6 +108,12 @@ class HtmlWidget
             : $asset_base.'utils/modernizr.js'
             )
             
+            // swfObject
+            ,array('scripts', 'swfobject', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : $asset_base.'swfobject/swfobject.js'
+            )
+            
             // Typo
             ,array('scripts', 'typo', $asset_base.'typo/typo.js')
             

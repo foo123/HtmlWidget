@@ -183,6 +183,12 @@ var HtmlWidget = self = {
             : asset_base+'utils/modernizr.js'
             ]
             
+            // swfObject
+            ,['scripts', 'swfobject', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : asset_base+'swfobject/swfobject.js'
+            ]
+            
             // Typo
             ,['scripts', 'typo', asset_base+'typo/typo.js']
             
