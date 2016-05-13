@@ -1,7 +1,7 @@
 /*
     WebSocket implementation as XPCOM component
 */
-!function( ){
+!function( root ){
 "use strict";
 
 var Cc = Components.classes, Ci = Components.interfaces, Cu = Components.utils, Cr = Components.results;
@@ -9,9 +9,8 @@ Cu['import']('resource://gre/modules/Services.jsm');
 //Cu['import']('resource://gre/modules/XPCOMUtils.jsm');
 
 // WebSocket implementation as XPCOM component
-var WebSocket = function( url, protocols/*, proxyHost, proxyPort, headers*/ ) {
+var WebSocket = function( url, protocols, options/*, proxyHost, proxyPort, headers*/ ) {
     var self = this;
-    protocols = 
     self._e = { };
     self.readyState = WebSocket.CONNECTING;
     self._ws = Cc["@mozilla.org/network/protocol;1?name=wss"].createInstance( Ci.nsIWebSocketChannel );
@@ -22,8 +21,8 @@ var WebSocket = function( url, protocols/*, proxyHost, proxyPort, headers*/ ) {
         Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
         Ci.nsIContentPolicy.TYPE_WEBSOCKET
     );
-    if ( 'string' === typeof protocols ) protocols = [protocols];
-    if ( protocols ) self._ws.protocol = protocols.join('; ');
+    if ( 'string' === typeof protocols ) protocols = [ protocols ];
+    if ( protocols ) self._ws.protocol = protocols.join(',');
     self._ws.asyncOpen( Services.io.newURI( url, null, null ), null, 0, self, null );
 };
 
@@ -34,6 +33,10 @@ WebSocket.CLOSED = 3;
 
 WebSocket.prototype = {
     constructor: WebSocket
+    ,CONNECTING: WebSocket.CONNECTING
+    ,OPEN: WebSocket.OPEN
+    ,CLOSING: WebSocket.CLOSING
+    ,CLOSED: WebSocket.CLOSED
     ,readyState: 0
     ,_ws: null
     ,_e: null
@@ -47,7 +50,6 @@ WebSocket.prototype = {
         if ( this._e[event] )
             this._e[event]( {event:event, data:data, target:this} );
     }
-    
     /**
     * nsIWebSocketListener method, handles the start of the websocket stream.
     *
@@ -61,7 +63,6 @@ WebSocket.prototype = {
             self.dispatchEvent( 'open' );
         }
     }
-
     /**
     * nsIWebSocketListener method, called when the websocket is closed locally.
     *
@@ -76,7 +77,6 @@ WebSocket.prototype = {
             self.dispatchEvent( Cr.NS_OK === aStatusCode || self._ws.CLOSE_NORMAL === aStatusCode ? 'close' : 'error', {status:aStatusCode} );
         }
     }
-
     /**
     * nsIWebSocketListener method, called when the websocket is closed
     * by the far end.
@@ -93,7 +93,6 @@ WebSocket.prototype = {
             self.dispatchEvent( 'close', {status:aCode, statusTxt:aReason} );
         }
     }
-
     /**
     * nsIWebSocketListener method, called when the websocket receives
     * a text message (normally json encoded).
@@ -108,7 +107,6 @@ WebSocket.prototype = {
             self.dispatchEvent( 'message', aMsg );
         }
     }
-
     /**
     * nsIWebSocketListener method, called when the websocket receives a binary message.
     * This class assumes that it is connected to a SimplePushServer and therefore treats
@@ -124,7 +122,6 @@ WebSocket.prototype = {
             self.dispatchEvent( 'message', aMsg );
         }
     }
-
     /**
     * Create a JSON encoded message payload and send via websocket.
     *
@@ -146,7 +143,6 @@ WebSocket.prototype = {
         }
         return false;
     }
-
     /**
     * Close the websocket.
     */
@@ -168,4 +164,7 @@ WebSocket.prototype = {
     }
 };
 
-}();
+// export it
+root[ 'WebSocket' ] = WebSocket;
+root.EXPORTED_SYMBOLS = [ 'WebSocket' ];
+}( this );
