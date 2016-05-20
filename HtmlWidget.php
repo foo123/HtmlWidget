@@ -229,6 +229,21 @@ class HtmlWidget
             // smoothState
             ,array('scripts', 'smoothstate', $asset_base.'utils/smoothState.js', array('jquery'))
              
+            // RT
+            ,array('scripts', 'RT', $asset_base.'RT/RT.js')
+            ,array('scripts', 'RT.Poll', $asset_base.'RT/RT.Poll.js', array('RT'))
+            ,array('scripts', 'RT.BOSH', $asset_base.'RT/RT.BOSH.js', array('RT'))
+            ,array('scripts', 'RT.WebSocket', $asset_base.'RT/RT.WebSocket.js', array('RT'), array('data-swfobject'=>$cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : $asset_base.'swfobject/swfobject.js'
+            ))
+            
+            // LocalStorage
+            ,array('scripts', 'local-storage', $cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf')
+            : $asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf')
+            )
+            
             // Packery
             ,array('scripts', 'packery', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'

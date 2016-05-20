@@ -304,6 +304,21 @@ var HtmlWidget = self = {
             // smoothState
             ,['scripts', 'smoothstate', asset_base+'utils/smoothState.js', ['jquery']]
              
+            // RT
+            ,['scripts', 'RT', asset_base+'RT/RT.js']
+            ,['scripts', 'RT.Poll', asset_base+'RT/RT.Poll.js', ['RT']]
+            ,['scripts', 'RT.BOSH', asset_base+'RT/RT.BOSH.js', ['RT']]
+            ,['scripts', 'RT.WebSocket', asset_base+'RT/RT.WebSocket.js', ['RT'], {'data-swfobject':cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : asset_base+'swfobject/swfobject.js'
+            }]
+            
+            // LocalStorage
+            ,['scripts', 'local-storage', cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf')
+            : asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf')
+            ]
+            
             // Packery
             ,['scripts', 'packery', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
