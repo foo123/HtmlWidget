@@ -314,9 +314,9 @@ var HtmlWidget = self = {
             }]
             
             // LocalStorage
-            ,['scripts', 'local-storage', cdn
-            ? '//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf')
-            : asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf')
+            ,['scripts', 'localstorage', cdn
+            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
+            : (asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf'))
             ]
             
             // Packery

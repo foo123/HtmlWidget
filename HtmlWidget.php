@@ -238,10 +238,10 @@ class HtmlWidget
             : $asset_base.'swfobject/swfobject.js'
             ))
             
-            // LocalStorage
-            ,array('scripts', 'local-storage', $cdn
-            ? '//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf')
-            : $asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf')
+            // localStorage
+            ,array('scripts', 'localstorage', $cdn
+            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
+            : ($asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf'))
             )
             
             // Packery
