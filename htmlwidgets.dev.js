@@ -1566,8 +1566,11 @@ htmlwidget._handle['datatable'] = function( type, el, opts, pre_init, post_init 
         }
     }
     dt_wrapper.addClass('w-table-wrapper');
-    dt_wrapper.find('.dataTables_filter input').addClass('w-widget w-text');
-    dt_wrapper.find('.dataTables_length select').htmlwidget('dropdown');
+    var dt_pagination = dt_wrapper.find('.dataTables_length select').htmlwidget('dropdown'),
+        dt_filter = dt_wrapper.find('.dataTables_filter input').addClass('w-widget w-text'),
+        dt_filter_placeholder = dt_filter.closest('label').text( )
+    ;
+    if ( !!dt_filter_placeholder ) dt_filter.attr('placeholder', dt_filter_placeholder);
     //dt_wrapper.find('.dt-button').addClass('w-widget w-button');
     if ( post_init ) post_init( el, opts );
 };
