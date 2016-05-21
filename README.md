@@ -61,12 +61,16 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 
 
 ![widgets-1](/screenshots/widgets-1.png)
+![widgets-1-2](/screenshots/widgets-1-2.png)
 ![widgets-2](/screenshots/widgets-2.png)
 ![widgets-3](/screenshots/widgets-3.png)
 ![widgets-4](/screenshots/widgets-4.png)
+![widgets-4-1](/screenshots/widgets-4-1.png)
+![widgets-4-2](/screenshots/widgets-4-2.png)
 ![widgets-5](/screenshots/widgets-5.png)
 ![widgets-6](/screenshots/widgets-6.png)
 ![widgets-7](/screenshots/widgets-7.png)
+![widgets-7-1](/screenshots/widgets-7-1.png)
 
 ![details-1](/screenshots/details-1.png)
 ![details-2](/screenshots/details-2.png)
