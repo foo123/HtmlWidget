@@ -1201,6 +1201,62 @@ input.w-radio + label.w-led-button:before
     opacity: 0.6;
 }
 
+ul.w-check-options,
+ol.w-check-options,
+.w-check-options
+{
+    position: relative;
+    display: inline-block;
+    padding: 0;
+    max-height: 300px;
+    min-width: 200px;
+    overflow-y: auto;
+    vertical-align: top;
+}
+.w-check-options > li 
+{
+    position: relative;
+    display: block;
+    padding: 0;
+    margin: 2px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+.w-check-options > li:after
+{
+    content: "";
+    display: table;
+    clear: both;
+}
+.w-check-options > li:last-child 
+{
+    border-bottom: none;
+}
+.w-check-options > li > input[type=checkbox]:first-child
+{
+    position: relative;
+    display: none !important;
+}
+.w-check-options > li > input[type=checkbox]:first-child+label
+{
+    position: relative;
+    display: inline-block;
+    width: 140px;
+    max-width: 100%;
+    padding: 4px;
+    margin: 2px;
+    cursor: pointer;
+}
+.w-check-options > li > input[type=checkbox]:first-child:checked+label
+{
+    background-color: #1190d1 !important;
+    color: #fff !important;
+}
+.w-check-options > li > input[type=checkbox]:first-child:not(:checked)~.w-check-option-selected
+{
+    display: none !important;
+}
+
 .w-rating
 { 
     position: relative;
