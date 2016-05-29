@@ -158,6 +158,12 @@ var HtmlWidget = self = {
             assets = assets.concat([
              ['scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places']
             
+            // Hover.css
+            ,['styles', 'hover.css', cdn
+            ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
+            : asset_base+'hover/hover.css'
+            ]
+            
             // Humane
             ,['styles', 'humane.css', asset_base+'humane/humane.css']
             ,['scripts', 'humane', asset_base+'humane/humane.js', ['humane.css']]

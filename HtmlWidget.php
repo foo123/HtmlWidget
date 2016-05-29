@@ -83,6 +83,12 @@ class HtmlWidget
             $assets = array_merge($assets, array(
              array('scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places')
             
+            // Hover.css
+            ,array('styles', 'hover.css', $cdn
+            ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
+            : $asset_base.'hover/hover.css'
+            )
+            
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane/humane.css')
             ,array('scripts', 'humane', $asset_base.'humane/humane.js', array('humane.css'))
