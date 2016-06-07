@@ -1899,7 +1899,7 @@ var HtmlWidget = self = {
         cl = column_keys.length
         for(c=0; c<cl; c++)
         {
-            wcolumns += "<th data-columnkey=\""+column_keys[c]+"\">"+column_values[column_keys[c]]+"</th>";
+            wcolumns += "<th data-columnkey=\""+column_keys[c]+"\"><span>"+column_values[column_keys[c]]+"</span></th>";
         }
         wcolumns = "<tr>"+wcolumns+"</tr>";
         wheader = !isset(attr['header']) || !empty(attr['header']) ? '<thead>'+wcolumns+'</thead>' : '';

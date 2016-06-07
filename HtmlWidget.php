@@ -1765,7 +1765,7 @@ class HtmlWidget
         $column_values = array_values($data_cols);
         foreach($column_values as $c=>$column)
         {
-            $wcolumns .= "<th data-columnkey=\"{$column_keys[$c]}\">".$column."</th>";
+            $wcolumns .= "<th data-columnkey=\"{$column_keys[$c]}\"><span>".$column."</span></th>";
         }
         $wcolumns = "<tr>$wcolumns</tr>";
         $wheader = !isset($attr['header']) || !empty($attr['header']) ? '<thead>'.$wcolumns.'</thead>' : '';
