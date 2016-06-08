@@ -2927,6 +2927,8 @@ table.w-table
     -ms-box-sizing: border-box;
     -o-box-sizing: border-box;
     box-sizing: border-box;
+    float: none;
+    clear: both;
 }
 .w-table-top .w-table-controls,
 .w-table-top .dt-buttons,
