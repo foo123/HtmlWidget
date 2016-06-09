@@ -1778,7 +1778,7 @@ class HtmlWidget
             $wrows .= "\n" . "<tr data-row=\"$rowid\">";
             foreach($column_values as $c=>$column)
             {
-                $wrows .= "<td data-column=\"".$column."\">{$rowv[$c]}</td>";
+                $wrows .= "<td data-columnkey=\"{$column_keys[$c]}\" data-column=\"{$column}\">{$rowv[$c]}</td>";
             }
             $wrows .= "</tr>";
         }

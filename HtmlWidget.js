@@ -1914,7 +1914,7 @@ var HtmlWidget = self = {
             wrows += "\n" + "<tr data-row=\""+rowid+"\">";
             for(c=0; c<cl; c++)
             {
-                wrows += "<td data-column=\""+column_values[column_keys[c]]+"\">"+rowv[rowk[c]]+"</td>";
+                wrows += "<td data-columnkey=\""+column_keys[c]+"\" data-column=\""+column_values[column_keys[c]]+"\">"+rowv[rowk[c]]+"</td>";
             }
             wrows += "</tr>";
         }
