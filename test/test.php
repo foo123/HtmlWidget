@@ -179,6 +179,16 @@ function scripts( )
     
     <hr />
     
+    <strong>Multiple-Level responsive blocks</strong>
+    <div class="fluid col-1-1">
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:red;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:green;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:yellow;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:blue;">&nbsp;</div>
+    </div>
+    
+    <hr />
+    
     <form method="post" enctype="multipart/form-data">
     <fieldset><legend>Menus</legend>
     
