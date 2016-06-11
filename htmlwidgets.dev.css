@@ -580,10 +580,6 @@ input[type=checkbox].w-checkbox
     color: inherit;
     font-size: inherit;
 }
-.w-table
-{
-    display: table;
-}
 .w-syntax-editor-box,
 .w-wysiwyg-editor-box
 {
@@ -591,9 +587,13 @@ input[type=checkbox].w-checkbox
 }
 .w-textarea,
 .w-syntax-editor,
-.w-wysiwyg-editor,
+.w-wysiwyg-editor
+{
+    vertical-align: top;
+}
 .w-table
 {
+    display: table;
     vertical-align: top;
 }
 .w-time-component,
@@ -2897,20 +2897,7 @@ select.w-select option.w-option-placeholder,
     cursor: progress;
 }
 
-table.w-table td, table.w-table th,
-table.w-table.dataTable thead td, table.w-table.dataTable thead th,
-table.w-table.dataTable tbody td, table.w-table.dataTable tbody th
-{ 
-    padding: 12px 8px;
-    text-align: left; 
-}
-table.w-table.responsive td:before 
-{ 
-    /* Now like a table header */
-    padding: 12px 8px;
-}
-.w-table-wrapper,
-table.w-table
+.w-table-wrapper
 {
     position: relative;
     font-size: 1em;
@@ -2921,6 +2908,7 @@ table.w-table
     position: relative;
     padding: 0;
     margin: 0;
+    border: 0;
     width: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2953,6 +2941,8 @@ table.w-table
     -ms-box-sizing: border-box;
     -o-box-sizing: border-box;
     box-sizing: border-box;
+    color: inherit !important;
+    font-size: 0.9em !important;
 }
 .dt-button-collection > .w-button
 {
@@ -2975,14 +2965,144 @@ table.w-table
 {
     content: "\f046";
 }
-table.w-table.dataTable thead td,
-table.w-table.dataTable thead th
+.w-table-top .dataTables_paginate a.paginate_button:active,
+.w-table-top .dataTables_paginate a.paginate_button:hover,
+.w-table-bottom .dataTables_paginate a.paginate_button:active,
+.w-table-bottom .dataTables_paginate a.paginate_button:hover,
+.w-table-top .dataTables_paginate a.paginate_button,
+.w-table-bottom .dataTables_paginate a.paginate_button,
+.w-table-top .dataTables_paginate .paginate_button:active,
+.w-table-top .dataTables_paginate .paginate_button:hover,
+.w-table-bottom .dataTables_paginate .paginate_button:active,
+.w-table-bottom .dataTables_paginate .paginate_button:hover,
+.w-table-top .dataTables_paginate .paginate_button,
+.w-table-bottom .dataTables_paginate .paginate_button
 {
+    background: none !important;
+    background-image: none !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: #ccc !important;
+    border-radius: 6px !important;
+}
+.w-table-top .dataTables_paginate a.paginate_button:active,
+.w-table-top .dataTables_paginate a.paginate_button:hover,
+.w-table-bottom .dataTables_paginate a.paginate_button:active,
+.w-table-bottom .dataTables_paginate a.paginate_button:hover,
+.w-table-top .dataTables_paginate .paginate_button:active,
+.w-table-top .dataTables_paginate .paginate_button:hover,
+.w-table-bottom .dataTables_paginate .paginate_button:active,
+.w-table-bottom .dataTables_paginate .paginate_button:hover
+{
+    border-color: #999 !important;
+}
+.w-table-top .dataTables_paginate a.paginate_button.current:active,
+.w-table-bottom .dataTables_paginate a.paginate_button.current:active,
+.w-table-top .dataTables_paginate .paginate_button.current:active,
+.w-table-bottom .dataTables_paginate .paginate_button.current:active,
+.w-table-top .dataTables_paginate a.paginate_button.current:hover,
+.w-table-bottom .dataTables_paginate a.paginate_button.current:hover,
+.w-table-top .dataTables_paginate .paginate_button.current:hover,
+.w-table-bottom .dataTables_paginate .paginate_button.current:hover,
+.w-table-top .dataTables_paginate a.paginate_button.current,
+.w-table-bottom .dataTables_paginate a.paginate_button.current,
+.w-table-top .dataTables_paginate .paginate_button.current,
+.w-table-bottom .dataTables_paginate .paginate_button.current
+{
+    border-color: #1190d1 !important;
+    color: #1190d1 !important;
+}
+table.w-table.cellular.dataTable,
+table.w-table.cellular,
+table.w-table.dataTable,
+table.w-table
+{
+    position: relative;
+    margin-bottom: 20px;
+    max-width: 100%;
+    width: 100%;
+    border: 0;
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1em;
+}
+table.w-table.responsive.bordered.dataTable,
+table.w-table.responsive.bordered,
+table.w-table.cellular.bordered.dataTable,
+table.w-table.cellular.bordered,
+table.w-table.bordered.dataTable,
+table.w-table.bordered
+{
+    border-collapse: collapse !important;
+}
+table.w-table.dataTable.no-header,
+table.w-table.dataTable.no-footer
+{
+    border-top: 0;
+    border-bottom: 0;
+}
+table.w-table.dataTable tfoot  td,
+table.w-table.dataTable tfoot  th,
+table.w-table.dataTable thead  td,
+table.w-table.dataTable thead  th,
+table.w-table.dataTable tbody  td,
+table.w-table tfoot  td,
+table.w-table tfoot  th,
+table.w-table thead  td,
+table.w-table thead  th,
+table.w-table tbody  td
+{
+    background: none;
+    background-color: transparent;
+    vertical-align: middle;
+    text-align: left;
+    padding: 8px;
+    border: 0;
+}
+table.w-table.cellular.dataTable td,
+table.w-table.cellular.dataTable  th,
+table.w-table.cellular th,
+table.w-table.cellular td,
+table.w-table.dataTable td,
+table.w-table.dataTable  th,
+table.w-table th,
+table.w-table td
+{
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+table.w-table.dataTable tfoot td, table.w-table.dataTable tfoot th,
+table.w-table.dataTable thead td, table.w-table.dataTable thead th,
+table.w-table tfoot td, table.w-table tfoot th,
+table.w-table thead td, table.w-table thead th
+{
+    font-weight: bold;
+    padding: 12px 8px;
     background-image: none !important;
 }
-table.w-table.dataTable thead .sorting::after, 
-table.w-table.dataTable thead .sorting_desc::after, 
-table.w-table.dataTable thead .sorting_asc::after 
+table.w-table.cellular.dataTable > tbody > tr > td,
+table.w-table.cellular > tr > td,
+table.w-table.cellular > tbody > tr > td
+{
+    min-height: 2em;
+    padding: 12px 8px;
+}
+table.w-table.cellular.dataTable > tbody > tr,
+table.w-table.cellular > tr,
+table.w-table.cellular > tbody > tr
+{
+    padding: 5px 1.6em 5px 1px;
+}
+table.w-table.dataTable tfoot .sorting:after, 
+table.w-table.dataTable tfoot .sorting_desc:after, 
+table.w-table.dataTable tfoot .sorting_asc:after,
+table.w-table.dataTable thead .sorting:after, 
+table.w-table.dataTable thead .sorting_desc:after, 
+table.w-table.dataTable thead .sorting_asc:after 
 {
     position: absolute; display: block; z-index: 1;
     font-family: FontAwesome, sans-serif;
@@ -2995,126 +3115,87 @@ table.w-table.dataTable thead .sorting_asc::after
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
 }
-table.w-table.dataTable thead .sorting_desc_disabled::after, 
-table.w-table.dataTable thead .sorting_asc_disabled::after 
+table.w-table.dataTable tfoot .sorting_desc_disabled:after, 
+table.w-table.dataTable tfoot .sorting_asc_disabled:after,
+table.w-table.dataTable thead .sorting_desc_disabled:after, 
+table.w-table.dataTable thead .sorting_asc_disabled:after 
 {
     opacity: 0.6;
 }
-table.w-table.dataTable thead .sorting::after
+table.w-table.dataTable tfoot .sorting:after,
+table.w-table.dataTable thead .sorting:after
 {
     content: "\f0dc";
 }
-table.w-table.dataTable thead .sorting_desc::after
+table.w-table.dataTable tfoot .sorting_desc:after,
+table.w-table.dataTable thead .sorting_desc:after
 {
     content: "\f0dd";
 }
-table.w-table.dataTable thead .sorting_asc::after
+table.w-table.dataTable tfoot .sorting_asc:after,
+table.w-table.dataTable thead .sorting_asc:after
 {
     content: "\f0de";
 }
-table.w-table.w-datatable,
-table.w-table
+table.w-table.responsive.bordered.dataTable thead  > tr,
+table.w-table.responsive.bordered thead  > tr,
+table.w-table.bordered.dataTable thead  > tr,
+table.w-table.bordered thead  > tr
 {
-    position: relative;
-    margin-bottom: 20px;
-    max-width: 100%;
-    width: 100%;
-    background: #fff;
-    border-spacing: 0;
-    border: none;
-    border-collapse: collapse;
+    border-bottom: 1px solid #ddd !important;
 }
-table.w-table.w-datatable.bordered,
-table.w-table.bordered
+table.w-table.responsive.bordered.dataTable tfoot  > tr,
+table.w-table.responsive.bordered tfoot  > tr,
+table.w-table.bordered.dataTable tfoot  > tr,
+table.w-table.bordered tfoot  > tr
 {
-    border-collapse: separate;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd !important;
 }
-table.w-table.w-datatable.responsive tbody td::before,
-table.w-table.responsive tbody td::before 
+table.w-table.responsive.bordered.dataTable tbody  > tr,
+table.w-table.responsive.bordered tbody  > tr,
+table.w-table.bordered.dataTable tbody  > tr,
+table.w-table.bordered tbody  > tr
 {
-    background: #fff;
-    color: inherit;
-    border-right: 3px solid #ddd;
-    font-size: 1.1em;
-    font-weight: normal;
-    font-family: Helvetica, Arial, sans-serif;
+    border-bottom: 1px solid #ccc !important;
 }
-table.w-table.w-datatable tfoot  tr,
-table.w-table.w-datatable thead  tr,
-table.w-table tfoot  tr,
-table.w-table thead  tr
+table.w-table:not(.cellular).responsive.bordered.dataTable tbody  > tr:last-child,
+table.w-table:not(.cellular).responsive.bordered tbody  > tr:last-child,
+table.w-table:not(.cellular).bordered.dataTable tbody  > tr:last-child,
+table.w-table:not(.cellular).bordered tbody  > tr:last-child
 {
-    background: #fff !important;
-    color: #121212;
-    font-size: 1em;
-    font-weight: normal;
-    font-family: Helvetica, Arial, sans-serif;
+    border-bottom: 0 !important;
 }
-table.w-table.w-datatable tfoot  td,
-table.w-table.w-datatable tfoot  th,
-table.w-table.w-datatable thead  td,
-table.w-table.w-datatable thead  th,
-table.w-table tfoot  td,
-table.w-table tfoot  th,
-table.w-table thead  td,
-table.w-table thead  th
+table.w-table.responsive.stripped.dataTable tbody tr:nth-of-type(2n+1),
+table.w-table.responsive.stripped tbody tr:nth-of-type(2n+1),
+table.w-table.stripped.dataTable tbody tr:nth-of-type(2n+1),
+table.w-table.stripped tbody tr:nth-of-type(2n+1)
 {
     background: none;
-    color: inherit;
-    vertical-align: middle;
-    text-align: left;
-    padding: 14px;
-    font-weight: normal;
+    background-color: transparent;
 }
-table.w-table.w-datatable tbody  td,
-table.w-table tbody  td
+table.w-table.responsive.stripped.dataTable tbody tr:nth-of-type(2n),
+table.w-table.responsive.stripped tbody tr:nth-of-type(2n),
+table.w-table.responsive:not(.stripped).vstripped.dataTable td:nth-of-type(2n),
+table.w-table.responsive:not(.stripped).vstripped td:nth-of-type(2n),
+table.w-table.responsive.stripped.vstripped.dataTable tr:nth-of-type(2n+1) > td:nth-of-type(2n),
+table.w-table.responsive.stripped.vstripped tr:nth-of-type(2n+1) > td:nth-of-type(2n),
+table.w-table.stripped.dataTable tbody tr:nth-of-type(2n),
+table.w-table.stripped tbody tr:nth-of-type(2n),
+table.w-table:not(.stripped).vstripped.dataTable td:nth-of-type(2n),
+table.w-table:not(.stripped).vstripped td:nth-of-type(2n),
+table.w-table.stripped.vstripped.dataTable tr:nth-of-type(2n+1) > td:nth-of-type(2n),
+table.w-table.stripped.vstripped tr:nth-of-type(2n+1) > td:nth-of-type(2n)
 {
-    background: #fefefe;
-    color: #232323;
-    font-weight: normal;
-    vertical-align: middle;
-    text-align: left;
-    padding: 8px;
+    background-color: rgba(0,0,0,0.11);
 }
-table.w-table.bordered thead  td,
-table.w-table.bordered thead  th
+table.w-table.responsive.dataTable tbody tr.selected,
+table.w-table.responsive tbody tr.selected,
+table.w-table.dataTable tbody tr.selected,
+table.w-table tbody tr.selected
 {
-    border-bottom: 1px solid #ddd;
+    background-color: #b1c1fb !important;
 }
-table.w-table.bordered tfoot  td,
-table.w-table.bordered tfoot  th
-{
-    border-top: 1px solid #ddd;
-}
-table.w-table.bordered tbody  td
-{
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-table.w-table.w-datatable.stripped tbody tr.odd,
-table.w-table.stripped tbody tr:nth-of-type(2n+1),
-table.w-table.w-datatable.stripped tbody tr.even,
-table.w-table.stripped tbody tr:nth-of-type(2n)
-{
-    background: none;
-}
-table.w-table.w-datatable.stripped tbody tr.even > td,
-table.w-table.w-datatable.stripped tbody tr:nth-of-type(2n) > td,
-table.w-table.stripped tbody tr.even > td,
-table.w-table.stripped tbody tr:nth-of-type(2n) > td
-{
-    background: rgba(0,0,0,0.11);
-}
-table.w-table.vstripped td:nth-of-type(2n)
-{
-    background: rgba(0,0,0,0.11);
-}
-table.w-table.w-datatable tbody tr.selected > td,
-table.w-table.w-datatable tbody tr.selected > td
-{
-    background: #b1c1fb !important;
-}
+table.w-table.fixed.dataTable,
 table.w-table.fixed
 {
     table-layout: fixed !important;
@@ -5482,23 +5563,13 @@ input.w-radio:checked + label.w-led-button:before
 {
     background-color: rgba(255,255,255,0);
 }
+table.w-table.cellular.dataTable,
+table.w-table.cellular,
+table.w-table.dataTable,
 table.w-table
 { 
-    color: #121212;
-}
-table.w-table.stripped tr
-{ 
-    background: #ededed; 
-}
-table.w-table.stripped tr:nth-of-type(even) 
-{ 
-    background: #dfdfdf; 
-}
-table.w-table.responsive td:before,
-table.w-table th 
-{ 
-    background: #ededed; 
-    color: #333; 
+    color: #444;
+    background-color: #efefef;
 }
 .pika-single
 {

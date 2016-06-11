@@ -78,6 +78,14 @@ function scripts( )
         position: relative;
         transition: all 0.5s;
     }
+    #forkongithub a {
+        width: 200px;
+        position: absolute;
+        top: 60px;
+        right: -60px;
+        transform: rotate(45deg);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
+    }
     #forkongithub a:hover {
         background: #aa0000;
         color: #fff;
@@ -97,26 +105,6 @@ function scripts( )
     {
         bottom: 1px;
         top: auto;
-    }
-    @media screen and (min-width:800px) {
-        #forkongithub {
-            position: absolute;
-            display: block;
-            z-index: 100;
-            top: 0;
-            right: 0;
-            width: 200px;
-            overflow: hidden;
-            height: 200px;
-        }
-        #forkongithub a {
-            width: 200px;
-            position: absolute;
-            top: 60px;
-            right: -60px;
-            transform: rotate(45deg);
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
-        }
     }
     .box {
         width: 600px; height: 200px;
@@ -161,33 +149,31 @@ function scripts( )
         font-weight: bold;
         padding: 20px;
     }
-    @media all and (max-width : 768px) {
-
+    @media (max-width: 60em), (max-device-width: 60em)
+    {
     .w-vertical-menu.w-mobile > .w-menu-controller-bt,
     .w-dropdown-menu.w-mobile > .w-menu-controller-bt {
         display: block;
         position: absolute;
         top: 0; left: 0;
     }
+    #forkongithub {
+        position: absolute;
+        display: block;
+        z-index: 100;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+    }
     }
     </style>
     <title>HtmlWidgets Test page (v.<?php echo HtmlWidget::VERSION; ?>)</title>
 </head>
-<body class="fluid col-1-1" style="padding:10px 20px">
+<body class="fluid col-1-1 responsive-960-container" style="padding:10px 20px">
     <span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Find me on GitHub</a></span>
     <h1>HtmlWidgets Test page (v.<?php echo HtmlWidget::VERSION; ?>)</h1>
-    
-    <hr />
-    
-    <strong>Multiple-Level responsive blocks</strong>
-    <div class="fluid col-1-1">
-    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:red;">&nbsp;</div>
-    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:green;">&nbsp;</div>
-    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:yellow;">&nbsp;</div>
-    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:blue;">&nbsp;</div>
-    </div>
-    
-    <hr />
     
     <form method="post" enctype="multipart/form-data">
     <fieldset><legend>Menus</legend>
@@ -501,6 +487,246 @@ function scripts( )
     <?php widget('button',array('class'=>'w-large w-purple','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
+    </fieldset>
+    
+    <fieldset><legend>Tables</legend>
+    <strong>multi-responsive blocks</strong>
+    <div class="fluid col-1-1">
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:red;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:green;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:yellow;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:blue;">&nbsp;</div>
+    </div>
+    
+    <br />
+    
+    <strong>multi-responsive cellular table</strong>
+    <table id="table_1" w-init="1" class="w-widget w-table w-datatable cellular responsive bordered vstripped cell-1-4 autocell-1-3-960 autocell-1-2-768 autocell-1-1-640">
+    <thead>
+        <tr>
+        <th data-columnkey="column1"><span>column1</span></th>
+        <th data-columnkey="column2"><span>column2</span></th>
+        <th data-columnkey="column3"><span>column3</span></th>
+        <th data-columnkey="column4"><span>column4</span></th>
+        <th data-columnkey="column5"><span>column5</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 1</td>
+        <td data-columnkey="column3" data-column="column3">data 1</td>
+        <td data-columnkey="column4" data-column="column4">data 1</td>
+        <td data-columnkey="column5" data-column="column5">data 1</td>
+        </tr>
+        <tr class="selected">
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 2</td>
+        <td data-columnkey="column3" data-column="column3">data 2</td>
+        <td data-columnkey="column4" data-column="column4">data 2</td>
+        <td data-columnkey="column5" data-column="column5">data 2</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 3</td>
+        <td data-columnkey="column3" data-column="column3">data 3</td>
+        <td data-columnkey="column4" data-column="column4">data 3</td>
+        <td data-columnkey="column5" data-column="column5">data 3</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 4</td>
+        <td data-columnkey="column3" data-column="column3">data 4</td>
+        <td data-columnkey="column4" data-column="column4">data 4</td>
+        <td data-columnkey="column5" data-column="column5">data 4</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 5</td>
+        <td data-columnkey="column3" data-column="column3">data 5</td>
+        <td data-columnkey="column4" data-column="column4">data 5</td>
+        <td data-columnkey="column5" data-column="column5">data 5</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 6</td>
+        <td data-columnkey="column3" data-column="column3">data 6</td>
+        <td data-columnkey="column4" data-column="column4">data 6</td>
+        <td data-columnkey="column5" data-column="column5">data 6</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <br />
+    
+    <strong>responsive table</strong>
+    <table id="table_2" w-init="1" class="w-widget w-table w-datatable responsive bordered stripped vstripped">
+    <thead>
+        <tr>
+        <th data-columnkey="column1"><span>column1</span></th>
+        <th data-columnkey="column2"><span>column2</span></th>
+        <th data-columnkey="column3"><span>column3</span></th>
+        <th data-columnkey="column4"><span>column4</span></th>
+        <th data-columnkey="column5"><span>column5</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 1</td>
+        <td data-columnkey="column3" data-column="column3">data 1</td>
+        <td data-columnkey="column4" data-column="column4">data 1</td>
+        <td data-columnkey="column5" data-column="column5">data 1</td>
+        </tr>
+        <tr class="selected">
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 2</td>
+        <td data-columnkey="column3" data-column="column3">data 2</td>
+        <td data-columnkey="column4" data-column="column4">data 2</td>
+        <td data-columnkey="column5" data-column="column5">data 2</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 3</td>
+        <td data-columnkey="column3" data-column="column3">data 3</td>
+        <td data-columnkey="column4" data-column="column4">data 3</td>
+        <td data-columnkey="column5" data-column="column5">data 3</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 4</td>
+        <td data-columnkey="column3" data-column="column3">data 4</td>
+        <td data-columnkey="column4" data-column="column4">data 4</td>
+        <td data-columnkey="column5" data-column="column5">data 4</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 5</td>
+        <td data-columnkey="column3" data-column="column3">data 5</td>
+        <td data-columnkey="column4" data-column="column4">data 5</td>
+        <td data-columnkey="column5" data-column="column5">data 5</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 6</td>
+        <td data-columnkey="column3" data-column="column3">data 6</td>
+        <td data-columnkey="column4" data-column="column4">data 6</td>
+        <td data-columnkey="column5" data-column="column5">data 6</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+    </tbody>
+    </table>
     </fieldset>
     
     <fieldset><legend>Dropdowns</legend>
@@ -1316,6 +1542,7 @@ tabstave
     enqueue('styles','responsive.css');
     enqueue('styles','fontawesome.css');
     enqueue('scripts','jquery');
+    enqueue('scripts','datatables');
     enqueue('scripts','tooltipster');
     enqueue('scripts','popr2');
     enqueue('scripts','serialiser');
