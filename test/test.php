@@ -1150,6 +1150,44 @@ function scripts( )
     </fieldset>
     
     <fieldset><legend>Syntax Highlighter(s)</legend>
+    <strong>Highlight.js</strong><br />
+    <?php widget('syntax-highlight',array(
+        'highlighter'=>'hjs',
+        'language' => 'javascript'
+    ),array(
+        'value'=>"// demo code
+function hello( )
+{
+    alert('hello!');
+}
+"
+    )); ?>
+    <br />
+    <strong>SyntaxHighlighter</strong><br />
+    <?php widget('syntax-highlight',array(
+        'highlighter'=>'sh',
+        'language' => 'javascript'
+    ),array(
+        'value'=>"// demo code
+function hello( )
+{
+    alert('hello!');
+}
+"
+    )); ?>
+    <br />
+    <strong>Prism</strong><br />
+    <?php widget('syntax-highlight',array(
+        //'highlighter'=>'prism',
+        'language' => 'javascript'
+    ),array(
+        'value'=>"// demo code
+function hello( )
+{
+    alert('hello!');
+}
+"
+    )); ?>
     </fieldset>
     
     <fieldset><legend>Translator</legend>

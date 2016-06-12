@@ -53,8 +53,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 * ie (10+)
 * firefox (30+)
 * chrome (30+)
-* opera
-* safari
+* opera (38+)
 
 
 **screenshot samples**
@@ -78,3 +77,4 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 ![details-4](/screenshots/details-4.png)
 ![details-5](/screenshots/details-5.png)
 ![details-6](/screenshots/details-6.png)
+![details-7](/screenshots/details-7.png)

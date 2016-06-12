@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery
-*  @version: 0.8.9
+*  @version: 0.9.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -11,12 +11,13 @@
 *  https://github.com/foo123/modelview-widgets
 *
 **/
+/** HtmlWidget github.com/foo123/HtmlWidget **/
 /* some defaults */
 .w-widget, .w-wrapper, .fa-wrapper,
 .w-panel, .w-dialog, .w-table,
 .w-tab, .w-page, .w-accordeon-item,
 .w-dropdown, .w-select, .w-time, .w-time-component,
-.w-textarea, .w-text, .w-map,
+.w-textarea, .w-syntax-highlight, .w-text, .w-map,
 .w-link, .w-label, .w-button, .w-switch,
 input.w-radio-image + label,
 input.w-checkbox-image + label,
@@ -59,6 +60,19 @@ input.w-checkbox + label
     -ms-box-sizing: border-box;
     -o-box-sizing: border-box;
     box-sizing: border-box;
+}
+.w-syntax-highlight
+{
+    position: relative; display: inline-block;
+    vertical-align: top; outline: 0;
+    padding: 0; width: 100%;
+    max-width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: auto;
 }
 
 .w-widget.w-chart,

@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.9
+*  @version: 0.9.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.8.9";
+    const VERSION = "0.9.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -83,6 +83,12 @@ class HtmlWidget
             $assets = array_merge($assets, array(
              array('scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places')
             
+            // Modernizr
+            ,array('scripts', 'modernizr', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
+            : $asset_base.'utils/modernizr.js'
+            )
+            
             // Hover.css
             ,array('styles', 'hover.css', $cdn
             ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
@@ -92,6 +98,24 @@ class HtmlWidget
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane/humane.css')
             ,array('scripts', 'humane', $asset_base.'humane/humane.js', array('humane.css'))
+            
+            // List.js
+            ,array('scripts', 'list', $cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
+            : $asset_base.'utils/list.js'
+            )
+            
+            // NodeList
+            ,array('scripts', 'nodelist', $asset_base.'utils/nodelist.js')
+            
+            // isMobile
+            ,array('scripts', 'ismobile', $asset_base.'utils/ismobile.js')
+            
+            // Tao
+            ,array('scripts', 'tao', $asset_base.'utils/tao.js')
+            
+            // Serialiser
+            ,array('scripts', 'serialiser', $asset_base.'utils/serialiser.js')
             
             // History
             ,array('scripts', 'history', $cdn
@@ -105,23 +129,26 @@ class HtmlWidget
             : $asset_base.'utils/cookie.js'
             )
             
-            // isMobile
-            ,array('scripts', 'ismobile', $asset_base.'utils/ismobile.js')
-            
-            // Modernizr
-            ,array('scripts', 'modernizr', $cdn
-            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
-            : $asset_base.'utils/modernizr.js'
+            // localStorage
+            ,array('scripts', 'localstorage', $cdn
+            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
+            : ($asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf'))
             )
+            
+            // RT
+            ,array('scripts', 'RT', $asset_base.'RT/RT.js')
+            ,array('scripts', 'RT.Poll', $asset_base.'RT/RT.Poll.js', array('RT'))
+            ,array('scripts', 'RT.BOSH', $asset_base.'RT/RT.BOSH.js', array('RT'))
+            ,array('scripts', 'RT.WebSocket', $asset_base.'RT/RT.WebSocket.js', array('RT'), array('data-swfobject'=>$cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : $asset_base.'swfobject/swfobject.js'
+            ))
             
             // swfObject
             ,array('scripts', 'swfobject', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : $asset_base.'swfobject/swfobject.js'
             )
-            
-            // Typo
-            ,array('scripts', 'typo', $asset_base.'typo/typo.js')
             
             // html5media
             ,array('scripts', 'html5media', $cdn
@@ -139,6 +166,21 @@ class HtmlWidget
             : $asset_base.'video.js/video.js'
             , array('video-js.css'))
             
+            // Typo
+            ,array('scripts', 'typo', $asset_base.'typo/typo.js')
+            
+            // AreaSelect
+            ,array('styles', 'areaselect.css', $asset_base.'areaselect/areaselect.css')
+            ,array('scripts', 'areaselect', $asset_base.'areaselect/areaselect.js', array('areaselect.css'))
+             
+            // AutoComplete
+            ,array('styles', 'autocomplete.css', $asset_base.'autocomplete/autocomplete.css')
+            ,array('scripts', 'autocomplete', $asset_base.'autocomplete/autocomplete.js', array('autocomplete.css','jquery'))
+             
+            // Awesomplete
+            ,array('styles', 'awesomplete.css', $asset_base.'awesomplete/awesomplete.css')
+            ,array('scripts', 'awesomplete', $asset_base.'awesomplete/awesomplete.js', array('awesomplete.css'))
+             
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer/timer.js')
             
@@ -153,17 +195,6 @@ class HtmlWidget
             ,array('styles', 'colorpicker.css', $asset_base.'colorpicker/colorpicker.css')
             ,array('scripts', 'colorpicker', $asset_base.'colorpicker/colorpicker.js', array('colorpicker.css'))
              
-            // LocationPicker
-            ,array('scripts', 'locationpicker', $asset_base.'locationpicker/locationpicker.js', array('cdn--google-maps','jquery'))
-             
-            // AreaSelect
-            ,array('styles', 'areaselect.css', $asset_base.'areaselect/areaselect.css')
-            ,array('scripts', 'areaselect', $asset_base.'areaselect/areaselect.js', array('areaselect.css'))
-             
-            // RangeSlider
-            ,array('styles', 'rangeslider.css', $asset_base.'rangeslider/rangeslider.css')
-            ,array('scripts', 'rangeslider', $asset_base.'rangeslider/rangeslider.js', array('rangeslider.css','jquery'))
-             
             // Sortable
             ,array('scripts', 'sortable', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
@@ -172,6 +203,13 @@ class HtmlWidget
              
             // TinyDraggable
             ,array('scripts', 'tinydraggable', $asset_base.'tinydraggable/tinydraggable.js')
+             
+            // LocationPicker
+            ,array('scripts', 'locationpicker', $asset_base.'locationpicker/locationpicker.js', array('cdn--google-maps','jquery'))
+             
+            // RangeSlider
+            ,array('styles', 'rangeslider.css', $asset_base.'rangeslider/rangeslider.css')
+            ,array('scripts', 'rangeslider', $asset_base.'rangeslider/rangeslider.js', array('rangeslider.css','jquery'))
              
             // Select2
             ,array('styles', 'select2.css', $cdn
@@ -182,14 +220,6 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
             : $asset_base.'select2/select2.js'
             , array('select2.css','jquery'))
-             
-            // Awesomplete
-            ,array('styles', 'awesomplete.css', $asset_base.'awesomplete/awesomplete.css')
-            ,array('scripts', 'awesomplete', $asset_base.'awesomplete/awesomplete.js', array('awesomplete.css'))
-             
-            // AutoComplete
-            ,array('styles', 'autocomplete.css', $asset_base.'autocomplete/autocomplete.css')
-            ,array('scripts', 'autocomplete', $asset_base.'autocomplete/autocomplete.js', array('autocomplete.css','jquery'))
              
             // TagEditor
             ,array('scripts', 'caret', $asset_base.'tageditor/caret.js')
@@ -214,42 +244,15 @@ class HtmlWidget
             ,array('styles', 'modal.css', $asset_base.'modal/modal.css')
             ,array('scripts', 'modal', $asset_base.'modal/modal.js', array('modal.css','jquery'))
             
-            // List.js
-            ,array('scripts', 'list', $asset_base.'utils/list.js')
+            // Address
+            ,array('scripts', 'address', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js'
+            : $asset_base.'utils/address.js'
+            , array('jquery'))
             
-            // NodeList
-            ,array('scripts', 'nodelist', $asset_base.'utils/nodelist.js')
-            
-            // Tao
-            ,array('scripts', 'tao', $asset_base.'utils/tao.js')
-            
-            // Serialiser
-            ,array('scripts', 'serialiser', $asset_base.'utils/serialiser.js')
-            
-            // ModelView
-            ,array('scripts', 'modelview', $asset_base.'modelview/modelview.js')
-            
-            // ModelViewForm
-            ,array('scripts', 'modelviewform', $asset_base.'modelview/modelview.form.js', array('jquery','datex','modelview'))
-             
             // smoothState
             ,array('scripts', 'smoothstate', $asset_base.'utils/smoothState.js', array('jquery'))
              
-            // RT
-            ,array('scripts', 'RT', $asset_base.'RT/RT.js')
-            ,array('scripts', 'RT.Poll', $asset_base.'RT/RT.Poll.js', array('RT'))
-            ,array('scripts', 'RT.BOSH', $asset_base.'RT/RT.BOSH.js', array('RT'))
-            ,array('scripts', 'RT.WebSocket', $asset_base.'RT/RT.WebSocket.js', array('RT'), array('data-swfobject'=>$cdn
-            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
-            : $asset_base.'swfobject/swfobject.js'
-            ))
-            
-            // localStorage
-            ,array('scripts', 'localstorage', $cdn
-            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
-            : ($asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf'))
-            )
-            
             // Packery
             ,array('scripts', 'packery', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
@@ -268,15 +271,17 @@ class HtmlWidget
                 : $asset_base.'masonry/masonry.js'
             )
              
+            // ModelView
+            ,array('scripts', 'modelview', $asset_base.'modelview/modelview.js')
+            
+            // ModelViewForm
+            ,array('scripts', 'modelviewform', $asset_base.'modelview/modelview.form.js', array('jquery','datex','modelview'))
+             
             // Raphael
             ,array('scripts', 'raphael', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
                 : $asset_base.'raphael/raphael.js'
             )
-             
-            // VexTab
-            ,array('styles', 'vextab.css', $asset_base.'vex/tab/vextab.css')
-            ,array('scripts', 'vextab', $asset_base.'vex/tab/vextab-div.js',array('vextab.css'))
              
             // D3
             ,array('scripts', 'd3', $cdn
@@ -294,19 +299,6 @@ class HtmlWidget
                 : $asset_base.'c3/c3.js'
             , array('c3.css','d3'))
              
-            // ImTranslator
-            //,array()
-            
-            // MathJax, ?config=TeX-AMS_HTML-full
-            ,array('scripts', 'mathjax', $cdn
-                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
-                : $asset_base.'mathjax/MathJax.js'
-            )
-            
-            // MathQuill
-            ,array('styles', 'mathquill.css', $asset_base.'mathquill/mathquill.css')
-            ,array('scripts', 'mathquill', $asset_base.'mathquill/mathquill.js', array('jquery','mathquill.css'))
-            
             // DataTables
             ,array('styles', 'datatables.css', $cdn
                 ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
@@ -444,6 +436,23 @@ class HtmlWidget
             ), array('datatables-all.css','datatables'))
             
             
+            // VexTab
+            ,array('styles', 'vextab.css', $asset_base.'vex/tab/vextab.css')
+            ,array('scripts', 'vextab', $asset_base.'vex/tab/vextab-div.js',array('vextab.css'))
+             
+            // ImTranslator
+            //,array()
+            
+            // MathJax, ?config=TeX-AMS_HTML-full
+            ,array('scripts', 'mathjax', $cdn
+                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
+                : $asset_base.'mathjax/MathJax.js'
+            )
+            
+            // MathQuill
+            ,array('styles', 'mathquill.css', $asset_base.'mathquill/mathquill.css')
+            ,array('scripts', 'mathquill', $asset_base.'mathquill/mathquill.js', array('jquery','mathquill.css'))
+            
             // Tinymce
             ,array('scripts', 'tinymce', $cdn
                 ? '//cdn.tinymce.com/4/tinymce.min.js'
@@ -528,24 +537,93 @@ class HtmlWidget
             ,array('scripts', 'ace-grammar', $asset_base.'ace/ace_grammar.js')
             
             // Prism
-            ,array('scripts', 'prefixfree', $asset_base.'prism/prefixfree.min.js')
-            ,array('styles', 'prism.css', $asset_base.'prism/themes/prism.css')
-            ,array('scripts', 'prism', $asset_base.'prism/prism.js', array('prism.css','prefixfree'))
+            ,array('scripts', 'prefixfree', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js'
+            : $asset_base.'prism/prefixfree.min.js'
+            )
+            ,array('styles', 'prism.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css'
+            : $asset_base.'prism/themes/prism.css'
+            )
+            ,array('scripts', 'prism', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.min.js'
+            : $asset_base.'prism/prism.js'
+            , array('prism.css','prefixfree'))
             ,array('scripts', 'prism-grammar', $asset_base.'prism/prism_grammar.js')
+            ,array('styles', 'prism-line-numbers.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/plugins/line-numbers/prism-line-numbers.min.css'
+            : $asset_base.'prism/plugins/line-numbers/prism-line-numbers.min.css'
+            )
+            ,array('scripts', 'prism-line-numbers', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/plugins/line-numbers/prism-line-numbers.min.js'
+            : $asset_base.'prism/plugins/line-numbers/prism-line-numbers.min.js'
+            , array('prism-line-numbers.css'))
+            ,array('scripts-composite', 'prism-html', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-markup.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-json.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-css.min.js'
+            )
+            : array(
+                $asset_base.'prism/components/prism-markup.min.js',
+                $asset_base.'prism/components/prism-javascript.min.js',
+                $asset_base.'prism/components/prism-json.min.js',
+                $asset_base.'prism/components/prism-css.min.js'
+            ), array('prism'))
             
             // SyntaxHighlighter
-            ,array('styles-composite', 'sh.css', array(
+            ,array('styles-composite', 'sh.css', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCoreDefault.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css'
+            )
+            : array(
                 $asset_base.'syntaxhighlighter/shCore.css',
                 $asset_base.'syntaxhighlighter/shCoreDefault.css',
                 $asset_base.'syntaxhighlighter/shThemeDefault.css'
             ))
-            ,array('scripts', 'sh', $asset_base.'syntaxhighlighter/shCore.js', array('sh.css'))
-            ,array('scripts', 'syntaxhighlighter-grammar', $asset_base.'syntaxhighlighter/syntaxhighlighter_grammar.js')
+            ,array('scripts', 'sh', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js'
+            : $asset_base.'syntaxhighlighter/shCore.js'
+            , array('sh.css'))
+            ,array('scripts', 'sh-grammar', $asset_base.'syntaxhighlighter/syntaxhighlighter_grammar.js')
+            ,array('scripts-composite', 'sh-html', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushXml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushCss.min.js'
+            )
+            : array(
+                $asset_base.'syntaxhighlighter/shBrushXml.min.js',
+                $asset_base.'syntaxhighlighter/shBrushJScript.min.js',
+                $asset_base.'syntaxhighlighter/shBrushCss.min.js'
+            ), array('sh'))
             
             // Highlightjs
-            ,array('styles', 'hjs.css', $asset_base.'highlightjs/styles/default.css')
-            ,array('scripts', 'hjs', $asset_base.'highlightjs/highlight.js', array('hjs.css'))
-            ,array('scripts', 'highlightjs-grammar', $asset_base.'highlightjs/highlightjs_grammar.js')
+            ,array('styles', 'hjs.css', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css'
+            : $asset_base.'highlightjs/styles/default.css'
+            )
+            ,array('scripts', 'hjs', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js'
+            : $asset_base.'highlightjs/highlight.js'
+            , array('hjs.css'))
+            ,array('scripts', 'hjs-grammar', $asset_base.'highlightjs/highlightjs_grammar.js')
+            ,array('scripts-composite', 'hjs-html', $cdn
+            ? array(
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/xml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/json.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/css.min.js'
+            )
+            : array(
+                $asset_base.'highlightjs/languages/xml.min.js',
+                $asset_base.'highlightjs/languages/javascript.min.js',
+                $asset_base.'highlightjs/languages/json.min.js',
+                $asset_base.'highlightjs/languages/css.min.js'
+            ), array('hjs'))
             ));
         }
         return $assets;
@@ -696,6 +774,9 @@ class HtmlWidget
         $out = '';
         if ( $widget )
         {
+            if ( null == $attr ) $attr = array();
+            if ( null == $data ) $data = array();
+            
             if ( isset(self::$widgets['w_'.$widget]) ) 
                 return call_user_func(self::$widgets['w_'.$widget], $attr, $data, $widget);
             
@@ -756,6 +837,8 @@ class HtmlWidget
             case 'text':        $out = self::w_text($attr, $data, $widget); break;
             case 'imtranslator':
             case 'translator':  $out = self::w_translator($attr, $data, $widget); break;
+            case 'syntax-highlighter':
+            case 'syntax-highlight':  $out = self::w_syntax_highlight($attr, $data, $widget); break;
             case 'tinymce':
             case 'editor':
             case 'rich-editor':
@@ -1450,6 +1533,38 @@ class HtmlWidget
             self::enqueue('styles', 'htmlwidgets.css');
         }
         return "<textarea id=\"$wid\" $winit $wopts $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" $wextra>$wvalue</textarea>{$wrep}";
+    }
+    
+    public static function w_syntax_highlight( $attr, $data, $widgetName=null )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wvalue = isset($data['value']) ? $data['value'] : "";
+        $wextra = self::attributes($attr,array('style','title','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $whighlighter = strtolower(empty($attr['highlighter']) ? 'prism' : $attr['highlighter']);
+        if ( 'hjs' === $whighlighter || 'hljs' === $whighlighter || 'highlightjs' === $whighlighter ) 
+        {
+            $wlang = empty($attr['language']) ? 'xml' : $attr['language'];
+            $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-hjs'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'htmlwidgets.css');
+            self::enqueue('scripts', "w-syntax-highlight-{$wid}", array("hljs.highlightBlock(document.getElementById('{$wid}') );"), array('hjs-html'));
+            return "<pre id=\"prewrap_{$wid}\" class=\"$wclass\" $wextra><code id=\"$wid\" class=\"language-{$wlang}\">$wvalue</code></pre>";
+        }
+        elseif ( 'sh' === $whighlighter || 'syntaxhighlighter' === $whighlighter ) 
+        {
+            $wlang = empty($attr['language']) ? 'xml' : $attr['language'];
+            $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-sh'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'htmlwidgets.css');
+            self::enqueue('scripts', "w-syntax-highlight-{$wid}", array("SyntaxHighlighter.highlight({brush:'{$wlang}'}, document.getElementById('{$wid}'));"), array('sh-html'));
+            return "<pre id=\"$wid\" class=\"$wclass\" $wextra>$wvalue</pre>";
+        }
+        else//if ( 'prism' === $whighlighter ) 
+        {
+            $wlang = empty($attr['language']) ? 'markup' : $attr['language'];
+            $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-prism'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'htmlwidgets.css');
+            self::enqueue('scripts', "w-syntax-highlight-{$wid}", array("Prism.highlightElement(document.getElementById('{$wid}'));"), array('prism-html','prism-line-numbers'));
+            return "<pre class=\"{$wclass} language-{$wlang} line-numbers\" $wextra><code id=\"$wid\">$wvalue</code></pre>";
+        }
     }
     
     public static function w_vextab( $attr, $data, $widgetName=null )

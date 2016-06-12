@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.8.9
+*  @version: 0.9.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -74,11 +74,10 @@ function data_attr( k, v )
 {
     if ( 'object' === typeof v )
     {
-        var attr = '', k1;
-        for (k1 in v)
+        var attr = '', ks = KEYS(v), k1, kl = ks.length;
+        for (k1=0; k1<kl; k1++)
         {
-            if ( !v[HAS](k1) ) continue;
-            attr += (!attr.length ? '' : ' ') + data_attr( k+'-'+k1, v[k1] );
+            attr += (!attr.length ? '' : ' ') + data_attr( k+'-'+ks[k1], v[ks[k1]] );
         }
         return attr;
     }
@@ -91,7 +90,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.8.9"
+    VERSION: "0.9.0"
     
     ,BASE: './'
     
@@ -102,11 +101,7 @@ var HtmlWidget = self = {
     ,enqueue: function( type, id, asset, deps, props ) {
         if ( enqueuer )
         {            
-            /*if ( isBrowser )
-                // add a small delay for browser to load asset after widget has been output
-                setTimeout(function( ){ enqueuer(type, id, asset||null, deps||[]); }, 10);
-            else*/
-                enqueuer(type, id, [asset||null, deps||[], props]);
+            enqueuer(type, id, [asset||null, deps||[], props]);
         }
     }
     
@@ -158,6 +153,12 @@ var HtmlWidget = self = {
             assets = assets.concat([
              ['scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places']
             
+            // Modernizr
+            ,['scripts', 'modernizr', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
+            : asset_base+'utils/modernizr.js'
+            ]
+            
             // Hover.css
             ,['styles', 'hover.css', cdn
             ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
@@ -167,6 +168,24 @@ var HtmlWidget = self = {
             // Humane
             ,['styles', 'humane.css', asset_base+'humane/humane.css']
             ,['scripts', 'humane', asset_base+'humane/humane.js', ['humane.css']]
+            
+            // List.js
+            ,['scripts', 'list', cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
+            : asset_base+'utils/list.js'
+            ]
+            
+            // NodeList
+            ,['scripts', 'nodelist', asset_base+'utils/nodelist.js']
+            
+            // isMobile
+            ,['scripts', 'ismobile', asset_base+'utils/ismobile.js']
+            
+            // Tao
+            ,['scripts', 'tao', asset_base+'utils/tao.js']
+            
+            // Serialiser
+            ,['scripts', 'serialiser', asset_base+'utils/serialiser.js']
             
             // History
             ,['scripts', 'history', cdn
@@ -180,23 +199,26 @@ var HtmlWidget = self = {
             : asset_base+'utils/cookie.js'
             ]
             
-            // isMobile
-            ,['scripts', 'ismobile', asset_base+'utils/ismobile.js']
-            
-            // Modernizr
-            ,['scripts', 'modernizr', cdn
-            ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
-            : asset_base+'utils/modernizr.js'
+            // LocalStorage
+            ,['scripts', 'localstorage', cdn
+            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
+            : (asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf'))
             ]
+            
+            // RT
+            ,['scripts', 'RT', asset_base+'RT/RT.js']
+            ,['scripts', 'RT.Poll', asset_base+'RT/RT.Poll.js', ['RT']]
+            ,['scripts', 'RT.BOSH', asset_base+'RT/RT.BOSH.js', ['RT']]
+            ,['scripts', 'RT.WebSocket', asset_base+'RT/RT.WebSocket.js', ['RT'], {'data-swfobject':cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
+            : asset_base+'swfobject/swfobject.js'
+            }]
             
             // swfObject
             ,['scripts', 'swfobject', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : asset_base+'swfobject/swfobject.js'
             ]
-            
-            // Typo
-            ,['scripts', 'typo', asset_base+'typo/typo.js']
             
             // html5media
             ,['scripts', 'html5media', cdn
@@ -214,6 +236,21 @@ var HtmlWidget = self = {
             : asset_base+'video.js/video.js'
             , ['video-js.css']]
             
+            // Typo
+            ,['scripts', 'typo', asset_base+'typo/typo.js']
+            
+            // AreaSelect
+            ,['styles', 'areaselect.css', asset_base+'areaselect/areaselect.css']
+            ,['scripts', 'areaselect', asset_base+'areaselect/areaselect.js', ['areaselect.css']]
+             
+            // AutoComplete
+            ,['styles', 'autocomplete.css', asset_base+'autocomplete/autocomplete.css']
+            ,['scripts', 'autocomplete', asset_base+'autocomplete/autocomplete.js', ['autocomplete.css','jquery']]
+             
+            // Awesomplete
+            ,['styles', 'awesomplete.css', asset_base+'awesomplete/awesomplete.css']
+            ,['scripts', 'awesomplete', asset_base+'awesomplete/awesomplete.js', ['awesomplete.css']]
+             
             // Timer
             ,['scripts', 'timer', asset_base+'timer/timer.js']
             
@@ -228,17 +265,6 @@ var HtmlWidget = self = {
             ,['styles', 'colorpicker.css', asset_base+'colorpicker/colorpicker.css']
             ,['scripts', 'colorpicker', asset_base+'colorpicker/colorpicker.js', ['colorpicker.css']]
              
-            // LocationPicker
-            ,['scripts', 'locationpicker', asset_base+'locationpicker/locationpicker.js', ['cdn--google-maps','jquery']]
-             
-            // AreaSelect
-            ,['styles', 'areaselect.css', asset_base+'areaselect/areaselect.css']
-            ,['scripts', 'areaselect', asset_base+'areaselect/areaselect.js', ['areaselect.css']]
-             
-            // RangeSlider
-            ,['styles', 'rangeslider.css', asset_base+'rangeslider/rangeslider.css']
-            ,['scripts', 'rangeslider', asset_base+'rangeslider/rangeslider.js', ['rangeslider.css','jquery']]
-             
             // Sortable
             ,['scripts', 'sortable', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
@@ -247,6 +273,13 @@ var HtmlWidget = self = {
              
             // TinyDraggable
             ,['scripts', 'tinydraggable', asset_base+'tinydraggable/tinydraggable.js']
+             
+            // LocationPicker
+            ,['scripts', 'locationpicker', asset_base+'locationpicker/locationpicker.js', ['cdn--google-maps','jquery']]
+             
+            // RangeSlider
+            ,['styles', 'rangeslider.css', asset_base+'rangeslider/rangeslider.css']
+            ,['scripts', 'rangeslider', asset_base+'rangeslider/rangeslider.js', ['rangeslider.css','jquery']]
              
             // Select2
             ,['styles', 'select2.css', cdn
@@ -257,14 +290,6 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
             : asset_base+'select2/select2.js'
             , ['select2.css','jquery']]
-             
-            // Awesomplete
-            ,['styles', 'awesomplete.css', asset_base+'awesomplete/awesomplete.css']
-            ,['scripts', 'awesomplete', asset_base+'awesomplete/awesomplete.js', ['awesomplete.css']]
-             
-            // AutoComplete
-            ,['styles', 'autocomplete.css', asset_base+'autocomplete/autocomplete.css']
-            ,['scripts', 'autocomplete', asset_base+'autocomplete/autocomplete.js', ['autocomplete.css','jquery']]
              
             // TagEditor
             ,['scripts', 'caret', asset_base+'tageditor/caret.js']
@@ -289,42 +314,15 @@ var HtmlWidget = self = {
             ,['styles', 'modal.css', asset_base+'modal/modal.css']
             ,['scripts', 'modal', asset_base+'modal/modal.js', ['modal.css','jquery']]
             
-            // List.js
-            ,['scripts', 'list', asset_base+'utils/list.js']
+            // Address
+            ,['scripts', 'address', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js'
+            : asset_base+'utils/address.js'
+            , ['jquery']]
             
-            // NodeList
-            ,['scripts', 'nodelist', asset_base+'utils/nodelist.js']
-            
-            // Tao
-            ,['scripts', 'tao', asset_base+'utils/tao.js']
-            
-            // Serialiser
-            ,['scripts', 'serialiser', asset_base+'utils/serialiser.js']
-            
-            // ModelView
-            ,['scripts', 'modelview', asset_base+'modelview/modelview.js']
-            
-            // ModelViewForm
-            ,['scripts', 'modelviewform', asset_base+'modelview/modelview.form.js', ['jquery','datex','modelview']]
-             
             // smoothState
             ,['scripts', 'smoothstate', asset_base+'utils/smoothState.js', ['jquery']]
              
-            // RT
-            ,['scripts', 'RT', asset_base+'RT/RT.js']
-            ,['scripts', 'RT.Poll', asset_base+'RT/RT.Poll.js', ['RT']]
-            ,['scripts', 'RT.BOSH', asset_base+'RT/RT.BOSH.js', ['RT']]
-            ,['scripts', 'RT.WebSocket', asset_base+'RT/RT.WebSocket.js', ['RT'], {'data-swfobject':cdn
-            ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
-            : asset_base+'swfobject/swfobject.js'
-            }]
-            
-            // LocalStorage
-            ,['scripts', 'localstorage', cdn
-            ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
-            : (asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf'))
-            ]
-            
             // Packery
             ,['scripts', 'packery', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
@@ -343,15 +341,17 @@ var HtmlWidget = self = {
                 : asset_base+'masonry/masonry.js'
             ]
              
+            // ModelView
+            ,['scripts', 'modelview', asset_base+'modelview/modelview.js']
+            
+            // ModelViewForm
+            ,['scripts', 'modelviewform', asset_base+'modelview/modelview.form.js', ['jquery','datex','modelview']]
+             
             // Raphael
             ,['scripts', 'raphael', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
                 : asset_base+'raphael/raphael.js'
             ]
-             
-            // VexTab
-            ,['styles', 'vextab.css', asset_base+'vex/tab/vextab.css']
-            ,['scripts', 'vextab', asset_base+'vex/tab/vextab-div.js',['vextab.css']]
              
             // D3
             ,['scripts', 'd3', cdn
@@ -369,19 +369,6 @@ var HtmlWidget = self = {
                 : asset_base+'c3/c3.js'
             , ['c3.css','d3']]
              
-            // ImTranslator
-            //,[]
-            
-            // MathJax, ?config=TeX-AMS_HTML-full
-            ,['scripts', 'mathjax', cdn
-                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
-                : asset_base+'mathjax/MathJax.js'
-            ]
-            
-            // MathQuill
-            ,['styles', 'mathquill.css', asset_base+'mathquill/mathquill.css']
-            ,['scripts', 'mathquill', asset_base+'mathquill/mathquill.js', ['jquery','mathquill.css']]
-            
             // DataTables
             ,['styles', 'datatables.css', cdn
                 ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
@@ -519,6 +506,23 @@ var HtmlWidget = self = {
             ], ['datatables-all.css','datatables']]
             
             
+            // VexTab
+            ,['styles', 'vextab.css', asset_base+'vex/tab/vextab.css']
+            ,['scripts', 'vextab', asset_base+'vex/tab/vextab-div.js',['vextab.css']]
+             
+            // ImTranslator
+            //,[]
+            
+            // MathJax, ?config=TeX-AMS_HTML-full
+            ,['scripts', 'mathjax', cdn
+                ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
+                : asset_base+'mathjax/MathJax.js'
+            ]
+            
+            // MathQuill
+            ,['styles', 'mathquill.css', asset_base+'mathquill/mathquill.css']
+            ,['scripts', 'mathquill', asset_base+'mathquill/mathquill.js', ['jquery','mathquill.css']]
+            
             // Tinymce
             ,['scripts', 'tinymce', cdn
                 ? '//cdn.tinymce.com/4/tinymce.min.js'
@@ -603,24 +607,93 @@ var HtmlWidget = self = {
             ,['scripts', 'ace-grammar', asset_base+'ace/ace_grammar.js']
             
             // Prism
-            ,['scripts', 'prefixfree', asset_base+'prism/prefixfree.min.js']
-            ,['styles', 'prism.css', asset_base+'prism/themes/prism.css']
-            ,['scripts', 'prism', asset_base+'prism/prism.js', ['prism.css','prefixfree']]
+            ,['scripts', 'prefixfree', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js'
+            : asset_base+'prism/prefixfree.min.js'
+            ]
+            ,['styles', 'prism.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css'
+            : asset_base+'prism/themes/prism.css'
+            ]
+            ,['scripts', 'prism', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.min.js'
+            : asset_base+'prism/prism.js'
+            , ['prism.css','prefixfree']]
             ,['scripts', 'prism-grammar', asset_base+'prism/prism_grammar.js']
+            ,['styles', 'prism-line-numbers.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/plugins/line-numbers/prism-line-numbers.min.css'
+            : asset_base+'prism/plugins/line-numbers/prism-line-numbers.min.css'
+            ]
+            ,['scripts', 'prism-line-numbers', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/plugins/line-numbers/prism-line-numbers.min.js'
+            : asset_base+'prism/plugins/line-numbers/prism-line-numbers.min.js'
+            , ['prism-line-numbers.css']]
+            ,['scripts-composite', 'prism-html', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-markup.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-json.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-css.min.js'
+            ]
+            : [
+                asset_base+'prism/components/prism-markup.min.js',
+                asset_base+'prism/components/prism-javascript.min.js',
+                asset_base+'prism/components/prism-json.min.js',
+                asset_base+'prism/components/prism-css.min.js'
+            ], ['prism']]
             
             // SyntaxHighlighter
-            ,['styles-composite', 'sh.css', [
+            ,['styles-composite', 'sh.css', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCoreDefault.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css'
+            ]
+            : [
                 asset_base+'syntaxhighlighter/shCore.css',
                 asset_base+'syntaxhighlighter/shCoreDefault.css',
                 asset_base+'syntaxhighlighter/shThemeDefault.css'
             ]]
-            ,['scripts', 'sh', asset_base+'syntaxhighlighter/shCore.js', ['sh.css']]
-            ,['scripts', 'syntaxhighlighter-grammar', asset_base+'syntaxhighlighter/syntaxhighlighter_grammar.js']
+            ,['scripts', 'sh', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js'
+            : asset_base+'syntaxhighlighter/shCore.js'
+            , ['sh.css']]
+            ,['scripts', 'sh-grammar', asset_base+'syntaxhighlighter/syntaxhighlighter_grammar.js']
+            ,['scripts-composite', 'sh-html', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushXml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushCss.min.js'
+            ]
+            : [
+                asset_base+'syntaxhighlighter/shBrushXml.min.js',
+                asset_base+'syntaxhighlighter/shBrushJScript.min.js',
+                asset_base+'syntaxhighlighter/shBrushCss.min.js'
+            ], ['sh']]
             
             // Highlightjs
-            ,['styles', 'hjs.css', asset_base+'highlightjs/styles/default.css']
-            ,['scripts', 'hjs', asset_base+'highlightjs/highlight.js', ['hjs.css']]
-            ,['scripts', 'highlightjs-grammar', asset_base+'highlightjs/highlightjs_grammar.js']
+            ,['styles', 'hjs.css', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css'
+            : asset_base+'highlightjs/styles/default.css'
+            ]
+            ,['scripts', 'hjs', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js'
+            : asset_base+'highlightjs/highlight.js'
+            , ['hjs.css']]
+            ,['scripts', 'hjs-grammar', asset_base+'highlightjs/highlightjs_grammar.js']
+            ,['scripts-composite', 'hjs-html', cdn
+            ? [
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/xml.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/json.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/css.min.js'
+            ]
+            : [
+                asset_base+'highlightjs/languages/xml.min.js',
+                asset_base+'highlightjs/languages/javascript.min.js',
+                asset_base+'highlightjs/languages/json.min.js',
+                asset_base+'highlightjs/languages/css.min.js'
+            ], ['hjs']]
             ]);
         }
         return assets;
@@ -788,7 +861,9 @@ var HtmlWidget = self = {
         var out = '';
         if ( widget )
         {
-            attr = attr || {}; data = data || {};
+            attr = attr || {};
+            data = data || {};
+            
             if ( widgets[HAS]('w_'+widget) )
                 return widgets['w_'+widget](attr, data, widget);
             
@@ -849,6 +924,8 @@ var HtmlWidget = self = {
             case 'text':        out = self.w_text(attr, data, widget); break;
             case 'imtranslator':
             case 'translator':  out = self.w_translator(attr, data, widget); break;
+            case 'syntax-highlighter':
+            case 'syntax-highlight':  out = self.w_syntax_highlight(attr, data, widget); break;
             case 'tinymce':
             case 'editor':
             case 'rich-editor':
@@ -1568,6 +1645,41 @@ var HtmlWidget = self = {
             self.enqueue('styles', 'htmlwidgets.css');
         }
         return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>'+wrep;
+    }
+    
+    ,w_syntax_highlight: function( attr, data, widgetName ) {
+        var wid, wclass, wextra, wvalue, whighlighter, wlang;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wextra = self.attributes(attr,['style','title','data'])+(!empty(attr,'extra') ? (' '+attr['extra']) : '');
+        whighlighter = (empty(attr,'highlighter') ? 'prism' : attr['highlighter']).toLowerCase();
+        if ( 'hjs' === whighlighter || 'hljs' === whighlighter || 'highlightjs' === whighlighter ) 
+        {
+            wlang = empty(attr,'language') ? 'xml' : attr['language'];
+            wclass = 'w-widget w-syntax-highlight w-syntax-highlight-hjs';
+            if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+            self.enqueue('styles', 'htmlwidgets.css');
+            self.enqueue('scripts', 'w-syntax-highlight-'+wid, ["hljs.highlightBlock(document.getElementById('"+wid+"') );"], ['hjs-html']);
+            return '<pre id="prewrap_'+wid+'" class="'+wclass+'" '+wextra+'><code id="'+wid+'" class="language-'+wlang+'">'+wvalue+'</code></pre>';
+        }
+        else if ( 'sh' === whighlighter || 'syntaxhighlighter' === whighlighter ) 
+        {
+            wlang = empty(attr,'language') ? 'xml' : attr['language'];
+            wclass = 'w-widget w-syntax-highlight w-syntax-highlight-sh';
+            if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+            self.enqueue('styles', 'htmlwidgets.css');
+            self.enqueue('scripts', 'w-syntax-highlight-'+wid, ["SyntaxHighlighter.highlight({brush:'"+wlang+"'}, document.getElementById('"+wid+"'));"], ['sh-html']);
+            return '<pre id="'+wid+'" class="'+wclass+'" '+wextra+'>'+wvalue+'</pre>';
+        }
+        else//if ( 'prism' === whighlighter ) 
+        {
+            wlang = empty(attr,'language') ? 'markup' : attr['language'];
+            wclass = 'w-widget w-syntax-highlight w-syntax-highlight-prism';
+            if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+            self.enqueue('styles', 'htmlwidgets.css');
+            self.enqueue('scripts', 'w-syntax-highlight-'+wid, ["Prism.highlightElement(document.getElementById('"+wid+"'));"], ['prism-html','prism-line-numbers']);
+            return '<pre class="'+wclass+' language-'+wlang+' line-numbers" '+wextra+'><code id="'+wid+'">'+wvalue+'</code></pre>';
+        }
     }
     
     ,w_vextab: function( attr, data, widgetName ) {
