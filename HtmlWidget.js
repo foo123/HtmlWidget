@@ -178,6 +178,9 @@ var HtmlWidget = self = {
             // NodeList
             ,['scripts', 'nodelist', asset_base+'utils/nodelist.js']
             
+            // FTScroller
+            ,['scripts', 'ftscroller', asset_base+'utils/ftscroller.js']
+            
             // isMobile
             ,['scripts', 'ismobile', asset_base+'utils/ismobile.js']
             

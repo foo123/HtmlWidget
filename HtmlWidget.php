@@ -108,6 +108,9 @@ class HtmlWidget
             // NodeList
             ,array('scripts', 'nodelist', $asset_base.'utils/nodelist.js')
             
+            // FTScroller
+            ,array('scripts', 'ftscroller', $asset_base.'utils/ftscroller.js')
+            
             // isMobile
             ,array('scripts', 'ismobile', $asset_base.'utils/ismobile.js')
             
