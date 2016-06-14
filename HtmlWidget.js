@@ -205,6 +205,12 @@ var HtmlWidget = self = {
             : (asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf'))
             ]
             
+            // localForage
+            ,['scripts', 'localforage', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js'
+            : asset_base+'localforage/localforage.js'
+            ]
+            
             // RT
             ,['scripts', 'RT', asset_base+'RT/RT.js']
             ,['scripts', 'RT.Poll', asset_base+'RT/RT.Poll.js', ['RT']]

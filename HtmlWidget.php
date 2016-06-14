@@ -135,6 +135,12 @@ class HtmlWidget
             : ($asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf'))
             )
             
+            // localForage
+            ,array('scripts', 'localforage', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js'
+            : $asset_base.'localforage/localforage.js'
+            )
+            
             // RT
             ,array('scripts', 'RT', $asset_base.'RT/RT.js')
             ,array('scripts', 'RT.Poll', $asset_base.'RT/RT.Poll.js', array('RT'))
