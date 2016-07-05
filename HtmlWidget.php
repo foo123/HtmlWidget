@@ -99,6 +99,12 @@ class HtmlWidget
             ,array('styles', 'humane.css', $asset_base.'humane/humane.css')
             ,array('scripts', 'humane', $asset_base.'humane/humane.js', array('humane.css'))
             
+            // notify.js
+            ,array('scripts', 'notify', $asset_base.'utils/notify.js')
+            
+            // visibility.js
+            ,array('scripts', 'visibility', $asset_base.'utils/visibility.js')
+            
             // List.js
             ,array('scripts', 'list', $cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'

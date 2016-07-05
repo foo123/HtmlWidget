@@ -169,6 +169,12 @@ var HtmlWidget = self = {
             ,['styles', 'humane.css', asset_base+'humane/humane.css']
             ,['scripts', 'humane', asset_base+'humane/humane.js', ['humane.css']]
             
+            // notify.js
+            ,['scripts', 'notify', asset_base+'utils/notify.js']
+            
+            // visibility.js
+            ,['scripts', 'visibility', asset_base+'utils/visibility.js']
+            
             // List.js
             ,['scripts', 'list', cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
