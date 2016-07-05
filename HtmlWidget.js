@@ -175,6 +175,16 @@ var HtmlWidget = self = {
             // visibility.js
             ,['scripts', 'visibility', asset_base+'utils/visibility.js']
             
+            // visibilityjs
+            ,['scripts', 'visibilityjs.fallback', cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.fallback.min.js'
+            : asset_base+'visibilityjs/visibility.fallback.js'
+            ]
+            ,['scripts', 'visibilityjs', cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.min.js'
+            : asset_base+'visibilityjs/visibility.js'
+            ]
+            
             // List.js
             ,['scripts', 'list', cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'

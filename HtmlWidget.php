@@ -105,6 +105,16 @@ class HtmlWidget
             // visibility.js
             ,array('scripts', 'visibility', $asset_base.'utils/visibility.js')
             
+            // visibilityjs
+            ,array('scripts', 'visibilityjs.fallback', $cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.fallback.min.js'
+            : $asset_base.'visibilityjs/visibility.fallback.js'
+            )
+            ,array('scripts', 'visibilityjs', $cdn
+            ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.min.js'
+            : $asset_base.'visibilityjs/visibility.js'
+            )
+            
             // List.js
             ,array('scripts', 'list', $cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
