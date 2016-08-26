@@ -78,3 +78,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 ![details-5](/screenshots/details-5.png)
 ![details-6](/screenshots/details-6.png)
 ![details-7](/screenshots/details-7.png)
+![details-8](/screenshots/details-8.png)
+![details-9](/screenshots/details-9.png)
+![details-10](/screenshots/details-10.png)
+![details-11](/screenshots/details-11.png)
