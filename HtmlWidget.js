@@ -128,8 +128,9 @@ var HtmlWidget = self = {
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : asset_base+'fontawesome/fontawesome.css'
         ]
+        ,['scripts', 'html5shiv', ['<!--[if lt IE 9]><script type="text/javascript" src="'+asset_base+'utils/html5shiv.js'+'"></script><![endif]-->']]
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
-        ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','jquery','selectorlistener']]
+        ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','html5shiv','jquery','selectorlistener']]
         ];
         
         if ( true === opts['jquery'] )

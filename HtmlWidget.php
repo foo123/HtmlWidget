@@ -58,8 +58,9 @@ class HtmlWidget
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : $asset_base.'fontawesome/fontawesome.css'
         )
+        ,array('scripts', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
-        ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','jquery','selectorlistener'))
+        ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','html5shiv','jquery','selectorlistener'))
         );
         
         if ( true === $opts['jquery'] )
