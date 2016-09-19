@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.0
+*  @version: 0.9.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.9.0";
+    const VERSION = "0.9.1";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -58,9 +58,9 @@ class HtmlWidget
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : $asset_base.'fontawesome/fontawesome.css'
         )
-        ,array('scripts', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
+        ,array('scripts-alt', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
-        ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css','html5shiv','jquery','selectorlistener'))
+        ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener'))
         );
         
         if ( true === $opts['jquery'] )
@@ -69,10 +69,12 @@ class HtmlWidget
             ? array(
                  array('scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js')
                 //,array('scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js')
+                ,array('scripts', 'jquery-form', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js', array('jquery'))
                 ,array('scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', array('jquery'))
             )
             : array(
                  array('scripts', 'jquery', $asset_base.'jquery/jquery.js')
+                ,array('scripts', 'jquery-form', $asset_base.'jquery/jquery.form.js', array('jquery'))
                 ,array('scripts', 'jquery-ui', $asset_base.'jquery/jquery-ui.js', array('jquery'))
                 //,array('scripts', 'jquery-iframe-transport', $asset_base.'jquery/jquery.iframe-transport.js', array('jquery'))
             )
@@ -277,7 +279,10 @@ class HtmlWidget
             , array('jquery'))
             
             // smoothState
-            ,array('scripts', 'smoothstate', $asset_base.'utils/smoothState.js', array('jquery'))
+            ,array('scripts', 'smoothstate', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/smoothState.js/0.7.2/jquery.smoothState.min.js'
+            : $asset_base.'utils/smoothState.js'
+            , array('jquery'))
              
             // Packery
             ,array('scripts', 'packery', $cdn

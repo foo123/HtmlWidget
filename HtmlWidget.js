@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.0
+*  @version: 0.9.1
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -12,20 +12,21 @@
 *  https://github.com/foo123/SelectorListener
 *
 **/
-!function( root, name, factory ) {
+!function( root, name, factory ){
 "use strict";
-var m;
 if ( ('undefined'!==typeof Components)&&('object'===typeof Components.classes)&&('object'===typeof Components.classesByID)&&Components.utils&&('function'===typeof Components.utils['import']) ) /* XPCOM */
-    (root.EXPORTED_SYMBOLS = [ name ]) && (root[ name ] = factory.call( root ));
+    (root.$deps = root.$deps||{}) && (root.EXPORTED_SYMBOLS = [name]) && (root[name] = root.$deps[name] = factory.call(root));
 else if ( ('object'===typeof module)&&module.exports ) /* CommonJS */
-    module.exports = factory.call( root );
-else if ( ('function'===typeof(define))&&define.amd&&('function'===typeof(require))&&('function'===typeof(require.specified))&&require.specified(name) ) /* AMD */
-    define(name,['require','exports','module'],function( ){return factory.call( root );});
+    (module.$deps = module.$deps||{}) && (module.exports = module.$deps[name] = factory.call(root));
+else if ( ('undefined'!==typeof System)&&('function'===typeof System.register)&&('function'===typeof System['import']) ) /* ES6 module */
+    System.register(name,[],function($__export){$__export(name, factory.call(root));});
+else if ( ('function'===typeof define)&&define.amd&&('function'===typeof require)&&('function'===typeof require.specified)&&require.specified(name) /*&& !require.defined(name)*/ ) /* AMD */
+    define(name,['module'],function(module){factory.moduleUri = module.uri; return factory.call(root);});
 else if ( !(name in root) ) /* Browser/WebWorker/.. */
-    (root[ name ] = (m=factory.call( root )))&&('function'===typeof(define))&&define.amd&&define(function( ){return m;} );
+    (root[name] = factory.call(root)||1)&&('function'===typeof(define))&&define.amd&&define(function(){return root[name];} );
 }(  /* current root */          this, 
     /* module name */           "HtmlWidget",
-    /* module factory */        function( undef ) {
+    /* module factory */        function ModuleFactory__HtmlWidget( undef ){
 "use strict";
 
 var HAS = 'hasOwnProperty', ATTR = 'setAttribute',
@@ -90,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.9.0"
+    VERSION: "0.9.1"
     
     ,BASE: './'
     
@@ -128,9 +129,9 @@ var HtmlWidget = self = {
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : asset_base+'fontawesome/fontawesome.css'
         ]
-        ,['scripts', 'html5shiv', ['<!--[if lt IE 9]><script type="text/javascript" src="'+asset_base+'utils/html5shiv.js'+'"></script><![endif]-->']]
+        ,['scripts-alt', 'html5shiv', ['<!--[if lt IE 9]><script type="text/javascript" src="'+asset_base+'utils/html5shiv.js'+'"></script><![endif]-->']]
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
-        ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css','html5shiv','jquery','selectorlistener']]
+        ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener']]
         ];
         
         if ( true === opts['jquery'] )
@@ -138,11 +139,13 @@ var HtmlWidget = self = {
             assets = assets.concat(cdn
             ? [
                  ['scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js']
+                ,['scripts', 'jquery-form', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js', ['jquery']]
                 //,['scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js']
                 ,['scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', ['jquery']]
             ]
             : [
                  ['scripts', 'jquery', asset_base+'jquery/jquery.js']
+                ,['scripts', 'jquery-form', asset_base+'jquery/jquery.form.js', ['jquery']]
                 ,['scripts', 'jquery-ui', asset_base+'jquery/jquery-ui.js', ['jquery']]
                 //,['scripts', 'jquery-iframe-transport', asset_base+'jquery/jquery.iframe-transport.js', ['jquery']]
             ]
@@ -347,24 +350,27 @@ var HtmlWidget = self = {
             , ['jquery']]
             
             // smoothState
-            ,['scripts', 'smoothstate', asset_base+'utils/smoothState.js', ['jquery']]
+            ,['scripts', 'smoothstate', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/smoothState.js/0.7.2/jquery.smoothState.min.js'
+            : asset_base+'utils/smoothState.js'
+            , ['jquery']]
              
             // Packery
             ,['scripts', 'packery', cdn
-                ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
-                : asset_base+'packery/packery.js'
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
+            : asset_base+'packery/packery.js'
             ]
              
             // Isotope
             ,['scripts', 'isotope', cdn
-                ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
-                : asset_base+'isotope/isotope.js'
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
+            : asset_base+'isotope/isotope.js'
             ]
              
             // Masonry
             ,['scripts', 'masonry', cdn
-                ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
-                : asset_base+'masonry/masonry.js'
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
+            : asset_base+'masonry/masonry.js'
             ]
              
             // ModelView
