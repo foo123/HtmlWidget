@@ -23,7 +23,7 @@ else root[name] = factory( );
 "use strict";
 
 // dont re-add it, abort
-if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
+//if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
 var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.9.1', widget: {}, locale: {}, _handle: {}},
     
@@ -2021,6 +2021,7 @@ window["__htmlwidget_init__"] = function( e ){
  * http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
  *
  */
+ /*
 // @win window reference
 // @fn function reference
 function contentLoaded(win, fn) {
@@ -2073,10 +2074,10 @@ htmlwidget.domReady = function domReady( f ) {
     if ( domReady_loaded ) setTimeout(f, 10);
     else domReady_queue.push( f );
 };
+*/
 
 // on dom ready, init and listen
-$(function( ){
-
+htmlwidget.initialise = function( ){
 if ( 'undefined' !== typeof SelectorListener ) SelectorListener.jquery( $ );
 if ( 'undefined' !== typeof ModelView ) ModelView.jquery( $ );
 
@@ -2105,7 +2106,7 @@ if ( 'function' === typeof $.fn.tooltipster )
     /*if ( 'function' === typeof $.fn.onSelector )
         $body.onSelector('[w-tooltip]:hover,[data-tooltip]:hover,[title]:hover', widget_tooltip);
     else*/
-        $body.on('mouseenter.htmlwidget touchstart.htmlwidget', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
+        $body.off('mouseenter.htmlwidget.tooltip touchstart.htmlwidget.tooltip').on('mouseenter.htmlwidget.tooltip touchstart.htmlwidget.tooltip', '[w-tooltip],[data-tooltip],[title]', widget_tooltip);
 }
 
 // dynamic popup menus
@@ -2120,15 +2121,15 @@ if ( 'function' === typeof $.fn.popr2 )
 
 $body
     // w-file controls
-    .on('change.htmlwidget', 'input[type=file].w-file-input', function( ){
+    .off('change.htmlwidget.file').on('change.htmlwidget.file', 'input[type=file].w-file-input', function( ){
         this.nextSibling.value = this.value;
     })
-    .on('click.htmlwidget', 'input[type=file].w-file-input+input.w-file', function( ){
+    .off('click.htmlwidget.file').on('click.htmlwidget.file', 'input[type=file].w-file-input+input.w-file', function( ){
         $(this.previousSibling).trigger('click');
         return false;
     })
     // new window popups
-    .on('click.htmlwidget', '[href].w-open-window', function( evt ){
+    .off('click.htmlwidget.open').on('click.htmlwidget.open', '[href].w-open-window', function( evt ){
         evt.preventDefault();
         var el = this, href = el.href,
             opts = el[HAS_ATTR]('data-window-options')
@@ -2142,7 +2143,8 @@ $body
     })
 ;
 
-});
+};
 
+$(htmlwidget.initialise);
 return $.htmlwidget = htmlwidget;
 });
