@@ -545,6 +545,20 @@ var HtmlWidget = self = {
             // ImTranslator
             //,[]
             
+            // KateX
+            ,['styles', 'katex.css', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
+            , ['katex.css']]
+            ,['scripts', 'katex', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js'
+            , ['katex.css']]
+            ,['scripts', 'katex-autorender', cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
+            , ['katex']]
+            
             // MathJax, ?config=TeX-AMS_HTML-full
             ,['scripts', 'mathjax', cdn
                 ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'

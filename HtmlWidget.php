@@ -474,10 +474,24 @@ class HtmlWidget
             // ImTranslator
             //,array()
             
+            // KateX
+            ,array('styles', 'katex.css', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
+            , array('katex.css'))
+            ,array('scripts', 'katex', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js'
+            , array('katex.css'))
+            ,array('scripts', 'katex-autorender', $cdn
+                ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
+                : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
+            , array('katex'))
+            
             // MathJax, ?config=TeX-AMS_HTML-full
             ,array('scripts', 'mathjax', $cdn
                 ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
-                : $asset_base.'mathjax/MathJax.js'
+                : 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
             )
             
             // MathQuill
@@ -494,7 +508,7 @@ class HtmlWidget
             // CKEditor
             ,array('scripts', 'ckeditor', $cdn
                 ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
-                : $asset_base.'ckeditor/ckeditor.js'
+                : '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
             )
              
             // Trumbowyg
