@@ -1513,7 +1513,12 @@ tabstave
     </fieldset>
     
     <fieldset><legend>Animation Sprites</legend>
+    <div class="fluid col-1-1">
     <?php widget('sprite',array('title'=>'Walking.. (sprite animation)','animation'=>'spriteanimation','rows'=>2,'columns'=>8,'sprite'=>'./spriteanimation.png','width'=>300,'height'=>521)); ?>
+    </div>
+    <div class="fluid col-3-4" style="margin-top:20px">
+    <?php widget('sprite',array('title'=>'Walking.. (sprite animation)','animation'=>'spriteanimation2','rows'=>2,'columns'=>8,'sprite'=>'./spriteanimation.png','width'=>300,'height'=>521, 'class'=>'responsive')); ?>
+    </div>
     </fieldset>
     
     <fieldset><legend>Tags</legend>

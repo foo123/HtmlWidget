@@ -2666,13 +2666,23 @@ OUT;
         $wr = isset($attr['rows']) ? (int)$attr['rows'] : 1;
         $wc = isset($attr['columns']) ? (int)$attr['columns'] : 1;
         $nframes = $wr*$wc; $d = $nframes/$wfps;
+        $factX = $wc; $factY = $wr;
+        $aspect_ratio = 100*$wh/$ww;
+        $background_size = ''.(100*$wc).'% '.(100*$wr).'%';
+        
+        /*if ( (false !== strpos(' '.$wclass.' ',' w-sprite-responsive ')) || (false !== strpos(' '.$wclass.' ',' sprite-responsive ')) )
+        {
+            $factX = $wc;
+            $factY = $wr;
+        }*/
+        
         if ( (1 < $wr) && (1 < $wc) )
         {
             // background-position-x, background-position-y NOT supported very good
             $two_dim_grid = true;
             $attX = "background-position-x"; $attY = "background-position-y";
-            $iniX = "0px"; $iniY = "0px";
-            $finX = "-".($wc*$ww)."px"; $finY = "-".($wr*$wh)."px";
+            $iniX = "0%"; $iniY = "0%";
+            $finX = "-".($factX*100)."%"; $finY = "-".($factY*100)."%";
             $animation_name = "{$wanimation}-grid-x, {$wanimation}-grid-y";
             $animation_duration = ''.($d/$wr).'s, '.$d.'s';
             $animation_delay = '0s, 0s';
@@ -2683,8 +2693,8 @@ OUT;
         {
             $two_dim_grid = false;
             $attX = "background-position";
-            $iniX = "0px 0px";
-            $finX = "0px -".($wr*$wh)."px";
+            $iniX = "0% 0%";
+            $finX = "0% -".($factY*100)."%";
             $animation_name = "{$wanimation}-grid-x";
             $animation_duration = ''.$d.'s';
             $animation_delay = '0s';
@@ -2695,8 +2705,8 @@ OUT;
         {
             $two_dim_grid = false;
             $attX = "background-position";
-            $iniX = "0px 0px";
-            $finX = "-".($wc*$ww)."px 0px";
+            $iniX = "0% 0%";
+            $finX = "-".($factX*100)."% 0%";
             $animation_name = "{$wanimation}-grid-x";
             $animation_duration = ''.$d.'s';
             $animation_delay = '0s';
@@ -2709,7 +2719,8 @@ OUT;
 width: {$ww}px; height: {$wh}px;
 background-image: url("{$wsprite}");
 background-repeat: none;
-background-position: 0px 0px;
+background-position: 0% 0%;
+background-size: auto auto;
 -webkit-animation-name: {$animation_name};
 -webkit-animation-duration: {$animation_duration};
 -webkit-animation-delay: {$animation_delay};
@@ -2735,6 +2746,14 @@ animation-duration: {$animation_duration};
 animation-delay: {$animation_delay};
 animation-timing-function: {$animation_timing};
 animation-iteration-count: {$animation_iteration};
+}
+#{$wid}.w-sprite.responsive.{$wanimation}-class,
+#{$wid}.w-sprite.sprite-responsive.{$wanimation}-class,
+#{$wid}.w-sprite.w-sprite-responsive.{$wanimation}-class
+{
+width: 100% !important; height: auto !important;
+padding-bottom: {$aspect_ratio}% !important;
+background-size: {$background_size} !important;
 }
 @-webkit-keyframes {$wanimation}-grid-x {
     0% { {$attX}: {$iniX}; }

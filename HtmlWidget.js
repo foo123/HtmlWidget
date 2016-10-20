@@ -2932,7 +2932,9 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
     
     ,w_sprite: function( attr, data, widgetName ) {
         var wid, wtext, wtitle, wclass, wextra, wsprite, wanimation, witer, wfps,
-            ww, wh, wr, wc, d, nframes, wsprite_def, two_dim_grid, attX, attY, iniX, iniY, finX, finY,
+            ww, wh, wr, wc, d, nframes, wsprite_def, two_dim_grid,
+            attX, attY, iniX, iniY, finX, finY, factX = 1, factY = 1,
+            aspect_ratio, background_size,
             animation_name, animation_duration, animation_delay, animation_timing, animation_iteration;
         wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_sprite');
         wtext = isset(data,'text') ? data['text'] : '';
@@ -2950,13 +2952,23 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
         wr = isset(attr,'rows') ? +attr['rows'] : 1;
         wc = isset(attr,'columns') ? +attr['columns'] : 1;
         nframes = wr*wc; d = nframes/wfps;
+        factX = wc; factY = wr;
+        aspect_ratio = 100*wh/ww;
+        background_size = ''+(100*wc)+'% '+(100*wr)+'%';
+        
+        /*if ( (-1 < (' '+wclass+' ').indexOf(' w-sprite-responsive ')) || (-1 < (' '+wclass+' ').indexOf(' sprite-responsive ')) )
+        {
+            factX = wc;
+            factY = wr;
+        }*/
+        
         if ( (1 < wr) && (1 < wc) )
         {
             // background-position-x, background-position-y NOT supported very good
             two_dim_grid = true;
             attX = "background-position-x"; attY = "background-position-y";
-            iniX = "0px"; iniY = "0px";
-            finX = "-"+(wc*ww)+"px"; finY = "-"+(wr*wh)+"px";
+            iniX = "0%"; iniY = "0%";
+            finX = "-"+(factX*100)+"%"; finY = "-"+(factY*100)+"%";
             animation_name = wanimation+"-grid-x, "+wanimation+"-grid-y";
             animation_duration = ''+(d/wr)+'s, '+d+'s';
             animation_delay = '0s, 0s';
@@ -2967,8 +2979,8 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
         {
             two_dim_grid = false;
             attX = "background-position";
-            iniX = "0px 0px";
-            finX = "0px -"+(wr*wh)+"px";
+            iniX = "0% 0%";
+            finX = "0% -"+(factY*100)+"%";
             animation_name = wanimation+"-grid-x";
             animation_duration = ''+d+'s';
             animation_delay = '0s';
@@ -2979,8 +2991,8 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
         {
             two_dim_grid = false;
             attX = "background-position";
-            iniX = "0px 0px";
-            finX = "-"+(wc*ww)+"px 0px";
+            iniX = "0% 0%";
+            finX = "-"+(factX*100)+"% 0%";
             animation_name = wanimation+"-grid-x";
             animation_duration = ''+d+'s';
             animation_delay = '0s';
@@ -2993,7 +3005,8 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
 width: '+ww+'px; height: '+wh+'px;\
 background-image: url("'+wsprite+'");\
 background-repeat: none;\
-background-position: 0px 0px;\
+background-position: 0% 0%;\
+background-size: auto auto;\
 -webkit-animation-name: '+animation_name+';\
 -webkit-animation-duration: '+animation_duration+';\
 -webkit-animation-delay: '+animation_delay+';\
@@ -3019,6 +3032,14 @@ animation-duration: '+animation_duration+';\
 animation-delay: '+animation_delay+';\
 animation-timing-function: '+animation_timing+';\
 animation-iteration-count: '+animation_iteration+';\
+}\
+#'+wid+'.w-sprite.responsive.'+wanimation+'-class,\
+#'+wid+'.w-sprite.sprite-responsive.'+wanimation+'-class,\
+#'+wid+'.w-sprite.w-sprite-responsive.'+wanimation+'-class\
+{\
+width: 100% !important; height: auto !important;\
+padding-bottom: '+aspect_ratio+'% !important;\
+background-size: '+background_size+' !important;\
 }\
 @-webkit-keyframes '+wanimation+'-grid-x {\
     0% { '+attX+': '+iniX+'; }\
