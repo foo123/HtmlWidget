@@ -1512,6 +1512,10 @@ tabstave
     <div class="w-bubble w-bubble2-right">Bubble Right</div>
     </fieldset>
     
+    <fieldset><legend>Animation Sprites</legend>
+    <?php widget('sprite',array('title'=>'Walking.. (sprite animation)','animation'=>'spriteanimation','rows'=>2,'columns'=>8,'sprite'=>'./spriteanimation.png','width'=>300,'height'=>521)); ?>
+    </fieldset>
+    
     <fieldset><legend>Tags</legend>
     <span class="w-tag w-orange">Tag 1</span>
     <span class="w-tag w-purple">Tag 1</span>

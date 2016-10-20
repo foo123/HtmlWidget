@@ -29,7 +29,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 
 
 1. control, checkbox, radio, switch, checkbox-image, radio-image, checkbox-label, radio-label, checkbox-list, radio-list, radio-array, checkbox-array, selectbox, multi-selectbox, textbox, textarea, file, range/slider, rating
-2. buttons, labels, links, icons, tooltips, tags, speech bubbles, spinners
+2. buttons, labels, links, icons, tooltips, tags, speech bubbles, spinners, animation sprites
 3. table, accordeon, tab, page, collapsable panels, side panels, modals, dialogs, hierarchical responsive horizontal menus, hierarchical responsive vertical menus
 4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable (drag-n-drop with preview)
 5. mvc/mvvm widget, area-select, popup menu, autocompleter, date/time picker, color picker, location/address picker, timer, wysiwyg editor, syntax  editor, advanced selectbox, dataTable, google map, graph/chart, music/tablature score, syntax highlight area

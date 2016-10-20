@@ -13,7 +13,7 @@
 **/
 /** HtmlWidget github.com/foo123/HtmlWidget **/
 /* some defaults */
-.w-widget, .w-wrapper, .fa-wrapper,
+.w-widget, .w-sprite, .w-wrapper, .fa-wrapper,
 .w-panel, .w-dialog, .w-table,
 .w-tab, .w-page, .w-accordeon-item,
 .w-dropdown, .w-select, .w-time, .w-time-component,
@@ -45,7 +45,10 @@ input.w-checkbox + label
     display: table;
     clear: both;
 }
-
+.w-sprite
+{
+    overflow: hidden !important;
+}
 .w-syntax-editor,
 .w-syntax-editor + .CodeMirror,
 .w-syntax-editor + .ace_editor

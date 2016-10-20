@@ -1036,6 +1036,7 @@ var HtmlWidget = self = {
             case 'graph':
             case 'chart':       out = self.w_chart(attr, data, widget); break;
             case 'animation':   out = self.w_animation(attr, data, widget); break;
+            case 'sprite':      out = self.w_sprite(attr, data, widget); break;
             case 'flash':
             case 'swf':         out = self.w_swf(attr, data, widget); break;
             case 'video':
@@ -2925,8 +2926,148 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
 }\
 ';
         }
-        self.enqueue('styles', wid, [wanimation_def], ['htmlwidgets.css']);
+        self.enqueue('styles', 'w-animation-'+wid, [wanimation_def], ['htmlwidgets.css']);
         return '';
+    }
+    
+    ,w_sprite: function( attr, data, widgetName ) {
+        var wid, wtext, wtitle, wclass, wextra, wsprite, wanimation, witer, wfps,
+            ww, wh, wr, wc, d, nframes, wsprite_def, two_dim_grid, attX, attY, iniX, iniY, finX, finY,
+            animation_name, animation_duration, animation_delay, animation_timing, animation_iteration;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_sprite');
+        wtext = isset(data,'text') ? data['text'] : '';
+        wtitle = isset(attr,'title') ? attr['title'] : wtext;
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        wanimation = isset(attr,"animation") ? attr["animation"] : 'sprite-'+wid;
+        wclass = 'w-sprite '+wanimation+'-class';
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wsprite = isset(attr,"sprite") ? attr["sprite"] : wid;
+        witer = isset(attr,"iteration") ? attr["iteration"] : 'infinite';
+        wfps = isset(attr,'fps') ? +attr['fps'] : 12;
+        ww = isset(attr,'width') ? +attr['width'] : 100;
+        wh = isset(attr,'height') ? +$attr['height'] : 100;
+        wr = isset(attr,'rows') ? +attr['rows'] : 1;
+        wc = isset(attr,'columns') ? +attr['columns'] : 1;
+        nframes = wr*wc; d = nframes/wfps;
+        if ( (1 < wr) && (1 < wc) )
+        {
+            // background-position-x, background-position-y NOT supported very good
+            two_dim_grid = true;
+            attX = "background-position-x"; attY = "background-position-y";
+            iniX = "0px"; iniY = "0px";
+            finX = "-"+(wc*ww)+"px"; finY = "-"+(wr*wh)+"px";
+            animation_name = wanimation+"-grid-x, "+wanimation+"-grid-y";
+            animation_duration = ''+(d/wr)+'s, '+d+'s';
+            animation_delay = '0s, 0s';
+            animation_timing = "steps("+wc+"), steps("+wr+")";
+            animation_iteration = ""+witer+", "+witer;
+        }
+        else if ( 1 < wr )
+        {
+            two_dim_grid = false;
+            attX = "background-position";
+            iniX = "0px 0px";
+            finX = "0px -"+(wr*wh)+"px";
+            animation_name = wanimation+"-grid-x";
+            animation_duration = ''+d+'s';
+            animation_delay = '0s';
+            animation_timing = "steps("+wr+")";
+            animation_iteration = witer;
+        }
+        else
+        {
+            two_dim_grid = false;
+            attX = "background-position";
+            iniX = "0px 0px";
+            finX = "-"+(wc*ww)+"px 0px";
+            animation_name = wanimation+"-grid-x";
+            animation_duration = ''+d+'s';
+            animation_delay = '0s';
+            animation_timing = "steps("+wc+")";
+            animation_iteration = witer;
+        }
+        wsprite_def = '\
+#'+wid+'.w-sprite.'+wanimation+'-class\
+{\
+width: '+ww+'px; height: '+wh+'px;\
+background-image: url("'+wsprite+'");\
+background-repeat: none;\
+background-position: 0px 0px;\
+-webkit-animation-name: '+animation_name+';\
+-webkit-animation-duration: '+animation_duration+';\
+-webkit-animation-delay: '+animation_delay+';\
+-webkit-animation-timing-function: '+animation_timing+';\
+-webkit-animation-iteration-count: '+animation_iteration+';\
+-moz-animation-name: '+animation_name+';\
+-moz-animation-duration: '+animation_duration+';\
+-moz-animation-delay: '+animation_delay+';\
+-moz-animation-timing-function: '+animation_timing+';\
+-moz-animation-iteration-count: '+animation_iteration+';\
+-ms-animation-name: '+animation_name+';\
+-ms-animation-duration: '+animation_duration+';\
+-ms-animation-delay: '+animation_delay+';\
+-ms-animation-timing-function: '+animation_timing+';\
+-ms-animation-iteration-count: '+animation_iteration+';\
+-o-animation-name: '+animation_name+';\
+-o-animation-duration: '+animation_duration+';\
+-o-animation-delay: '+animation_delay+';\
+-o-animation-timing-function: '+animation_timing+';\
+-o-animation-iteration-count: '+animation_iteration+';\
+animation-name: '+animation_name+';\
+animation-duration: '+animation_duration+';\
+animation-delay: '+animation_delay+';\
+animation-timing-function: '+animation_timing+';\
+animation-iteration-count: '+animation_iteration+';\
+}\
+@-webkit-keyframes '+wanimation+'-grid-x {\
+    0% { '+attX+': '+iniX+'; }\
+    100% { '+attX+': '+finX+'; }\
+}\
+@-moz-keyframes '+wanimation+'-grid-x {\
+    0% { '+attX+': '+iniX+'; }\
+    100% { '+attX+': '+finX+'; }\
+}\
+@-ms-keyframes '+wanimation+'-grid-x {\
+    0% { '+attX+': '+iniX+'; }\
+    100% { '+attX+': '+finX+'; }\
+}\
+@-o-keyframes '+wanimation+'-grid-x {\
+    0% { '+attX+': '+iniX+'; }\
+    100% { '+attX+': '+finX+'; }\
+}\
+@keyframes '+wanimation+'-grid-x {\
+    0% { '+attX+': '+iniX+'; }\
+    100% { '+attX+': '+finX+'; }\
+}\
+';
+    if ( two_dim_grid )
+    {
+        wsprite_def += "\n"+'\
+@-webkit-keyframes '+wanimation+'-grid-y {\
+    0% { '+attY+': '+iniY+'; }\
+    100% { '+attY+': '+finY+'; }\
+}\
+@-moz-keyframes '+wanimation+'-grid-y {\
+    0% { '+attY+': '+iniY+'; }\
+    100% { '+attY+': '+finY+'; }\
+}\
+@-ms-keyframes '+wanimation+'-grid-y {\
+    0% { '+attY+': '+iniY+'; }\
+    100% { '+attY+': '+finY+'; }\
+}\
+@-o-keyframes '+wanimation+'-grid-y {\
+    0% { '+attY+': '+iniY+'; }\
+    100% { '+attY+': '+finY+'; }\
+}\
+@keyframes '+wanimation+'-grid-y {\
+    0% { '+attY+': '+iniY+'; }\
+    100% { '+attY+': '+finY+'; }\
+}\
+';
+    }
+        self.enqueue('styles', 'w-sprite-'+wid, [wsprite_def], ['htmlwidgets.css']);
+        return '<div id="'+wid+'" class="'+wclass+'" title="'+wtitle+'" '+wstyle+' '+wextra+'>'+wtext+'</div>';
     }
 };
 
