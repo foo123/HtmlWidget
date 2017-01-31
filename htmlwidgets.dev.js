@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.9.1
+*  @version: 0.9.2
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -25,9 +25,9 @@ else root[name] = factory( );
 // dont re-add it, abort
 //if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.9.1', widget: {}, locale: {}, _handle: {}},
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.9.2', widget: {}, locale: {}, _handle: {}},
     
-    HAS = 'hasOwnProperty', ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
+    HAS = Object.prototype.hasOwnProperty, ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
     
     slice = Array[PROTO].slice, toString = Object[PROTO].toString,
@@ -54,7 +54,7 @@ function add_css( style, css )
         var n, declaration, i = 0, selector, rules, index;
         for (n in css)
         {
-            if ( !css[HAS](n) ) continue;
+            if ( !HAS.call(css,n) ) continue;
             declaration = css[ n ];
             selector = declaration.selector;
             rules = [].concat(declaration.rules).join('; ');
@@ -1702,7 +1702,7 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
     {
         for (var pl in tinymce_external_plugins)
         {
-            if ( !tinymce_external_plugins[HAS](pl) ) continue;
+            if ( !HAS.call(tinymce_external_plugins,pl) ) continue;
             tinymce.PluginManager.load(pl, tinymce_external_plugins[pl]);
         }
     }
@@ -1803,7 +1803,7 @@ $.fn.htmlwidget = function( type, options ) {
     var widget_handler;
     options = options || { };
     
-    if ( htmlwidget.widget[HAS](type) && 'function' === typeof htmlwidget.widget[type] )
+    if ( HAS.call(htmlwidget.widget,type) && 'function' === typeof htmlwidget.widget[type] )
     {
         widget_handler = htmlwidget.widget[type];
         this.each(function( ){
@@ -1880,7 +1880,7 @@ $.fn.htmlwidget = function( type, options ) {
             default:
                 break;
         }
-        widget_handler = htmlwidget._handle[HAS]( type ) ? htmlwidget._handle[ type ] : htmlwidget._handleDefault;
+        widget_handler = HAS.call(htmlwidget._handle, type) ? htmlwidget._handle[ type ] : htmlwidget._handleDefault;
         this.each(function( ){
             var el = this, opts, pre_init = null, post_init = null;
             opts = el[HAS_ATTR]('w-opts') && ('object' === typeof window[el[ATTR]('w-opts')]) ? window[el[ATTR]('w-opts')] : options;

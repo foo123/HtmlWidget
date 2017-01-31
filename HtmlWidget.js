@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.1
+*  @version: 0.9.2
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -29,7 +29,7 @@ else if ( !(name in root) ) /* Browser/WebWorker/.. */
     /* module factory */        function ModuleFactory__HtmlWidget( undef ){
 "use strict";
 
-var HAS = 'hasOwnProperty', ATTR = 'setAttribute',
+var HAS = Object.prototype.hasOwnProperty, ATTR = 'setAttribute',
     KEYS = Object.keys, json_encode = JSON.stringify, toString = Object.prototype.toString,
     isXPCOM = ("undefined" !== typeof Components) && ("object" === typeof Components.classes) && ("object" === typeof Components.classesByID) && Components.utils && ("function" === typeof Components.utils['import']),
     isNode = ("undefined" !== typeof global) && ('[object global]' === toString.call(global)),
@@ -41,20 +41,20 @@ var HAS = 'hasOwnProperty', ATTR = 'setAttribute',
 function isset( o, p )
 {
     // not set or null; or empty string/array
-    return o[HAS](p) && (null != o[p]);
+    return HAS.call(o,p) && (null != o[p]);
 }
 function empty( o, p )
 {
     // not set or null; or empty string/array
-    return !o[HAS](p) || (null == o[p]) || ("function"=== typeof (o[p].substr||o[p].concat) && !o[p].length);
+    return !HAS.call(o,p) || (null == o[p]) || ("function"=== typeof (o[p].substr||o[p].concat) && !o[p].length);
 }
 function merge( a, b )
 {
     var k, c = {};
-    for (k in a) if ( a[HAS](k) ) c[k] = a[k];
+    for (k in a) if ( HAS.call(a,k) ) c[k] = a[k];
     if ( b )
     {
-        for (k in b) if ( b[HAS](k) ) c[k] = b[k];
+        for (k in b) if ( HAS.call(b,k) ) c[k] = b[k];
     }
     return c;
 }
@@ -91,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.9.1"
+    VERSION: "0.9.2"
     
     ,BASE: './'
     
@@ -264,6 +264,21 @@ var HtmlWidget = self = {
             ? 'http://vjs.zencdn.net/vjs-version/video.js'
             : asset_base+'video.js/video.js'
             , ['video-js.css']]
+            
+            // clappr
+            ,['scripts', 'clappr', cdn
+            ? 'https://cdn.jsdelivr.net/clappr/latest/clappr.min.js'
+            : asset_base+'clappr/clappr.js'
+            ]
+            
+            // gest.js
+            ,['scripts', 'gest', asset_base+'gest/gest.js']
+            
+            // hammer.js
+            ,['scripts', 'hammer', cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
+            : asset_base+'hammer/hammer.js'
+            ]
             
             // Typo
             ,['scripts', 'typo', asset_base+'typo/typo.js']
@@ -778,12 +793,12 @@ var HtmlWidget = self = {
     ,data: function( attr, ctx ) {
         var d_attr = '';
         if ( arguments.length < 2 ) ctx = 'data';
-        if ( !!ctx && attr[HAS](ctx) && ('object' === typeof attr[ctx]) )
+        if ( !!ctx && HAS.call(attr,ctx) && ('object' === typeof attr[ctx]) )
         {
             var k, attr_ctx = attr[ctx];
             for(k in attr_ctx)
             {
-                if ( !attr_ctx[HAS](k) ) continue;
+                if ( !HAS.call(attr_ctx,k) ) continue;
                 d_attr += (!d_attr.length ? '' : ' ') + data_attr( ctx+'-'+k, attr_ctx[k] );
             }
         }
@@ -796,7 +811,7 @@ var HtmlWidget = self = {
         for (i=0; i<l; i++)
         {
             k = atts[i];
-            if ( attr[HAS](k) && (null != attr[k]) )
+            if ( HAS.call(attr,k) && (null != attr[k]) )
             {
                 if ( 'data' == k )
                 {
@@ -850,7 +865,7 @@ var HtmlWidget = self = {
         {
             for (k in opts)
             {
-                if ( !opts[HAS](k) ) continue;
+                if ( !HAS.call(opts,k) ) continue;
                 v = opts[k];
                 
                 o_key = null;
@@ -899,7 +914,7 @@ var HtmlWidget = self = {
     ,addWidget: function( widget, renderer ) {
         if ( widget && "function"===typeof renderer )
             widgets['w_'+widget] = renderer;
-        else if ( widget && (false === renderer) && widgets[HAS]('w_'+widget) )
+        else if ( widget && (false === renderer) && HAS.call(widgets,'w_'+widget) )
             delete widgets['w_'+widget];
     }
     
@@ -910,7 +925,7 @@ var HtmlWidget = self = {
             attr = attr || {};
             data = data || {};
             
-            if ( widgets[HAS]('w_'+widget) )
+            if ( HAS.call(widgets,'w_'+widget) )
                 return widgets['w_'+widget](attr, data, widget);
             
             if ( 'audio' === widget ) attr['type'] = 'audio';

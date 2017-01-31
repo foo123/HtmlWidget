@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.1
+*  @version: 0.9.2
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget') )
 {
 class HtmlWidget
 {
-    const VERSION = "0.9.1";
+    const VERSION = "0.9.2";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -193,6 +193,21 @@ class HtmlWidget
             ? 'http://vjs.zencdn.net/vjs-version/video.js'
             : $asset_base.'video.js/video.js'
             , array('video-js.css'))
+            
+            // clappr
+            ,array('scripts', 'clappr', $cdn
+            ? 'https://cdn.jsdelivr.net/clappr/latest/clappr.min.js'
+            : $asset_base.'clappr/clappr.js'
+            )
+            
+            // gest.js
+            ,array('scripts', 'gest', $asset_base.'gest/gest.js')
+            
+            // hammer.js
+            ,array('scripts', 'hammer', $cdn
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
+            : $asset_base.'hammer/hammer.js'
+            )
             
             // Typo
             ,array('scripts', 'typo', $asset_base.'typo/typo.js')

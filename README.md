@@ -33,7 +33,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 3. table, accordeon, tab, page, collapsable panels, side panels, modals, dialogs, hierarchical responsive horizontal menus, hierarchical responsive vertical menus
 4. delayable, disabable, morphable, selectable, removable, sortable, re-arrangeable, draggable, uploadable (drag-n-drop with preview)
 5. mvc/mvvm widget, area-select, popup menu, autocompleter, date/time picker, color picker, location/address picker, timer, wysiwyg editor, syntax  editor, advanced selectbox, dataTable, google map, graph/chart, music/tablature score, syntax highlight area
-6. flash, swf, video, audio widgets
+6. flash, swf, video, audio widgets, media players, touch recognition, visual gesture recognition
 
 
 **external widgets/plugins/libraries (integrated mashup components, with CDN support):**
@@ -44,7 +44,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 2. [`Select2`](https://github.com/select2/select2), [`Sortable`](https://github.com/RubaXa/Sortable), [`tinyDraggable`](https://github.com/Pixabay/jQuery-tinyDraggable), [`AutoComplete`](https://github.com/foo123/AutoComplete), [`DateX`](https://github.com/foo123/DateX), [`Pikadaytime`](https://github.com/foo123/Pikadaytime), [`ColorPicker`](https://github.com/foo123/ColorPicker), [`Timer`](https://github.com/foo123/Timer)
 3. [`Jcrop`](https://github.com/tapmodo/Jcrop), [`AreaSelect`](https://github.com/foo123/area-select.js), [`rangeSlider`](https://github.com/andreruffert/rangeslider.js), [`jquery.modal`](http://github.com/kylefox/jquery-modal), [`jquery.tooltipster`](https://github.com/iamceege/tooltipster), [`jquery.locationpicker`](https://github.com/Logicify/jquery-locationpicker-plugin), [`jquery.gmap3`](https://github.com/foo123/jquery-plugins), [`Selectable`,`Removable`,`Morphable`,`Delayable`,`Disabable`,`Uploadable`](https://github.com/foo123/jquery-ui-widgets)
 4. [`jsCookie`](https://github.com/js-cookie/js-cookie), [`History.js`](https://github.com/browserstate/History.js/), [`ModelView`](https://github.com/foo123/modelview.js), [`ModelViewForm`](https://github.com/foo123/modelview-form.js), [`Tao.js`](https://github.com/foo123/Tao.js), [`(Form) Serialiser`](https://github.com/foo123/serialiser.js), [`localStorage`](https://github.com/mortzdk/localStorage), [`localForage`](https://github.com/mozilla/localForage), [`RT`](https://github.com/foo123/RT), [`smoothState`](https://github.com/miguel-perez/smoothState.js), [`Packery`](https://github.com/metafizzy/packery), [`Isotope`](https://github.com/metafizzy/isotope), [`Masonry`](https://github.com/desandro/masonry), [`Popr2`](https://github.com/foo123/Popr2), [`humane`](http://wavded.github.com/humane-js/), [`notify.js`](https://github.com/alexgibson/notify.js), [`visibility.js`](https://github.com/alexgibson/visibility.js), [`visibilityjs`](https://github.com/ai/visibilityjs)
-5. [`html5media`](https://github.com/etianen/html5media), [`video.js`](https://github.com/videojs/video.js)
+5. [`html5media`](https://github.com/etianen/html5media), [`video.js`](https://github.com/videojs/video.js), [`clappr`](https://github.com/clappr/clappr), [`hammer.js`](https://github.com/hammerjs/hammer.js), [`gest.js`](https://github.com/hadimichael/gest.js)
 6. [`Font-Awesome`](https://github.com/FortAwesome/Font-Awesome), [`Hover.css`](https://github.com/IanLunn/Hover), [`jQuery`](https://jquery.com/), [`Modernizr`](https://github.com/modernizr/modernizr)
 
 
