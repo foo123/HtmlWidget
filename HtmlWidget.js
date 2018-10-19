@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.2
+*  @version: 0.9.3
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -91,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.9.2"
+    VERSION: "0.9.3"
     
     ,BASE: './'
     
@@ -129,6 +129,14 @@ var HtmlWidget = self = {
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : asset_base+'fontawesome/fontawesome.css'
         ]
+        ,['styles', 'bootstrap.css', cdn
+        ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
+        : asset_base+'bootstrap/boostrap.min.css'
+        ]
+        ,['scripts', 'bootstrap.js', cdn
+        ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+        : asset_base+'bootstrap/boostrap.min.js'
+        , ['bootstrap.css', 'jquery']]
         ,['scripts-alt', 'html5shiv', ['<!--[if lt IE 9]><script type="text/javascript" src="'+asset_base+'utils/html5shiv.js'+'"></script><![endif]-->']]
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener']]

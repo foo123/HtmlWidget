@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.2
+*  @version: 0.9.3
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -13,11 +13,11 @@
 *  https://github.com/foo123/SelectorListener
 *
 **/
-if ( !class_exists('HtmlWidget') )
+if ( !class_exists('HtmlWidget', false) )
 {
 class HtmlWidget
 {
-    const VERSION = "0.9.2";
+    const VERSION = "0.9.3";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -58,6 +58,14 @@ class HtmlWidget
         ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
         : $asset_base.'fontawesome/fontawesome.css'
         )
+        ,array('styles', 'bootstrap.css', $cdn
+        ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
+        : $asset_base.'bootstrap/boostrap.min.css'
+        )
+        ,array('scripts', 'bootstrap.js', $cdn
+        ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+        : $asset_base.'bootstrap/boostrap.min.js'
+        , array('bootstrap.css', 'jquery'))
         ,array('scripts-alt', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener'))
@@ -67,7 +75,7 @@ class HtmlWidget
         {
             $assets = array_merge($assets, $cdn
             ? array(
-                 array('scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js')
+                 array('scripts', 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
                 //,array('scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js')
                 ,array('scripts', 'jquery-form', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js', array('jquery'))
                 ,array('scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', array('jquery'))
