@@ -3,7 +3,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.3
+*  @version: 0.9.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -91,7 +91,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.9.3"
+    VERSION: "0.9.4"
     
     ,BASE: './'
     
@@ -126,17 +126,17 @@ var HtmlWidget = self = {
         ,['styles', 'normalize.css', asset_base+'responsive/normalize.css']
         ,['styles', 'responsive.css', asset_base+'responsive/responsive.css']
         ,['styles', 'fontawesome.css', cdn
-        ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
+        ? 'https://use.fontawesome.com/releases/v5.4.2/css/all.css'
         : asset_base+'fontawesome/fontawesome.css'
-        ]
+        , null, {integrity:'sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns',crossorigin:'anonymous'}]
         ,['styles', 'bootstrap.css', cdn
         ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
         : asset_base+'bootstrap/boostrap.min.css'
-        ]
+        , null, {integrity:'sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u',crossorigin:'anonymous'}]
         ,['scripts', 'bootstrap.js', cdn
         ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
         : asset_base+'bootstrap/boostrap.min.js'
-        , ['bootstrap.css', 'jquery']]
+        , ['bootstrap.css', 'jquery'], {integrity:'sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa',crossorigin:'anonymous'}]
         ,['scripts-alt', 'html5shiv', ['<!--[if lt IE 9]><script type="text/javascript" src="'+asset_base+'utils/html5shiv.js'+'"></script><![endif]-->']]
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener']]
@@ -146,7 +146,7 @@ var HtmlWidget = self = {
         {
             assets = assets.concat(cdn
             ? [
-                 ['scripts', 'jquery', 'https://code.jquery.com/jquery-1.12.3.min.js']
+                 ['scripts', 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js']
                 ,['scripts', 'jquery-form', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js', ['jquery']]
                 //,['scripts', 'jquery-2.x', 'https://code.jquery.com/jquery-2.2.3.min.js']
                 ,['scripts', 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', ['jquery']]
@@ -287,6 +287,16 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
             : asset_base+'hammer/hammer.js'
             ]
+            
+            // tabulator
+            ,['styles', 'tabulator.css', cdn
+            ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/css/tabulator.min.css'
+            : asset_base+'tabulator/tabulator.min.css'
+            ]
+            ,['scripts', 'tabulator.js', cdn
+            ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/js/tabulator.min.js'
+            : asset_base+'tabulator/tabulator.min.js'
+            , ['tabulator.css']]
             
             // Typo
             ,['scripts', 'typo', asset_base+'typo/typo.js']

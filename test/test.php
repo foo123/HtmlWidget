@@ -1191,7 +1191,7 @@ function hello( )
     </fieldset>
     
     <fieldset><legend>Translator</legend>
-    <?php /*widget('translator');*/ ?>
+    <?php widget('translator'); ?>
     </fieldset>
     
     <fieldset><legend>Music Notation / Tablature</legend>

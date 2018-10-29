@@ -4,7 +4,7 @@
 *  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.3
+*  @version: 0.9.4
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,7 +17,7 @@ if ( !class_exists('HtmlWidget', false) )
 {
 class HtmlWidget
 {
-    const VERSION = "0.9.3";
+    const VERSION = "0.9.4";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
@@ -55,17 +55,17 @@ class HtmlWidget
         ,array('styles', 'normalize.css', $asset_base.'responsive/normalize.css')
         ,array('styles', 'responsive.css', $asset_base.'responsive/responsive.css')
         ,array('styles', 'fontawesome.css', $cdn
-        ? 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
+        ? 'https://use.fontawesome.com/releases/v5.4.2/css/all.css'
         : $asset_base.'fontawesome/fontawesome.css'
-        )
+        , null, array('integrity'=>'sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns','crossorigin'=>'anonymous'))
         ,array('styles', 'bootstrap.css', $cdn
         ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
         : $asset_base.'bootstrap/boostrap.min.css'
-        )
+        , null, array('integrity'=>'sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u','crossorigin'=>'anonymous'))
         ,array('scripts', 'bootstrap.js', $cdn
         ? 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
         : $asset_base.'bootstrap/boostrap.min.js'
-        , array('bootstrap.css', 'jquery'))
+        , array('bootstrap.css', 'jquery'), array('integrity'=>'sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa','crossorigin'=>'anonymous'))
         ,array('scripts-alt', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener'))
@@ -216,6 +216,16 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
             : $asset_base.'hammer/hammer.js'
             )
+            
+            // tabulator
+            ,array('styles', 'tabulator.css', $cdn
+            ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/css/tabulator.min.css'
+            : $asset_base.'tabulator/tabulator.min.css'
+            )
+            ,array('scripts', 'tabulator.js', $cdn
+            ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/js/tabulator.min.js'
+            : $asset_base.'tabulator/tabulator.min.js'
+            , array('tabulator.css'))
             
             // Typo
             ,array('scripts', 'typo', $asset_base.'typo/typo.js')
