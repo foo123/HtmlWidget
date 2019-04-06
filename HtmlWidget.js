@@ -1,9 +1,9 @@
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for Node.js / Browser Javascript, PHP, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.4
+*  @version: 1.0.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -24,7 +24,7 @@ else if ( ('function'===typeof define)&&define.amd&&('function'===typeof require
     define(name,['module'],function(module){factory.moduleUri = module.uri; return factory.call(root);});
 else if ( !(name in root) ) /* Browser/WebWorker/.. */
     (root[name] = factory.call(root)||1)&&('function'===typeof(define))&&define.amd&&define(function(){return root[name];} );
-}(  /* current root */          this, 
+}(  /* current root */          'undefined' !== typeof self ? self : this, 
     /* module name */           "HtmlWidget",
     /* module factory */        function ModuleFactory__HtmlWidget( undef ){
 "use strict";
@@ -47,6 +47,10 @@ function empty( o, p )
 {
     // not set or null; or empty string/array
     return !HAS.call(o,p) || (null == o[p]) || ("function"=== typeof (o[p].substr||o[p].concat) && !o[p].length);
+}
+function htmlspecialchars( s )
+{
+    return String(s).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');
 }
 function merge( a, b )
 {
@@ -91,7 +95,7 @@ function data_attr( k, v )
 
 var HtmlWidget = self = {
     
-    VERSION: "0.9.4"
+    VERSION: "1.0.0"
     
     ,BASE: './'
     
@@ -986,8 +990,6 @@ var HtmlWidget = self = {
             case 'link':        out = self.w_link(attr, data, widget); break;
             case 'button':      out = self.w_button(attr, data, widget); break;
             case 'label':       out = self.w_label(attr, data, widget); break;
-            /*case 'uploader':
-            case 'upload':*/
             case 'dnd-uploader':
             case 'dnd-upload':
             case 'drag-n-drop-uploader':
@@ -1064,6 +1066,7 @@ var HtmlWidget = self = {
             case 'endmenu':
             case 'end_menu':
             case 'menu_end':    out = self.w_menu_end(attr, data, widget); break;
+            case 'pagination':  out = self.w_pagination(attr, data, widget); break;
             case 'datatable':
             case 'table':       out = self.w_table(attr, data, widget); break;
             case 'graph':
@@ -2162,6 +2165,126 @@ var HtmlWidget = self = {
         return '</div>';
     }
     
+    ,w_pagination: function( attr, data, widgetName ) {
+        var wid, wclass, wstyle, wextra, totalItems, itemsPerPage, currentPage,
+            maxPagesToShow, placeholder, urlPattern, previousText, nextText, ellipsis,
+            numPages, pages, i, l, numAdjacents, slidingStart, slidingEnd, out;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wclass = 'w-pagination pagination'; 
+        if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wextra = !empty(attr,"extra") ? attr["extra"] : '';
+        totalItems = +data['totalItems'];
+        itemsPerPage = +data['itemsPerPage'];
+        currentPage = isset(data,'currentPage') ? +data['currentPage'] : 1;
+        maxPagesToShow = isset(attr,'maxPages') ? +attr['maxPages'] : 10;
+        placeholder = isset(attr,'placeholder') ? String(attr['placeholder']) : '(:page)';
+        urlPattern = isset(attr,'urlPattern') ? String(attr['urlPattern']) : '?page='+placeholder;
+        previousText = isset(attr,'previousText') ? String(attr['previousText']) : '&laquo; Previous';
+        nextText = isset(attr,'nextText') ? String(attr['nextText']) : 'Next &raquo;';
+        ellipsis = isset(attr,'ellipsis') ? String(attr['ellipsis']) : '...';
+        
+        numPages = 0 >= itemsPerPage || 0 >= totalItems ? 0 : Math.ceil(totalItems/itemsPerPage);
+        if ( numPages > 1 )
+        {
+            pages = [];
+            if ( numPages <= maxPagesToShow )
+            {
+                for(i=1; i<=numPages; i++)
+                {
+                    pages.push({
+                        text : i,
+                        url : urlPattern.replace(placeholder, i),
+                        isCurrent : i===currentPage
+                    });
+                }
+            }
+            else
+            {
+                // Determine the sliding range, centered around the current page.
+                numAdjacents = Math.floor((maxPagesToShow - 3) / 2);
+
+                if ( currentPage + numAdjacents > numPages )
+                {
+                    slidingStart = numPages - maxPagesToShow + 2;
+                }
+                else
+                {
+                    slidingStart = currentPage - numAdjacents;
+                }
+                if ( slidingStart < 2 ) slidingStart = 2;
+
+                slidingEnd = slidingStart + maxPagesToShow - 3;
+                if ( slidingEnd >= numPages ) slidingEnd = numPages - 1;
+
+                // Build the list of pages.
+                pages.push({
+                    text : 1,
+                    url : urlPattern.replace(placeholder, 1),
+                    isCurrent : 1===currentPage
+                });
+                if ( slidingStart > 2 )
+                {
+                    pages.push({
+                        text : ellipsis,
+                        url : null,
+                        isCurrent : false
+                    });
+                }
+                for (i=slidingStart; i<=slidingEnd; i++)
+                {
+                    pages.push({
+                        text : i,
+                        url : urlPattern.replace(placeholder, i),
+                        isCurrent : i===currentPage
+                    });
+                }
+                if ( slidingEnd < numPages - 1 )
+                {
+                    pages.push({
+                        text : ellipsis,
+                        url : null,
+                        isCurrent : false
+                    });
+                }
+                pages.push({
+                    text : numPages,
+                    url : urlPattern.replace(placeholder, numPages),
+                    isCurrent : numPages===currentPage
+                });
+            }
+
+            out = '<nav><ul id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
+            if ( currentPage > 1 )
+            {
+                out += '<li><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage-1)) + '">'+ previousText +'</a></li>';
+            }
+
+            for(i=0,l=pages.length; i<l; i++)
+            {
+                if (pages[i].url)
+                {
+                    out += '<li' + (pages[i].isCurrent ? ' class="active"' : '') + '><a href="' + htmlspecialchars(pages[i].url) + '">' + pages[i].text + '</a></li>';
+                }
+                else
+                {
+                    out += '<li class="disabled"><span>' + pages[i].text + '</span></li>';
+                }
+            }
+
+            if ( currentPage < numPages )
+            {
+                out += '<li><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage+1)) + '">'+ nextText +'</a></li>';
+            }
+            out += '</ul></nav>';
+            return out;
+        }
+        else
+        {
+            return '';
+        }
+    }
+    
     ,w_swf: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wswf, wquality, wmode, wscale, wflashvars, wallowfullscreen;
         wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
@@ -3125,7 +3248,7 @@ background-size: '+background_size+' !important;\
     }
 };
 
-if (isXPCOM )
+if ( isXPCOM )
 {
     HtmlWidget.BASE = './';
 }

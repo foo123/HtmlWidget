@@ -1,9 +1,9 @@
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for Node.js / Browser Javascript, PHP, Python
 *
-*  @dependencies: FontAwesome, SelectorListener, jQuery
-*  @version: 0.9.4
+*  @dependencies: FontAwesome, jQuery, SelectorListener
+*  @version: 1.0.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -19,29 +19,29 @@ if ( 'object' === typeof exports ) module.exports = factory( );
 // AMD. Register as an anonymous module.
 else if ( 'function' === typeof define && define.amd ) define(function( req ) { return factory( ); });
 else root[name] = factory( );
-}(this, 'htmlwidget', function( undef ) {
+}('undefined' !== typeof self ? self : this, 'htmlwidget', function( undef ) {
 "use strict";
 
 // dont re-add it, abort
 //if ( 'object' === typeof jQuery.htmlwidget ) return jQuery.htmlwidget;
 
-var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '0.9.4', widget: {}, locale: {}, _handle: {}},
-    
+var PROTO = 'prototype', ID = 0, $ = jQuery, htmlwidget = {VERSION: '1.0.0', widget: {}, locale: {}, _handle: {}},
+
     HAS = Object.prototype.hasOwnProperty, ATTR = 'getAttribute', SET_ATTR = 'setAttribute',
     HAS_ATTR = 'hasAttribute', DEL_ATTR = 'removeAttribute',
-    
+
     slice = Array[PROTO].slice, toString = Object[PROTO].toString,
-    
+
     json_decode = JSON.parse, json_encode = JSON.stringify,
     base64_decode = atob, base64_encode = btoa,
-    
+
     camel_case_re = /(_)([a-z])/g, snake_case_re = /([a-z])([A-Z])/g,
-    
+
     int = function( x ) { return parseInt(x||0,10)||0; },
-    
+
     DragDropUploadCap = (function( ) {
         var div = document.createElement('div');
-        return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 
+        return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) &&
             ('FormData' in window) && ('FileReader' in window);
     })( )
 ;
@@ -59,12 +59,12 @@ function add_css( style, css )
             selector = declaration.selector;
             rules = [].concat(declaration.rules).join('; ');
             index = i++;
-            if ( "insertRule" in style.sheet ) 
+            if ( "insertRule" in style.sheet )
             {
                 style.sheet.insertRule( selector + "{" + rules + "}", index );
                 declaration.css = style.sheet.cssRules[ index ];
             }
-            else if ( "addRule" in style.sheet ) 
+            else if ( "addRule" in style.sheet )
             {
                 style.sheet.addRule( selector, rules, index );
                 declaration.css = style.sheet.rules[ index ];
@@ -231,7 +231,7 @@ function widget2jquery( name, widget, spr )
         var method = "string" === typeof options ? options : false,
             args = slice.call( arguments, 1 ), return_value = this, method_;
 
-        if ( method ) 
+        if ( method )
         {
             this.each(function( ){
                 var method_value,
@@ -247,10 +247,10 @@ function widget2jquery( name, widget, spr )
                     return_value = widget_inst ? widget_inst.instance || widget_inst : widget_inst;
                     return false;
                 }
-                
+
                 if ( !widget_inst ) return false;
-                
-                if ( "dispose" === method || "destroy" === method ) 
+
+                if ( "dispose" === method || "destroy" === method )
                 {
                     if ( 'function' === typeof widget_inst.dispose ) widget_inst.dispose( );
                     else if ( 'function' === typeof widget_inst.destroy ) widget_inst.destroy( );
@@ -263,31 +263,31 @@ function widget2jquery( name, widget, spr )
                     $.removeData( this, name );
                     return false;
                 }
-                
+
                 method_ = widget_inst[ method ] || (super_ && super_[ method ]);
                 if ( 'function' !== typeof method_ ) return false;
 
                 method_value = method_.apply( widget_inst, args );
-                if ( method_value !== widget_inst && undef !== method_value ) 
+                if ( method_value !== widget_inst && undef !== method_value )
                 {
-                    return_value = method_value && method_value.jquery 
-                                ? return_value.pushStack( method_value.get( ) ) 
+                    return_value = method_value && method_value.jquery
+                                ? return_value.pushStack( method_value.get( ) )
                                 : method_value;
                     return false;
                 }
             });
-        } 
-        else 
+        }
+        else
         {
             options = options || {};
             this.each(function( ){
                 var widget_inst = $.data( this, name );
-                if ( widget_inst ) 
+                if ( widget_inst )
                 {
                     method_ = widget_inst.options ||  (super_ && super_.options);
                     if ( 'function' === typeof method_ ) method_.call( widget_inst, options );
-                } 
-                else 
+                }
+                else
                 {
                     $.data( this, name, widget_inst = new widget( this, options ) );
                     method_ = widget_inst.init ||  (super_ && super_.init);
@@ -333,29 +333,29 @@ htmlwidget.resetFormElements = function ( els ) {
   if ( els.length )
   {
       var $form = $('<form style="display:none"></form>').appendTo('body'), i;
-      
+
       i = 0;
       $(els).each(function( ){
           var id = '__ele_reset_proxy__'+(++i)+'';
           $( this ).val( '' )/*.blur( )*/.replaceWith( '<span id="'+id+'"></span>' );
           $form.append( this );
       });
-      
+
       $form.trigger( 'reset' )/*reset()*/;
-      
+
       i = 0;
       $(els).each(function( ){
           var id = '#__ele_reset_proxy__'+(++i)+'';
           $( id ).replaceWith( this );
           $(this).triggerNative( 'reset' );
       });
-      
+
       $form.remove( );
   }
   return els;
 };
 $.fn.triggerNative = function( event, data ) {
-    this.each(function( ){ htmlwidget.dispatch(event, this, data); });
+    this.each(function( ){ htmlwidget.dispatch(event, this, data, true); });
     return this;
 };
 $.fn.resetElement = function( ) {
@@ -443,7 +443,7 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
     var self = this;
     if ( !(self instanceof morphable) ) return new morphable(el, options);
     var cur_mode = null, style_sheet = null, css_styles = null, mode_class;
-    
+
     /*self.create = function( ) {
         var $el = $(el), cssStyles = {}, hideSelector, showSelector, mainSelector,
             modes = !!$el.attr('data-morphable-modes') ? $el.attr('data-morphable-modes').split(',') : [].concat(options.modes||[]),
@@ -451,7 +451,7 @@ widget2jquery('removable', htmlwidget.removable=function removable( el, options 
             hide_class = $el.attr('data-morphable-hide') || options.hideClass,
             mode_class = $el.attr('data-morphable-mode') || options.modeClass
         ;
-        
+
         $el.addClass('w-morphable');
         mainSelector = '#' + $el.attr( "id" ) + '.w-morphable';
         hideSelector = []; showSelector = [];
@@ -578,9 +578,9 @@ widget2jquery('disabable', htmlwidget.disabable=function disabable( el, options 
 widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
     var self = this;
     if ( !(self instanceof sortable) ) return new sortable(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof Sortable )
         {
@@ -601,13 +601,13 @@ widget2jquery('sortable', htmlwidget.sortable=function sortable( el, options ){
 widget2jquery('template', htmlwidget.template=function template( el, options ){
     var self = this;
     if ( !(self instanceof template) ) return new template(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof Tao )
         {
-            self.instance = Tao( 
+            self.instance = Tao(
                 el,
                 el[HAS_ATTR]('data-tpl-key') ? new RegExp(el[ATTR]('data-tpl-key')) : (options.key || template.key),
                 !!(el[ATTR]('data-tpl-revivable') || options.revivable),
@@ -636,9 +636,9 @@ htmlwidget.Template.key = /\$\(([^\(\)]+)\)/g;
 widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
     var self = this;
     if ( !(self instanceof suggest) ) return new suggest(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof AutoComplete )
         {
@@ -667,10 +667,10 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
                     ;
                     data.suggest[q] = term;
                     //var evt = $.Event( "suggest" );
-                    
+
                     // allow to dynamicaly add suggest parameters
                     $el.triggerNative("suggest", data);
-                    
+
                     if ( !!data.suggestions || !!data.list )
                     {
                         suggest( data.suggestions || data.list );
@@ -723,7 +723,7 @@ widget2jquery('suggest', htmlwidget.suggest=function suggest( el, options ){
 widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadable( el, options ){
     var self = this;
     if ( !(self instanceof dnd_uploadable) ) return new dnd_uploadable(el, options);
-    
+
     self.dispose = function( ) {
         var control = $(el);
         control.off('.dnd_uploadable');
@@ -744,14 +744,14 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
             preview_size = ($file[0][HAS_ATTR]('data-dnd-upload-preview')
                 ? int($file[0][ATTR]('data-dnd-upload-preview'))
                 : int(options.preview || 140)) || 140;
-        
+
         var do_reset = function( and_trigger ) {
             var $file = control.find('input._w-dnd-uploader[type=file]');
             $file[0].files_dropped = null;
             $file.resetElement( );
             if ( false !== and_trigger ) $file.triggerNative('change');
         };
-        
+
         if ( !!mimetype && ('string' === typeof mimetype) )
         {
             mimetype = new RegExp( ".?(" + mimetype.replace( /\s/g, "" ).replace( /[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&" ).replace( /,/g, '|' ).split( '\/*' ).join( '/.*' ) + ")$", "i" );
@@ -800,7 +800,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
                         return;
                     }
                 }
-                
+
                 for (i=0,l=files.length; i<l; i++)
                 {
                     if ( (show_preview||upload_thumbnail) && files[i].type.match( 'image' ) )
@@ -899,7 +899,7 @@ widget2jquery('dnd_uploadable', htmlwidget.dnd_uploadable=function dnd_uploadabl
 widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, options ){
     var self = this;
     if ( !(self instanceof uploadable) ) return new uploadable(el, options);
-    
+
     self.dispose = function( ) {
         var control = $(el);
         control.off('.uploadable');
@@ -907,29 +907,29 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
     };
     self.init = function( ) {
         var control = $(el),
-        
+
             fileSizeMax = (el[HAS_ATTR]('data-upload-size')
                 ? int(el[ATTR]('data-upload-size'))
                 : int(options.fileSizeMax || 1048576)) || 1048576 /*1 MiB*/,
-                
+
             fileType = 'image' /*!!el[ATTR]('data-upload-type') ? el[ATTR]('data-upload-type') : (options.fileType || 'image')*/,
-            
+
             fileDimensions = el[HAS_ATTR]('data-upload-dimensions')
                 ? el[ATTR]('data-upload-dimensions').split('x').map(int)
                 : (!!options.dimensions ? options.dimensions.map(int) : null),
-                
+
             thumbnail_size = (el[HAS_ATTR]('data-upload-thumbnail')
                 ? int(el[ATTR]('data-upload-thumbnail'))
                 : int(options.thumbnail || 120)) || 120,
-                
+
             msgFileSize = el[HAS_ATTR]('data-upload-size-msg')
                 ? el[ATTR]('data-upload-size-msg')
                 : (options.maxFileSizeMsg || 'File size exceeds maximum size limit!'),
-                
+
             msgFileType = el[HAS_ATTR]('data-upload-type-msg')
                 ? el[ATTR]('data-upload-type-msg')
                 : (options.fileTypeMsg || 'File type not allowed!'),
-                
+
             msgFileDimensions = el[HAS_ATTR]('data-upload-dimensions-msg')
                 ? el[ATTR]('data-upload-dimensions-msg')
                 : (options.dimensionsMsg || 'File dimensions exceed allowed dimensions!')
@@ -938,7 +938,7 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
         .on('click.uploadable', '.w-upload-thumbnail', function( evt ){
             var $upload_data = control.find('._w-data'),
                 upload_data = control[0].upload_data || (!!$upload_data.val() ? json_decode($upload_data.val()) : null);
-                
+
             if ( !!upload_data && upload_data.type.match('image') )
             {
                 if ( !control[0].upload_data ) control[0].upload_data = upload_data;
@@ -1034,9 +1034,9 @@ widget2jquery('uploadable', htmlwidget.uploadable=function uploadable( el, optio
 widget2jquery('datetimepicker', htmlwidget.datetimepicker=function datetimepicker( el, options ){
     var self = this;
     if ( !(self instanceof datetimepicker) ) return new datetimepicker(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof Pikadaytime )
         {
@@ -1101,9 +1101,9 @@ htmlwidget.datetimepicker.decoder = function datetime_decoder( format, locale )
 widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, options ){
     var self = this;
     if ( !(self instanceof colorpicker) ) return new colorpicker(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof ColorPicker )
         {
@@ -1138,9 +1138,9 @@ widget2jquery('colorpicker', htmlwidget.colorpicker=function colorpicker( el, op
 widget2jquery('areaselect', htmlwidget.areaselect=function areaselect( el, options ){
     var self = this;
     if ( !(self instanceof areaselect) ) return new areaselect(el, options);
-    
+
     self.instance = null;
-    
+
     self.init = function( ) {
         if ( 'function' === typeof AreaSelect )
         {
@@ -1213,15 +1213,15 @@ function map_geocode( location, cb, reverse_geocode )
         cb( null );
     }
 }
-function add_map_marker( map, lat, lng, title, info, opts ) 
-{ 
+function add_map_marker( map, lat, lng, title, info, opts )
+{
     // https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions
     var marker_options = {
         map: map,
         title: title,
         position: new google.maps.LatLng( lat, lng )
     }, marker, marker_popup;
-    
+
     /*if ( null != opts.clickable ) marker_options.clickable = !!opts.clickable;
     if ( null != opts.draggable ) marker_options.draggable = !!opts.draggable;
     if ( null != opts.crossOnDrag ) marker_options.crossOnDrag = !!opts.crossOnDrag;
@@ -1229,7 +1229,7 @@ function add_map_marker( map, lat, lng, title, info, opts )
     if ( null != opts.icon ) marker_options.icon = opts.icon;
     if ( null != opts.zIndex ) marker_options.zIndex = opts.zIndex;
     if ( null != opts.shape ) marker_options.shape = opts.shape;*/
-    
+
     marker = new google.maps.Marker( marker_options );
     if ( !!info )
     {
@@ -1249,9 +1249,9 @@ function add_map_marker( map, lat, lng, title, info, opts )
 widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
     var self = this, gmap, zoom, c_lat, c_lng, center_marker, responsive;
     if ( !(self instanceof gmap3) ) return new gmap3(el, options);
-    
+
     gmap = null;
-    
+
     //google.maps.MapTypeId.ROADMAP
     options = $.extend({
         type: "ROADMAP",
@@ -1261,7 +1261,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
         kml: null,
         responsive: false
     }, options||{});
-    
+
     function on_resize( )
     {
         if ( gmap )
@@ -1273,7 +1273,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
             });
         }
     }
-    
+
     self.dispose = function( ) {
         if ( responsive ) $(window).off( 'resize.gmap3', on_resize );
         // http://stackoverflow.com/questions/10485582/what-is-the-proper-way-to-destroy-a-map-instance
@@ -1292,7 +1292,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
             ;
             c_lat = parseFloat(center[0]||0, 10);
             c_lng = parseFloat(center[1]||0, 10);
-            
+
             if ( has_center_marker )
             {
                 var marker = {
@@ -1303,7 +1303,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 };
                 markers.push( center_marker = marker );
             }
-            
+
             // declarative markers
             $el.children('.marker,.map-marker').each(function( ){
                 var m = this,
@@ -1321,7 +1321,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 markers.push( marker );
             });
             $el.empty( );
-            
+
             // markers reference
             if ( !!el[ATTR]('data-map-markers') )
             {
@@ -1341,7 +1341,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                     markers.push( marker );
                 });
             }
-            
+
             // option markers
             var i, marker, l = options.markers ? options.markers.length : 0;
             for (i=0; i<l; i++)
@@ -1350,13 +1350,13 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 marker = options.markers[i];
                 markers.push( marker );
             }
-            
+
             gmap = new google.maps.Map(el, {
                 zoom: zoom,
                 center: new google.maps.LatLng( c_lat, c_lng ),
                 mapTypeId: google.maps.MapTypeId[ type ]
             });
-            
+
             for(i=0,l=markers.length; i<l; i++)
             {
                 marker = markers[i];
@@ -1366,7 +1366,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                     add_map_marker( gmap, marker.lat, marker.lng, marker.title||'', marker.info, marker );
             }
             markers = null;
-            
+
             /*if ( !!address )
             {
                 map_geocode(address, function( data ){
@@ -1378,13 +1378,13 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                     }
                 });
             }
-            
+
             if ( null != options.kml )
             {
                 var geoRssLayer = new google.maps.KmlLayer( options.kml );
                 geoRssLayer.setMap( gmap );
             }*/
-            
+
             responsive = !!(el[ATTR]('data-map-responsive')||options.responsive);
             if ( responsive ) $(window).on( 'resize.gmap3', on_resize );
         }
@@ -1445,7 +1445,7 @@ widget2jquery('gmap3', htmlwidget.gmap3=function gmap3( el, options ) {
                 markers[i].setMap( null );
         }
     };
-});	
+});
 
 htmlwidget._handleDefault = function( type, el, opts, pre_init, post_init, pluginClass ) {
     if ( pluginClass && ('function' === typeof window[pluginClass]) )
@@ -1727,7 +1727,7 @@ htmlwidget._handle['tinymce'] = function( type, el, opts, pre_init, post_init ) 
             });
         };
     }
-    
+
     // see if same editor was created in the past
     var prev_editor = tinymce.get( el.id );
     if ( prev_editor ) prev_editor.remove( );
@@ -1802,7 +1802,7 @@ htmlwidget._handle['vextab'] = function( type, el, opts, pre_init, post_init ) {
 $.fn.htmlwidget = function( type, options ) {
     var widget_handler;
     options = options || { };
-    
+
     if ( HAS.call(htmlwidget.widget,type) && 'function' === typeof htmlwidget.widget[type] )
     {
         widget_handler = htmlwidget.widget[type];
@@ -1967,7 +1967,7 @@ htmlwidget.tooltip = function( el ) {
         : (el[HAS_ATTR]('title')
         ? el[ATTR]('title')
         : ''));
-        
+
         if ( content.length )
         {
             $el.tooltipster({
@@ -1976,7 +1976,7 @@ htmlwidget.tooltip = function( el ) {
                 autoClose: true,
                 contentAsHTML: true,
                 content: '<i class="fa fa-info-circle"></i>&nbsp;&nbsp;' + content,
-                position: $el.hasClass('tooltip-bottom') 
+                position: $el.hasClass('tooltip-bottom')
                             ? 'bottom'
                             : ($el.hasClass('tooltip-right')
                             ? 'right'

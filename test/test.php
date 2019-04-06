@@ -20,7 +20,7 @@ $importer->register( 'assets', HtmlWidget::assets(array(
             'full'      => true,
             'jquery'    => true,
             'dev'       => true,
-            'cdn'       => false
+            'cdn'       => true
         )) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
@@ -318,6 +318,12 @@ function scripts( )
     </ul></div>
     
     </fieldset>
+    
+    <?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?>
+    
+    <?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?>
+    
+    <?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
     
     <fieldset><legend>Buttons</legend>
     <?php widget('button',array('class'=>'w-xsmall','icon'=>'times-circle')); ?>
@@ -1588,6 +1594,7 @@ tabstave
     enqueue('styles','normalize.css');
     enqueue('styles','responsive.css');
     enqueue('styles','fontawesome.css');
+    enqueue('styles','bootstrap.css');
     enqueue('scripts','jquery');
     enqueue('scripts','datatables');
     enqueue('scripts','tooltipster');

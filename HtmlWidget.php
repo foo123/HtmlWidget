@@ -1,10 +1,10 @@
 <?php
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for PHP, Node/XPCOM/JS, Python
+*  html widgets used as (template) plugins and/or standalone, for Node.js / Browser Javascript, PHP, Python
 *
 *  @dependencies: FontAwesome, jQuery, SelectorListener
-*  @version: 0.9.4
+*  @version: 1.0.0
 *  https://github.com/foo123/HtmlWidget
 *  https://github.com/foo123/components.css
 *  https://github.com/foo123/responsive.css
@@ -17,23 +17,23 @@ if ( !class_exists('HtmlWidget', false) )
 {
 class HtmlWidget
 {
-    const VERSION = "0.9.4";
+    const VERSION = "1.0.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array( );
-    
+
     public static function enqueueAssets( $enqueuer=null )
     {
         if ( $enqueuer && is_callable($enqueuer) ) self::$enqueuer = $enqueuer;
         else self::$enqueuer = null;
     }
-    
+
     public static function enqueue( $type, $id, $asset=null, $deps=array(), $props=array() )
     {
-        if ( self::$enqueuer ) 
+        if ( self::$enqueuer )
             call_user_func(self::$enqueuer, $type, $id, array($asset, $deps, $props));
     }
-    
+
     public static function assets( $opts=array() )
     {
         $opts = array_merge(array(
@@ -43,13 +43,13 @@ class HtmlWidget
             'dev'       => false,
             'cdn'       => false
         ), (array)$opts);
-        
+
         $dev = true === $opts['dev']; $cdn = true === $opts['cdn'];
         $base = $opts['base'];
         if ( empty($base) ) $base = '';
         $base = $base . ('/' === substr($base, -1)  ? '' : '/');
         $asset_base = $base . 'assets/';
-        
+
         $assets = array(
          array('styles', 'htmlwidgets.css', $dev ? $base.'htmlwidgets.dev.css' : $base.'htmlwidgets.css')
         ,array('styles', 'normalize.css', $asset_base.'responsive/normalize.css')
@@ -70,7 +70,7 @@ class HtmlWidget
         ,array('scripts', 'selectorlistener', $asset_base.'utils/selectorlistener.js')
         ,array('scripts', 'htmlwidgets', $dev ? $base.'htmlwidgets.dev.js' : $base.'htmlwidgets.js', array('htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener'))
         );
-        
+
         if ( true === $opts['jquery'] )
         {
             $assets = array_merge($assets, $cdn
@@ -88,34 +88,34 @@ class HtmlWidget
             )
             );
         }
-        
+
         if ( true === $opts['full'] )
         {
             $assets = array_merge($assets, array(
              array('scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places')
-            
+
             // Modernizr
             ,array('scripts', 'modernizr', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
             : $asset_base.'utils/modernizr.js'
             )
-            
+
             // Hover.css
             ,array('styles', 'hover.css', $cdn
             ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
             : $asset_base.'hover/hover.css'
             )
-            
+
             // Humane
             ,array('styles', 'humane.css', $asset_base.'humane/humane.css')
             ,array('scripts', 'humane', $asset_base.'humane/humane.js', array('humane.css'))
-            
+
             // notify.js
             ,array('scripts', 'notify', $asset_base.'utils/notify.js')
-            
+
             // visibility.js
             ,array('scripts', 'visibility', $asset_base.'utils/visibility.js')
-            
+
             // visibilityjs
             ,array('scripts', 'visibilityjs.fallback', $cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.fallback.min.js'
@@ -125,52 +125,52 @@ class HtmlWidget
             ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.min.js'
             : $asset_base.'visibilityjs/visibility.js'
             )
-            
+
             // List.js
             ,array('scripts', 'list', $cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
             : $asset_base.'utils/list.js'
             )
-            
+
             // NodeList
             ,array('scripts', 'nodelist', $asset_base.'utils/nodelist.js')
-            
+
             // FTScroller
             ,array('scripts', 'ftscroller', $asset_base.'utils/ftscroller.js')
-            
+
             // isMobile
             ,array('scripts', 'ismobile', $asset_base.'utils/ismobile.js')
-            
+
             // Tao
             ,array('scripts', 'tao', $asset_base.'utils/tao.js')
-            
+
             // Serialiser
             ,array('scripts', 'serialiser', $asset_base.'utils/serialiser.js')
-            
+
             // History
             ,array('scripts', 'history', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
             : $asset_base.'utils/history.js'
             )
-            
+
             // Cookie
             ,array('scripts', 'cookie', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
             : $asset_base.'utils/cookie.js'
             )
-            
+
             // localStorage
             ,array('scripts', 'localstorage', $cdn
             ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='.urlencode('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
             : ($asset_base.'localstorage/localStorage.js?swfURL='.urlencode($asset_base.'localstorage/localStorage.swf'))
             )
-            
+
             // localForage
             ,array('scripts', 'localforage', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js'
             : $asset_base.'localforage/localforage.js'
             )
-            
+
             // RT
             ,array('scripts', 'RT', $asset_base.'RT/RT.js')
             ,array('scripts', 'RT.Poll', $asset_base.'RT/RT.Poll.js', array('RT'))
@@ -179,19 +179,19 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : $asset_base.'swfobject/swfobject.js'
             ))
-            
+
             // swfObject
             ,array('scripts', 'swfobject', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : $asset_base.'swfobject/swfobject.js'
             )
-            
+
             // html5media
             ,array('scripts', 'html5media', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js'
             : $asset_base.'html5media/html5media.js'
             )
-            
+
             // video.js
             ,array('styles', 'video-js.css', $cdn
             ? 'http://vjs.zencdn.net/vjs-version/video-js.css'
@@ -201,22 +201,22 @@ class HtmlWidget
             ? 'http://vjs.zencdn.net/vjs-version/video.js'
             : $asset_base.'video.js/video.js'
             , array('video-js.css'))
-            
+
             // clappr
             ,array('scripts', 'clappr', $cdn
             ? 'https://cdn.jsdelivr.net/clappr/latest/clappr.min.js'
             : $asset_base.'clappr/clappr.js'
             )
-            
+
             // gest.js
             ,array('scripts', 'gest', $asset_base.'gest/gest.js')
-            
+
             // hammer.js
             ,array('scripts', 'hammer', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
             : $asset_base.'hammer/hammer.js'
             )
-            
+
             // tabulator
             ,array('styles', 'tabulator.css', $cdn
             ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/css/tabulator.min.css'
@@ -226,52 +226,52 @@ class HtmlWidget
             ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/js/tabulator.min.js'
             : $asset_base.'tabulator/tabulator.min.js'
             , array('tabulator.css'))
-            
+
             // Typo
             ,array('scripts', 'typo', $asset_base.'typo/typo.js')
-            
+
             // AreaSelect
             ,array('styles', 'areaselect.css', $asset_base.'areaselect/areaselect.css')
             ,array('scripts', 'areaselect', $asset_base.'areaselect/areaselect.js', array('areaselect.css'))
-             
+
             // AutoComplete
             ,array('styles', 'autocomplete.css', $asset_base.'autocomplete/autocomplete.css')
             ,array('scripts', 'autocomplete', $asset_base.'autocomplete/autocomplete.js', array('autocomplete.css','jquery'))
-             
+
             // Awesomplete
             ,array('styles', 'awesomplete.css', $asset_base.'awesomplete/awesomplete.css')
             ,array('scripts', 'awesomplete', $asset_base.'awesomplete/awesomplete.js', array('awesomplete.css'))
-             
+
             // Timer
             ,array('scripts', 'timer', $asset_base.'timer/timer.js')
-            
+
             // DateX
             ,array('scripts', 'datex', $asset_base.'utils/datex.js')
-            
+
             // Pikadaytime
             ,array('styles', 'pikadaytime.css', $asset_base.'pikadaytime/pikadaytime.css')
             ,array('scripts', 'pikadaytime', $asset_base.'pikadaytime/pikadaytime.js', array('pikadaytime.css','datex'))
-             
+
             // ColorPicker
             ,array('styles', 'colorpicker.css', $asset_base.'colorpicker/colorpicker.css')
             ,array('scripts', 'colorpicker', $asset_base.'colorpicker/colorpicker.js', array('colorpicker.css'))
-             
+
             // Sortable
             ,array('scripts', 'sortable', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
             : $asset_base.'sortable/sortable.js'
             )
-             
+
             // TinyDraggable
             ,array('scripts', 'tinydraggable', $asset_base.'tinydraggable/tinydraggable.js')
-             
+
             // LocationPicker
             ,array('scripts', 'locationpicker', $asset_base.'locationpicker/locationpicker.js', array('cdn--google-maps','jquery'))
-             
+
             // RangeSlider
             ,array('styles', 'rangeslider.css', $asset_base.'rangeslider/rangeslider.css')
             ,array('scripts', 'rangeslider', $asset_base.'rangeslider/rangeslider.js', array('rangeslider.css','jquery'))
-             
+
             // Select2
             ,array('styles', 'select2.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
@@ -281,12 +281,12 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
             : $asset_base.'select2/select2.js'
             , array('select2.css','jquery'))
-             
+
             // TagEditor
             ,array('scripts', 'caret', $asset_base.'tageditor/caret.js')
             ,array('styles', 'tageditor.css', $asset_base.'tageditor/tageditor.css')
             ,array('scripts', 'tageditor', $asset_base.'tageditor/tageditor.js', array('tageditor.css','jquery','caret'))
-             
+
             // Tooltipster
             ,array('styles', 'tooltipster.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
@@ -296,63 +296,63 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
             : $asset_base.'tooltipster/tooltipster.js'
             , array('tooltipster.css','jquery'))
-             
+
             // Popr2
             ,array('styles', 'popr2.css', $asset_base.'popr2/popr2.css')
             ,array('scripts', 'popr2', $asset_base.'popr2/popr2.js', array('popr2.css','jquery'))
-            
+
             // Modal
             ,array('styles', 'modal.css', $asset_base.'modal/modal.css')
             ,array('scripts', 'modal', $asset_base.'modal/modal.js', array('modal.css','jquery'))
-            
+
             // Address
             ,array('scripts', 'address', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js'
             : $asset_base.'utils/address.js'
             , array('jquery'))
-            
+
             // smoothState
             ,array('scripts', 'smoothstate', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/smoothState.js/0.7.2/jquery.smoothState.min.js'
             : $asset_base.'utils/smoothState.js'
             , array('jquery'))
-             
+
             // Packery
             ,array('scripts', 'packery', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
                 : $asset_base.'packery/packery.js'
             )
-             
+
             // Isotope
             ,array('scripts', 'isotope', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
                 : $asset_base.'isotope/isotope.js'
             )
-             
+
             // Masonry
             ,array('scripts', 'masonry', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
                 : $asset_base.'masonry/masonry.js'
             )
-             
+
             // ModelView
             ,array('scripts', 'modelview', $asset_base.'modelview/modelview.js')
-            
+
             // ModelViewForm
             ,array('scripts', 'modelviewform', $asset_base.'modelview/modelview.form.js', array('jquery','datex','modelview'))
-             
+
             // Raphael
             ,array('scripts', 'raphael', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
                 : $asset_base.'raphael/raphael.js'
             )
-             
+
             // D3
             ,array('scripts', 'd3', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
                 : $asset_base.'d3/d3.js'
             )
-             
+
             // C3
             ,array('styles', 'c3.css', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css'
@@ -362,7 +362,7 @@ class HtmlWidget
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js'
                 : $asset_base.'c3/c3.js'
             , array('c3.css','d3'))
-             
+
             // DataTables
             ,array('styles', 'datatables.css', $cdn
                 ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
@@ -498,15 +498,15 @@ class HtmlWidget
                 $asset_base.'datatables/js/scroller.js',
                 $asset_base.'datatables/js/keytable.js'
             ), array('datatables-all.css','datatables'))
-            
-            
+
+
             // VexTab
             ,array('styles', 'vextab.css', $asset_base.'vex/tab/vextab.css')
             ,array('scripts', 'vextab', $asset_base.'vex/tab/vextab-div.js',array('vextab.css'))
-             
+
             // ImTranslator
             //,array()
-            
+
             // KateX
             ,array('styles', 'katex.css', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
@@ -520,30 +520,30 @@ class HtmlWidget
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
                 : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
             , array('katex'))
-            
+
             // MathJax, ?config=TeX-AMS_HTML-full
             ,array('scripts', 'mathjax', $cdn
                 ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
                 : 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
             )
-            
+
             // MathQuill
             ,array('styles', 'mathquill.css', $asset_base.'mathquill/mathquill.css')
             ,array('scripts', 'mathquill', $asset_base.'mathquill/mathquill.js', array('jquery','mathquill.css'))
-            
+
             // Tinymce
             ,array('scripts', 'tinymce', $cdn
                 ? '//cdn.tinymce.com/4/tinymce.min.js'
                 : $asset_base.'tinymce/tinymce.min.js'
             )
             ,array('scripts', 'tinymce-plugin-placeholder', $asset_base.'tinymce/plugins/placeholderalt/plugin.min.js',array('tinymce'))
-             
+
             // CKEditor
             ,array('scripts', 'ckeditor', $cdn
                 ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
                 : '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
             )
-             
+
             // Trumbowyg
             ,array('styles', 'trumbowyg.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/ui/trumbowyg.min.css'
@@ -553,7 +553,7 @@ class HtmlWidget
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/trumbowyg.min.js'
             : $asset_base.'trumbowyg/trumbowyg.js'
             , array('trumbowyg.css','jquery'))
-            
+
             // CodeMirror
             ,array('styles', 'codemirror.css', $cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.css'
@@ -606,14 +606,14 @@ class HtmlWidget
                 $asset_base.'codemirror/addon/comment/comment.js'
             ), array('codemirror.css'))
             ,array('scripts', 'codemirror-grammar', $asset_base.'codemirror/addon/grammar/codemirror_grammar.js')
-            
+
             // ACE
             ,array('scripts', 'ace', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js'
             : $asset_base.'ace/ace.js'
             ,null, array('charset'=>'utf-8','data-ace-base'=>$cdn?'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3':($asset_base.'ace')))
             ,array('scripts', 'ace-grammar', $asset_base.'ace/ace_grammar.js')
-            
+
             // Prism
             ,array('scripts', 'prefixfree', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js'
@@ -649,7 +649,7 @@ class HtmlWidget
                 $asset_base.'prism/components/prism-json.min.js',
                 $asset_base.'prism/components/prism-css.min.js'
             ), array('prism'))
-            
+
             // SyntaxHighlighter
             ,array('styles-composite', 'sh.css', $cdn
             ? array(
@@ -678,7 +678,7 @@ class HtmlWidget
                 $asset_base.'syntaxhighlighter/shBrushJScript.min.js',
                 $asset_base.'syntaxhighlighter/shBrushCss.min.js'
             ), array('sh'))
-            
+
             // Highlightjs
             ,array('styles', 'hjs.css', $cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css'
@@ -706,7 +706,7 @@ class HtmlWidget
         }
         return $assets;
     }
-    
+
     public static function i18n( $locale, $base='', $all=false, $cdn=false )
     {
         if ( empty($locale) ) return array();
@@ -731,13 +731,13 @@ class HtmlWidget
         }
         return $i18n;
     }
-    
+
     public static function uuid( $prefix="widget", $suffix="static1" )
     {
         static $GID = 0;
         return implode("_", array($prefix, time(), ++$GID, rand(0,1000), $suffix));
     }
-    
+
     private static function data_attr( $k, $v )
     {
         if ( is_array($v) )
@@ -752,7 +752,7 @@ class HtmlWidget
             return "{$k}='{$v}'";
         }
     }
-    
+
     public static function data( $attr, $ctx='data' )
     {
         $d_attr = '';
@@ -763,7 +763,7 @@ class HtmlWidget
         }
         return $d_attr;
     }
-    
+
     public static function attributes( $attr, $atts=array() )
     {
         if ( empty($atts) || empty($attr) ) return '';
@@ -785,7 +785,7 @@ class HtmlWidget
         }
         return empty($attrs) ? '' : implode(' ', $attrs);
     }
-    
+
     public static function options( $opts, $key=null, $value=null )
     {
         $options = array( );
@@ -802,7 +802,7 @@ class HtmlWidget
                 if ( isset($vv[$key]) )
                     $o_key = $vv[$key];
             }
-            
+
             $o_val = null;
             if ( null !== $value )
             {
@@ -813,14 +813,14 @@ class HtmlWidget
             {
                 $o_val = $v;
             }
-            
+
             if ( null === $o_key ) $o_key = $o_val;
-            
+
             $options[] = array($o_key, $o_val);
         }
         return $options;
     }
-    
+
     public static function shuffle( $arr, $assoc=false )
     {
         // shuffle an asociative array as well
@@ -838,7 +838,7 @@ class HtmlWidget
         }
         return $shuffled;
     }
-    
+
     public static function addWidget( $widget, $renderer )
     {
         if ( $widget && $renderer && is_callable($renderer) )
@@ -846,7 +846,7 @@ class HtmlWidget
         elseif ( $widget && (false === $renderer) && isset(self::$widgets['w_'.$widget]) )
             unset(self::$widgets['w_'.$widget]);
     }
-    
+
     public static function widget( $widget, $attr=array(), $data=array() )
     {
         $out = '';
@@ -854,10 +854,10 @@ class HtmlWidget
         {
             if ( null == $attr ) $attr = array();
             if ( null == $data ) $data = array();
-            
-            if ( isset(self::$widgets['w_'.$widget]) ) 
+
+            if ( isset(self::$widgets['w_'.$widget]) )
                 return call_user_func(self::$widgets['w_'.$widget], $attr, $data, $widget);
-            
+
             if ( 'audio' === $widget ) $attr['type'] = 'audio';
             elseif ( 'video' === $widget ) $attr['type'] = 'video';
             elseif ( 'checkbox-array' === $widget || 'check-array' === $widget ) $attr['type'] = 'checkbox';
@@ -872,7 +872,7 @@ class HtmlWidget
             elseif ( 'datatable' === $widget ) $attr['datatable'] = true;
             elseif ( 'ace' === $widget || 'ace-editor' === $widget || 'codemirror' === $widget || 'codemirror-editor' === $widget || 'syntax-editor' === $widget || 'source-editor' === $widget || 'syntax' === $widget || 'source' === $widget || 'highlight-editor' === $widget || 'highlighter' === $widget ) $attr['syntax-editor'] = true;
             elseif ( 'tinymce' === $widget || 'wysiwyg-editor' === $widget || 'wysiwyg' === $widget || 'rich-editor' === $widget || 'rich' === $widget || 'editor' === $widget ) $attr['wysiwyg-editor'] = true;
-            
+
             switch( $widget )
             {
             case 'empty':       $out = self::w_empty($attr, $data, $widget); break;
@@ -898,8 +898,6 @@ class HtmlWidget
             case 'link':        $out = self::w_link($attr, $data, $widget); break;
             case 'button':      $out = self::w_button($attr, $data, $widget); break;
             case 'label':       $out = self::w_label($attr, $data, $widget); break;
-            /*case 'uploader':
-            case 'upload':*/
             case 'dnd-uploader':
             case 'dnd-upload':
             case 'drag-n-drop-uploader':
@@ -934,10 +932,10 @@ class HtmlWidget
             case 'highlight-editor':
             case 'highlighter':
             case 'textarea':    $out = self::w_textarea($attr, $data, $widget); break;
-            case 'music':       
-            case 'score':       
-            case 'vextab':       
-            case 'tab':       
+            case 'music':
+            case 'score':
+            case 'vextab':
+            case 'tab':
             case 'tablature':   $out = self::w_vextab($attr, $data, $widget); break;
             case 'datetimepicker':
             case 'datepicker':
@@ -976,6 +974,7 @@ class HtmlWidget
             case 'endmenu':
             case 'end_menu':
             case 'menu_end':    $out = self::w_menu_end($attr, $data, $widget); break;
+            case 'pagination':  $out = self::w_pagination($attr, $data, $widget); break;
             case 'datatable':
             case 'table':       $out = self::w_table($attr, $data, $widget); break;
             case 'graph':
@@ -992,25 +991,25 @@ class HtmlWidget
         }
         return $out;
     }
-    
+
     public static function w_empty( $attr, $data, $widgetName=null )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         return '';
     }
-    
+
     public static function w_sep( $attr, $data, $widgetName=null )
     {
-        $wclass = 'w-separator'; 
+        $wclass = 'w-separator';
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         self::enqueue('styles', 'htmlwidgets.css');
         return "<div class=\"$wclass\" $wstyle></div>";
     }
-    
+
     public static function w_icon( $attr, $data, $widgetName=null )
     {
-        $wclass = 'fa'; 
+        $wclass = 'fa';
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         if ( !empty($attr['icon']) ) $wclass .= ' fa-'.$attr['icon'];
@@ -1019,7 +1018,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return "<i class=\"$wclass\" $wstyle $wtitle $wextra></i>";
     }
-    
+
     public static function w_label( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1043,7 +1042,7 @@ class HtmlWidget
         // iOS needs an onlick attribute to handle lable update if used as controller
         return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle onclick=\"\" $wextra>$wtext</label>";
     }
-    
+
     public static function w_link( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1070,15 +1069,15 @@ class HtmlWidget
         }
         else
         {
-            $whref = isset($attr['href']) ? $attr['href'] : '#'; 
+            $whref = isset($attr['href']) ? $attr['href'] : '#';
             $wextra .= ' '.self::attributes($attr,array('target','rel'));
             return "<a id=\"$wid\" class=\"$wclass\" $wstyle title=\"$wtitle\" href=\"$whref\" $wextra>$wtext</a>";
         }
     }
-    
+
     public static function w_button( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
         $wclass = 'w-widget w-button'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1114,7 +1113,7 @@ class HtmlWidget
             return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra>$wtext</button>";
         }
     }
-    
+
     public static function w_control( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1147,7 +1146,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
     }
-    
+
     public static function w_control_list( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1220,7 +1219,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return $widget;
     }
-    
+
     public static function w_control_array( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1307,7 +1306,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return $widget;
     }
-    
+
     public static function w_switch( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1351,7 +1350,7 @@ class HtmlWidget
             {
                 $wstates = "<input type=\"$wtype\" id=\"{$wid}-on\" $wname class=\"w-switch-state w-state-on\" value=\"$wvalue\" $wextra /><input type=\"$wtype\" id=\"{$wid}-off\" $wname class=\"w-switch-state w-state-off\" value=\"$wvalue2\" $wextra checked />";
             }
-            if ( $wreverse ) 
+            if ( $wreverse )
             {
                 $wclass .= ' reverse';
                 $wswitches = "<label for=\"{$wid}-off\" class=\"w-switch-off\" onclick=\"\">$wiconoff</label><label for=\"{$wid}-on\" class=\"w-switch-on\" onclick=\"\">$wiconon</label>";
@@ -1366,7 +1365,7 @@ class HtmlWidget
             // switch with one state for on/off
             if ( $wchecked ) $wchecked = 'checked';
             $wstates = "<input type=\"$wtype\" id=\"$wid\" $wname class=\"w-switch-state\" value=\"$wvalue\" $wextra $wchecked />";
-            if ( $wreverse ) 
+            if ( $wreverse )
             {
                 $wclass .= ' reverse';
                 $wswitches = "<label for=\"$wid\" class=\"w-switch-off\" onclick=\"\">$wiconoff</label><label for=\"$wid\" class=\"w-switch-on\" onclick=\"\">$wiconon</label>";
@@ -1379,7 +1378,7 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return "<span class=\"$wclass\" $wtitle $wstyle>{$wstates}{$wswitches}<span class=\"w-switch-handle\"></span></span>";
     }
-    
+
     public static function w_rating( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1415,14 +1414,14 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return $widget;
     }
-    
+
     public static function w_select( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wdropdown = !empty($attr['dropdown']);
-        $wclass = $wdropdown ? "w-widget w-dropdown" : "w-widget w-select"; 
+        $wclass = $wdropdown ? "w-widget w-dropdown" : "w-widget w-select";
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
@@ -1445,7 +1444,7 @@ class HtmlWidget
             //if ( empty($wname) ) $wextra .= ' form="__NONE__"';
             $wextra .= ' data-placeholder="'.$attr['placeholder'].'"';
         }
-        
+
         $wopts = "";
         self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($attr['select2']) && !$wdropdown )
@@ -1464,7 +1463,7 @@ class HtmlWidget
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $winit $wopts $wname class=\"w-dropdown-select\" $wtitle $wextra>$woptions</select></span>"
         : "<select id=\"$wid\" $winit $wopts $wname class=\"$wclass\" $wstyle $wtitle $wextra>$woptions</select>";
     }
-    
+
     public static function w_text( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1508,7 +1507,7 @@ class HtmlWidget
         ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $winit $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>".$wautocomplete
         : "<input type=\"$wtype\" id=\"$wid\" $winit $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />".$wautocomplete;
     }
-    
+
     public static function w_suggest( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1548,7 +1547,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wopts $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" autocomplete=\"off\" data-ajax=\"$wajax\" $wextra />$wicon</span>";
     }
-    
+
     public static function w_textarea( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1562,7 +1561,7 @@ class HtmlWidget
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $wopts = "";
         $wrep = '';
-        if ( !empty($attr['syntax-editor']) ) 
+        if ( !empty($attr['syntax-editor']) )
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
             if ( 'ace' === $widgetName || 'ace-editor' === $widgetName )
@@ -1593,7 +1592,7 @@ class HtmlWidget
             }
             self::enqueue('scripts', 'htmlwidgets');
         }
-        elseif ( !empty($attr['wysiwyg-editor']) ) 
+        elseif ( !empty($attr['wysiwyg-editor']) )
         {
             if ( empty($winit) ) $winit = 'w-init="1"';
             $wclass = 'w-widget w-wysiwyg-editor'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1613,14 +1612,14 @@ class HtmlWidget
         }
         return "<textarea id=\"$wid\" $winit $wopts $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" $wextra>$wvalue</textarea>{$wrep}";
     }
-    
+
     public static function w_syntax_highlight( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $wextra = self::attributes($attr,array('style','title','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $whighlighter = strtolower(empty($attr['highlighter']) ? 'prism' : $attr['highlighter']);
-        if ( 'hjs' === $whighlighter || 'hljs' === $whighlighter || 'highlightjs' === $whighlighter ) 
+        if ( 'hjs' === $whighlighter || 'hljs' === $whighlighter || 'highlightjs' === $whighlighter )
         {
             $wlang = empty($attr['language']) ? 'xml' : $attr['language'];
             $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-hjs'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1628,7 +1627,7 @@ class HtmlWidget
             self::enqueue('scripts', "w-syntax-highlight-{$wid}", array("hljs.highlightBlock(document.getElementById('{$wid}') );"), array('hjs-html'));
             return "<pre id=\"prewrap_{$wid}\" class=\"$wclass\" $wextra><code id=\"$wid\" class=\"language-{$wlang}\">$wvalue</code></pre>";
         }
-        elseif ( 'sh' === $whighlighter || 'syntaxhighlighter' === $whighlighter ) 
+        elseif ( 'sh' === $whighlighter || 'syntaxhighlighter' === $whighlighter )
         {
             $wlang = empty($attr['language']) ? 'xml' : $attr['language'];
             $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-sh'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1636,7 +1635,7 @@ class HtmlWidget
             self::enqueue('scripts', "w-syntax-highlight-{$wid}", array("SyntaxHighlighter.highlight({brush:'{$wlang}'}, document.getElementById('{$wid}'));"), array('sh-html'));
             return "<pre id=\"$wid\" class=\"$wclass\" $wextra>$wvalue</pre>";
         }
-        else//if ( 'prism' === $whighlighter ) 
+        else//if ( 'prism' === $whighlighter )
         {
             $wlang = empty($attr['language']) ? 'markup' : $attr['language'];
             $wclass = 'w-widget w-syntax-highlight w-syntax-highlight-prism'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1645,7 +1644,7 @@ class HtmlWidget
             return "<pre class=\"{$wclass} language-{$wlang} line-numbers\" $wextra><code id=\"$wid\">$wvalue</code></pre>";
         }
     }
-    
+
     public static function w_vextab( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1657,7 +1656,7 @@ class HtmlWidget
         self::enqueue('scripts', 'vextab');
         return "<div id=\"{$wid}\" class=\"{$wclass}\" {$wextra}>{$wtablature}</div>";
     }
-    
+
     public static function w_translator( $attr, $data, $widgetName=null )
     {
         $wtype = !empty($attr['type']) ? $attr['type'] : "iframe";
@@ -1672,7 +1671,7 @@ class HtmlWidget
         self::enqueue('scripts', 'w-translator', 'http://imtranslator.net/translation/webmaster/wm-im-'.('popup'===$wtype?'popup':$wdims).'.js', array('w-translator-opts'));
         return '<div id="TranslatorBuilder" class="'.$wclass.'" '.$wstyle.' '.$wextra.'><a href="http://imtranslator.net/translation/" id="ImTranslator" target="_top" title="Translator - imtranslator.net">Translator</a></div><div id="ImBack"></div>';
     }
-    
+
     public static function w_date( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1716,7 +1715,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $winit $wopts $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" data-datepicker-format=\"$wformat\" $wtime $wextra />$wicon</span>";
     }
-    
+
     public static function w_time( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1724,7 +1723,7 @@ class HtmlWidget
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wformat = !empty($attr['format']) ? explode(":", $attr['format']) : array("h","m","s");
-        if (isset($data['value'])) 
+        if (isset($data['value']))
         {
             $wvalue = is_array($data['value']) ? $data['value'] : explode(':',$data['value']);
             while ( count($wvalue) < 3 ) $wvalue[] = "00";
@@ -1762,10 +1761,10 @@ class HtmlWidget
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return "<span class=\"$wclass\" $winit $wstyle>$wtimes</span>";
     }
-    
+
     public static function w_timer( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr["name"]) ? $attr["name"] : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
@@ -1773,7 +1772,7 @@ class HtmlWidget
         $wformat = !empty($attr['format']) ? $attr['format'] : '%hh%:%mm%:%ss%';
         $wduration = isset($data['duration']) ? $data['duration'] : '10';
         $wclass = 'w-widget w-timer'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : ''; 
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $wopts = "";
         if ( isset($attr["options"]) && is_array($attr["options"]) )
@@ -1785,7 +1784,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<span id=\"{$wid}\" {$winit} {$wopts} class=\"{$wclass}\" {$wtitle} {$wstyle} {$wextra} data-timer-type=\"{$wtype}\" data-timer-format=\"{$wformat}\" data-timer-duration=\"{$wduration}\">{$wformat}</span>";
     }
-    
+
     public static function w_color( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1818,7 +1817,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return $winput."<div id=\"$wid\" $winit $wopts $wtitle class=\"$wclass\" $wstyle data-colorpicker-color=\"$wvalue\" data-colorpicker-opacity=\"$wopacity\" data-colorpicker-format=\"$wformat\" $winputref $wextra></div>";
     }
-    
+
     public static function w_gmap( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1838,7 +1837,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra".(!empty($wcenter)?' data-map-center="'.implode(',',(array)$wcenter).'"':'')." data-map-zoom=\"$wzoom\"".(!empty($wmarkers)?' data-map-markers="'.$wmarkers.'"':'')."></div>";
     }
-    
+
     public static function w_file( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -1865,10 +1864,10 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
     }
-    
+
     public static function w_dnd_upload( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( );
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr['name']) ? 'name="'.$attr['name'].'"' : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
@@ -1890,10 +1889,10 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<div $winit $wopts $wtitle id=\"{$wid}_wrapper\" class=\"$wclass\" $wstyle><input id=\"$wid\" $wname type=\"file\" class=\"_w-dnd-uploader\" value=\"\" style=\"display:none !important;\" $wextra><label for=\"$wid\" class=\"w-widget w-button w-dnd-upload-upload\" title=\"{$msg_upload}\"><i class=\"fa fa-upload fa-2x\"></i></label><button type=\"button\" class=\"w-widget w-button w-dnd-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times fa-2x\"></i></button></div>";
     }
-    
+
     public static function w_upload( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( ); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid( );
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
         $wname = !empty($attr['name']) ? 'name="'.$attr['name'].'"' : '';
         $wclass = 'w-widget w-upload'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1939,12 +1938,12 @@ class HtmlWidget
             return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle data-upload-base=\"$wupload_base\" $wextra><img id=\"{$wid}_thumbnail\" class=\"w-upload-thumbnail\" title=\"{$msg_full}\" src=\"$thumb\" /><textarea json-encoded=\"1\" id=\"{$wid}_data\" $wname class=\"_w-data\" style=\"display:none !important;\">$upload_data</textarea><label class=\"w-widget w-button\" title=\"{$msg_upload}\"><i class=\"fa fa-upload\"></i><input id=\"{$wid}_uploader\" type=\"file\" class=\"_w-uploader\" style=\"display:none !important;\" /></label><button type=\"button\" class=\"w-widget w-button w-upload-delete\" title=\"{$msg_delete}\"><i class=\"fa fa-times\"></i></button></div>";
         }
     }
-    
+
     public static function w_table( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
-        $wclass = 'w-widget w-table'; 
+        $wclass = 'w-widget w-table';
         /*
         if ( !empty($attr['stripped']) ) $wclass .= ' stripped';
         if ( !empty($attr['bordered']) ) $wclass .= ' bordered';
@@ -1993,7 +1992,7 @@ class HtmlWidget
         }
         return "<table id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
-    
+
     public static function w_chart( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -2009,7 +2008,7 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit $wopts class=\"$wclass\" $wstyle $wextra $wdata></div>";
     }
-    
+
     public static function w_menu( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -2020,17 +2019,134 @@ class HtmlWidget
         $wdata = self::data($attr);
         return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>";
     }
-    
+
     public static function w_menu_end( $attr, $data, $widgetName=null )
     {
         self::enqueue('styles', 'htmlwidgets.css');
         return "</div>";
     }
-    
+
+    public static function w_pagination( $attr, $data, $widgetName=null )
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'w-pagination pagination'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $totalItems = (int)$data['totalItems'];
+        $itemsPerPage = (int)$data['itemsPerPage'];
+        $currentPage = isset($data['currentPage']) ? (int)$data['currentPage'] : 1;
+        $maxPagesToShow = isset($attr['maxPages']) ? (int)$attr['maxPages'] : 10;
+        $placeholder = isset($attr['placeholder']) ? (string)$attr['placeholder'] : '(:page)';
+        $urlPattern = isset($attr['urlPattern']) ? (string)$attr['urlPattern'] : '?page='.$placeholder;
+        $previousText = isset($attr['previousText']) ? (string)$attr['previousText'] : '&laquo; Previous';
+        $nextText = isset($attr['nextText']) ? (string)$attr['nextText'] : 'Next &raquo;';
+        $ellipsis = isset($attr['ellipsis']) ? (string)$attr['ellipsis'] : '...';
+
+        $numPages = 0 >= $itemsPerPage || 0 >= $totalItems ? 0 : (int)ceil($totalItems/$itemsPerPage);
+        if ( $numPages > 1 )
+        {
+            $pages = array();
+            if ( $numPages <= $maxPagesToShow )
+            {
+                for($i=1; $i<=$numPages; $i++)
+                {
+                    $pages[] = array(
+                        'text' => $i,
+                        'url' => str_replace($placeholder, $i, $urlPattern),
+                        'isCurrent' => $i===$currentPage
+                    );
+                }
+            }
+            else
+            {
+                // Determine the sliding range, centered around the current page.
+                $numAdjacents = (int)floor(($maxPagesToShow - 3) / 2);
+
+                if ( $currentPage + $numAdjacents > $numPages )
+                {
+                    $slidingStart = $numPages - $maxPagesToShow + 2;
+                }
+                else
+                {
+                    $slidingStart = $currentPage - $numAdjacents;
+                }
+                if ( $slidingStart < 2 ) $slidingStart = 2;
+
+                $slidingEnd = $slidingStart + $maxPagesToShow - 3;
+                if ( $slidingEnd >= $numPages ) $slidingEnd = $numPages - 1;
+
+                // Build the list of pages.
+                $pages[] = array(
+                    'text' => 1,
+                    'url' => str_replace($placeholder, 1, $urlPattern),
+                    'isCurrent' => 1===$currentPage
+                );
+                if ( $slidingStart > 2 )
+                {
+                    $pages[] = array(
+                        'text' => $ellipsis,
+                        'url' => null,
+                        'isCurrent' => false
+                    );
+                }
+                for ($i=$slidingStart; $i<=$slidingEnd; $i++)
+                {
+                    $pages[] = array(
+                        'text' => $i,
+                        'url' => str_replace($placeholder, $i, $urlPattern),
+                        'isCurrent' => $i===$currentPage
+                    );
+                }
+                if ( $slidingEnd < $numPages - 1 )
+                {
+                    $pages[] = array(
+                        'text' => $ellipsis,
+                        'url' => null,
+                        'isCurrent' => false
+                    );
+                }
+                $pages[] = array(
+                    'text' => $numPages,
+                    'url' => str_replace($placeholder, $numPages, $urlPattern),
+                    'isCurrent' => $numPages===$currentPage
+                );
+            }
+
+            $out = "<nav><ul id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
+            if ( $currentPage > 1 )
+            {
+                $out .= '<li><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage-1, $urlPattern)) . '">'. $previousText .'</a></li>';
+            }
+
+            foreach($pages as $page)
+            {
+                if ($page['url'])
+                {
+                    $out .= '<li' . ($page['isCurrent'] ? ' class="active"' : '') . '><a href="' . htmlspecialchars($page['url']) . '">' . $page['text'] . '</a></li>';
+                }
+                else
+                {
+                    $out .= '<li class="disabled"><span>' . $page['text'] . '</span></li>';
+                }
+            }
+
+            if ( $currentPage < $numPages )
+            {
+                $out .= '<li><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage+1, $urlPattern)) . '">'. $nextText .'</a></li>';
+            }
+            $out .= '</ul></nav>';
+            return $out;
+        }
+        else
+        {
+            return '';
+        }
+    }
+
     public static function w_swf( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wclass = 'w-swf'; 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'w-swf';
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = self::attributes($attr,array('width','height')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
@@ -2042,7 +2158,7 @@ class HtmlWidget
         $wallowfullscreen = empty($attr['allowfullscreen']) ? 'false' : $attr['allowfullscreen'];
         return "<object id=\"{$wid}\" type=\"application/x-shockwave-flash\" {$wextra} data=\"{$wswf}\" class=\"{$wclass}\" $wstyle><param name=\"movie\" value=\"{$wswf}\" /><param name=\"quality\" value=\"{$wquality}\" /><param name=\"wmode\" value=\"{$wmode}\" /><param name=\"scale\" value=\"{$wscale}\" /><param name=\"FlashVars\" value=\"{$wflashvars}\" /><param name=\"allowFullScreen\" value=\"{$wallowfullscreen}\" /></object>";
     }
-    
+
     public static function w_media( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -2064,12 +2180,12 @@ class HtmlWidget
         self::enqueue('scripts','html5media');
         return "<{$wtype} id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra}>{$wsource}{$wtext}</{$wtype}>";
     }
-    
+
     public static function w_delayable( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
-        $wclass = 'w-delayable-overlay'; 
+        $wclass = 'w-delayable-overlay';
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
@@ -2078,23 +2194,23 @@ class HtmlWidget
         self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra><div class=\"$wspinner\"></div></div>";
     }
-    
+
     public static function w_disabable( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : 'w-init="1"';
-        $wclass = 'w-disabable-overlay'; 
+        $wclass = 'w-disabable-overlay';
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra></div>";
     }
-    
+
     public static function w_morphable( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
-        $wclass = 'w-morphable'; 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'w-morphable';
         $wmodes = (array)$attr['modes'];
         $wmode_class = !empty($attr['mode']) ? $attr['mode'] : 'mode-${MODE}';
         $wshow_class = !empty($attr['show']) ? $attr['show'] : 'show-if-${MODE}';
@@ -2116,114 +2232,114 @@ class HtmlWidget
             $whide_not_sel = ' .w-morphable-item.' . str_replace('${MODE}', 'not-'.$mode, $whide_class);
             $wshow_sel = ' .w-morphable-item.' . str_replace('${MODE}', $mode, $wshow_class);
             $wshow_not_sel = ' .w-morphable-item.' . str_replace('${MODE}', 'not-'.$mode, $wshow_class);
-            
+
             /*
             SHOW < HIDE, SHOW default
-            
+
             mode + show                 =====> SHOW !important
             mode + hide                 =====> HIDE !important
-            
+
             !mode + hide_not            =====> HIDE
             !mode + show_not            =====> SHOW
             !mode + show                =====> HIDE
             !mode + hide                =====> SHOW
             mode + hide_not             =====> SHOW
             mode + show_not             =====> HIDE
-            
+
             else                        =====> LEAVE AS IS
-            
+
             CSS selectors are LINEAR O(n) in the number of options/modes
             inluding AND/OR operations between modes
             */
-            
+
             // 1st level only
             $wshow_selector[] = $wselector.'.w-morphable-level-1 > .w-morphable-item';
             $wshow_selector_animated[] = $wselector_animated.'.w-morphable-level-1 > .w-morphable-item';
-            
+
             $whide_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$whide_sel;
             $whide_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_sel;
-            
+
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_sel;
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_not_sel;
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$whide_not_sel;
             $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_sel;
             $whide_selector[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_not_sel;
             $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_not_sel;
-            
-            
+
+
             $wshow_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_sel;
             $wshow_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_sel;
-            
+
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$whide_sel;
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.'.w-morphable-level-1 >'.$whide_not_sel;
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.'.w-morphable-level-1 >'.$wshow_not_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_not_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_not_sel;
-            
-            
+
+
             $whide_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_sel;
             $whide_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_sel;
-            
+
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_sel;
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_not_sel;
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_not_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_not_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_not_sel;
-            
-            
+
+
             $wshow_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_sel;
             $wshow_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$wshow_sel;
-            
+
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_sel;
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.'.w-morphable-level-1 >'.$whide_not_sel;
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.'.w-morphable-level-1 >'.$wshow_not_sel;
             $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$whide_sel;
             $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.'.w-morphable-level-1 >'.$whide_not_sel;
             $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.').w-morphable-level-1 >'.$wshow_not_sel;
-            
-            
+
+
             // any level
             $wshow_selector[] = $wselector.':not(.w-morphable-level-1) .w-morphable-item';
             $wshow_selector_animated[] = $wselector_animated.':not(.w-morphable-level-1) .w-morphable-item';
-            
+
             $whide_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_sel;
             $whide_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_sel;
-            
+
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_sel;
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_not_sel;
             $whide_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_not_sel;
             $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_sel;
             $whide_selector[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_not_sel;
             $whide_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_not_sel;
-            
-            
+
+
             $wshow_selector__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_sel;
             $wshow_selector__important[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_sel;
-            
+
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_sel;
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector.':not(.w-morphable-level-1)'.$whide_not_sel;
             $wshow_selector[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector.':not(.w-morphable-level-1)'.$wshow_not_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_not_sel;
             $wshow_selector[] = $wselector.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_not_sel;
-            
-            
+
+
             $whide_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_sel;
             $whide_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$whide_sel;
-            
+
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_sel;
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_not_sel;
             $whide_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_not_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_not_sel;
             $whide_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$whide_not_sel;
-            
-            
+
+
             $wshow_selector_animated__important[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_sel;
             $wshow_selector_animated__important[] = $wselector_animated.'.w-morphable-class.'.$mode_class.':not(.w-morphable-level-1)'.$wshow_sel;
-            
+
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_sel;
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:checked ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$whide_not_sel;
             $wshow_selector_animated[] = 'input[data-morph-'.$wid.'="'.$mode_class.'"]:not(:checked) ~ '.$wselector_animated.':not(.w-morphable-level-1)'.$wshow_not_sel;
@@ -2232,12 +2348,12 @@ class HtmlWidget
             $wshow_selector_animated[] = $wselector_animated.'.w-morphable-class:not(.'.$mode_class.'):not(.w-morphable-level-1)'.$wshow_not_sel;
         }
         $wstyle = '';
-        
+
         $wstyle .= implode(',',$whide_selector) . '{display: none !important}';
         $wstyle .= implode(',',$wshow_selector) . '{display: block}';
         $wstyle .= implode(',',$whide_selector__important) . '{display: none !important}';
         $wstyle .= implode(',',$wshow_selector__important) . '{display: block !important}';
-        
+
         $wstyle .= implode(',',$whide_selector_animated) . "{
 pointer-events: none !important; overflow: hidden !important;
 min-width: 0 !important; max-width: 0 !important;
@@ -2279,10 +2395,10 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
         self::enqueue('styles', "w-morphable-$wid", array($wstyle), array('htmlwidgets.css'));
         return '';
     }
-    
+
     public static function w_panel( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'w-panel'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -2290,30 +2406,30 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;
         $wchecked = !empty($attr['opened']) ? 'checked' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
-        
+
         self::enqueue('styles', 'htmlwidgets.css');
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return "<input type=\"checkbox\" id=\"controller_{$wid}\" class=\"w-panel-controller\" value=\"1\" $wchecked/><div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-panel-header\">$wtitle<label class=\"w-panel-controller-button fa fa-2x\" for=\"controller_{$wid}\" onclick=\"\"></label></div><div class=\"w-panel-content\">";
     }
-    
+
     public static function w_panel_end( $attr, $data, $widgetName=null )
     {
         return "</div></div>";
     }
-    
+
     public static function w_accordeon( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $wheight = !empty($attr['height']) ? $attr['height'] : '1500px';
         $wtype = !empty($attr['independent']) ? 'checkbox' : 'radio';
         $witems = (array)$attr['items'];
-        
+
         $wctrl = "ctrl_{$wid}";
         $wcontrollers = "<input name=\"{$wctrl}\" type=\"{$wtype}\" id=\"item_" . implode( "\" class=\"w-transition-controller w-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"{$wtype}\" id=\"item_", $witems ) . "\" class=\"w-transition-controller w-{$wctrl}-controller\"/>";
-        
+
         $wstyle = '';
-        
+
         // de-activate
         $wselector = array();
         foreach ($witems as $witem)
@@ -2349,14 +2465,14 @@ OUT;
         self::enqueue('styles', "w-accordeon-$wid", array($wstyle), array('htmlwidgets.css'));
         return $wcontrollers;
     }
-    
+
     public static function w_tabs( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $wtabs = (array)$attr['tabs'];
         //$wselected = !empty($data['selected']) ? $data['selected'] : 0;
-        
+
         if ( !empty($attr['3d']) )
         {
             $wtransform1 = 'w-fx-slideout-3d';
@@ -2367,12 +2483,12 @@ OUT;
             $wtransform1 = 'w-fx-slideout';
             $wtransform2 = 'w-fx-slidein';
         }
-        
+
         $wctrl = "ctrl_{$wid}";
         $wcontrollers = "<input name=\"{$wctrl}\" checked type=\"radio\" id=\"tab_" . implode( "\" class=\"w-transition-controller w-{$wctrl}-controller\"/><input name=\"{$wctrl}\" type=\"radio\" id=\"tab_", $wtabs ) . "\" class=\"w-transition-controller w-{$wctrl}-controller\"/>";
-        
+
         $wstyle = '';
-        
+
         // de-activate
         $wselector = array();
         foreach ($wtabs as $wtab)
@@ -2382,13 +2498,13 @@ OUT;
 {$wselector}
 {
     position: absolute;
-    
+
     -webkit-animation-name: {$wtransform1};
     -moz-animation-name: {$wtransform1};
     -ms-animation-name: {$wtransform1};
     -o-animation-name: {$wtransform1};
     animation-name: {$wtransform1};
-    
+
     -webkit-animation-timing-function: ease-out;
     -moz-animation-timing-function: ease-out;
     -ms-animation-timing-function: ease-out;
@@ -2406,13 +2522,13 @@ OUT;
 {
     position: relative;
     z-index: 10;
-    
+
     -webkit-animation-name: {$wtransform2};
     -moz-animation-name: {$wtransform2};
     -ms-animation-name: {$wtransform2};
     -o-animation-name: {$wtransform2};
     animation-name: {$wtransform2};
-    
+
     -webkit-animation-timing-function: ease-in;
     -moz-animation-timing-function: ease-in;
     -ms-animation-timing-function: ease-in;
@@ -2423,13 +2539,13 @@ OUT;
         self::enqueue('styles', "w-tabs-$wid", array($wstyle), array('htmlwidgets.css'));
         return $wcontrollers;
     }
-    
+
     public static function w_pages( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wcontext = !empty($attr['context']) ? "{$attr['context']} " : "";
         $wpages = (array)$attr['pages'];
-        
+
         if ( !empty($attr['3d']) )
         {
             $wtransform1 = 'translate3d(0px,0px,0px)';
@@ -2442,11 +2558,11 @@ OUT;
             $wtransform2 = 'translateX(-100%)';
             $wtransform3 = 'translateX(100%)';
         }
-        
+
         $wcontrollers = "<span id=\"page_" . implode( "\" class=\"w-page-controller\"></span><span id=\"page_", $wpages ) . "\" class=\"w-page-controller\"></span>";
-        
+
         $wstyle = '';
-        
+
         // main page
         $main_page = array_shift( $wpages );
         $wstyle .= <<<OUT
@@ -2462,13 +2578,13 @@ OUT;
 .w-page-controller:not(#page_{$main_page}):target ~ {$wcontext}#{$main_page}.w-page
 {
     position: absolute;
-    
+
     -webkit-transform: {$wtransform2};
     -moz-transform: {$wtransform2};
     -ms-transform: {$wtransform2};
     -o-transform: {$wtransform2};
     transform: {$wtransform2};
-    
+
     -webkit-transition: -webkit-transform .3s ease;
     -moz-transition: -moz-transform .3s ease;
     -ms-transition: -ms-transform .3s ease;
@@ -2499,13 +2615,13 @@ OUT;
 {$wselector}
 {
     position: relative;
-    
+
     -webkit-transform: {$wtransform1};
     -moz-transform: {$wtransform1};
     -ms-transform: {$wtransform1};
     -o-transform: {$wtransform1};
     transform: {$wtransform1};
-    
+
     -webkit-transition: -webkit-transform .3s ease;
     -moz-transition: -moz-transform .3s ease;
     -ms-transition: -ms-transform .3s ease;
@@ -2516,13 +2632,13 @@ OUT;
         self::enqueue('styles', "w-pages-$wid", array($wstyle), array('htmlwidgets.css'));
         return $wcontrollers;
     }
-    
+
     public static function w_dialog( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wtitle = isset($data['title']) ? $data['title'] : '';
-        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
+        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : '';
         $wcontent = !empty($data['content']) ? $data['content'] : '';
         $wclass = 'w-dialog'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -2541,10 +2657,10 @@ OUT;
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}</div><div class=\"w-dialog-content\">$wcontent</div><div class=\"w-dialog-buttons\">$wbuttons</div></div>";
     }
-    
+
     public static function w_modal( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wclass = 'w-modal w-dialog'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -2557,16 +2673,16 @@ OUT;
         if ( !empty($winit) ) self::enqueue('scripts', 'htmlwidgets');
         return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" $winit class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
     }
-    
+
     public static function w_modal_end( $attr, $data, $widgetName=null )
     {
-        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : ''; 
+        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : '';
         return "</div><div class=\"w-dialog-buttons\">$wbuttons</div></div>";
     }
-    
+
     public static function w_tooltip( $attr, $data, $widgetName=null )
     {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid(); 
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
         $wclass = 'w-tooltip'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -2599,7 +2715,7 @@ OUT;
         self::enqueue('styles', 'htmlwidgets.css');
         return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra title=\"$wtitle\" $wdata>{$wtext}{$warrow}</div>";
     }
-    
+
     public static function w_animation( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid('widget_animation');
@@ -2681,7 +2797,7 @@ OUT;
         self::enqueue('styles', 'w-animation-'.$wid, array($wanimation_def), array('htmlwidgets.css'));
         return '';
     }
-    
+
     public static function w_sprite( $attr, $data, $widgetName=null )
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid('widget_sprite');
@@ -2702,13 +2818,13 @@ OUT;
         $factX = $wc; $factY = $wr;
         $aspect_ratio = 100*$wh/$ww;
         $background_size = ''.(100*$wc).'% '.(100*$wr).'%';
-        
+
         /*if ( (false !== strpos(' '.$wclass.' ',' w-sprite-responsive ')) || (false !== strpos(' '.$wclass.' ',' sprite-responsive ')) )
         {
             $factX = $wc;
             $factY = $wr;
         }*/
-        
+
         if ( (1 < $wr) && (1 < $wc) )
         {
             // background-position-x, background-position-y NOT supported very good
