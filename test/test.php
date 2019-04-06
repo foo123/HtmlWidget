@@ -20,7 +20,7 @@ $importer->register( 'assets', HtmlWidget::assets(array(
             'full'      => true,
             'jquery'    => true,
             'dev'       => true,
-            'cdn'       => true
+            'cdn'       => false
         )) );
 HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
 
@@ -1594,7 +1594,7 @@ tabstave
     enqueue('styles','normalize.css');
     enqueue('styles','responsive.css');
     enqueue('styles','fontawesome.css');
-    enqueue('styles','bootstrap.css');
+    //enqueue('styles','bootstrap.css');
     enqueue('scripts','jquery');
     enqueue('scripts','datatables');
     enqueue('scripts','tooltipster');

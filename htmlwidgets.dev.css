@@ -1584,6 +1584,52 @@ select.w-select option.w-option-placeholder,
         width: auto !important;
     }
 }
+.w-pagination
+{
+    display: inline-block;
+    padding-left: 0;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+.w-pagination > li
+{
+    display: inline;
+}
+.w-pagination > li > a,
+.w-pagination > li > span
+{
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    color: inherit;
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+.w-pagination > li:first-child > a,
+.w-pagination > li:first-child > span
+{
+    margin-left: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.w-pagination > li:last-child > a,
+.w-pagination > li:last-child > span
+{
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.w-pagination > .active > a,
+.w-pagination > .active > a:focus,
+.w-pagination > .active > a:hover,
+.w-pagination > .active > span,
+.w-pagination > .active > span:focus,
+.w-pagination > .active > span:hover
+{
+    z-index: 3;
+}
 .w-dropdown-menu
 {
     position: relative;
@@ -5493,6 +5539,37 @@ input.w-radio:checked + label.w-led-button:before
     color: #fff;
     -webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, .9);
     box-shadow: inset 0 1px 0 #000;
+}
+.w-pagination > li > a,
+.w-pagination > li > span
+{
+    color: #337ab7;
+    background-color: #fff;
+    border-color: #ddd;
+}
+.w-pagination > .disabled > a,
+.w-pagination > .disabled > a:focus,
+.w-pagination > .disabled > a:hover,
+.w-pagination > .disabled > span,
+.w-pagination > .disabled > span:focus,
+.w-pagination > .disabled > span:hover
+{
+    cursor: not-allowed;
+    color: #777;
+    background-color: #fff;
+    border-color: #ddd;
+}
+.w-pagination > .active > a,
+.w-pagination > .active > a:focus,
+.w-pagination > .active > a:hover,
+.w-pagination > .active > span,
+.w-pagination > .active > span:focus,
+.w-pagination > .active > span:hover
+{
+    color: #fff;
+    cursor: default;
+    background-color: #337ab7;
+    border-color: #337ab7;
 }
 .w-vertical-menu ul,
 .w-dropdown-menu ul
