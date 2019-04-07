@@ -35,7 +35,8 @@ var HAS = Object.prototype.hasOwnProperty, ATTR = 'setAttribute',
     isNode = ("undefined" !== typeof global) && ('[object global]' === toString.call(global)),
     isWebWorker = !isXPCOM && !isNode && ('undefined' !== typeof WorkerGlobalScope) && ("function" === typeof importScripts) && (navigator instanceof WorkerNavigator),
     isBrowser = !isXPCOM && !isNode && !isWebWorker,
-    GID = 0, self, widgets = {}, enqueuer = null;
+    GID = 0, self, widgets = {}, enqueuer = null,
+    html_esc_re = /[&<>'"]/g;
 
 // http://php.net/manual/en/function.empty.php
 function is_string( x )
@@ -62,7 +63,16 @@ function empty( o, p )
 }
 function htmlspecialchars( s )
 {
-    return String(s).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');
+    return String(s).replace(html_esc_re, function( m ){
+        switch(m)
+        {
+            case '&': return '&amp;'
+            case '<': return '&lt;'
+            case '>': return '&gt;'
+            case '"': return '&quot;'
+            default: return m;
+        }
+    });
 }
 function merge( a, b )
 {
