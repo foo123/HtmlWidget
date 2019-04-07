@@ -839,6 +839,26 @@ class HtmlWidget
         return $shuffled;
     }
 
+    public static function menu( $items, $tab='' )
+    {
+        $tab_tab = '  '.$tab;
+        $out = $tab.'<ul>'."\n";
+        foreach($items as $item)
+        {
+            $item_class = array();
+            if ( !empty($item['submenu']) ) $item_class[] = 'w-submenu-item';
+            if ( !empty($item['active']) ) $item_class[] = 'active';
+            $item_url = isset($item['url']) ? (string)$item['url'] : '#';
+            $out .= $tab_tab.'<li'.(!empty($item_class) ? ' class="'.implode(' ',$item_class).'"' : '').'>'."\n";
+            $out .= $tab_tab.'<a href="'.$item_url.'">'.(string)$item['text'].'</a>'."\n";
+            if ( !empty($item['submenu']) )
+                $out .= self::menu((array)$item['submenu'], $tab_tab);
+            $out .= $tab_tab.'</li>'."\n";
+        }
+        $out .= $tab.'</ul>'."\n";
+        return $out;
+    }
+
     public static function addWidget( $widget, $renderer )
     {
         if ( $widget && $renderer && is_callable($renderer) )
@@ -2013,17 +2033,32 @@ class HtmlWidget
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
-        $wclass = 'w-widget w-dropdown-menu'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wclass = 'w-widget'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wdata = self::data($attr);
-        return "<div id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>";
+        if ( !empty($data) )
+        {
+            $out = "<nav id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>\n";
+            if ( !empty($attr['mobile']) )
+            {
+                $out .= '<label for="mobile-menu_'.$wid.'" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label><input id="mobile-menu_'.$wid.'" type="checkbox" class="w-menu-controller" value="1" />'."\n";
+            }
+            $out .= self::menu((array)$data);
+            $out .= '</nav>';
+            self::enqueue('styles', 'htmlwidgets.css');
+            return $out;
+        }
+        else
+        {
+            return "<nav id=\"$wid\" $winit class=\"$wclass\" $wstyle $wextra $wdata>";
+        }
     }
 
     public static function w_menu_end( $attr, $data, $widgetName=null )
     {
         self::enqueue('styles', 'htmlwidgets.css');
-        return "</div>";
+        return "</nav>";
     }
 
     public static function w_pagination( $attr, $data, $widgetName=null )
@@ -2051,7 +2086,7 @@ class HtmlWidget
                 for($i=1; $i<=$numPages; $i++)
                 {
                     $pages[] = array(
-                        'text' => $i,
+                        'text' => (string)$i,
                         'url' => str_replace($placeholder, $i, $urlPattern),
                         'isCurrent' => $i===$currentPage
                     );
@@ -2112,29 +2147,29 @@ class HtmlWidget
                 );
             }
 
-            $out = "<nav><ul id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
+            $out = "<ul id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
             if ( $currentPage > 1 )
             {
-                $out .= '<li><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage-1, $urlPattern)) . '">'. $previousText .'</a></li>';
+                $out .= '<li class="page-previous"><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage-1, $urlPattern)) . '">'. $previousText .'</a></li>';
             }
 
             foreach($pages as $page)
             {
-                if ($page['url'])
+                if ( $page['url'] )
                 {
-                    $out .= '<li' . ($page['isCurrent'] ? ' class="active"' : '') . '><a href="' . htmlspecialchars($page['url']) . '">' . $page['text'] . '</a></li>';
+                    $out .= '<li class="page-item' . (1==$page['text'] ? ' page-first' : '') . ($numPages==$page['text'] ? ' page-last' : '') . ($page['isCurrent'] ? ' page-active active' : '') . '"><a href="' . htmlspecialchars($page['url']) . '">' . (string)$page['text'] . '</a></li>';
                 }
                 else
                 {
-                    $out .= '<li class="disabled"><span>' . $page['text'] . '</span></li>';
+                    $out .= '<li class="page-item disabled"><span>' . (string)$page['text'] . '</span></li>';
                 }
             }
 
             if ( $currentPage < $numPages )
             {
-                $out .= '<li><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage+1, $urlPattern)) . '">'. $nextText .'</a></li>';
+                $out .= '<li class="page-next"><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage+1, $urlPattern)) . '">'. $nextText .'</a></li>';
             }
-            $out .= '</ul></nav>';
+            $out .= '</ul>';
             return $out;
         }
         else

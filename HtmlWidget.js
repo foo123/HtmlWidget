@@ -24,7 +24,7 @@ else if ( ('function'===typeof define)&&define.amd&&('function'===typeof require
     define(name,['module'],function(module){factory.moduleUri = module.uri; return factory.call(root);});
 else if ( !(name in root) ) /* Browser/WebWorker/.. */
     (root[name] = factory.call(root)||1)&&('function'===typeof(define))&&define.amd&&define(function(){return root[name];} );
-}(  /* current root */          'undefined' !== typeof self ? self : this, 
+}(  /* current root */          'undefined' !== typeof self ? self : this,
     /* module name */           "HtmlWidget",
     /* module factory */        function ModuleFactory__HtmlWidget( undef ){
 "use strict";
@@ -38,15 +38,27 @@ var HAS = Object.prototype.hasOwnProperty, ATTR = 'setAttribute',
     GID = 0, self, widgets = {}, enqueuer = null;
 
 // http://php.net/manual/en/function.empty.php
+function is_string( x )
+{
+    return (x instanceof String) || ('[object String]' === toString.call(x));
+}
+function is_array( x )
+{
+    return (x instanceof Array) || ('[object Array]' === toString.call(x));
+}
+function is_object( x )
+{
+    return '[object Object]' === toString.call(x);
+}
 function isset( o, p )
 {
-    // not set or null; or empty string/array
+    // not set or null;
     return HAS.call(o,p) && (null != o[p]);
 }
 function empty( o, p )
 {
     // not set or null; or empty string/array
-    return !HAS.call(o,p) || (null == o[p]) || ("function"=== typeof (o[p].substr||o[p].concat) && !o[p].length);
+    return !HAS.call(o,p) || (null == o[p]) || (0 === o[p]) || (false === o[p]) || ((is_array(o[p]) || is_string(o[p])) && !o[p].length) || (is_object(o[p]) && !KEYS(o[p]).length);
 }
 function htmlspecialchars( s )
 {
@@ -67,10 +79,10 @@ function shuffle( a )
 {
     var p, b, i;
     for (i=a.length-1; i>0; i--)
-    { 
-        p = Math.round(i*Math.random()); 
+    {
+        p = Math.round(i*Math.random());
         if ( i === p ) continue;
-        b = a[ i ]; a[ i ] = a[ p ]; a[ p ] = b; 
+        b = a[ i ]; a[ i ] = a[ p ]; a[ p ] = b;
     }
     return a;
 }
@@ -91,25 +103,25 @@ function data_attr( k, v )
         return ""+k+"='"+v+"'";
     }
 }
-    
+
 
 var HtmlWidget = self = {
-    
+
     VERSION: "1.0.0"
-    
+
     ,BASE: './'
-    
+
     ,enqueueAssets: function( _enqueuer ) {
         enqueuer = _enqueuer && 'function' === typeof _enqueuer ? _enqueuer : null;
     }
-    
+
     ,enqueue: function( type, id, asset, deps, props ) {
         if ( enqueuer )
-        {            
+        {
             enqueuer(type, id, [asset||null, deps||[], props]);
         }
     }
-    
+
     ,assets: function( opts ) {
         opts = merge({
             'base'      : '',
@@ -118,13 +130,13 @@ var HtmlWidget = self = {
             'dev'       : false,
             'cdn'       : false
         }, opts);
-        
+
         var dev = true === opts['dev'], cdn = true === opts['cdn'];
         var base = opts['base'];
         base = base || '';
         base = base + ('/' === base.slice(-1) ? '' : '/');
         var asset_base = base + 'assets/';
-        
+
         var assets = [
          ['styles', 'htmlwidgets.css', dev ? base+'htmlwidgets.dev.css' : base+'htmlwidgets.css']
         ,['styles', 'normalize.css', asset_base+'responsive/normalize.css']
@@ -145,7 +157,7 @@ var HtmlWidget = self = {
         ,['scripts', 'selectorlistener', asset_base+'utils/selectorlistener.js']
         ,['scripts', 'htmlwidgets', dev ? base+'htmlwidgets.dev.js' : base+'htmlwidgets.js', ['htmlwidgets.css',/*'html5shiv',*/'jquery','selectorlistener']]
         ];
-        
+
         if ( true === opts['jquery'] )
         {
             assets = assets.concat(cdn
@@ -163,34 +175,34 @@ var HtmlWidget = self = {
             ]
             );
         }
-        
+
         if ( true === opts['full'] )
         {
             assets = assets.concat([
              ['scripts', 'cdn--google-maps', 'http://maps.google.com/maps/api/js?libraries=places']
-            
+
             // Modernizr
             ,['scripts', 'modernizr', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'
             : asset_base+'utils/modernizr.js'
             ]
-            
+
             // Hover.css
             ,['styles', 'hover.css', cdn
             ? '//cdn.bootcss.com/hover.css/2.0.2/css/hover-min.css'
             : asset_base+'hover/hover.css'
             ]
-            
+
             // Humane
             ,['styles', 'humane.css', asset_base+'humane/humane.css']
             ,['scripts', 'humane', asset_base+'humane/humane.js', ['humane.css']]
-            
+
             // notify.js
             ,['scripts', 'notify', asset_base+'utils/notify.js']
-            
+
             // visibility.js
             ,['scripts', 'visibility', asset_base+'utils/visibility.js']
-            
+
             // visibilityjs
             ,['scripts', 'visibilityjs.fallback', cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.fallback.min.js'
@@ -200,52 +212,52 @@ var HtmlWidget = self = {
             ? '//cdnjs.cloudflare.com/ajax/libs/visibility.js/1.2.3/visibility.min.js'
             : asset_base+'visibilityjs/visibility.js'
             ]
-            
+
             // List.js
             ,['scripts', 'list', cdn
             ? '//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js'
             : asset_base+'utils/list.js'
             ]
-            
+
             // NodeList
             ,['scripts', 'nodelist', asset_base+'utils/nodelist.js']
-            
+
             // FTScroller
             ,['scripts', 'ftscroller', asset_base+'utils/ftscroller.js']
-            
+
             // isMobile
             ,['scripts', 'ismobile', asset_base+'utils/ismobile.js']
-            
+
             // Tao
             ,['scripts', 'tao', asset_base+'utils/tao.js']
-            
+
             // Serialiser
             ,['scripts', 'serialiser', asset_base+'utils/serialiser.js']
-            
+
             // History
             ,['scripts', 'history', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/history/3.0.0-2/history.min.js'
             : asset_base+'utils/history.js'
             ]
-            
+
             // Cookie
             ,['scripts', 'cookie', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js'
             : asset_base+'utils/cookie.js'
             ]
-            
+
             // LocalStorage
             ,['scripts', 'localstorage', cdn
             ? ('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js?swfURL='+encodeURIComponent('//cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf'))
             : (asset_base+'localstorage/localStorage.js?swfURL='+encodeURIComponent(asset_base+'localstorage/localStorage.swf'))
             ]
-            
+
             // localForage
             ,['scripts', 'localforage', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js'
             : asset_base+'localforage/localforage.js'
             ]
-            
+
             // RT
             ,['scripts', 'RT', asset_base+'RT/RT.js']
             ,['scripts', 'RT.Poll', asset_base+'RT/RT.Poll.js', ['RT']]
@@ -254,19 +266,19 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : asset_base+'swfobject/swfobject.js'
             }]
-            
+
             // swfObject
             ,['scripts', 'swfobject', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.min.js'
             : asset_base+'swfobject/swfobject.js'
             ]
-            
+
             // html5media
             ,['scripts', 'html5media', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js'
             : asset_base+'html5media/html5media.js'
             ]
-            
+
             // video.js
             ,['styles', 'video-js.css', cdn
             ? 'http://vjs.zencdn.net/vjs-version/video-js.css'
@@ -276,22 +288,22 @@ var HtmlWidget = self = {
             ? 'http://vjs.zencdn.net/vjs-version/video.js'
             : asset_base+'video.js/video.js'
             , ['video-js.css']]
-            
+
             // clappr
             ,['scripts', 'clappr', cdn
             ? 'https://cdn.jsdelivr.net/clappr/latest/clappr.min.js'
             : asset_base+'clappr/clappr.js'
             ]
-            
+
             // gest.js
             ,['scripts', 'gest', asset_base+'gest/gest.js']
-            
+
             // hammer.js
             ,['scripts', 'hammer', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js'
             : asset_base+'hammer/hammer.js'
             ]
-            
+
             // tabulator
             ,['styles', 'tabulator.css', cdn
             ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/css/tabulator.min.css'
@@ -301,52 +313,52 @@ var HtmlWidget = self = {
             ? 'https://unpkg.com/tabulator-tables@4.0.5/dist/js/tabulator.min.js'
             : asset_base+'tabulator/tabulator.min.js'
             , ['tabulator.css']]
-            
+
             // Typo
             ,['scripts', 'typo', asset_base+'typo/typo.js']
-            
+
             // AreaSelect
             ,['styles', 'areaselect.css', asset_base+'areaselect/areaselect.css']
             ,['scripts', 'areaselect', asset_base+'areaselect/areaselect.js', ['areaselect.css']]
-             
+
             // AutoComplete
             ,['styles', 'autocomplete.css', asset_base+'autocomplete/autocomplete.css']
             ,['scripts', 'autocomplete', asset_base+'autocomplete/autocomplete.js', ['autocomplete.css','jquery']]
-             
+
             // Awesomplete
             ,['styles', 'awesomplete.css', asset_base+'awesomplete/awesomplete.css']
             ,['scripts', 'awesomplete', asset_base+'awesomplete/awesomplete.js', ['awesomplete.css']]
-             
+
             // Timer
             ,['scripts', 'timer', asset_base+'timer/timer.js']
-            
+
             // DateX
             ,['scripts', 'datex', asset_base+'utils/datex.js']
-            
+
             // Pikadaytime
             ,['styles', 'pikadaytime.css', asset_base+'pikadaytime/pikadaytime.css']
             ,['scripts', 'pikadaytime', asset_base+'pikadaytime/pikadaytime.js', ['pikadaytime.css','datex']]
-             
+
             // ColorPicker
             ,['styles', 'colorpicker.css', asset_base+'colorpicker/colorpicker.css']
             ,['scripts', 'colorpicker', asset_base+'colorpicker/colorpicker.js', ['colorpicker.css']]
-             
+
             // Sortable
             ,['scripts', 'sortable', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js'
             : asset_base+'sortable/sortable.js'
             ]
-             
+
             // TinyDraggable
             ,['scripts', 'tinydraggable', asset_base+'tinydraggable/tinydraggable.js']
-             
+
             // LocationPicker
             ,['scripts', 'locationpicker', asset_base+'locationpicker/locationpicker.js', ['cdn--google-maps','jquery']]
-             
+
             // RangeSlider
             ,['styles', 'rangeslider.css', asset_base+'rangeslider/rangeslider.css']
             ,['scripts', 'rangeslider', asset_base+'rangeslider/rangeslider.js', ['rangeslider.css','jquery']]
-             
+
             // Select2
             ,['styles', 'select2.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css'
@@ -356,12 +368,12 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js'
             : asset_base+'select2/select2.js'
             , ['select2.css','jquery']]
-             
+
             // TagEditor
             ,['scripts', 'caret', asset_base+'tageditor/caret.js']
             ,['styles', 'tageditor.css', asset_base+'tageditor/tageditor.css']
             ,['scripts', 'tageditor', asset_base+'tageditor/tageditor.js', ['tageditor.css','jquery','caret']]
-             
+
             // Tooltipster
             ,['styles', 'tooltipster.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css'
@@ -371,63 +383,63 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js'
             : asset_base+'tooltipster/tooltipster.js'
             , ['tooltipster.css','jquery']]
-             
+
             // Popr2
             ,['styles', 'popr2.css', asset_base+'popr2/popr2.css']
             ,['scripts', 'popr2', asset_base+'popr2/popr2.js', ['popr2.css','jquery']]
-            
+
             // Modal
             ,['styles', 'modal.css', asset_base+'modal/modal.css']
             ,['scripts', 'modal', asset_base+'modal/modal.js', ['modal.css','jquery']]
-            
+
             // Address
             ,['scripts', 'address', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js'
             : asset_base+'utils/address.js'
             , ['jquery']]
-            
+
             // smoothState
             ,['scripts', 'smoothstate', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/smoothState.js/0.7.2/jquery.smoothState.min.js'
             : asset_base+'utils/smoothState.js'
             , ['jquery']]
-             
+
             // Packery
             ,['scripts', 'packery', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/packery/2.0.0/packery.pkgd.min.js'
             : asset_base+'packery/packery.js'
             ]
-             
+
             // Isotope
             ,['scripts', 'isotope', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js'
             : asset_base+'isotope/isotope.js'
             ]
-             
+
             // Masonry
             ,['scripts', 'masonry', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.0.0/masonry.pkgd.min.js'
             : asset_base+'masonry/masonry.js'
             ]
-             
+
             // ModelView
             ,['scripts', 'modelview', asset_base+'modelview/modelview.js']
-            
+
             // ModelViewForm
             ,['scripts', 'modelviewform', asset_base+'modelview/modelview.form.js', ['jquery','datex','modelview']]
-             
+
             // Raphael
             ,['scripts', 'raphael', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js'
                 : asset_base+'raphael/raphael.js'
             ]
-             
+
             // D3
             ,['scripts', 'd3', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js'
                 : asset_base+'d3/d3.js'
             ]
-             
+
             // C3
             ,['styles', 'c3.css', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css'
@@ -437,7 +449,7 @@ var HtmlWidget = self = {
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js'
                 : asset_base+'c3/c3.js'
             , ['c3.css','d3']]
-             
+
             // DataTables
             ,['styles', 'datatables.css', cdn
                 ? 'https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'
@@ -573,15 +585,15 @@ var HtmlWidget = self = {
                 asset_base+'datatables/js/scroller.js',
                 asset_base+'datatables/js/keytable.js'
             ], ['datatables-all.css','datatables']]
-            
-            
+
+
             // VexTab
             ,['styles', 'vextab.css', asset_base+'vex/tab/vextab.css']
             ,['scripts', 'vextab', asset_base+'vex/tab/vextab-div.js',['vextab.css']]
-             
+
             // ImTranslator
             //,[]
-            
+
             // KateX
             ,['styles', 'katex.css', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css'
@@ -595,17 +607,17 @@ var HtmlWidget = self = {
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
                 : 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js'
             , ['katex']]
-            
+
             // MathJax, ?config=TeX-AMS_HTML-full
             ,['scripts', 'mathjax', cdn
                 ? 'https://cdn.mathjax.org/mathjax/latest/MathJax.js'
                 : asset_base+'mathjax/MathJax.js'
             ]
-            
+
             // MathQuill
             ,['styles', 'mathquill.css', asset_base+'mathquill/mathquill.css']
             ,['scripts', 'mathquill', asset_base+'mathquill/mathquill.js', ['jquery','mathquill.css']]
-            
+
             // Tinymce
             ,['scripts', 'tinymce', cdn
                 ? '//cdn.tinymce.com/4/tinymce.min.js'
@@ -618,7 +630,7 @@ var HtmlWidget = self = {
                 ? '//cdn.ckeditor.com/4.5.8/standard/ckeditor.js'
                 : asset_base+'ckeditor/ckeditor.js'
             ]
-             
+
             // Trumbowyg
             ,['styles', 'trumbowyg.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/ui/trumbowyg.min.css'
@@ -628,7 +640,7 @@ var HtmlWidget = self = {
             ? 'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.0.5/trumbowyg.min.js'
             : asset_base+'trumbowyg/trumbowyg.js'
             , ['trumbowyg.css','jquery']]
-            
+
             // CodeMirror
             ,['styles', 'codemirror.css', cdn
                 ? 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.css'
@@ -681,14 +693,14 @@ var HtmlWidget = self = {
                 asset_base+'codemirror/addon/comment/comment.js'
             ], ['codemirror.css']]
             ,['scripts', 'codemirror-grammar', asset_base+'codemirror/addon/grammar/codemirror_grammar.js']
-            
+
             // ACE
             ,['scripts', 'ace', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js'
             : asset_base+'ace/ace.js'
             ,null, {'charset':'utf-8','data-ace-base':cdn?'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3':(asset_base+'ace')}]
             ,['scripts', 'ace-grammar', asset_base+'ace/ace_grammar.js']
-            
+
             // Prism
             ,['scripts', 'prefixfree', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js'
@@ -724,7 +736,7 @@ var HtmlWidget = self = {
                 asset_base+'prism/components/prism-json.min.js',
                 asset_base+'prism/components/prism-css.min.js'
             ], ['prism']]
-            
+
             // SyntaxHighlighter
             ,['styles-composite', 'sh.css', cdn
             ? [
@@ -753,7 +765,7 @@ var HtmlWidget = self = {
                 asset_base+'syntaxhighlighter/shBrushJScript.min.js',
                 asset_base+'syntaxhighlighter/shBrushCss.min.js'
             ], ['sh']]
-            
+
             // Highlightjs
             ,['styles', 'hjs.css', cdn
             ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css'
@@ -781,7 +793,7 @@ var HtmlWidget = self = {
         }
         return assets;
     }
-    
+
     ,i18n: function( locale, base, all, cdn ) {
         if ( !locale ) return [];
         base = base || '';
@@ -805,13 +817,13 @@ var HtmlWidget = self = {
         }
         return i18n;
     }
-    
+
     ,uuid: function( prefix, suffix ) {
         prefix = prefix || "widget";
         suffix = suffix || (isNode ? "static2" : "dynamic");
         return [prefix, new Date().getTime(), ++GID, ~~(1000*Math.random()), suffix].join("_");
     }
-    
+
     ,data: function( attr, ctx ) {
         var d_attr = '';
         if ( arguments.length < 2 ) ctx = 'data';
@@ -826,7 +838,7 @@ var HtmlWidget = self = {
         }
         return d_attr;
     }
-    
+
     ,attributes: function( attr, atts ) {
         if ( !atts || !attr ) return '';
         var attrs = [], i, l = atts.length, k, v;
@@ -848,7 +860,7 @@ var HtmlWidget = self = {
         }
         return attrs.length ? attrs.join(' ') : '';
     }
-    
+
     ,options: function( opts, key, value ) {
         var options = [], o_key, o_val, k, v, l;
         opts = opts || {};
@@ -857,7 +869,7 @@ var HtmlWidget = self = {
             for (k=0,l=opts.length; k<l; k++)
             {
                 v = opts[k];
-                
+
                 o_key = null;
                 if ( -1 === key )
                 {
@@ -868,7 +880,7 @@ var HtmlWidget = self = {
                     if ( isset(v, key) )
                         o_key = v[key];
                 }
-                
+
                 o_val = null;
                 if ( null != value )
                 {
@@ -889,7 +901,7 @@ var HtmlWidget = self = {
             {
                 if ( !HAS.call(opts,k) ) continue;
                 v = opts[k];
-                
+
                 o_key = null;
                 if ( -1 === key )
                 {
@@ -900,7 +912,7 @@ var HtmlWidget = self = {
                     if ( isset(v, key) )
                         o_key = v[key];
                 }
-                
+
                 o_val = null;
                 if ( null != value )
                 {
@@ -917,7 +929,7 @@ var HtmlWidget = self = {
         }
         return options;
     }
-    
+
     ,shuffle: function( arr, assoc ) {
         var shuffled;
         if ( true === assoc )
@@ -932,24 +944,46 @@ var HtmlWidget = self = {
         }
         return shuffled;
     }
-    
+
+    ,menu: function menu( items, tab ) {
+        tab = tab || '';
+        var tab_tab = '  '+tab,
+            out, item, i, l, item_class, item_url;
+        out = tab+'<ul>'+"\n";
+        for(i=0,l=items.length; i<l; i++)
+        {
+            item = items[i];
+            item_class = [];
+            if ( !empty(item,'submenu') ) item_class.push('w-submenu-item');
+            if ( !empty(item,'active') ) item_class.push('active');
+            item_url = isset(item,'url') ? String(item['url']) : '#';
+            out += tab_tab+'<li'+(item_class.length ? ' class="'+item_class.join(' ')+'"' : '')+'>'+"\n";
+            out += tab_tab+'<a href="'+item_url+'">'+String(item['text'])+'</a>'+"\n";
+            if ( !empty(item,'submenu') )
+                out += menu(item['submenu'], tab_tab);
+            out += tab_tab+'</li>'+"\n";
+        }
+        out += tab+'</ul>'+"\n";
+        return out;
+    }
+
     ,addWidget: function( widget, renderer ) {
         if ( widget && "function"===typeof renderer )
             widgets['w_'+widget] = renderer;
         else if ( widget && (false === renderer) && HAS.call(widgets,'w_'+widget) )
             delete widgets['w_'+widget];
     }
-    
+
     ,widget: function( widget, attr, data ) {
         var out = '';
         if ( widget )
         {
             attr = attr || {};
             data = data || {};
-            
+
             if ( HAS.call(widgets,'w_'+widget) )
                 return widgets['w_'+widget](attr, data, widget);
-            
+
             if ( 'audio' === widget ) attr['type'] = 'audio';
             else if ( 'video' === widget ) attr['type'] = 'video';
             else if ( 'checkbox-array' === widget || 'check-array' === widget ) attr['type'] = 'checkbox';
@@ -964,7 +998,7 @@ var HtmlWidget = self = {
             else if ( 'datatable' === widget ) attr['datatable'] = true;
             else if ( 'ace' === widget || 'ace-editor' === widget || 'codemirror' === widget || 'codemirror-editor' === widget || 'syntax-editor' === widget || 'source-editor' === widget || 'syntax' === widget || 'source' === widget || 'highlight-editor' === widget || 'highlighter' === widget ) attr['syntax-editor'] = true;
             else if ( 'tinymce' === widget || 'wysiwyg-editor' === widget || 'wysiwyg' === widget || 'rich-editor' === widget || 'rich' === widget || 'editor' === widget ) attr['wysiwyg-editor'] = true;
-            
+
             switch( widget )
             {
             case 'empty':       out = self.w_empty(attr, data, widget); break;
@@ -1024,10 +1058,10 @@ var HtmlWidget = self = {
             case 'highlight-editor':
             case 'highlighter':
             case 'textarea':    out = self.w_textarea(attr, data, widget); break;
-            case 'music':       
-            case 'score':       
-            case 'vextab':       
-            case 'tab':       
+            case 'music':
+            case 'score':
+            case 'vextab':
+            case 'tab':
             case 'tablature':   out = self.w_vextab(attr, data, widget); break;
             case 'datetimepicker':
             case 'datepicker':
@@ -1083,42 +1117,42 @@ var HtmlWidget = self = {
         }
         return out;
     }
-    
+
     ,w_empty: function( attr, data, widgetName ) {
         self.enqueue('styles', 'htmlwidgets.css');
         return '';
     }
-    
+
     ,w_sep: function( attr, data, widgetName ) {
         var wclass, wstyle;
-        wclass = 'w-separator'; 
+        wclass = 'w-separator';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         self.enqueue('styles', 'htmlwidgets.css');
         return '<div class="'+wclass+'" '+wstyle+'></div>';
     }
-    
+
     ,w_icon: function( attr, data, widgetName ) {
         var wclass, wstyle, wextra, wtitle;
-        wclass = 'fa'; 
+        wclass = 'fa';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         if ( !empty(attr,'icon') ) wclass += ' fa-'+attr['icon'];
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wextra = self.attributes(attr,['data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
         return '<i class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+'></i>';
     }
-    
+
     ,w_label: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wfor, wtext, wtitle;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wfor = isset(attr,"for") ? 'for="'+attr['for']+'"' : '';
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'w-widget w-label'; 
+        wclass = 'w-widget w-label';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         if ( !empty(attr,'icon') )
         {
             wclass += ' w-icon';
@@ -1134,15 +1168,15 @@ var HtmlWidget = self = {
         // iOS needs an onlick attribute to handle lable update if used as controller
         return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+'>'+wtext+'</label>';
     }
-    
+
     ,w_link: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, whref, wfor, wtext;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'w-link'; 
+        wclass = 'w-link';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         if ( !empty(attr,'icon') )
         {
             wclass += ' w-icon';
@@ -1167,15 +1201,15 @@ var HtmlWidget = self = {
             return '<a id="'+wid+'" class="'+wclass+'" '+wstyle+' title="'+wtitle+'" href="'+whref+'" '+wextra+'>'+wtext+'</a>';
         }
     }
-    
+
     ,w_button: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtype, wtitle, wtext, whref, wfor;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'w-widget w-button'; 
+        wclass = 'w-widget w-button';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         if ( !empty(attr,'icon') )
         {
             if ( !wtext.length ) wclass += ' w-icon-only';
@@ -1207,15 +1241,15 @@ var HtmlWidget = self = {
             return '<button id="'+wid+'" type="'+wtype+'" class="'+wclass+'" '+wstyle+' title="'+wtitle+'" '+wextra+'>'+wtext+'</button>';
         }
     }
-    
+
     ,w_control: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wctrl, wextra, wtitle, wchecked, wvalue, wname, wtype, wstate, wtext;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
-        wvalue = isset(data,"value") ? data["value"] : "1"; 
+        wvalue = isset(data,"value") ? data["value"] : "1";
         wchecked = !empty(attr,'checked') && attr['checked'] ? 'checked' : '';
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wstate = '';
@@ -1236,20 +1270,20 @@ var HtmlWidget = self = {
             wctrl = 'radio' === wtype ? 'w-radio' : 'w-checkbox';
             wtext = '&nbsp;';
         }
-        wclass = 'w-widget w-control'; 
+        wclass = 'w-widget w-control';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         self.enqueue('styles', 'htmlwidgets.css');
         return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" value="'+wvalue+'" '+wextra+' '+wchecked+' /><label for="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wtext+'</label>';
     }
-    
+
     ,w_control_list: function( attr, data, widgetName ) {
         var wid, wname, wclass, wstyle, wextra, wvalue, woptions,
             w_item_atts, w_item_class, w_large, w_xlarge, i, l, opt, widget;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? attr["name"] : null;
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
-        wvalue = isset(data,"value") ? data["value"] : "1"; 
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wvalue = isset(data,"value") ? data["value"] : "1";
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         woptions = [].concat(data['options']);
         wvalue = isset(data,'value') ? data['value'] : "";
@@ -1318,15 +1352,15 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         return widget;
     }
-    
+
     ,w_control_array: function( attr, data, widgetName ) {
         var wid, wname, wclass, wstyle, wextra, wvalues, wvalue, woptions, wfields, fields, field, f,fl,
             w_item_atts, w_item_class, w_item_name, w_large, w_xlarge, i, l, opt, widget;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? attr["name"] : null;
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
-        wvalue = isset(data,"value") ? data["value"] : "1"; 
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wvalue = isset(data,"value") ? data["value"] : "1";
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wfields = data['fields'] || {};
         woptions = [].concat(data['options']);
@@ -1413,20 +1447,20 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         return widget;
     }
-    
+
     ,w_switch: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wchecked, wiconon, wiconoff, wvalue, wvalue2, wdual, wname, wtype, wreverse, wstates, wswitches;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'checkbox';
-        wvalue = isset(data,"value") ? data["value"] : "1"; 
+        wvalue = isset(data,"value") ? data["value"] : "1";
         wvalue2 = isset(data,"valueoff") ? data["valueoff"] : false;
         wdual = false !== wvalue2;
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wchecked = !empty(attr,'checked') && attr['checked'];
-        wclass = 'w-widget w-switch'; 
+        wclass = 'w-widget w-switch';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wreverse = !empty(attr,"reverse")&&attr["reverse"];
         wiconon='&nbsp;'; wiconoff='&nbsp;';
         if ( !empty(attr,"iconon") && empty(attr,"iconoff") )
@@ -1458,7 +1492,7 @@ var HtmlWidget = self = {
             {
                 wstates = '<input type="'+wtype+'" id="'+wid+'-on" '+wname+' class="w-switch-state w-state-on" value="'+wvalue+'" '+wextra+' /><input type="'+wtype+'" id="'+wid+'-off" '+wname+' class="w-switch-state w-state-off" value="'+wvalue2+'" '+wextra+' checked />';
             }
-            if ( wreverse ) 
+            if ( wreverse )
             {
                 wclass += ' reverse';
                 wswitches = '<label for="'+wid+'-off" class="w-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'-on" class="w-switch-on" onclick="">'+wiconon+'</label>';
@@ -1473,7 +1507,7 @@ var HtmlWidget = self = {
             // switch with one state for on/off
             if ( wchecked ) wchecked = 'checked';
             wstates = '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="w-switch-state" value="'+wvalue+'" '+wextra+' '+wchecked+' />';
-            if ( wreverse ) 
+            if ( wreverse )
             {
                 wclass += ' reverse';
                 wswitches = '<label for="'+wid+'" class="w-switch-off" onclick="">'+wiconoff+'</label><label for="'+wid+'" class="w-switch-on" onclick="">'+wiconon+'</label>';
@@ -1486,11 +1520,11 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         return '<span class="'+wclass+'" '+wtitle+' '+wstyle+'>'+wstates+wswitches+'<span class="w-switch-handle"></span></span>';
     }
-    
+
     ,w_rating: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wratings, wname, wtitle, wtext, wicon,
             r, rate, label, widget, wchecked, w_item_atts, w_icon;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : 'name="__rating_'+wid+'"';
         wvalue = isset(data,'value') ? data['value'] : "";
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
@@ -1523,22 +1557,22 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         return widget;
     }
-    
+
     ,w_select: function( attr, data, widgetName ) {
-        var wid, wclass, wstyle, wextra, wname, wdropdown, woptions, wselected, 
+        var wid, wclass, wstyle, wextra, wname, wdropdown, woptions, wselected,
             opts, o, opt, l, key, val, selected, has_selected, winit, wopts, wtitle;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wdropdown = !!attr['dropdown'];
         wclass = wdropdown ? 'w-widget w-dropdown' : 'w-widget w-select';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wextra = self.attributes(attr,['multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wselected = isset(data,'selected') ? data['selected'] : [];
         if ( !(wselected instanceof Array) ) wselected = [wselected];
-        woptions = ''; 
+        woptions = '';
         opts = data['options']; l = opts.length;
         has_selected = false;
         for(o=0; o<l; o++)
@@ -1556,7 +1590,7 @@ var HtmlWidget = self = {
             //if ( !wname.length ) wextra += ' form="__NONE__"';
             wextra += ' data-placeholder="'+attr['placeholder']+'"';
         }
-        
+
         wopts = "";
         self.enqueue('styles', 'htmlwidgets.css');
         if ( !!attr['select2'] && !wdropdown )
@@ -1575,19 +1609,19 @@ var HtmlWidget = self = {
         ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+winit+' '+wopts+' '+wname+' class="w-dropdown-select" '+wtitle+' '+wextra+'>'+woptions+'</select></span>'
         : '<select id="'+wid+'" '+winit+' '+wopts+' '+wname+' class="'+wclass+'" '+wstyle+' '+wtitle+' '+wextra+'>'+woptions+'</select>';
     }
-    
+
     ,w_text: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtype, wicon, wautocomplete, wplaceholder, wvalue, wname, wtitle, wrapper_class, winit, titl;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
-        wclass = 'w-widget w-text'; 
+        wclass = 'w-widget w-text';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wtype = !empty(attr,"type") ? attr["type"] : 'text';
         wicon = '';
         wrapper_class = 'w-wrapper';
@@ -1619,20 +1653,20 @@ var HtmlWidget = self = {
         ? '<span class="'+wrapper_class+'" '+wstyle+'><input type="'+wtype+'" id="'+wid+'" '+winit+' '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wicon+'</span>'+wautocomplete
         : '<input type="'+wtype+'" id="'+wid+'" '+winit+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wautocomplete;
     }
-    
+
     ,w_suggest: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wajax, wicon, wplaceholder,
             wvalue, wname, wtitle, wrapper_class, winit, wopts, titl;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
-        wclass = 'w-widget w-text w-suggest'; 
+        wclass = 'w-widget w-text w-suggest';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wajax = attr["ajax"];
         wicon = '';
         wrapper_class = 'w-wrapper';
@@ -1661,20 +1695,20 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" autocomplete="off" data-ajax="'+wajax+'" '+wextra+' />'+wicon+'</span>';
     }
-    
+
     ,w_textarea: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wplaceholder, wvalue, wname, wtitle, weditor, defaults, winit, wopts, titl, wrep, wrep_id;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wopts = ""; wrep = '';
-        if ( !!attr['syntax-editor'] ) 
+        if ( !!attr['syntax-editor'] )
         {
             if ( !winit ) winit = 'w-init="1"';
             if ( 'ace' === widgetName || 'ace-editor' === widgetName )
@@ -1707,10 +1741,10 @@ var HtmlWidget = self = {
             }
             self.enqueue('scripts', 'htmlwidgets');
         }
-        else if ( !!attr['wysiwyg-editor'] ) 
+        else if ( !!attr['wysiwyg-editor'] )
         {
             if ( !winit ) winit = 'w-init="1"';
-            wclass = 'w-widget w-wysiwyg-editor'; 
+            wclass = 'w-widget w-wysiwyg-editor';
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             if ( 'object'===typeof attr['options'] )
             {
@@ -1723,20 +1757,20 @@ var HtmlWidget = self = {
         }
         else
         {
-            wclass = 'w-widget w-textarea'; 
+            wclass = 'w-widget w-textarea';
             if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
             self.enqueue('styles', 'htmlwidgets.css');
         }
         return '<textarea id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>'+wrep;
     }
-    
+
     ,w_syntax_highlight: function( attr, data, widgetName ) {
         var wid, wclass, wextra, wvalue, whighlighter, wlang;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wvalue = isset(data,"value") ? data["value"] : "";
         wextra = self.attributes(attr,['style','title','data'])+(!empty(attr,'extra') ? (' '+attr['extra']) : '');
         whighlighter = (empty(attr,'highlighter') ? 'prism' : attr['highlighter']).toLowerCase();
-        if ( 'hjs' === whighlighter || 'hljs' === whighlighter || 'highlightjs' === whighlighter ) 
+        if ( 'hjs' === whighlighter || 'hljs' === whighlighter || 'highlightjs' === whighlighter )
         {
             wlang = empty(attr,'language') ? 'xml' : attr['language'];
             wclass = 'w-widget w-syntax-highlight w-syntax-highlight-hjs';
@@ -1745,7 +1779,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'w-syntax-highlight-'+wid, ["hljs.highlightBlock(document.getElementById('"+wid+"') );"], ['hjs-html']);
             return '<pre id="prewrap_'+wid+'" class="'+wclass+'" '+wextra+'><code id="'+wid+'" class="language-'+wlang+'">'+wvalue+'</code></pre>';
         }
-        else if ( 'sh' === whighlighter || 'syntaxhighlighter' === whighlighter ) 
+        else if ( 'sh' === whighlighter || 'syntaxhighlighter' === whighlighter )
         {
             wlang = empty(attr,'language') ? 'xml' : attr['language'];
             wclass = 'w-widget w-syntax-highlight w-syntax-highlight-sh';
@@ -1754,7 +1788,7 @@ var HtmlWidget = self = {
             self.enqueue('scripts', 'w-syntax-highlight-'+wid, ["SyntaxHighlighter.highlight({brush:'"+wlang+"'}, document.getElementById('"+wid+"'));"], ['sh-html']);
             return '<pre id="'+wid+'" class="'+wclass+'" '+wextra+'>'+wvalue+'</pre>';
         }
-        else//if ( 'prism' === whighlighter ) 
+        else//if ( 'prism' === whighlighter )
         {
             wlang = empty(attr,'language') ? 'markup' : attr['language'];
             wclass = 'w-widget w-syntax-highlight w-syntax-highlight-prism';
@@ -1764,20 +1798,20 @@ var HtmlWidget = self = {
             return '<pre class="'+wclass+' language-'+wlang+' line-numbers" '+wextra+'><code id="'+wid+'">'+wvalue+'</code></pre>';
         }
     }
-    
+
     ,w_vextab: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtablature;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'w-vextab vex-tabdiv'; 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wclass = 'w-vextab vex-tabdiv';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['title','width','height','scale','editor','editor_width','editor_height','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wtablature = empty(data,'notes') ? '' : data['notes'];
         if ( !empty(attr,'render') && ('svg' === attr['render']) ) self.enqueue('scripts', 'raphael');
         self.enqueue('scripts', 'vextab');
         return '<div id="'+wid+'" class="'+wclass+'" '+wextra+'>'+wtablature+'</div>';
     }
-    
+
     ,w_translator: function( attr, data, widgetName ) {
         var wtype, wclass, wstyle, wextra, wdims, wsource, wtarget, wlocale;
         wtype = !empty(attr,'type') ? attr['type'] : "iframe";
@@ -1785,7 +1819,7 @@ var HtmlWidget = self = {
         wsource = !empty(attr,'source') ? attr['source'] : "en";
         wtarget = !empty(attr,'target') ? attr['target'] : "el";
         wlocale = !empty(attr,'locale') ? attr['locale'] : "en";
-        wclass = 'w-translator'; 
+        wclass = 'w-translator';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
@@ -1793,22 +1827,22 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'w-translator', 'http://imtranslator.net/translation/webmaster/wm-im-'+('popup'===wtype?'popup':wdims)+'.js', ['w-translator-opts']);
         return '<div id="TranslatorBuilder" class="'+wclass+'" '+wstyle+' '+wextra+'><a href="http://imtranslator.net/translation/" id="ImTranslator" target="_top" title="Translator - imtranslator.net">Translator</a></div><div id="ImBack"></div>';
     }
-    
+
     ,w_date: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wplaceholder, wicon, wvalue, wname, wtime, wtitle, wformat, wrapper_class, winit, wopts, titl;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
         wtime = !empty(attr,"time") ? 'data-datepicker-time="1"' : '';
         if ( !!wtime )
             wtime += isset(attr,"seconds") && (false === !!attr["seconds"]) ? ' data-datepicker-seconds="0"' : ' data-datepicker-seconds="1"';
-        wclass = 'w-widget w-text w-date'; 
+        wclass = 'w-widget w-text w-date';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wformat = !empty(attr,"format") ? attr["format"] : (!!wtime ? 'Y-m-d H:i:s' : 'Y-m-d');
         wicon = '';
         wrapper_class = 'w-wrapper';
@@ -1838,16 +1872,16 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+winit+' '+wopts+' '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" data-datepicker-format="'+wformat+'" '+wtime+' '+wextra+' />'+wicon+'</span>';
     }
-    
+
     ,w_time: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wtitle, wname, wnam, wformat, wtimes,
             time_options, i, tt, t, p, f, selected, winit;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wname = !empty(attr,"name") ? attr["name"] : '';
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wformat = !empty(attr,'format') ? attr['format'].split(':') : ["h","m","s"];
-        if (isset(data,'value')) 
+        if (isset(data,'value'))
         {
             wvalue = data['value'] instanceof Array ? data['value'] : data['value'].split(':');
             while ( wvalue.length < 3 ) wvalue.push("00");
@@ -1856,9 +1890,9 @@ var HtmlWidget = self = {
         {
             wvalue = ["00", "00", "00"];
         }
-        wclass = 'w-widget w-time'; 
+        wclass = 'w-widget w-time';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         time_options = {
             'h':[],
@@ -1888,19 +1922,19 @@ var HtmlWidget = self = {
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<span class="'+wclass+'" '+winit+' '+wstyle+'>'+wtimes+'</span>';
     }
-    
+
     ,w_timer: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wduration, wname, wformat, wtype, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? attr["name"] : '';
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
         wtype = !empty(attr,'type') ? attr['type'] : 'down';
         wformat = !empty(attr,'format') ? attr['format'] : '%hh%:%mm%:%ss%';
         wduration = isset(data,'duration') ? data['duration'] : '10';
-        wclass = 'w-widget w-timer'; 
+        wclass = 'w-widget w-timer';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wopts = "";
         if ( 'object'===typeof attr['options'] )
@@ -1912,10 +1946,10 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<span id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wtitle+' '+wstyle+' '+wextra+' data-timer-type="'+wtype+'" data-timer-format="'+wformat+'" data-timer-duration="'+wduration+'">'+wformat+'</span>';
     }
-    
+
     ,w_color: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wvalue, wopacity, winput, winputref, wname, wtitle, wformat, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         if ( !empty(attr,'input') )
@@ -1928,12 +1962,12 @@ var HtmlWidget = self = {
             winput = '';
             winputref = '';
         }
-        wvalue = isset(data,"color") ? data["color"] : ""; 
-        wopacity = isset(data,"opacity") ? data["opacity"] : "1.0"; 
+        wvalue = isset(data,"color") ? data["color"] : "";
+        wopacity = isset(data,"opacity") ? data["opacity"] : "1.0";
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-        wclass = 'colorpicker-selector w-colorselector'; 
+        wclass = 'colorpicker-selector w-colorselector';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wformat = !empty(attr,"format") ? attr["format"] : 'rgba';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wopts = "";
@@ -1946,14 +1980,14 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return winput+'<div id="'+wid+'" '+winit+' '+wopts+' '+wtitle+' class="'+wclass+'" '+wstyle+'  data-colorpicker-color="'+wvalue+'" data-colorpicker-opacity="'+wopacity+'" data-colorpicker-format="'+wformat+'" '+winputref+' '+wextra+'></div>';
     }
-    
+
     ,w_gmap: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wcenter, wzoom, wmarkers, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
-        wclass = 'w-widget w-map'; 
+        wclass = 'w-widget w-map';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wcenter = !empty(attr,"center") ? attr["center"] : null;
         wzoom = !empty(attr,"zoom") ? attr["zoom"] : '6';
         wmarkers = !empty(data,"markers") ? data["markers"] : null;
@@ -1967,18 +2001,18 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+''+(!!wcenter ? ' data-map-center="'+wcenter.join(',')+'"':'')+' data-map-zoom="'+wzoom+'"'+(!!wmarkers ? ' data-map-markers="'+wmarkers+'"':'')+'></div>';
     }
-    
+
     ,w_file: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wicon, wplaceholder, wvalue, wname, wtitle, wrapper_class, titl;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : ""; 
+        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
-        wclass = 'w-widget w-file w-text'; 
+        wclass = 'w-widget w-file w-text';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wicon = '';
         wrapper_class = 'w-wrapper';
         if ( !empty(attr,'icon') )
@@ -1995,11 +2029,11 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
     }
-    
+
     ,w_dnd_upload: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wname, wtitle,
             msg_upload, msg_delete, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid( );
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
         wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
@@ -2022,11 +2056,11 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<div '+winit+' '+wopts+' id="'+wid+'_wrapper" class="'+wclass+'" '+wstyle+'><input id="'+wid+'" '+wname+' type="file" class="_w-dnd-uploader" value="" style="display:none !important;" '+wextra+'><label for="'+wid+'" class="w-widget w-button w-dnd-upload-upload" title="'+msg_upload+'"><i class="fa fa-upload fa-2x"></i></label><button type="button" class="w-widget w-button w-dnd-upload-delete" title="'+msg_delete+'"><i class="fa fa-times fa-2x"></i></button></div>';
     }
-    
+
     ,w_upload: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wupload_base, wvalue, wname,
             msg_upload, msg_delete, msg_full, image, thumb, upload_data, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid( ); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid( );
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
         wname = !empty(attr,'name') ? 'name="'+attr['name']+'"' : '';
         wclass = 'w-widget w-upload'; if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -2072,13 +2106,13 @@ var HtmlWidget = self = {
             return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' data-upload-base="'+wupload_base+'" '+wextra+'><img id="'+wid+'_thumbnail" class="w-upload-thumbnail" title="'+msg_full+'" src="'+thumb+'" /><textarea json-encoded="1" id="'+wid+'_data" '+wname+' class="_w-data" style="display:none !important;">'+upload_data+'</textarea><label class="w-widget w-button" title="'+msg_upload+'"><i class="fa fa-upload"></i><input id="'+wid+'_uploader" type="file" class="_w-uploader" style="display:none !important;" /></label><button type="button" class="w-widget w-button w-upload-delete" title="'+msg_delete+'"><i class="fa fa-times"></i></button></div>';
         }
     }
-    
+
     ,w_table: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wcolumns, wrows, wheader, wfooter,
             column_values, column_keys, row, rowid, rowk, rowv, r, c, rl, cl, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
-        wclass = 'w-widget w-table'; 
+        wclass = 'w-widget w-table';
         /*
         if ( !empty(attr,'stripped') ) wclass += ' stripped';
         if ( !empty(attr,'bordered') ) wclass += ' bordered';
@@ -2086,7 +2120,7 @@ var HtmlWidget = self = {
         */
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         var plus_footer = !empty(attr['footer']);
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wcolumns = '';
         column_values = data['columns'];
@@ -2130,14 +2164,14 @@ var HtmlWidget = self = {
         }
         return '<table id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
-    
+
     ,w_chart: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, winit, wopts;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
-        wclass = 'w-widget w-dropdown-menu'; 
+        wclass = 'w-widget w-dropdown-menu';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
         wopts = 'w-opts="htmlw_'+wid+'_options"';
@@ -2147,32 +2181,47 @@ var HtmlWidget = self = {
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' '+wopts+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'></div>';
     }
-    
+
     ,w_menu: function( attr, data, widgetName ) {
-        var wid, wclass, wstyle, wextra, wdata, winit;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        var wid, wclass, wstyle, wextra, wdata, winit, out;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
-        wclass = 'w-widget w-dropdown-menu'; 
+        wclass = 'w-widget';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
-        return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>';
+        if ( is_array(data) && data.length )
+        {
+            out = '<nav id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+"\n";
+            if ( empty(attr,'mobile') )
+            {
+                out += '<label for="mobile-menu_'+wid+'" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label><input id="mobile-menu_'+wid+'" type="checkbox" class="w-menu-controller" value="1" />'+"\n";
+            }
+            out += self.menu(data);
+            out += '</nav>';
+            self.enqueue('styles', 'htmlwidgets.css');
+            return out;
+        }
+        else
+        {
+            return '<nav id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>';
+        }
     }
-    
+
     ,w_menu_end: function( attr, data, widgetName ) {
         self.enqueue('styles', 'htmlwidgets.css');
-        return '</div>';
+        return '</nav>';
     }
-    
+
     ,w_pagination: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, totalItems, itemsPerPage, currentPage,
             maxPagesToShow, placeholder, urlPattern, previousText, nextText, ellipsis,
-            numPages, pages, i, l, numAdjacents, slidingStart, slidingEnd, out;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'w-pagination pagination'; 
+            numPages, pages, page, i, l, numAdjacents, slidingStart, slidingEnd, out;
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wclass = 'w-pagination pagination';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         totalItems = +data['totalItems'];
         itemsPerPage = +data['itemsPerPage'];
@@ -2183,7 +2232,7 @@ var HtmlWidget = self = {
         previousText = isset(attr,'previousText') ? String(attr['previousText']) : '&laquo; Previous';
         nextText = isset(attr,'nextText') ? String(attr['nextText']) : 'Next &raquo;';
         ellipsis = isset(attr,'ellipsis') ? String(attr['ellipsis']) : '...';
-        
+
         numPages = 0 >= itemsPerPage || 0 >= totalItems ? 0 : Math.ceil(totalItems/itemsPerPage);
         if ( numPages > 1 )
         {
@@ -2254,29 +2303,31 @@ var HtmlWidget = self = {
                 });
             }
 
-            out = '<nav><ul id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
+            out = '<ul id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
             if ( currentPage > 1 )
             {
-                out += '<li><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage-1)) + '">'+ previousText +'</a></li>';
+                out += '<li class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage-1)) + '">'+ previousText +'</a></li>';
             }
 
             for(i=0,l=pages.length; i<l; i++)
             {
-                if (pages[i].url)
+                page = pages[i];
+                if ( page.url )
                 {
-                    out += '<li' + (pages[i].isCurrent ? ' class="active"' : '') + '><a href="' + htmlspecialchars(pages[i].url) + '">' + pages[i].text + '</a></li>';
+                    out += '<li class="page-item' + (1==page.text ? ' page-first' : '') + (numPages==page.text ? ' page-last' : '') + (page.isCurrent ? ' page-active active' : '') + '"><a href="' + htmlspecialchars(page.url) + '">' + String(page.text) + '</a></li>';
                 }
                 else
                 {
-                    out += '<li class="disabled"><span>' + pages[i].text + '</span></li>';
+                    out += '<li class="page-item disabled"><span>' + String(page.text) + '</span></li>';
                 }
             }
 
             if ( currentPage < numPages )
             {
-                out += '<li><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage+1)) + '">'+ nextText +'</a></li>';
+                out += '<li class="page-next"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage+1)) + '">'+ nextText +'</a></li>';
             }
-            out += '</ul></nav>';
+            out += '</ul>';
+            self.enqueue('styles', 'htmlwidgets.css');
             return out;
         }
         else
@@ -2284,11 +2335,11 @@ var HtmlWidget = self = {
             return '';
         }
     }
-    
+
     ,w_swf: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wswf, wquality, wmode, wscale, wflashvars, wallowfullscreen;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
-        wclass = 'w-swf'; 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wclass = 'w-swf';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['width','height'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
@@ -2300,13 +2351,13 @@ var HtmlWidget = self = {
         wallowfullscreen = empty(attr,'allowfullscreen') ? 'false' : attr['allowfullscreen'];
         return '<object id="'+wid+'" type="application/x-shockwave-flash" '+wextra+' data="'+wswf+'" class="'+wclass+'" '+wstyle+'><param name="movie" value="'+wswf+'" /><param name="quality" value="'+wquality+'" /><param name="wmode" value="'+wmode+'" /><param name="scale" value="'+wscale+'" /><param name="FlashVars" value="'+wflashvars+'" /><param name="allowFullScreen" value="'+wallowfullscreen+'" /></object>';
     }
-    
+
     ,w_media: function( attr, data, widgetName ) {
         var wid, wtype, wclass, wstyle, wextra, wtext, wsources, wsource, source, src, src_type;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wtype = empty(attr,'type') ? "video" : attr['type'];
         if ( 'audio' !== wtype ) wtype = 'video';
-        wclass = 'w-media w-'+wtype; 
+        wclass = 'w-media w-'+wtype;
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['title','width','height','src','controls','autoplay','loop','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         wtext = empty(data,'text') ? '' : data['text'];
@@ -2321,37 +2372,37 @@ var HtmlWidget = self = {
         self.enqueue('scripts','html5media');
         return '<'+wtype+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>'+wsource+wtext+'</'+wtype+'>';
     }
-    
+
     ,w_delayable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, winit, wspinner;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
-        wclass = 'w-delayable-overlay'; 
+        wclass = 'w-delayable-overlay';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wspinner = 'w-spinner';
         wspinner += !empty(attr,'spinner') ? " "+attr['spinner'] : " w-spinner-dots";
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+'><div class="'+wspinner+'"></div></div>';
     }
-    
+
     ,w_disabable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, winit;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : 'w-init="1"';
-        wclass = 'w-disabable-overlay'; 
+        wclass = 'w-disabable-overlay';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
     }
-    
+
     ,w_morphable: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wmodes, wmode_class, wshow_class, whide_class, wselector, wselector_animated, wshow_selector, whide_selector, wshow_selector_animated, whide_selector_animated, wshow_selector__important, whide_selector__important, wshow_selector_animated__important, whide_selector_animated__important, whide_sel, whide_not_sel, wshow_sel, wshow_not_sel, mode_class;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
-        wclass = 'w-morphable'; 
+        wclass = 'w-morphable';
         wmodes = [].concat(attr['modes']);
         wmode_class = !empty(attr,'mode') ? attr['mode'] : 'mode-${MODE}';
         wshow_class = !empty(attr,'show') ? attr['show'] : 'show-if-${MODE}';
@@ -2374,26 +2425,26 @@ var HtmlWidget = self = {
             whide_not_sel = ' .w-morphable-item.' + whide_class.split('${MODE}').join('not-'+wmodes[i]);
             wshow_sel = ' .w-morphable-item.' + wshow_class.split('${MODE}').join(wmodes[i]);
             wshow_not_sel = ' .w-morphable-item.' + wshow_class.split('${MODE}').join('not-'+wmodes[i]);
-            
+
             /*
             SHOW < HIDE, SHOW default
-            
+
             mode + show                 =====> SHOW !important
             mode + hide                 =====> HIDE !important
-            
+
             !mode + hide_not            =====> HIDE
             !mode + show_not            =====> SHOW
             !mode + show                =====> HIDE
             !mode + hide                =====> SHOW
             mode + hide_not             =====> SHOW
             mode + show_not             =====> HIDE
-            
+
             else                        =====> LEAVE AS IS
-            
+
             CSS selectors are LINEAR O(n) in the number of options/modes
             inluding AND/OR operations between modes
             */
-            
+
             // 1st level only
             wshow_selector.push(
                 wselector+'.w-morphable-level-1 > .w-morphable-item'
@@ -2401,14 +2452,14 @@ var HtmlWidget = self = {
             wshow_selector_animated.push(
                 wselector_animated+'.w-morphable-level-1 > .w-morphable-item'
             );
-            
+
             whide_selector__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+whide_sel
             );
             whide_selector__important.push(
                 wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_sel
             );
-            
+
             whide_selector.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+wshow_sel
             );
@@ -2427,15 +2478,15 @@ var HtmlWidget = self = {
             whide_selector.push(
                 wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_not_sel
             );
-            
-            
+
+
             wshow_selector__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+'.w-morphable-level-1 >'+wshow_sel
             );
             wshow_selector__important.push(
                 wselector+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_sel
             );
-            
+
             wshow_selector.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+'.w-morphable-level-1 >'+whide_sel
             );
@@ -2454,15 +2505,15 @@ var HtmlWidget = self = {
             wshow_selector.push(
                 wselector+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_not_sel
             );
-            
-            
+
+
             whide_selector_animated__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_sel
             );
             whide_selector_animated__important.push(
                 wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+whide_sel
             );
-            
+
             whide_selector_animated.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_sel
             );
@@ -2481,15 +2532,15 @@ var HtmlWidget = self = {
             whide_selector_animated.push(
                 wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+whide_not_sel
             );
-            
-            
+
+
             wshow_selector_animated__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+'.w-morphable-level-1 >'+wshow_sel
             );
             wshow_selector_animated__important.push(
                 wselector_animated+'.w-morphable-class.'+mode_class+'.w-morphable-level-1 >'+wshow_sel
             );
-            
+
             wshow_selector_animated.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+'.w-morphable-level-1 >'+whide_sel
             );
@@ -2508,8 +2559,8 @@ var HtmlWidget = self = {
             wshow_selector_animated.push(
                 wselector_animated+'.w-morphable-class:not(.'+mode_class+').w-morphable-level-1 >'+wshow_not_sel
             );
-            
-            
+
+
             // any level
             wshow_selector.push(
                 wselector+':not(.w-morphable-level-1) .w-morphable-item'
@@ -2517,14 +2568,14 @@ var HtmlWidget = self = {
             wshow_selector_animated.push(
                 wselector_animated+':not(.w-morphable-level-1) .w-morphable-item'
             );
-            
+
             whide_selector__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+whide_sel
             );
             whide_selector__important.push(
                 wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_sel
             );
-            
+
             whide_selector.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+wshow_sel
             );
@@ -2543,15 +2594,15 @@ var HtmlWidget = self = {
             whide_selector.push(
                 wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_not_sel
             );
-            
-            
+
+
             wshow_selector__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector+':not(.w-morphable-level-1)'+wshow_sel
             );
             wshow_selector__important.push(
                 wselector+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_sel
             );
-            
+
             wshow_selector.oush(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector+':not(.w-morphable-level-1)'+whide_sel
             );
@@ -2570,15 +2621,15 @@ var HtmlWidget = self = {
             wshow_selector.push(
                 wselector+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+wshow_not_sel
             );
-            
-            
+
+
             whide_selector_animated__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'.$whide_sel
             );
             whide_selector_animated__important.push(
                 wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+whide_sel
             );
-            
+
             whide_selector_animated.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_sel
             );
@@ -2597,15 +2648,15 @@ var HtmlWidget = self = {
             whide_selector_animated.push(
                 wselector_animated+'.w-morphable-class:not(.'+mode_class+'):not(.w-morphable-level-1)'+whide_not_sel
             );
-            
-            
+
+
             wshow_selector_animated__important.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:checked ~ '+wselector_animated+':not(.w-morphable-level-1)'+wshow_sel
             );
             wshow_selector_animated__important.push(
                 wselector_animated+'.w-morphable-class.'+mode_class+':not(.w-morphable-level-1)'+wshow_sel
             );
-            
+
             wshow_selector_animated.push(
                 'input[data-morph-'+wid+'="'+mode_class+'"]:not(:checked) ~ '+wselector_animated+':not(.w-morphable-level-1)'+whide_sel
             );
@@ -2626,12 +2677,12 @@ var HtmlWidget = self = {
             );
         }
         wstyle = '';
-        
+
         wstyle += whide_selector.join(',') + '{display: none !important}';
         wstyle += wshow_selector.join(',') + '{display: block}';
         wstyle += whide_selector__important.join(',') + '{display: none !important}';
         wstyle += wshow_selector__important.join(',') + '{display: block !important}';
-        
+
         wstyle += whide_selector_animated.join(',') + '{\
 pointer-events: none !important; overflow: hidden !important;\
 min-width: 0 !important; max-width: 0 !important;\
@@ -2687,10 +2738,10 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         self.enqueue('styles', "w-morphable-"+wid, [wstyle], ['htmlwidgets.css']);
         return '';
     }
-    
+
     ,w_panel: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wtitle, wchecked, wdata, winit;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
         wclass = 'w-panel';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
@@ -2699,16 +2750,16 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         wchecked = !empty(attr,'opened') ? 'checked' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wdata = self.data(attr);
-        
+
         self.enqueue('styles', 'htmlwidgets.css');
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<input type="checkbox" id="controller_'+wid+'" class="w-panel-controller" value="1" '+wchecked+'/><div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-panel-header">'+wtitle+'<label class="w-panel-controller-button fa fa-2x" for="controller_'+wid+'" onclick=""></label></div><div class="w-panel-content">';
     }
-    
+
     ,w_panel_end: function( attr, data, widgetName ) {
         return '</div></div>';
     }
-    
+
     ,w_accordeon: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wtype, witems, i, l, wcontrollers, wctrl, wselector, wselected, wheight;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
@@ -2716,12 +2767,12 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         wheight = !empty(attr,'height') ? attr['height'] : '1500px';
         wtype = !empty(attr,'independent') ? 'checkbox' : 'radio';
         witems = [].concat(attr['items']);
-        
+
         wctrl = "ctrl_"+wid;
         wcontrollers = "<input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" + witems.join( "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\""+wtype+"\" id=\"item_" ) + "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/>";
-        
+
         wstyle = '';
-        
+
         // de-activate
         wselector = [];
         for (i=0,l=witems.length; i<l; i++)
@@ -2755,13 +2806,13 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         self.enqueue('styles', "w-accordeon-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
-    
+
     ,w_tabs: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wtabs, i, l, wcontrollers, wctrl, wselector, wselected, wtransform1, wtransform2;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
         wtabs = [].concat(attr['tabs']);
-        
+
         if ( !empty(attr['3d']) )
         {
             wtransform1 = 'w-fx-slideout-3d';
@@ -2772,12 +2823,12 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
             wtransform1 = 'w-fx-slideout';
             wtransform2 = 'w-fx-slidein';
         }
-        
+
         wctrl = "ctrl_"+wid;
         wcontrollers = "<input name=\""+wctrl+"\" checked type=\"radio\" id=\"tab_" + wtabs.join( "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/><input name=\""+wctrl+"\" type=\"radio\" id=\"tab_" ) + "\" class=\"w-transition-controller w-"+wctrl+"-controller\"/>";
-        
+
         wstyle = '';
-        
+
         // de-activate
         wselector = [];
         for (i=0,l=wtabs.length; i<l; i++)
@@ -2826,13 +2877,13 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         self.enqueue('styles', "w-tabs-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
-    
+
     ,w_pages: function( attr, data, widgetName ) {
         var wid, wstyle, wcontext, wpages, main_page, i, l, wcontrollers, wselector, wtransform1, wtransform2, wtransform3;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wcontext = !empty(attr,'context') ? (attr['context']+" ") : "";
         wpages = [].concat(attr['pages']);
-        
+
         if ( !empty(attr['3d']) )
         {
             wtransform1 = 'translate3d(0px,0px,0px)';
@@ -2845,11 +2896,11 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
             wtransform2 = 'translateX(-100%)';
             wtransform3 = 'translateX(100%)';
         }
-        
+
         wcontrollers = "<span id=\"page_" + wpages.join( "\" class=\"w-page-controller\"></span><span id=\"page_" ) + "\" class=\"w-page-controller\"></span>";
-        
+
         wstyle = '';
-        
+
         // main page
         main_page = wpages.shift();
         wstyle += '\
@@ -2917,17 +2968,17 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         self.enqueue('styles', "w-pages-"+wid, [wstyle], ['htmlwidgets.css']);
         return wcontrollers;
     }
-    
+
     ,w_dialog: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, wbuttons, wcontent, winit;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
-        wtitle = isset(data,'title') ? data['title'] : ''; 
-        wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
+        wtitle = isset(data,'title') ? data['title'] : '';
+        wbuttons = isset(attr,'buttons') ? attr['buttons'] : '';
         wcontent = isset(data,'content') ? data['content'] : '';
-        wclass = 'w-dialog'; 
+        wclass = 'w-dialog';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wicon = '';
         if ( !empty(attr,'icon') )
@@ -2943,16 +2994,16 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'</div><div class="w-dialog-content">'+wcontent+'</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
-    
+
     ,w_modal: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay, winit;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = !empty(attr,"init") ? 'w-init="'+attr["init"]+'"' : '';
-        wclass = 'w-modal w-dialog'; 
+        wclass = 'w-modal w-dialog';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        wtitle = isset(data,'title') ? data['title'] : ''; 
+        wtitle = isset(data,'title') ? data['title'] : '';
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
         woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick=""></label>' : '<div class="w-modal-overlay"></div>';
         wdata = self.data(attr);
@@ -2960,21 +3011,21 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         if ( !!winit ) self.enqueue('scripts', 'htmlwidgets');
         return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" '+winit+' class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
-    
+
     ,w_modal_end: function( attr, data, widgetName ) {
         var wbuttons;
-        wbuttons = isset(attr,'buttons') ? attr['buttons'] : ''; 
+        wbuttons = isset(attr,'buttons') ? attr['buttons'] : '';
         return '</div><div class="w-dialog-buttons">'+wbuttons+'</div></div>';
     }
-    
+
     ,w_tooltip: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, wdata, wtitle, wtext, warrow;
-        wid = isset(attr,"id") ? attr["id"] : self.uuid(); 
+        wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wtext = isset(data,'text') ? data['text'] : '';
         wtitle = isset(attr,'title') ? attr['title'] : wtext;
-        wclass = 'w-tooltip'; 
+        wclass = 'w-tooltip';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : ''; 
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         if ( !empty(attr,'icon') )
         {
@@ -3003,7 +3054,7 @@ transition: opacity 0.4s ease 0.2s, max-width 0.6s ease, max-height 0.6s ease;\
         self.enqueue('styles', 'htmlwidgets.css');
         return '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' title="'+wtitle+'" '+wdata+'>'+wtext+warrow+'</div>';
     }
-    
+
     ,w_animation: function( attr, data, widgetName )  {
         var wid, wselector, wanimation, wtransition, wduration, wdelay, wtiming_function, weasing, witeration_count, wfill_mode, wanimation_def;
         wid = isset(attr,"id") ? attr["id"] : self.uuid('widget_animation');
@@ -3085,7 +3136,7 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
         self.enqueue('styles', 'w-animation-'+wid, [wanimation_def], ['htmlwidgets.css']);
         return '';
     }
-    
+
     ,w_sprite: function( attr, data, widgetName ) {
         var wid, wtext, wtitle, wclass, wextra, wsprite, wanimation, witer, wfps,
             ww, wh, wr, wc, d, nframes, wsprite_def, two_dim_grid,
@@ -3111,13 +3162,13 @@ transition: '+wtransition+' '+wduration+' '+wtiming_function+' '+wdelay+';\
         factX = wc; factY = wr;
         aspect_ratio = 100*wh/ww;
         background_size = ''+(100*wc)+'% '+(100*wr)+'%';
-        
+
         /*if ( (-1 < (' '+wclass+' ').indexOf(' w-sprite-responsive ')) || (-1 < (' '+wclass+' ').indexOf(' sprite-responsive ')) )
         {
             factX = wc;
             factY = wr;
         }*/
-        
+
         if ( (1 < wr) && (1 < wc) )
         {
             // background-position-x, background-position-y NOT supported very good

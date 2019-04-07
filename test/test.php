@@ -178,7 +178,7 @@ function scripts( )
     <form method="post" enctype="multipart/form-data">
     <fieldset><legend>Menus</legend>
     
-    <div class="w-dropdown-menu"><ul>
+    <nav class="w-dropdown-menu"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
         <ul>
@@ -208,10 +208,10 @@ function scripts( )
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
-    </ul></div>
+    </ul></nav>
     
     <hr />
-    <div class="w-dropdown-menu w-mobile" style="z-index:300">
+    <nav class="w-dropdown-menu w-mobile" style="z-index:300">
     <label for="mobile-menu" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
     <input id="mobile-menu" type="checkbox" class="w-menu-controller" value="1" />
     <ul>
@@ -244,11 +244,11 @@ function scripts( )
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
-    </ul></div>
+    </ul></nav>
 
     <hr />
     
-    <div class="w-vertical-menu" style="z-index:200"><ul>
+    <nav class="w-vertical-menu" style="z-index:200"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
         <ul>
@@ -278,11 +278,11 @@ function scripts( )
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
-    </ul></div>
+    </ul></nav>
     
     <hr />
     
-    <div class="w-vertical-menu w-mobile" style="z-index:100">
+    <nav class="w-vertical-menu w-mobile" style="z-index:100">
     <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
     <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
     <ul>
@@ -315,15 +315,112 @@ function scripts( )
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
-    </ul></div>
+    </ul></nav>
     
+    <hr />
+    <?php widget('menu', array(
+        'mobile' => true,
+        'class' => 'w-dropdown-menu w-mobile',
+        'style' => 'z-index:200'
+    ),array(
+        array(
+            'text' => 'Item',
+            'active' => 1,
+            'submenu' => array(
+                array(
+                    'text' => 'Sub Item',
+                    'submenu' => array(
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        )
+                    )
+                ),
+                array(
+                    'text' => 'Sub Item'
+                ),
+                array(
+                    'text' => 'Sub Item'
+                ),
+                array(
+                    'text' => 'Sub Item'
+                )
+            )
+        ),
+        array(
+            'text' => 'Item'
+        ),
+        array(
+            'text' => 'Item'
+        ),
+        array(
+            'text' => 'Item'
+        )
+    )); ?>
+    <hr />
+    <?php widget('menu', array(
+        'class' => 'w-vertical-menu',
+        'style' => 'z-index:100'
+    ),array(
+        array(
+            'text' => 'Item',
+            'active' => 1,
+            'submenu' => array(
+                array(
+                    'text' => 'Sub Item',
+                    'submenu' => array(
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        ),
+                        array(
+                            'text' => 'Sub Sub Item'
+                        )
+                    )
+                ),
+                array(
+                    'text' => 'Sub Item'
+                ),
+                array(
+                    'text' => 'Sub Item'
+                ),
+                array(
+                    'text' => 'Sub Item'
+                )
+            )
+        ),
+        array(
+            'text' => 'Item'
+        ),
+        array(
+            'text' => 'Item'
+        ),
+        array(
+            'text' => 'Item'
+        )
+    )); ?>
     </fieldset>
     
-    <?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?>
+    <fieldset><legend>Pagination</legend>
+    <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?></nav>
     
-    <?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?>
+    <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?></nav>
     
-    <?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
+    <nav><?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
+    </fieldset>
     
     <fieldset><legend>Buttons</legend>
     <?php widget('button',array('class'=>'w-xsmall','icon'=>'times-circle')); ?>
@@ -1197,7 +1294,7 @@ function hello( )
     </fieldset>
     
     <fieldset><legend>Translator</legend>
-    <?php widget('translator'); ?>
+    <?php //widget('translator'); ?>
     </fieldset>
     
     <fieldset><legend>Music Notation / Tablature</legend>
