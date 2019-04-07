@@ -2227,21 +2227,22 @@ var HtmlWidget = self = {
     ,w_pagination: function( attr, data, widgetName ) {
         var wid, wclass, wstyle, wextra, totalItems, itemsPerPage, currentPage,
             maxPagesToShow, placeholder, urlPattern, previousText, nextText, ellipsis,
-            numPages, pages, page, i, l, numAdjacents, slidingStart, slidingEnd, out;
+            numPages, pages, page, i, l, numAdjacents, slidingStart, slidingEnd, selectBox, out;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wclass = 'w-pagination pagination';
         if ( !empty(attr,"class") ) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
-        totalItems = +data['totalItems'];
-        itemsPerPage = +data['itemsPerPage'];
-        currentPage = isset(data,'currentPage') ? +data['currentPage'] : 1;
-        maxPagesToShow = isset(attr,'maxPages') ? +attr['maxPages'] : 10;
+        totalItems = parseInt(data['totalItems']);
+        itemsPerPage = parseInt(data['itemsPerPage']);
+        currentPage = isset(data,'currentPage') ? parseInt(data['currentPage']) : 1;
+        maxPagesToShow = isset(attr,'maxPages') ? parseInt(attr['maxPages']) : 10;
         placeholder = isset(attr,'placeholder') ? String(attr['placeholder']) : '(:page)';
         urlPattern = isset(attr,'urlPattern') ? String(attr['urlPattern']) : '?page='+placeholder;
         previousText = isset(attr,'previousText') ? String(attr['previousText']) : '&laquo; Previous';
         nextText = isset(attr,'nextText') ? String(attr['nextText']) : 'Next &raquo;';
         ellipsis = isset(attr,'ellipsis') ? String(attr['ellipsis']) : '...';
+        selectBox = !empty(attr,'selectBox');
 
         numPages = 0 >= itemsPerPage || 0 >= totalItems ? 0 : Math.ceil(totalItems/itemsPerPage);
         if ( numPages > 1 )
@@ -2253,8 +2254,8 @@ var HtmlWidget = self = {
                 {
                     pages.push({
                         text : i,
-                        url : urlPattern.replace(placeholder, i),
-                        isCurrent : i===currentPage
+                        url : urlPattern.replace(placeholder, String(i)),
+                        isCurrent : i==currentPage
                     });
                 }
             }
@@ -2279,8 +2280,8 @@ var HtmlWidget = self = {
                 // Build the list of pages.
                 pages.push({
                     text : 1,
-                    url : urlPattern.replace(placeholder, 1),
-                    isCurrent : 1===currentPage
+                    url : urlPattern.replace(placeholder, String(1)),
+                    isCurrent : 1==currentPage
                 });
                 if ( slidingStart > 2 )
                 {
@@ -2294,8 +2295,8 @@ var HtmlWidget = self = {
                 {
                     pages.push({
                         text : i,
-                        url : urlPattern.replace(placeholder, i),
-                        isCurrent : i===currentPage
+                        url : urlPattern.replace(placeholder, String(i)),
+                        isCurrent : i==currentPage
                     });
                 }
                 if ( slidingEnd < numPages - 1 )
@@ -2308,35 +2309,67 @@ var HtmlWidget = self = {
                 }
                 pages.push({
                     text : numPages,
-                    url : urlPattern.replace(placeholder, numPages),
-                    isCurrent : numPages===currentPage
+                    url : urlPattern.replace(placeholder, String(numPages)),
+                    isCurrent : numPages==currentPage
                 });
             }
 
-            out = '<ul id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
-            if ( currentPage > 1 )
+            if ( selectBox )
             {
-                out += '<li class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage-1)) + '">'+ previousText +'</a></li>';
-            }
-
-            for(i=0,l=pages.length; i<l; i++)
-            {
-                page = pages[i];
-                if ( page.url )
+                out = '<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
+                if ( currentPage > 1 )
                 {
-                    out += '<li class="page-item' + (1==page.text ? ' page-first' : '') + (numPages==page.text ? ' page-last' : '') + (page.isCurrent ? ' page-active active' : '') + '"><a href="' + htmlspecialchars(page.url) + '">' + String(page.text) + '</a></li>';
+                    out += '<span class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage-1))) + '">'+ previousText +'</a></span>';
                 }
-                else
-                {
-                    out += '<li class="page-item disabled"><span>' + String(page.text) + '</span></li>';
-                }
-            }
 
-            if ( currentPage < numPages )
-            {
-                out += '<li class="page-next"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, currentPage+1)) + '">'+ nextText +'</a></li>';
+                out += '<select class="page-select" style="width: auto; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;">';
+                for(i=0,l=pages.length; i<l; i++)
+                {
+                    page = pages[i];
+                    if ( page.url )
+                    {
+                        out += '<option value="' + htmlspecialchars(page.url) + '"' + (page.isCurrent ? ' selected' : '') + '>' + String(page.text) + '</option>';
+                    }
+                    else
+                    {
+                        out += '<option disabled>' + String(page.text) + '</option>';
+                    }
+                }
+                out += '</select>';
+
+                if ( currentPage < numPages )
+                {
+                    out += '<span class="page-next"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage+1))) + '">'+ nextText +'</a></span>';
+                }
+                out += '</div>';
             }
-            out += '</ul>';
+            else
+            {
+                out = '<ul id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>';
+                if ( currentPage > 1 )
+                {
+                    out += '<li class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage-1))) + '">'+ previousText +'</a></li>';
+                }
+
+                for(i=0,l=pages.length; i<l; i++)
+                {
+                    page = pages[i];
+                    if ( page.url )
+                    {
+                        out += '<li class="page-item' + (1==page.text ? ' page-first' : '') + (numPages==page.text ? ' page-last' : '') + (page.isCurrent ? ' page-active active' : '') + '"><a href="' + htmlspecialchars(page.url) + '">' + String(page.text) + '</a></li>';
+                    }
+                    else
+                    {
+                        out += '<li class="page-item disabled"><span>' + String(page.text) + '</span></li>';
+                    }
+                }
+
+                if ( currentPage < numPages )
+                {
+                    out += '<li class="page-next"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage+1))) + '">'+ nextText +'</a></li>';
+                }
+                out += '</ul>';
+            }
             self.enqueue('styles', 'htmlwidgets.css');
             return out;
         }

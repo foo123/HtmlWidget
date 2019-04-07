@@ -2076,6 +2076,7 @@ class HtmlWidget
         $previousText = isset($attr['previousText']) ? (string)$attr['previousText'] : '&laquo; Previous';
         $nextText = isset($attr['nextText']) ? (string)$attr['nextText'] : 'Next &raquo;';
         $ellipsis = isset($attr['ellipsis']) ? (string)$attr['ellipsis'] : '...';
+        $selectBox = !empty($attr['selectBox']);
 
         $numPages = 0 >= $itemsPerPage || 0 >= $totalItems ? 0 : (int)ceil($totalItems/$itemsPerPage);
         if ( $numPages > 1 )
@@ -2086,9 +2087,9 @@ class HtmlWidget
                 for($i=1; $i<=$numPages; $i++)
                 {
                     $pages[] = array(
-                        'text' => (string)$i,
-                        'url' => str_replace($placeholder, $i, $urlPattern),
-                        'isCurrent' => $i===$currentPage
+                        'text' => $i,
+                        'url' => str_replace($placeholder, (string)$i, $urlPattern),
+                        'isCurrent' => $i==$currentPage
                     );
                 }
             }
@@ -2113,8 +2114,8 @@ class HtmlWidget
                 // Build the list of pages.
                 $pages[] = array(
                     'text' => 1,
-                    'url' => str_replace($placeholder, 1, $urlPattern),
-                    'isCurrent' => 1===$currentPage
+                    'url' => str_replace($placeholder, (string)1, $urlPattern),
+                    'isCurrent' => 1==$currentPage
                 );
                 if ( $slidingStart > 2 )
                 {
@@ -2128,8 +2129,8 @@ class HtmlWidget
                 {
                     $pages[] = array(
                         'text' => $i,
-                        'url' => str_replace($placeholder, $i, $urlPattern),
-                        'isCurrent' => $i===$currentPage
+                        'url' => str_replace($placeholder, (string)$i, $urlPattern),
+                        'isCurrent' => $i==$currentPage
                     );
                 }
                 if ( $slidingEnd < $numPages - 1 )
@@ -2142,34 +2143,65 @@ class HtmlWidget
                 }
                 $pages[] = array(
                     'text' => $numPages,
-                    'url' => str_replace($placeholder, $numPages, $urlPattern),
-                    'isCurrent' => $numPages===$currentPage
+                    'url' => str_replace($placeholder, (string)$numPages, $urlPattern),
+                    'isCurrent' => $numPages==$currentPage
                 );
             }
 
-            $out = "<ul id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
-            if ( $currentPage > 1 )
+            if ( $selectBox )
             {
-                $out .= '<li class="page-previous"><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage-1, $urlPattern)) . '">'. $previousText .'</a></li>';
-            }
-
-            foreach($pages as $page)
-            {
-                if ( $page['url'] )
+                $out = "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
+                if ( $currentPage > 1 )
                 {
-                    $out .= '<li class="page-item' . (1==$page['text'] ? ' page-first' : '') . ($numPages==$page['text'] ? ' page-last' : '') . ($page['isCurrent'] ? ' page-active active' : '') . '"><a href="' . htmlspecialchars($page['url']) . '">' . (string)$page['text'] . '</a></li>';
+                    $out .= '<span class="page-previous"><a href="' . htmlspecialchars(str_replace($placeholder, (string)($currentPage-1), $urlPattern), ENT_COMPAT) . '">'. $previousText .'</a></span>';
                 }
-                else
-                {
-                    $out .= '<li class="page-item disabled"><span>' . (string)$page['text'] . '</span></li>';
-                }
-            }
 
-            if ( $currentPage < $numPages )
-            {
-                $out .= '<li class="page-next"><a href="' . htmlspecialchars(str_replace($placeholder, $currentPage+1, $urlPattern)) . '">'. $nextText .'</a></li>';
+                $out .= '<select class="page-select" style="width: auto; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;">';
+                foreach($pages as $page)
+                {
+                    if ( $page['url'] )
+                    {
+                        $out .= '<option value="' . htmlspecialchars($page['url'], ENT_COMPAT) . '"'  . ($page['isCurrent'] ? ' selected' : '') . '>' . (string)$page['text'] . '</option>';
+                    }
+                    else
+                    {
+                        $out .= '<option disabled>' . (string)$page['text'] . '</option>';
+                    }
+                }
+                $out .= '</select>';
+
+                if ( $currentPage < $numPages )
+                {
+                    $out .= '<span class="page-next"><a href="' . htmlspecialchars(str_replace($placeholder, (string)($currentPage+1), $urlPattern), ENT_COMPAT) . '">'. $nextText .'</a></span>';
+                }
+                $out .= '</div>';
             }
-            $out .= '</ul>';
+            else
+            {
+                $out = "<ul id=\"$wid\" class=\"$wclass\" $wstyle $wextra>";
+                if ( $currentPage > 1 )
+                {
+                    $out .= '<li class="page-previous"><a href="' . htmlspecialchars(str_replace($placeholder, (string)($currentPage-1), $urlPattern), ENT_COMPAT) . '">'. $previousText .'</a></li>';
+                }
+
+                foreach($pages as $page)
+                {
+                    if ( $page['url'] )
+                    {
+                        $out .= '<li class="page-item' . (1==$page['text'] ? ' page-first' : '') . ($numPages==$page['text'] ? ' page-last' : '') . ($page['isCurrent'] ? ' page-active active' : '') . '"><a href="' . htmlspecialchars($page['url'], ENT_COMPAT) . '">' . (string)$page['text'] . '</a></li>';
+                    }
+                    else
+                    {
+                        $out .= '<li class="page-item disabled"><span>' . (string)$page['text'] . '</span></li>';
+                    }
+                }
+
+                if ( $currentPage < $numPages )
+                {
+                    $out .= '<li class="page-next"><a href="' . htmlspecialchars(str_replace($placeholder, (string)($currentPage+1), $urlPattern), ENT_COMPAT) . '">'. $nextText .'</a></li>';
+                }
+                $out .= '</ul>';
+            }
             return $out;
         }
         else

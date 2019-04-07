@@ -1586,12 +1586,15 @@ select.w-select option.w-option-placeholder,
 }
 .w-pagination
 {
+    position: relative;
     display: inline-block;
     padding-left: 0;
     margin: 20px 0;
     border-radius: 4px;
 }
-.w-pagination > li
+.w-pagination > li,
+.w-pagination > span,
+.w-pagination > select
 {
     display: inline;
 }
@@ -1607,6 +1610,19 @@ select.w-select option.w-option-placeholder,
     color: inherit;
     background-color: transparent;
     border: 1px solid transparent;
+}
+.w-pagination > span,
+.w-pagination > select
+{
+    padding: 6px 12px;
+    text-decoration: none;
+    color: inherit;
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+.w-pagination > span > a
+{
+    text-decoration: none;
 }
 .w-pagination > li:first-child > a,
 .w-pagination > li:first-child > span
@@ -5541,7 +5557,10 @@ input.w-radio:checked + label.w-led-button:before
     box-shadow: inset 0 1px 0 #000;
 }
 .w-pagination > li > a,
-.w-pagination > li > span
+.w-pagination > li > span,
+.w-pagination > span,
+.w-pagination > span > a,
+.w-pagination > select
 {
     color: #337ab7;
     background-color: #fff;

@@ -420,6 +420,9 @@ function scripts( )
     <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?></nav>
     
     <nav><?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
+    <hr />
+    
+    <?php widget('pagination',array('selectBox'=>1),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
     </fieldset>
     
     <fieldset><legend>Buttons</legend>
