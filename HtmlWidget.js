@@ -2322,7 +2322,7 @@ var HtmlWidget = self = {
                     out += '<span class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage-1))) + '">'+ previousText +'</a></span>';
                 }
 
-                out += '<select class="page-select" style="width: auto; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;">';
+                out += '<select class="page-select">';
                 for(i=0,l=pages.length; i<l; i++)
                 {
                     page = pages[i];

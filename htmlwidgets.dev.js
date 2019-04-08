@@ -2141,6 +2141,10 @@ $body
         }, 10);
         return false;
     })
+    .on('change', '.pagination > select', function( evt ) {
+        // pagination via selectbox
+        document.location = $(this).val();
+    })
 ;
 
 };

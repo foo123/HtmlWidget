@@ -1594,7 +1594,7 @@ select.w-select option.w-option-placeholder,
 }
 .w-pagination > li,
 .w-pagination > span,
-.w-pagination > select
+.w-pagination > .page-select
 {
     display: inline;
 }
@@ -1612,13 +1612,21 @@ select.w-select option.w-option-placeholder,
     border: 1px solid transparent;
 }
 .w-pagination > span,
-.w-pagination > select
+.w-pagination > .page-select
 {
     padding: 6px 12px;
     text-decoration: none;
     color: inherit;
     background-color: transparent;
     border: 1px solid transparent;
+}
+.w-pagination > .page-select
+{
+    width: auto;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 .w-pagination > span > a
 {
@@ -5560,7 +5568,7 @@ input.w-radio:checked + label.w-led-button:before
 .w-pagination > li > span,
 .w-pagination > span,
 .w-pagination > span > a,
-.w-pagination > select
+.w-pagination > .page-select
 {
     color: #337ab7;
     background-color: #fff;

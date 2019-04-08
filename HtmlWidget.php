@@ -2156,7 +2156,7 @@ class HtmlWidget
                     $out .= '<span class="page-previous"><a href="' . htmlspecialchars(str_replace($placeholder, (string)($currentPage-1), $urlPattern), ENT_COMPAT) . '">'. $previousText .'</a></span>';
                 }
 
-                $out .= '<select class="page-select" style="width: auto; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;">';
+                $out .= '<select class="page-select">';
                 foreach($pages as $page)
                 {
                     if ( $page['url'] )
@@ -2202,6 +2202,7 @@ class HtmlWidget
                 }
                 $out .= '</ul>';
             }
+            self::enqueue('styles', 'htmlwidgets.css');
             return $out;
         }
         else

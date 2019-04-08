@@ -48,6 +48,10 @@ function scripts( )
     echo $importer->assets( 'scripts' );
 }
 
+$currentUri = $_SERVER['REQUEST_URI'];
+if ( false !== ($pos = strpos($currentUri,'#')) ) $currentUri = substr($currentUri, 0, $pos);
+if ( false !== ($pos = strpos($currentUri,'?')) ) $currentUri = substr($currentUri, 0, $pos);
+$paginationUri = $currentUri.'?page=(:page)';
 ?>
 <!doctype html>
 <!--[if lt IE 7]>
@@ -415,14 +419,14 @@ function scripts( )
     </fieldset>
     
     <fieldset><legend>Pagination</legend>
-    <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?></nav>
+    <nav><?php widget('pagination',array('urlPattern'=>$paginationUri),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?></nav>
     
     <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?></nav>
     
     <nav><?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
     <hr />
     
-    <?php widget('pagination',array('selectBox'=>1),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
+    <?php widget('pagination',array('urlPattern'=>$paginationUri,'selectBox'=>1),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
     </fieldset>
     
     <fieldset><legend>Buttons</legend>
