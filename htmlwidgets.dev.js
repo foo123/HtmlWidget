@@ -1955,6 +1955,9 @@ htmlwidget.widgetize = function( el ) {
     if ( $node.hasClass('w-templateable') ) $node.htmlwidget('template');
     if ( $node.hasClass('w-areaselectable') ) $node.htmlwidget('areaselect');
     if ( $node.hasClass('w-vextab') ) $node.htmlwidget('vextab');
+    /*if ( $node.hasClass('material-component') && 'undefined' !== mdc )
+    {
+    }*/
 };
 htmlwidget.tooltip = function( el ) {
     var $el = $(el), content = '', hasTooltip = $el.hasClass('tooltipstered');
@@ -2117,6 +2120,13 @@ if ( 'function' === typeof $.fn.popr2 )
         'attribute' : 'data-popr',
         'activate'  : 'click'
      });
+}
+
+if ( 'undefined' !== typeof mdc && !window.__MDCAutoInit__ )
+{
+    // material components
+    window.__MDCAutoInit__ = 1;
+    mdc.autoInit();
 }
 
 $body

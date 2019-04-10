@@ -88,6 +88,9 @@ class HtmlWidget
         ,array('scripts', 'material.js', 
         'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js'
         , array('material.css'))
+        ,array('scripts', 'material-auto-init', array(
+        'window.HtmlWidget_OnDomReady=function(cb){if (document.readyState!="loading") cb(); else if (document.addEventListener) document.addEventListener("DOMContentLoaded", cb); else document.attachEvent("onreadystatechange", function(){ if (document.readyState=="complete") cb(); }); }; window.HtmlWidget_OnDomReady(function(){if ("undefined" !== typeof mdc && !window.__MDCAutoInit__) { window.__MDCAutoInit__=1; mdc.autoInit();}});'
+        ), array('material.js'))
         
         ,array('scripts-alt', 'html5shiv', array('<!--[if lt IE 9]><script type="text/javascript" src="'.$asset_base.'utils/html5shiv.js'.'"></script><![endif]-->'))
         
@@ -1039,7 +1042,19 @@ class HtmlWidget
 
     public static function w_empty( $attr, $data, $widgetName=null )
     {
-        self::enqueue('styles', 'htmlwidgets.css');
+        $framework = !empty($attr['framework']) ? strtolower((string)$attr['framework']) : 'default';
+        if ( 'material' === $framework )
+        {
+            self::enqueue('styles', 'material.css');
+        }
+        elseif ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
+        {
+            self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
+        }
+        else
+        {
+            self::enqueue('styles', 'htmlwidgets.css');
+        }
         return '';
     }
 
@@ -1084,7 +1099,7 @@ class HtmlWidget
         }
         $wextra = self::attributes($attr,array('disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
-        // iOS needs an onlick attribute to handle lable update if used as controller
+        // iOS needs an onlick attribute to handle label update if used as controller
         return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle onclick=\"\" $wextra>$wtext</label>";
     }
 
@@ -1126,22 +1141,29 @@ class HtmlWidget
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
+        $wextra2 = '';
+        
         if ( 'material' === $framework )
         {
             self::enqueue('styles', 'material.css');
-            $wclass = 'mdc-button';
+            self::enqueue('scripts', 'material-auto-init');
+            $wextra2 = 'data-mdc-auto-init="MDCRipple"';
+            $wclass = 'material-widget mdc-button';
             $wtext = '<span class="mdc-button__label">'.$wtext.'</span>';
         }
+        
         elseif ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
         {
             self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
-            $wclass = 'btn';
+            $wclass = 'bootstrap-widget btn';
         }
+        
         else
         {
             self::enqueue('styles', 'htmlwidgets.css');
             $wclass = 'w-widget w-button';
         }
+        
         if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         if ( !empty($attr['icon']) )
@@ -1160,18 +1182,18 @@ class HtmlWidget
         if ( isset($attr['for']) )
         {
             $wfor = $attr['for'];
-            return "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" $wextra>$wtext</label>";
+            return "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" $wextra $wextra2>$wtext</label>";
         }
         elseif ( isset($attr['href']) )
         {
             $whref = $attr['href'];
             $wextra .= ' '.self::attributes($attr,array('role','target','rel'));
-            return "<a id=\"$wid\" href=\"$whref\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra>$wtext</a>";
+            return "<a id=\"$wid\" href=\"$whref\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</a>";
         }
         else
         {
             $wtype = isset($attr['type']) ? $attr['type'] : 'button';
-            return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra>$wtext</button>";
+            return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</button>";
         }
     }
 
@@ -1186,57 +1208,60 @@ class HtmlWidget
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        
         if ( 'material' === $framework )
         {
             self::enqueue('styles', 'material.css');
+            self::enqueue('scripts', 'material-auto-init');
             if ( 'radio' === $wtype )
             {
-                $wclass = 'mdc-radio';
+                $wextra2 = 'data-mdc-auto-init="MDCRadio"';
+                $wclass = 'material-widget mdc-radio';
                 if ( !empty($attr['disabled']) ) $wclass .= ' mdc-radio--disabled';
                 if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-                $out = '<div class="'.$wclass.'" '.$wstyle.' '.$wtitle.'><input type="radio" class="mdc-radio__native-control" id="'.$wid.'" '.$wname.' value="'.$wvalue.'" '.$wchecked.' '.$wextra.'/><div class="mdc-radio__background"><div class="mdc-radio__outer-circle"></div><div class="mdc-radio__inner-circle"></div></div></div>';
+                $out = "<div class=\"$wclass\" $wstyle $wtitle $wextra2><input type=\"radio\" class=\"mdc-radio__native-control\" id=\"$wid\" $wname value=\"$wvalue\" $wchecked $wextra/><div class=\"mdc-radio__background\"><div class=\"mdc-radio__outer-circle\"></div><div class=\"mdc-radio__inner-circle\"></div></div></div>";
             }
             else
             {
-                $wclass = 'mdc-'.$wtype.'';
+                $wextra2 = 'data-mdc-auto-init="MDC'.ucfirst($wtype).'"';
+                $wclass = 'material-widget mdc-'.$wtype.'';
                 if ( !empty($attr['disabled']) ) $wclass .= ' mdc-'.$wtype.'--disabled';
                 if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-                $out = '<div class="'.$wclass.'" '.$wstyle.' '.$wtitle.'><input type="'.$wtype.'" class="mdc-'.$wtype.'__native-control" id="'.$wid.'" '.$wname.' value="'.$wvalue.'" '.$wchecked.' '.$wextra.'/><div class="mdc-'.$wtype.'__background"><svg class="mdc-'.$wtype.'__checkmark" viewBox="0 0 24 24"><path class="mdc-'.$wtype.'__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path></svg><div class="mdc-'.$wtype.'__mixedmark"></div></div></div>';
+                $out = "<div class=\"$wclass\" $wstyle $wtitle $wextra2><input type=\"$wtype\" class=\"mdc-{$wtype}__native-control\" id=\"$wid\" $wname value=\"$wvalue\" $wchecked $wextra/><div class=\"mdc-{$wtype}__background\"><svg class=\"mdc-{$wtype}__checkmark\" viewBox=\"0 0 24 24\"><path class=\"mdc-{$wtype}__checkmark-path\" fill=\"none\" d=\"M1.73,12.91 8.1,19.28 22.79,4.59\"></path></svg><div class=\"mdc-{$wtype}__mixedmark\"></div></div></div>";
             }
             return $out;
         }
-        elseif ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
+        
+        if ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
         {
             self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
-            self::enqueue('styles', 'bootstrap-extended.css');
-            $wclass = $wtype;
+            //self::enqueue('styles', 'bootstrap-extended.css');
+            $wclass = 'bootstrap-widget custom-control custom-'.$wtype;
             if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            return "<div class=\"$wclass\" $wstyle><label><input type=\"$wtype\" id=\"$wid\" $wname value=\"$wvalue\" $wchecked $wextra /><span class=\"cr\"><i class=\"cr-icon fa fa-check\"></i></span></label></div>";
+            return "<div class=\"$wclass\" $wstyle $wtitle><input type=\"$wtype\" class=\"custom-control-input\" id=\"$wid\" $wname value=\"$wvalue\" $wchecked $wextra/><label class=\"custom-control-label\" for=\"$wid\"></label></div>";
+        }
+        
+        self::enqueue('styles', 'htmlwidgets.css');
+        $wstate = '';
+        if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
+        if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
+        if ( !empty($attr['image']) )
+        {
+            $wctrl = 'radio' === $wtype ? 'w-radio-image' : 'w-checkbox-image';
+            $wtext = '<span style="background-image:url('.$attr['image'].');"></span>';
+        }
+        elseif ( !empty($attr['label']) )
+        {
+            $wctrl = 'radio' === $wtype ? 'w-radio-label' : 'w-checkbox-label';
+            $wtext = $attr['label'];
         }
         else
         {
-            self::enqueue('styles', 'htmlwidgets.css');
-            $wstate = '';
-            if ( isset($attr['state-on']) ) $wstate .= " data-wstate-on=\"{$attr['state-on']}\"";
-            if ( isset($attr['state-off']) ) $wstate .= " data-wstate-off=\"{$attr['state-off']}\"";
-            if ( !empty($attr['image']) )
-            {
-                $wctrl = 'radio' === $wtype ? 'w-radio-image' : 'w-checkbox-image';
-                $wtext = '<span style="background-image:url('.$attr['image'].');"></span>';
-            }
-            elseif ( !empty($attr['label']) )
-            {
-                $wctrl = 'radio' === $wtype ? 'w-radio-label' : 'w-checkbox-label';
-                $wtext = $attr['label'];
-            }
-            else
-            {
-                $wctrl = 'radio' === $wtype ? 'w-radio' : 'w-checkbox';
-                $wtext = '&nbsp;';
-            }
-            $wclass = 'w-widget w-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-            return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
+            $wctrl = 'radio' === $wtype ? 'w-radio' : 'w-checkbox';
+            $wtext = '&nbsp;';
         }
+        $wclass = 'w-widget w-control'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
     }
 
     public static function w_control_list( $attr, $data, $widgetName=null )
@@ -1422,10 +1447,21 @@ class HtmlWidget
         if ( 'material' === $framework )
         {
             $wchecked = $wchecked ? 'checked' : '';
-            $wclass = "mdc-switch";
+            $wextra2 = 'data-mdc-auto-init="MDCSwitch"';
+            $wclass = "material-widget mdc-switch";
             if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             self::enqueue('styles', 'material.css');
-            return "<div class=\"$wclass\" $wstyle $wtitle><div class=\"mdc-switch__track\"></div><div class=\"mdc-switch__thumb-underlay\"><div class=\"mdc-switch__thumb\"><input type=\"checkbox\" id=\"$wid\" class=\"mdc-switch__native-control\" role=\"switch\" $wname value=\"$wvalue\" $wchecked  $wextra /></div></div></div>";
+            self::enqueue('scripts', 'material-auto-init');
+            return "<div class=\"$wclass\" $wstyle $wtitle $wextra2><div class=\"mdc-switch__track\"></div><div class=\"mdc-switch__thumb-underlay\"><div class=\"mdc-switch__thumb\"><input type=\"checkbox\" id=\"$wid\" class=\"mdc-switch__native-control\" role=\"switch\" $wname value=\"$wvalue\" $wchecked  $wextra /></div></div></div>";
+        }
+        
+        if ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
+        {
+            $wchecked = $wchecked ? 'checked' : '';
+            $wclass = "boostrap-widget custom-control custom-switch";
+            if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
+            return "<div class=\"$wclass\" $wstyle><input type=\"checkbox\" class=\"custom-control-input\" id=\"$wid\" $wname value=\"$wvalue\" $wchecked $wextra/><label class=\"custom-control-label\" for=\"$wid\"></label></div>";
         }
         
         $wclass = "w-widget w-switch"; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
@@ -1545,9 +1581,11 @@ class HtmlWidget
             if ( !empty($selected) ) $has_selected = true;
             $woptions .= "<option value=\"$key\"$selected>$val</option>";
         }
+        
         if ( 'material' === $framework )
         {
-            $wclass = "mdc-select";
+            $wextra2 = 'data-mdc-auto-init="MDCSelect"';
+            $wclass = "material-widget mdc-select";
             if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             $wplaceholder = '';
             if ( !empty($attr['placeholder']) )
@@ -1555,7 +1593,8 @@ class HtmlWidget
                 $wplaceholder = "<label class=\"mdc-floating-label\">".$attr['placeholder']."</label>";
             }
             self::enqueue('styles', 'material.css');
-            return "<div class=\"$wclass\" $wstyle $wtitle><i class=\"mdc-select__dropdown-icon\"></i><select id=\"$wid\" $wname class=\"mdc-select__native-control\" $wextra>$woptions</select>$wplaceholder<div class=\"mdc-line-ripple\"></div></div>";
+            self::enqueue('scripts', 'material-auto-init');
+            return "<div class=\"$wclass\" $wstyle $wtitle $wextra2><i class=\"mdc-select__dropdown-icon\"></i><select id=\"$wid\" $wname class=\"mdc-select__native-control\" $wextra>$woptions</select>$wplaceholder<div class=\"mdc-line-ripple\"></div></div>";
         }
         
         if ( !empty($attr['placeholder']) )
@@ -1565,9 +1604,10 @@ class HtmlWidget
             //if ( empty($wname) ) $wextra .= ' form="__NONE__"';
             $wextra .= ' data-placeholder="'.$attr['placeholder'].'"';
         }
+        
         if ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
         {
-            $wclass = "form-control";
+            $wclass = "bootstrap-widget custom-select";
             if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
             self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
             return "<select id=\"$wid\" $wname class=\"$wclass\" $wstyle $wtitle $wextra>$woptions</select>";
@@ -1597,6 +1637,7 @@ class HtmlWidget
 
     public static function w_text( $attr, $data, $widgetName=null )
     {
+        $framework = !empty($attr['framework']) ? strtolower((string)$attr['framework']) : 'default';
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = !empty($attr["init"]) ? 'w-init="'.$attr["init"].'"' : '';
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
@@ -1604,7 +1645,6 @@ class HtmlWidget
         $titl = isset($attr["title"]) ? $attr["title"] : '';
         $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
-        $wclass = 'w-widget w-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         // text, number, email, url, tel etc..
         $wtype = !empty($attr["type"]) ? $attr["type"] : 'text';
@@ -1621,6 +1661,26 @@ class HtmlWidget
             $wrapper_class .= ' w-icon-right';
         }
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        
+        if ( 'material' === $framework )
+        {
+            $wextra2 = 'data-mdc-auto-init="MDCTextField"';
+            $wclass = "material-widget mdc-text-field";
+            if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'material.css');
+            self::enqueue('scripts', 'material-auto-init');
+            return "<div class=\"$wclass\" $wstyle $wextra2><input type=\"$wtype\" id=\"$wid\" $wname value=\"$wvalue\" class=\"mdc-text-field__input\" $wextra /><label class=\"mdc-floating-label\" for=\"$wid\">$wplaceholder</label><div class=\"mdc-line-ripple\"></div></div>";
+        }
+        
+        if ( 'bootstrap' === $framework || 'bootstrap3' === $framework )
+        {
+            $wclass = "bootstrap-widget form-control";
+            if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+            self::enqueue('styles', 'bootstrap3' === $framework ? 'bootstrap3.css' : 'bootstrap.css');
+            return "<input type=\"$wtype\" id=\"$wid\" $wname value=\"$wvalue\" class=\"$wclass\" $wstyle $wtitle placeholder=\"$wplaceholder\" $wextra/>";
+        }
+        
+        $wclass = 'w-widget w-text'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
         if ( !empty($attr['autocomplete']) )
         {
             $wclass .= ' awesomplete';

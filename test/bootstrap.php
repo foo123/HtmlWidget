@@ -134,18 +134,18 @@ function scripts( )
 <h2>Checkboxes / Radio Buttons</h2>
 <hr />
 
-<?php widget('checkbox',array('framework'=>'bootstrap','id'=>'c1'),array()); ?>
+<?php widget('checkbox',array('framework'=>'bootstrap','id'=>'c1','class'=>'custom-control-inline'),array()); ?>
 <label for="c1">Checkbox 1</label>
 
-<?php widget('radio',array('framework'=>'bootstrap','id'=>'r1','name'=>'radio1'),array()); ?>
+<?php widget('radio',array('framework'=>'bootstrap','id'=>'r1','name'=>'radio1','class'=>'custom-control-inline'),array()); ?>
 <label for="r1">Radio 1</label>
 
-<?php widget('radio',array('framework'=>'bootstrap','id'=>'r2','name'=>'radio1'),array()); ?>
+<?php widget('radio',array('framework'=>'bootstrap','id'=>'r2','name'=>'radio1','class'=>'custom-control-inline'),array()); ?>
 <label for="r2">Radio 2</label>
 
 <h2>Switches</h2>
 <hr />
-<?php widget('switch',array('framework'=>'bootstrap','id'=>'s1'),array()); ?>
+<?php widget('switch',array('framework'=>'bootstrap','id'=>'s1','class'=>'custom-control-inline'),array()); ?>
 <label for="s1">off/on</label>
 
 <h2>Select Boxes</h2>
@@ -155,6 +155,10 @@ array('key1','option1'),
 array('key2','option2'),
 array('key3','option3'),
 ))); ?>
+
+<h2>Text Fields</h2>
+<hr />
+<?php widget('text',array('framework'=>'bootstrap','placeholder'=>'Type..'),array()); ?>
 
 <?php
 enqueue('styles','fontawesome.css');

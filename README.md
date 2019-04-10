@@ -74,7 +74,7 @@ standalone and pluggable optimised, localised, modular and dynamicaly initialise
 ![widgets-bootstrap](/screenshots/widgets-bootstrap.png)
 
 
-**using default widgets **
+**using default widgets**
 
 ![widgets-1](/screenshots/widgets-1.png)
 ![widgets-1-2](/screenshots/widgets-1-2.png)

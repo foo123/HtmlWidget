@@ -162,6 +162,10 @@ array('key2','option2'),
 array('key3','option3'),
 ))); ?>
 
+<h2>Text Fields</h2>
+<hr />
+<?php widget('text',array('framework'=>'material','placeholder'=>'Type..'),array()); ?>
+
 <?php
 enqueue('styles','fontawesome.css');
 styles( );
