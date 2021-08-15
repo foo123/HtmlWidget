@@ -1,71 +1,46 @@
 <?php
 @ini_set('display_errors', E_ALL);
-
-if ( !empty($_POST) || !empty($_FILES) )
-{
-    echo json_encode(array(
-        '$_POST'        => empty($_POST) ? array() : $_POST,
-        '$_FILES'       => empty($_FILES) ? array() : $_FILES
-    ));
-    exit;
-}
 require('../../Importer/src/php/Importer.php');
-require('../HtmlWidget.php');
+require('../src/HtmlWidget.php');
 
 global $importer;
 
 $importer = new Importer( );
-$importer->register( 'assets', HtmlWidget::assets(array(
-            'base'      => '../',
-            'full'      => true,
-            'jquery'    => true,
-            'dev'       => true,
-            'cdn'       => false
-        )) );
-HtmlWidget::enqueueAssets( array( $importer, 'enqueue' ) );
+HtmlWidget::assets(json_decode(file_get_contents('../src/htmlwidget.json'), true));
+$importer->register('assets', HtmlWidget::assets(true, '../assets'));
+HtmlWidget::enqueueAssets(array($importer, 'enqueue'));
 
-function widget( $widget, $attr=array(), $data=array() )
+function widget($widget, $attr=array(), $data=array())
 {
-    echo HtmlWidget::widget( $widget, $attr, $data );
+    echo HtmlWidget::widget($widget, $attr, $data);
 }
-function options( $options, $key=null, $val=null )
+function options($options, $key=null, $val=null)
 {
-    return HtmlWidget::options( $options, $key, $val );
+    return HtmlWidget::options($options, $key, $val);
 }
-function enqueue( $type, $asset )
+function enqueue($type, $asset)
 {
     global $importer;
-    $importer->enqueue( $type, $asset );
+    $importer->enqueue($type, $asset);
 }
-function styles( )
+function styles()
 {
     global $importer;
-    echo $importer->assets( 'styles' );
+    echo $importer->assets('styles');
 }
-function scripts( )
+function scripts()
 {
     global $importer;
-    echo $importer->assets( 'scripts' );
+    echo $importer->assets('scripts');
 }
 
 $currentUri = $_SERVER['REQUEST_URI'];
-if ( false !== ($pos = strpos($currentUri,'#')) ) $currentUri = substr($currentUri, 0, $pos);
-if ( false !== ($pos = strpos($currentUri,'?')) ) $currentUri = substr($currentUri, 0, $pos);
+if (false !== ($pos = strpos($currentUri,'#'))) $currentUri = substr($currentUri, 0, $pos);
+if (false !== ($pos = strpos($currentUri,'?'))) $currentUri = substr($currentUri, 0, $pos);
 $paginationUri = $currentUri.'?page=(:page)';
 ?>
 <!doctype html>
-<!--[if lt IE 7]>
-<html lang="en" class="ie lt-ie9 lt-ie8 lt-ie7">
-<![endif]-->
-<!--[if IE 7]>
-<html lang="en" class="ie lt-ie9 lt-ie8">
-<![endif]-->
-<!--[if IE 8]>
-<html lang="en" class="ie lt-ie9">
-<![endif]-->
-<!--[if gt IE 8]><!-->
 <html lang="en" class="no-ie">
-<!--<![endif]-->
 <head>
     <meta charset="utf-8"/>
     <style type="text/css">
@@ -178,10 +153,10 @@ $paginationUri = $currentUri.'?page=(:page)';
 <body class="fluid col-1-1 responsive-960-container" style="padding:10px 20px">
     <span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Find me on GitHub</a></span>
     <h1>HtmlWidgets Test page (v.<?php echo HtmlWidget::VERSION; ?>)</h1>
-    
+
     <form method="post" enctype="multipart/form-data">
     <fieldset><legend>Menus</legend>
-    
+
     <nav class="w-dropdown-menu"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
@@ -213,7 +188,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     </ul></nav>
-    
+
     <hr />
     <nav class="w-dropdown-menu w-mobile" style="z-index:300">
     <label for="mobile-menu" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
@@ -251,7 +226,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </ul></nav>
 
     <hr />
-    
+
     <nav class="w-vertical-menu" style="z-index:200"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
@@ -283,9 +258,9 @@ $paginationUri = $currentUri.'?page=(:page)';
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     </ul></nav>
-    
+
     <hr />
-    
+
     <nav class="w-vertical-menu w-mobile" style="z-index:100">
     <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
     <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
@@ -320,7 +295,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     <li><a href="#">Item</a></li>
     <li><a href="#">Item</a></li>
     </ul></nav>
-    
+
     <hr />
     <?php widget('menu', array(
         'mobile' => true,
@@ -417,25 +392,25 @@ $paginationUri = $currentUri.'?page=(:page)';
         )
     )); ?>
     </fieldset>
-    
+
     <fieldset><legend>Pagination</legend>
     <nav><?php widget('pagination',array('urlPattern'=>$paginationUri),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>2)); ?></nav>
-    
+
     <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?></nav>
-    
+
     <nav><?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
     <hr />
-    
+
     <?php widget('pagination',array('urlPattern'=>$paginationUri,'selectBox'=>1),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
     </fieldset>
-    
+
     <fieldset><legend>Buttons</legend>
     <?php widget('button',array('class'=>'w-xsmall','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'','icon'=>'plus'),array('text'=>'button')); ?>
@@ -444,15 +419,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-black','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-black','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-black','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-black','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-black','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-black','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-black','icon'=>'plus'),array('text'=>'button')); ?>
@@ -461,15 +436,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-black','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-black','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-primary','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-primary','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-primary','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-primary','icon'=>'plus'),array('text'=>'button')); ?>
@@ -478,15 +453,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-primary','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-primary','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-red','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-red','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-red','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-red','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-red','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-red','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-red','icon'=>'plus'),array('text'=>'button')); ?>
@@ -495,15 +470,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-red','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-red','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-blue','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-blue','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-blue','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-blue','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-blue','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-blue','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-blue','icon'=>'plus'),array('text'=>'button')); ?>
@@ -512,15 +487,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-blue','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-blue','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-orange','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-orange','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-orange','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-orange','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-orange','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-orange','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-orange','icon'=>'plus'),array('text'=>'button')); ?>
@@ -529,15 +504,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-orange','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-orange','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-green','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-green','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-green','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-green','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-green','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-green','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-green','icon'=>'plus'),array('text'=>'button')); ?>
@@ -546,15 +521,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-green','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-green','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-aqua','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-aqua','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-aqua','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-aqua','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-aqua','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-aqua','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-aqua','icon'=>'plus'),array('text'=>'button')); ?>
@@ -563,15 +538,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-aqua','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-aqua','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-yellow','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-yellow','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-yellow','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-yellow','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-yellow','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-yellow','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-yellow','icon'=>'plus'),array('text'=>'button')); ?>
@@ -580,15 +555,15 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-large w-yellow','icon'=>'plus','disabled'=>1),array('text'=>'large')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-yellow','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
-    
+
     <br />
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-purple','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-small w-purple','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-purple','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-large w-purple','icon'=>'times-circle')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle')); ?>
-    
+
     <?php widget('button',array('class'=>'w-xsmall w-purple','icon'=>'plus'),array('text'=>'xsmall')); ?>
     <?php widget('button',array('class'=>'w-small w-purple','icon'=>'plus'),array('text'=>'small')); ?>
     <?php widget('button',array('class'=>'w-purple','icon'=>'plus'),array('text'=>'button')); ?>
@@ -598,7 +573,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle'),array('text'=>'xlarge')); ?>
     <?php widget('button',array('class'=>'w-xlarge w-purple','icon'=>'info-circle','readonly'=>1),array('text'=>'xlarge')); ?>
     </fieldset>
-    
+
     <fieldset><legend>Tables</legend>
     <strong>multi-responsive blocks</strong>
     <div class="fluid col-1-1">
@@ -607,9 +582,9 @@ $paginationUri = $currentUri.'?page=(:page)';
     <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:yellow;">&nbsp;</div>
     <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:blue;">&nbsp;</div>
     </div>
-    
+
     <br />
-    
+
     <strong>multi-responsive cellular table</strong>
     <table id="table_1" w-init="1" class="w-widget w-table w-datatable cellular responsive bordered vstripped cell-1-4 autocell-1-3-960 autocell-1-2-768 autocell-1-1-640">
     <thead>
@@ -724,7 +699,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </table>
 
     <br />
-    
+
     <strong>responsive table</strong>
     <table id="table_2" w-init="1" class="w-widget w-table w-datatable responsive bordered stripped vstripped">
     <thead>
@@ -838,7 +813,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tbody>
     </table>
     </fieldset>
-    
+
     <fieldset><legend>Dropdowns</legend>
     <?php widget('dropdown',array('placeholder'=>'select..'),array('options'=>options(array(
         1 => 'option 1',
@@ -852,9 +827,9 @@ $paginationUri = $currentUri.'?page=(:page)';
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
-    
+
     <hr />
-    
+
     <?php widget('select2',array('placeholder'=>'select..'),array('options'=>options(array(
         1 => 'option 1',
         2 => 'option 2'
@@ -868,91 +843,85 @@ $paginationUri = $currentUri.'?page=(:page)';
         2 => 'option 2'
     ),-1))); ?>
     </fieldset>
-    
+
     <fieldset><legend>Color Picker</legend>
     <?php widget('colorpicker',array(
         'title'=>'Select color',
-        'data'=>array(
-            'colorpicker-format' => 'rgba'
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,0,0.7)'
         )
-    ),array(
-        'color'=>'rgba(210,0,0,0.7)'
-    )); ?>
+    ),array()); ?>
     <?php widget('colorpicker',array(
         'title'=>'Select color',
         'class' => 'w-large',
-        'data'=>array(
-            'colorpicker-format' => 'rgba'
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,0,0.7)'
         )
-    ),array(
-        'color'=>'rgba(210,0,0,0.7)'
-    )); ?>
+    ),array()); ?>
     <?php widget('colorpicker',array(
         'title'=>'Select color',
         'class' => 'w-xlarge',
-        'data'=>array(
-            'colorpicker-format' => 'rgba'
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,0,0.7)'
         )
-    ),array(
-        'color'=>'rgba(210,0,0,0.7)'
-    )); ?>
+    ),array()); ?>
     </fieldset>
-    
+
     <fieldset><legend>Date-Time Picker</legend>
     <?php widget('datetimepicker',array(
         'title'=>'Select date-time',
-        'data'=>array(
-            'datetime-format' => 'Y-m-d H:i:s',
-            'datetime-time' => 1,
-            'datetime-seconds' => 1
+        'options'=>array(
+            'format' => 'Y-m-d H:i:s',
+            'showTime' => 1,
+            'showSeconds' => 1,
+            'value'=>'2016-01-24 12:00:00'
         )
-    ),array(
-        'value'=>'2016-01-24 12:00:00'
-    )); ?>
+    ),array()); ?>
     <?php widget('datetimepicker',array(
         'title'=>'Select date-time',
         'class' => 'w-large',
         'disabled' => 1,
-        'data'=>array(
-            'datetime-format' => 'Y-m-d H:i:s',
-            'datetime-time' => 1,
-            'datetime-seconds' => 1
+        'options'=>array(
+            'format' => 'Y-m-d H:i:s',
+            'showTime' => 1,
+            'showSeconds' => 1,
+            'value'=>'2016-01-24 12:00:00'
         )
-    ),array(
-        'value'=>'2016-01-24 12:00:00'
-    )); ?>
+    ),array()); ?>
     <?php widget('datetimepicker',array(
         'title'=>'Select date-time',
         'class' => 'w-xlarge',
         'readonly' => 1,
-        'data'=>array(
-            'datetime-format' => 'Y-m-d H:i:s',
-            'datetime-time' => 1,
-            'datetime-seconds' => 1
+        'options'=>array(
+            'format' => 'Y-m-d H:i:s',
+            'showTime' => 1,
+            'showSeconds' => 1,
+            'value'=>'2016-01-24 12:00:00'
         )
-    ),array(
-        'value'=>'2016-01-24 12:00:00'
-    )); ?>
+    ),array()); ?>
     </fieldset>
-    
+
     <fieldset><legend>Ratings</legend>
     <?php widget('rating',array('title'=>'Please rate:','icon'=>'star'),array('value'=>'3')); ?>
     <?php widget('rating',array('title'=>'Please rate:','class'=>'w-large','icon'=>'star','disabled'=>1),array('value'=>'3')); ?>
     <?php widget('rating',array('title'=>'Please rate:','class'=>'w-xlarge','icon'=>'star','readonly'=>1),array('value'=>'3')); ?>
     </fieldset>
-    
+
     <fieldset><legend>Textboxes</legend>
     <?php widget('textbox',array('title'=>'text..','icon'=>'pencil'),array('value'=>'')); ?>
     <?php widget('textbox',array('class'=>'w-large','title'=>'large..','icon'=>'pencil','disabled'=>1),array('value'=>'')); ?>
     <?php widget('textbox',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
-    
+
     <hr />
-    
+
     <?php widget('textarea',array('title'=>'text..','icon'=>'pencil'),array('value'=>'')); ?>
     <?php widget('textarea',array('class'=>'w-large','title'=>'large..','icon'=>'pencil','disabled'=>1),array('value'=>'')); ?>
     <?php widget('textarea',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
     </fieldset>
-    
+
     <fieldset style="overflow:hidden;"><legend>Panels</legend>
     <?php widget("button", array(
         "class" => "w-orange",
@@ -978,10 +947,10 @@ $paginationUri = $currentUri.'?page=(:page)';
     ),array(
         "text"  => "Toggle Right"
     )); ?>
-    
+
     <br />
-    
-    
+
+
     <?php widget("panel",array("id"=>"a_panel","class"=>"w-panel-no-header")); ?>
     <div class="fluid col-1-1 text-right">
     <?php widget("button", array(
@@ -1003,9 +972,9 @@ $paginationUri = $currentUri.'?page=(:page)';
         "icon"  => "play"
     )); ?>
     </div>
-    
+
     <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-red">Questions</span></td>
@@ -1019,7 +988,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
@@ -1033,7 +1002,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
@@ -1047,7 +1016,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-green">Values</span></td>
@@ -1061,10 +1030,10 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     </div>
     <?php widget("panel_end"); ?>
-    
+
     <?php widget("panel",array("id"=>"a_left_panel","class"=>"w-side-panel-left w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
     <div class="fluid col-1-1 text-right">
     <?php widget("button", array(
@@ -1086,9 +1055,9 @@ $paginationUri = $currentUri.'?page=(:page)';
         "icon"  => "play"
     )); ?>
     </div>
-    
+
     <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-red">Questions</span></td>
@@ -1102,7 +1071,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
@@ -1116,7 +1085,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
@@ -1130,7 +1099,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-green">Values</span></td>
@@ -1144,10 +1113,10 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     </div>
     <?php widget("panel_end"); ?>
-    
+
     <br />
     <?php widget("panel",array("id"=>"a_right_panel","class"=>"w-side-panel-right w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
     <div class="fluid col-1-1 text-right">
@@ -1170,9 +1139,9 @@ $paginationUri = $currentUri.'?page=(:page)';
         "icon"  => "play"
     )); ?>
     </div>
-    
+
     <div class="fluid col-1-1" style="border-radius:10px;border:1px solid #ccc;padding:4px;">
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-red">Questions</span></td>
@@ -1186,7 +1155,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-blue">Answers</span></td>
@@ -1200,7 +1169,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-orange">Variables</span></td>
@@ -1214,7 +1183,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     <div class="fluid col-1-2" style="padding:2px"><table class="w-table stripped"><tbody>
     <tr>
     <td><span class="w-tag w-tag3 w-green">Values</span></td>
@@ -1228,191 +1197,66 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tr>
     <?php } ?>
     </tbody></table></div>
-    
+
     </div>
     <?php widget("panel_end"); ?>
     </fieldset>
-    
-    <fieldset><legend>Wysiwyg Editor(s)</legend>
+
+    <fieldset><legend>Wysiwyg Editor</legend>
     <?php widget('wysiwyg-editor',array(
         'placeholder'=>'rich text..'
     ),array(
-        'value'=>'<i>Hello Tinymce</i>'
+        'value'=>'<b>Hello Tinymce</b>'
     )); ?>
     </fieldset>
-    
-    <fieldset><legend>Syntax Editor(s)</legend>
-    <?php widget('codemirror',array(
+
+    <fieldset><legend>Syntax Editor</legend>
+    <?php widget('syntax-editor',array(
         'placeholder'=>'source text..',
         //'readonly' => 1,
-        'data'=>array('cm-mode'=>'xml')
+        'options'=>array('mode'=>'xml')
     ),array(
-        'value'=>'<i>Hello Codemirror</i>'
-    )); ?>
-    <br />
-    <?php widget('ace',array(
-        'placeholder'=>'source text..',
-        //'readonly' => 1,
-        'data'=>array('ace-mode'=>'xml')
-    ),array(
-        'value'=>'<i>Hello Ace</i>'
+        'value'=>'<b>Hello Codemirror</b>'
     )); ?>
     </fieldset>
-    
-    <fieldset><legend>Syntax Highlighter(s)</legend>
-    <strong>Highlight.js</strong><br />
-    <?php widget('syntax-highlight',array(
-        'highlighter'=>'hjs',
-        'language' => 'javascript'
-    ),array(
-        'value'=>"// demo code
-function hello( )
-{
-    alert('hello!');
-}
-"
-    )); ?>
-    <br />
-    <strong>SyntaxHighlighter</strong><br />
-    <?php widget('syntax-highlight',array(
-        'highlighter'=>'sh',
-        'language' => 'javascript'
-    ),array(
-        'value'=>"// demo code
-function hello( )
-{
-    alert('hello!');
-}
-"
-    )); ?>
-    <br />
-    <strong>Prism</strong><br />
-    <?php widget('syntax-highlight',array(
-        //'highlighter'=>'prism',
-        'language' => 'javascript'
-    ),array(
-        'value'=>"// demo code
-function hello( )
-{
-    alert('hello!');
-}
-"
-    )); ?>
-    </fieldset>
-    
-    <fieldset><legend>Translator</legend>
-    <?php //widget('translator'); ?>
-    </fieldset>
-    
-    <fieldset><legend>Music Notation / Tablature</legend>
-    <?php widget('tablature', array(
-        //'id'    => 'late_init',
-        //'render' => 'svg',
-        'width' => 700,
-        'scale' => 1.0,
-        'editor' => "true",
-        'editor_height' => 110
-    ),array(
-        'notes'=> "
-options player=true
-options space=20
 
-tabstave
-  notation=true
-  key=A time=4/4
-
-  notes :q =|: (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 |
-  notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4
-  text :w, |#segno, ,|, :hd, , #tr
-
-
-options space=25
-
-tabstave
-  notation=true
-
-  notes :q (5/4.5/5) (7/4.7/5)s(5/4.5/5) ^3^
-  notes :8 7-5/4 $.a./b.$ (5/4.5/5)h(7/5) =:|
-  notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5
-  notes :h (5V/6.5/4.6/3.7/2) $.italic.let ring$ =|=
-
-  text :h, ,.font=Times-12-italic, D.S. al coda, |#coda
-  text :h, ,.-1, .font=Arial-14-bold,A13
-  text ++, .23, #f
-"
-      )); ?>
-    </fieldset>
-    
-    <fieldset><legend>Chart / Graph</legend>
-    <?php widget('chart', array(),array(
-        'data'=> array(
-          'columns'=> array(
-            array('data1', 30, 200, 100, 400, 150, 250),
-            array('data2', 50, 20, 10, 40, 15, 25)
-          ),
-        )
-      )); ?>
-    </fieldset>
-    
-    <fieldset><legend>Google Map</legend>
-    <?php /*widget('map', array(
-        'title' => 'Here',
-        'style' => 'width:100%',
-        'options' => array(
-            'center'        => array(39.5455, 22.345353),
-            'centerMarker'  => true,
-            'zoom'          => 12,
-            'type'          => 'ROADMAP',
-            'responsive'    => true
-        )
-    ));*/ ?>
-    </fieldset>
-    
-    <fieldset><legend>Flash Video</legend>
-    <?php /*widget('swf', array(
-        'width' => '600', 'height' => '400'
-    ),array(
-        'swf'    => 'https://www.youtube.com/v/g_2regfwgggreggeW40'
-    ));*/ ?>
-    </fieldset>
-    
     <fieldset><legend>Html5 Audio</legend>
-    <?php /*widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
+    <?php widget('audio', array('autoplay'=>1,'controls'=>1,'data'=>array('foo'=>array('1'=>1,'2'=>2),'bar'=>3)),array(
         'sources'    => options(array(
         './audio.mp3' => 'audio/mp3',
         './audio.ogg' => 'audio/ogg'
         ),-1)
-    ));*/ ?>
+    )); ?>
     </fieldset>
-    
+
     <fieldset><legend>Html5 Video</legend>
-    <?php /*widget('video', array('autoplay'=>1,'controls'=>1),array(
+    <?php widget('video', array('autoplay'=>1,'controls'=>1),array(
         'sources'    => options(array(
         './video.mp4' => 'video/mp4',
         './video.ogv' => 'video/ogv'
         ),-1)
-    ));*/ ?>
+    )); ?>
     </fieldset>
-    
+
     <fieldset><legend>Checkboxes</legend>
     <?php widget('checkbox',array('title'=>'Check'),array('value'=>'1')); ?>
     <?php widget('checkbox',array('title'=>'Check','class'=>'w-large','disabled'=>1),array('value'=>'1')); ?>
     <?php widget('checkbox',array('title'=>'Check','class'=>'w-xlarge','readonly'=>1),array('value'=>'1')); ?>
-    
+
     <hr />
-    
+
     <?php widget('radio',array('title'=>'Check','name'=>'radio'),array('value'=>'1')); ?>
     <?php widget('radio',array('title'=>'Check','name'=>'radio','class'=>'w-large','disabled'=>1),array('value'=>'1')); ?>
     <?php widget('radio',array('title'=>'Check','name'=>'radio','class'=>'w-xlarge','readonly'=>1),array('value'=>'1')); ?>
-    
+
     <hr />
-    
+
     <?php widget('switch',array('title'=>'Check','readonly'=>1),array('value'=>'1')); ?>
     <?php widget('switch',array('title'=>'Check','class'=>'w-large','iconon'=>'check','iconoff'=>'times-circle','disabled'=>1),array('value'=>'1')); ?>
     <?php widget('switch',array('title'=>'Check','class'=>'w-xlarge','iconon'=>'check','iconoff'=>'times-circle'),array('value'=>'1')); ?>
-    
+
     <hr />
-    
+
     <?php widget('checklist',array('name'=>'demo_list_1[]'),array('options'=>options(array(
         '1' => 'Option 1',
         '2' => 'Option 2',
@@ -1433,7 +1277,7 @@ tabstave
         '2' => 'Option 2 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option',
         '3' => 'Option 3 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option'
     ),-1), 'value'=>3)); ?>
-    
+
     <hr />
     <?php widget('checkbox-array',array('name'=>'demo_array_1','randomised'=>true),array(
     'fields'=>array(
@@ -1469,120 +1313,116 @@ tabstave
     )
     )); ?>
     <hr />
-    
+
     <?php widget('checkbox-image',array('image'=>'./luxury.jpg','name'=>'demo_image_1','style'=>'width:152px;height:152px'),array()); ?>
     <?php widget('radio-image',array('image'=>'./luxury.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px'),array()); ?>
     <?php widget('radio-image',array('image'=>'./comfort.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px','checked'=>1),array()); ?>
-    
+
     <hr />
     <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
     <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_1')); ?>
-    
+
     <?php widget('checkbox-label',array('label'=>'Red','name'=>'demo_label_2','data'=>array('morph-a-morphable'=>'mode-red'))); ?>
     <?php widget('checkbox-label',array('label'=>'Green','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-green'))); ?>
     <?php widget('checkbox-label',array('label'=>'Blue','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-blue'))); ?>
-    
+
     <hr />
     <?php widget('morphable',array('id'=>'a-morphable','modes'=>array('red','green','blue'))); ?>
     <div id="a-morphable" class="fluid col-1-1 w-morphable w-animated-morphable w-morphable-level-1">
-    
+
     <!-- red and green and blue -->
     <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green hide-if-not-blue">
     <div class="fluid col-1-1 boxaki" style="background:#fff;"></div>
     </div>
-    
+
     <!-- neither red nor green nor blue -->
     <div class="fluid col-1-6 w-morphable-item show-if-not-red show-if-not-green show-if-not-blue">
     <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
     <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
     <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
     </div>
-    
+
     <!-- red or green -->
     <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green">
     <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
     </div>
-    
+
     <!-- red or blue -->
     <div class="fluid col-1-6 w-morphable-item show-if-red show-if-blue">
     <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
     </div>
-    
+
     <!-- green or blue -->
     <div class="fluid col-1-6 w-morphable-item show-if-blue show-if-green">
     <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
     </div>
-    
+
     <!-- red or green or blue -->
     <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green show-if-blue">
     <div class="fluid col-1-3 boxaki" style="background:#f00;"></div>
     <div class="fluid col-1-3 boxaki" style="background:#0f0;"></div>
     <div class="fluid col-1-3 boxaki" style="background:#00f;"></div>
     </div>
-    
+
     <!-- red and green -->
     <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green">
     <div class="fluid col-1-1 boxaki" style="background:#ff0;"></div>
     </div>
-    
+
     <!-- red and blue -->
     <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-blue">
     <div class="fluid col-1-1 boxaki" style="background:#f0f;"></div>
     </div>
-    
+
     <!-- green and blue -->
     <div class="fluid col-1-6 w-morphable-item hide-if-not-green hide-if-not-blue">
     <div class="fluid col-1-1 boxaki" style="background:#0ff;"></div>
     </div>
-    
+
     <!-- neither red nor green -->
     <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-green">
     <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
     </div>
-    
+
     <!-- neither red nor blue -->
     <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-blue">
     <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
     </div>
-    
+
     <!-- neither green nor blue -->
     <div class="fluid col-1-6 w-morphable-item hide-if-green hide-if-blue">
     <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
     <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
     </div>
-    
+
     <!-- red -->
     <div class="fluid col-1-6 w-morphable-item show-if-red">
     <div class="fluid col-1-1 boxaki" style="background:#f00;"></div>
     </div>
-    
+
     <!-- green -->
     <div class="fluid col-1-6 w-morphable-item show-if-green">
     <div class="fluid col-1-1 boxaki" style="background:#0f0;"></div>
     </div>
-    
+
     <!-- blue -->
     <div class="fluid col-1-6 w-morphable-item show-if-blue">
     <div class="fluid col-1-1 boxaki" style="background:#00f;"></div>
     </div>
-    
+
     </div>
     </fieldset>
-    
-    <fieldset><legend>Uploads</legend>
-    <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
-    <?php widget('dnd-upload',array('name'=>'foo','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
-    <?php widget('dnd-upload',array('name'=>'bar[foo]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
-    <?php widget('dnd-upload',array('name'=>'foo2[]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
-    <?php widget('dnd-upload',array('name'=>'bar2[foo2][]','title'=>'Upload your file here','show-preview'=>1,'upload-thumbnail'=>1)); ?>
-    </fieldset>
-    
-    
+
+    <!---<fieldset><legend>Uploads</legend>
+    <?php //widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
+    </fieldset>-->
+
+
     <fieldset><legend>Tooltips</legend>
     <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
     <hr /><br /><br />
@@ -1592,25 +1432,20 @@ tabstave
     <hr /><br /><br />
     <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
     </fieldset>
-    
+
     <fieldset><legend>Spinners</legend>
-    <div class="box w-delayable w-delayed"></div>
+    <!--<div class="box w-disabable w-disabled"><?php //widget('disabable'); ?></div>-->
+    <div class="box w-delayable w-delayed"><?php widget('delayable'); ?></div>
     <div class="box"><div class="w-spinner w-spinner-dots2 active"></div></div>
     </fieldset>
-    
+
     <fieldset><legend>Ribbons</legend>
     <div class="box">
        <div class="w-ribbon-dtl w-red w-ribbon-fold w-large"><span>Ribbon</span></div>
        <div class="w-ribbon-dtr w-blue w-ribbon-fold"><span>Ribbon</span></div>
     </div>
     </fieldset>
-    
-    <fieldset><legend>Popup Menus</legend>
-    <div class="popr inline-block w-popr" data-popr="popr_1"><i class="fa fa-list-alt"></i> Feugait nostrud</div>
-    <div class="popr inline-block w-popr" data-popr="popr_2"><i class="fa fa-cog"></i></div>
-    <div class="popr inline-block w-popr" data-popr="popr_3" data-popr-mode="top"><i class="fa fa-list-alt"></i> Dolore</div>
-    </fieldset>
-    
+
     <fieldset><legend>(Speech) Bubbles</legend>
     <div class="w-bubble w-bubble-up">Bubble Up</div>
     <div class="w-bubble w-bubble-down">Bubble Down</div>
@@ -1621,7 +1456,7 @@ tabstave
     <div class="w-bubble w-bubble2-left">Bubble Left</div>
     <div class="w-bubble w-bubble2-right">Bubble Right</div>
     </fieldset>
-    
+
     <fieldset><legend>Animation Sprites</legend>
     <div class="fluid col-1-1">
     <?php widget('sprite',array('title'=>'Walking.. (sprite animation)','animation'=>'spriteanimation','rows'=>2,'columns'=>8,'sprite'=>'./spriteanimation.png','width'=>300,'height'=>521)); ?>
@@ -1630,7 +1465,7 @@ tabstave
     <?php widget('sprite',array('title'=>'Walking.. (sprite animation)','animation'=>'spriteanimation2','rows'=>2,'columns'=>8,'sprite'=>'./spriteanimation.png','width'=>300,'height'=>521, 'class'=>'responsive')); ?>
     </div>
     </fieldset>
-    
+
     <fieldset><legend>Tags</legend>
     <span class="w-tag w-orange">Tag 1</span>
     <span class="w-tag w-purple">Tag 1</span>
@@ -1652,7 +1487,7 @@ tabstave
     <option value="2">Option 3</option>
     </select></span>
     </fieldset>
-    
+
     <fieldset><legend>Messages</legend>
     <div class="w-msg w-msg-ok">
         <i class="fa fa-check"></i> <strong>Success!</strong>
@@ -1660,7 +1495,7 @@ tabstave
     </div>
     <div class="w-msg w-msg-info">
         <i class="fa fa-info"></i> <strong>Info!</strong>
-        This msg indicates a neutral informative change or action. 
+        This msg indicates a neutral informative change or action.
     </div>
     <div class="w-msg w-msg-warn">
         <i class="fa fa-exclamation-circle"></i> <strong>Warning!</strong>
@@ -1668,65 +1503,19 @@ tabstave
     </div>
     <div class="w-msg w-msg-err">
         <i class="fa fa-exclamation-triangle"></i> <strong>Error!</strong>
-        This msg indicates a dangerous or potentially negative action. 
+        This msg indicates a dangerous or potentially negative action.
     </div>
     </fieldset>
-    
+
     <button id="submit_form" type="submit">Submit Test</button>
     </form>
-    
-<div class="popr-box" id="popr_1">
-<a href="#"><i class="fa fa-list-alt"></i> Feugait delenit</a>
-<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
-<a href="#"><i class="fa fa-list-alt"></i> Exerci ipsum</a>
-</div>
 
-<div class="popr-box" id="popr_2">
-<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
-<a href="#" id="feugait"><i class="fa fa-list-alt"></i> Feugait</a>
-<a href="#"><i class="fa fa-list-alt"></i> Commodo quis</a>
-</div>
-
-<div class="popr-box" id="popr_3">
-<a href="#">Malorum</a>
-<a href="#"><i class="fa fa-list-alt"></i> Vero dolor et</a>
-<a href="#">Exerci ipsum</a>
-</div>
-
-    <?php
-    //enqueue('scripts','-external-google-maps-api');
-    enqueue('styles','normalize.css');
-    enqueue('styles','responsive.css');
-    enqueue('styles','fontawesome.css');
-    //enqueue('styles','bootstrap.css');
-    enqueue('scripts','jquery');
-    enqueue('scripts','datatables');
-    enqueue('scripts','tooltipster');
-    enqueue('scripts','popr2');
-    enqueue('scripts','serialiser');
-    styles( );
-    scripts( );
-    ?>
-    <script>
-    jQuery(function($){
-       /*setTimeout(function(){
-       $('#late_init').addClass('w-vextab');
-       }, 10000);*/
-       $('#submit_form').on('click', function( evt ){
-           evt.preventDefault( );
-           evt.stopPropagation( );
-           $.ajax({
-                type: 'POST',
-                method: 'POST',
-                dataType: 'json',
-                url: document.location,
-                data: Serialiser.ModelToFormData(Serialiser.FieldsToModel($('form').find('input,textarea,select'), {})),
-                processData: false,
-                contentType: false
-            });
-           return false;
-       });
-    });
-    </script>
+<?php
+enqueue('styles','normalize.css');
+enqueue('styles','responsive.css');
+enqueue('styles','htmlwidgets.css');
+styles();
+scripts();
+?>
 </body>
 </html>

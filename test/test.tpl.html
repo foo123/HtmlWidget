@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en" class="no-ie">
+<head>
+    <meta charset="utf-8"/>
+    <style type="text/css">
+    #forkongithub  a {
+        background: #aa0000;
+        color: #fff;
+        text-decoration: none;
+        font-family: arial, sans-serif;
+        text-align: center;
+        font-weight: bold;
+        padding: 5px 40px;
+        font-size: 0.9rem;
+        line-height: 1.4rem;
+        position: relative;
+        transition: all 0.5s;
+    }
+    #forkongithub a {
+        width: 200px;
+        position: absolute;
+        top: 60px;
+        right: -60px;
+        transform: rotate(45deg);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
+    }
+    #forkongithub a:hover {
+        background: #aa0000;
+        color: #fff;
+    }
+    #forkongithub a::before, #forkongithub a::after {
+        content: "";
+        width: 100%;
+        display: block;
+        position: absolute;
+        z-index: 100;
+        top: 1px;
+        left: 0;
+        height: 1px;
+        background: #fff;
+    }
+    #forkongithub a::after
+    {
+        bottom: 1px;
+        top: auto;
+    }
+    .box {
+        width: 600px; height: 200px;
+        position: relative;
+        border: 1px solid #BBB;
+        background: #EEE;
+        margin-left: 100px;
+    }
+    .boxaki {
+        border: 2px solid #ccc;
+        min-height: 200px;
+    }
+    .w-menu-controller-bt {
+        cursor: pointer;
+        display: none;
+    }
+    .w-vertical-menu {
+        width: 300px;
+    }
+    .w-bubble {
+        max-width: 300px;
+        border-color: #f3961c;
+        background: #f3961c;
+        color: #fff;
+        font-weight: bold;
+    }
+    fieldset:not(.w-rating) {
+        position: relative; display: block;
+        font-size: 1em;
+        padding: 0; width: 100%;
+        float: none;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        -o-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 40px 0;
+    }
+    legend {
+        position: relative;
+        font-size: 2em;
+        font-weight: bold;
+        padding: 20px;
+    }
+    @media (max-width: 60em), (max-device-width: 60em)
+    {
+    .w-vertical-menu.w-mobile > .w-menu-controller-bt,
+    .w-dropdown-menu.w-mobile > .w-menu-controller-bt {
+        display: block;
+        position: absolute;
+        top: 0; left: 0;
+    }
+    #forkongithub {
+        position: absolute;
+        display: block;
+        z-index: 100;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+    }
+    }
+    </style>
+    <title>HtmlWidgets Test page (v.<?php HtmlWidget.VERSION ?>)</title>
+</head>
+<body class="fluid col-1-1 responsive-960-container" style="padding:10px 20px">
+    <span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Find me on GitHub</a></span>
+    <h1>HtmlWidgets Test page (v.<?php HtmlWidget.VERSION ?>)</h1>
+
+    <form method="post" enctype="multipart/form-data">
+    <fieldset><legend>Menus</legend>
+
+    <nav class="w-dropdown-menu"><ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></nav>
+
+    <hr />
+    <nav class="w-dropdown-menu w-mobile" style="z-index:300">
+    <label for="mobile-menu" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+    <input id="mobile-menu" type="checkbox" class="w-menu-controller" value="1" />
+    <ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></nav>
+
+    <hr />
+
+    <nav class="w-vertical-menu" style="z-index:200"><ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></nav>
+
+    <hr />
+
+    <nav class="w-vertical-menu w-mobile" style="z-index:100">
+    <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
+    <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
+    <ul>
+    <li class="w-submenu-item">
+        <a href="#">Item</a>
+        <ul>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li><a href="#">sub Item</a></li>
+        <li class="w-submenu-item">
+            <a href="#">sub Item</a>
+            <ul>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li><a href="#">sub sub Item</a></li>
+            <li class="w-submenu-item">
+                <a href="#">sub sub Item</a>
+                <ul>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                <li><a href="#">sub sub sub Item</a></li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li class="active"><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    <li><a href="#">Item</a></li>
+    </ul></nav>
+
+    <hr />
+    <?php widget('menu', {
+        'mobile' : true,
+        'class' : 'w-dropdown-menu w-mobile',
+        'style' : 'z-index:200'
+    },[
+        {
+            'text' : 'Item',
+            'active' : 1,
+            'submenu' : [
+                {
+                    'text' : 'Sub Item',
+                    'submenu' : [
+                        {
+                            'text' : 'Sub Sub Item'
+                        },
+                        {
+                            'text' : 'Sub Sub Item'
+                        },
+                        {
+                            'text' : 'Sub Sub Item'
+                        },
+                        {
+                            'text' : 'Sub Sub Item'
+                        }
+                    ]
+                },
+                {
+                    'text' : 'Sub Item'
+                },
+                {
+                    'text' : 'Sub Item'
+                },
+                {
+                    'text' : 'Sub Item'
+                }
+            ]
+        },
+        {
+            'text' : 'Item'
+        },
+        {
+            'text' : 'Item'
+        },
+        {
+            'text' : 'Item'
+        }
+    ]) ?>
+    </fieldset>
+
+    <fieldset><legend>Pagination</legend>
+    <nav><?php widget('pagination',{},{'totalItems':100,'itemsPerPage':10,'currentPage':1}) ?></nav>
+
+    <nav><?php widget('pagination',{},{'totalItems':1000,'itemsPerPage':10,'currentPage':3}) ?></nav>
+    </fieldset>
+
+    <fieldset><legend>Buttons</legend>
+    <?php widget('button',{'class':'w-xsmall','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-small','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-large','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-xlarge','icon':'info-circle'}) ?>
+
+    <?php widget('button',{'class':'w-xsmall','icon':'plus'},{'text':'xsmall'}) ?>
+    <?php widget('button',{'class':'w-small','icon':'plus'},{'text':'small'}) ?>
+    <?php widget('button',{'class':'','icon':'plus'},{'text':'button'}) ?>
+    <?php widget('button',{'class':'','icon':'plus','disabled':1},{'text':'button'}) ?>
+    <?php widget('button',{'class':'w-large','icon':'plus','readonly':1},{'text':'large'}) ?>
+    <?php widget('button',{'class':'w-large','icon':'plus','disabled':1},{'text':'large'}) ?>
+    <?php widget('button',{'class':'w-xlarge','icon':'info-circle'},{'text':'xlarge'}) ?>
+    <?php widget('button',{'class':'w-xlarge','icon':'info-circle','readonly':1},{'text':'xlarge'}) ?>
+
+    <br />
+
+    <?php widget('button',{'class':'w-xsmall w-black','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-small w-black','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-black','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-large w-black','icon':'times-circle'}) ?>
+    <?php widget('button',{'class':'w-xlarge w-black','icon':'info-circle'}) ?>
+
+    <?php widget('button',{'class':'w-xsmall w-black','icon':'plus'},{'text':'xsmall'}) ?>
+    <?php widget('button',{'class':'w-small w-black','icon':'plus'},{'text':'small'}) ?>
+    <?php widget('button',{'class':'w-black','icon':'plus'},{'text':'button'}) ?>
+    <?php widget('button',{'class':'w-black','icon':'plus','disabled':1},{'text':'button'}) ?>
+    <?php widget('button',{'class':'w-large w-black','icon':'plus','readonly':1},{'text':'large'}) ?>
+    <?php widget('button',{'class':'w-large w-black','icon':'plus','disabled':1},{'text':'large'}) ?>
+    <?php widget('button',{'class':'w-xlarge w-black','icon':'info-circle'},{'text':'xlarge'}) ?>
+    <?php widget('button',{'class':'w-xlarge w-black','icon':'info-circle','readonly':1},{'text':'xlarge'}) ?>
+    </fieldset>
+
+    <fieldset><legend>Tables</legend>
+    <strong>multi-responsive blocks</strong>
+    <div class="fluid col-1-1">
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:red;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:green;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:yellow;">&nbsp;</div>
+    <div class="fluid col-1-4 autoadjust autocol-1-3-1024 autocol-1-2-768 autocol-1-1-640" style="height:100px;background:blue;">&nbsp;</div>
+    </div>
+
+    <br />
+
+    <strong>multi-responsive cellular table</strong>
+    <table id="table_1" w-init="1" class="w-widget w-table w-datatable cellular responsive bordered vstripped cell-1-4 autocell-1-3-960 autocell-1-2-768 autocell-1-1-640">
+    <thead>
+        <tr>
+        <th data-columnkey="column1"><span>column1</span></th>
+        <th data-columnkey="column2"><span>column2</span></th>
+        <th data-columnkey="column3"><span>column3</span></th>
+        <th data-columnkey="column4"><span>column4</span></th>
+        <th data-columnkey="column5"><span>column5</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 1</td>
+        <td data-columnkey="column3" data-column="column3">data 1</td>
+        <td data-columnkey="column4" data-column="column4">data 1</td>
+        <td data-columnkey="column5" data-column="column5">data 1</td>
+        </tr>
+        <tr class="selected">
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 2</td>
+        <td data-columnkey="column3" data-column="column3">data 2</td>
+        <td data-columnkey="column4" data-column="column4">data 2</td>
+        <td data-columnkey="column5" data-column="column5">data 2</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 3</td>
+        <td data-columnkey="column3" data-column="column3">data 3</td>
+        <td data-columnkey="column4" data-column="column4">data 3</td>
+        <td data-columnkey="column5" data-column="column5">data 3</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 4</td>
+        <td data-columnkey="column3" data-column="column3">data 4</td>
+        <td data-columnkey="column4" data-column="column4">data 4</td>
+        <td data-columnkey="column5" data-column="column5">data 4</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 5</td>
+        <td data-columnkey="column3" data-column="column3">data 5</td>
+        <td data-columnkey="column4" data-column="column4">data 5</td>
+        <td data-columnkey="column5" data-column="column5">data 5</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 6</td>
+        <td data-columnkey="column3" data-column="column3">data 6</td>
+        <td data-columnkey="column4" data-column="column4">data 6</td>
+        <td data-columnkey="column5" data-column="column5">data 6</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <br />
+
+    <strong>responsive table</strong>
+    <table id="table_2" w-init="1" class="w-widget w-table w-datatable responsive bordered stripped vstripped">
+    <thead>
+        <tr>
+        <th data-columnkey="column1"><span>column1</span></th>
+        <th data-columnkey="column2"><span>column2</span></th>
+        <th data-columnkey="column3"><span>column3</span></th>
+        <th data-columnkey="column4"><span>column4</span></th>
+        <th data-columnkey="column5"><span>column5</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 1</td>
+        <td data-columnkey="column3" data-column="column3">data 1</td>
+        <td data-columnkey="column4" data-column="column4">data 1</td>
+        <td data-columnkey="column5" data-column="column5">data 1</td>
+        </tr>
+        <tr class="selected">
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 2</td>
+        <td data-columnkey="column3" data-column="column3">data 2</td>
+        <td data-columnkey="column4" data-column="column4">data 2</td>
+        <td data-columnkey="column5" data-column="column5">data 2</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 3</td>
+        <td data-columnkey="column3" data-column="column3">data 3</td>
+        <td data-columnkey="column4" data-column="column4">data 3</td>
+        <td data-columnkey="column5" data-column="column5">data 3</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 4</td>
+        <td data-columnkey="column3" data-column="column3">data 4</td>
+        <td data-columnkey="column4" data-column="column4">data 4</td>
+        <td data-columnkey="column5" data-column="column5">data 4</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 5</td>
+        <td data-columnkey="column3" data-column="column3">data 5</td>
+        <td data-columnkey="column4" data-column="column4">data 5</td>
+        <td data-columnkey="column5" data-column="column5">data 5</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 6</td>
+        <td data-columnkey="column3" data-column="column3">data 6</td>
+        <td data-columnkey="column4" data-column="column4">data 6</td>
+        <td data-columnkey="column5" data-column="column5">data 6</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 7</td>
+        <td data-columnkey="column3" data-column="column3">data 7</td>
+        <td data-columnkey="column4" data-column="column4">data 7</td>
+        <td data-columnkey="column5" data-column="column5">data 7</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 8</td>
+        <td data-columnkey="column3" data-column="column3">data 8</td>
+        <td data-columnkey="column4" data-column="column4">data 8</td>
+        <td data-columnkey="column5" data-column="column5">data 8</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 9</td>
+        <td data-columnkey="column3" data-column="column3">data 9</td>
+        <td data-columnkey="column4" data-column="column4">data 9</td>
+        <td data-columnkey="column5" data-column="column5">data 9</td>
+        </tr>
+        <tr>
+        <td data-columnkey="column1" data-column="column1"><i class="fa fa-info-circle fa-2x"></i></td>
+        <td data-columnkey="column2" data-column="column2">data 0</td>
+        <td data-columnkey="column3" data-column="column3">data 0</td>
+        <td data-columnkey="column4" data-column="column4">data 0</td>
+        <td data-columnkey="column5" data-column="column5">data 0</td>
+        </tr>
+    </tbody>
+    </table>
+    </fieldset>
+
+    <fieldset><legend>Dropdowns</legend>
+    <?php widget('dropdown',{'placeholder':'select..'},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+    <?php widget('dropdown',{'placeholder':'large..','class':'w-large','disabled':1},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+    <?php widget('dropdown',{'placeholder':'xlarge..','class':'w-xlarge','readonly':1},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+
+    <hr />
+
+    <?php widget('select2',{'placeholder':'select..'},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+    <?php widget('select2',{'placeholder':'large..','class':'w-large','disabled':1},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+    <?php widget('select2',{'placeholder':'xlarge..','class':'w-xlarge','multiple':1},{'options':options({
+        '1' : 'option 1',
+        '2' : 'option 2'
+    },-1)}) ?>
+    </fieldset>
+
+    <fieldset><legend>Color Picker</legend>
+    <?php widget('colorpicker',{
+        'title':'Select color',
+        'options':{
+            'format' : 'rgba',
+            'color':'rgba(210,0,0,0.7)'
+        }
+    },{}) ?>
+    <?php widget('colorpicker',{
+        'title':'Select color',
+        'class' : 'w-large',
+        'options':{
+            'format' : 'rgba',
+            'color':'rgba(210,0,0,0.7)'
+        }
+    },{}) ?>
+    <?php widget('colorpicker',{
+        'title':'Select color',
+        'class' : 'w-xlarge',
+        'options':{
+            'format' : 'rgba',
+            'color':'rgba(210,0,0,0.7)'
+        }
+    },{}) ?>
+    </fieldset>
+
+    <fieldset><legend>Date-Time Picker</legend>
+    <?php widget('datetimepicker',{
+        'title':'Select date-time',
+        'options':{
+            'format' : 'Y-m-d H:i:s',
+            'showTime' : 1,
+            'showSeconds' : 1,
+            'value':'2016-01-24 12:00:00'
+        }
+    },{}) ?>
+    <?php widget('datetimepicker',{
+        'title':'Select date-time',
+        'class' : 'w-large',
+        'disabled' : 1,
+        'options':{
+            'format' : 'Y-m-d H:i:s',
+            'showTime' : 1,
+            'showSeconds' : 1,
+            'value':'2016-01-24 12:00:00'
+        }
+    },{}) ?>
+    <?php widget('datetimepicker',{
+        'title':'Select date-time',
+        'class' : 'w-large',
+        'readonly' : 1,
+        'options':{
+            'format' : 'Y-m-d H:i:s',
+            'showTime' : 1,
+            'showSeconds' : 1,
+            'value':'2016-01-24 12:00:00'
+        }
+    },{}) ?>
+    </fieldset>
+
+    <fieldset><legend>Ratings</legend>
+    <?php widget('rating',{'title':'Please rate:','icon':'star'},{'value':'3'}) ?>
+    <?php widget('rating',{'title':'Please rate:','class':'w-large','icon':'star','disabled':1},{'value':'3'}) ?>
+    <?php widget('rating',{'title':'Please rate:','class':'w-xlarge','icon':'star','readonly':1},{'value':'3'}) ?>
+    </fieldset>
+
+    <fieldset><legend>Textboxes</legend>
+    <?php widget('textbox',{'title':'text..','icon':'pencil'},{'value':''}) ?>
+    <?php widget('textbox',{'class':'w-large','title':'large..','icon':'pencil','disabled':1},{'value':''}) ?>
+    <?php widget('textbox',{'class':'w-xlarge','title':'xlarge..','icon':'pencil','readonly':1},{'value':''}) ?>
+
+    <hr />
+
+    <?php widget('textarea',{'title':'text..','icon':'pencil'},{'value':''}) ?>
+    <?php widget('textarea',{'class':'w-large','title':'large..','icon':'pencil','disabled':1},{'value':''}) ?>
+    <?php widget('textarea',{'class':'w-xlarge','title':'xlarge..','icon':'pencil','readonly':1},{'value':''}) ?>
+    </fieldset>
+
+    <fieldset><legend>Wysiwyg Editor</legend>
+    <?php widget('wysiwyg-editor',{
+        'placeholder':'rich text..'
+    },{
+        'value':'<b>Hello Tinymce</b>'
+    }) ?>
+    </fieldset>
+
+    <fieldset><legend>Syntax Editor</legend>
+    <?php widget('syntax-editor',{
+        'placeholder':'source text..',
+        //'readonly' : 1,
+        'options':{'mode':'xml'}
+    },{
+        'value':'<b>Hello Codemirror</b>'
+    }) ?>
+    </fieldset>
+
+    <fieldset><legend>Html5 Audio</legend>
+    <?php widget('audio', {'autoplay':1,'controls':1},{
+        'sources'    : options({
+        './audio.mp3' : 'audio/mp3',
+        './audio.ogg' : 'audio/ogg'
+        },-1)
+    }) ?>
+    </fieldset>
+
+    <fieldset><legend>Html5 Video</legend>
+    <?php widget('video', {'autoplay':1,'controls':1},{
+        'sources'    : options({
+        './video.mp4' : 'video/mp4',
+        './video.ogv' : 'video/ogv'
+        },-1)
+    }) ?>
+    </fieldset>
+
+    <fieldset><legend>Checkboxes</legend>
+    <?php widget('checkbox',{'title':'Check'},{'value':'1'}) ?>
+    <?php widget('checkbox',{'title':'Check','class':'w-large','disabled':1},{'value':'1'}) ?>
+    <?php widget('checkbox',{'title':'Check','class':'w-xlarge','readonly':1},{'value':'1'}) ?>
+
+    <hr />
+
+    <?php widget('radio',{'title':'Check','name':'radio'},{'value':'1'}) ?>
+    <?php widget('radio',{'title':'Check','name':'radio','class':'w-large','disabled':1},{'value':'1'}) ?>
+    <?php widget('radio',{'title':'Check','name':'radio','class':'w-xlarge','readonly':1},{'value':'1'}) ?>
+
+    <hr />
+
+    <?php widget('switch',{'title':'Check','readonly':1},{'value':'1'}) ?>
+    <?php widget('switch',{'title':'Check','class':'w-large','iconon':'check','iconoff':'times-circle','disabled':1},{'value':'1'}) ?>
+    <?php widget('switch',{'title':'Check','class':'w-xlarge','iconon':'check','iconoff':'times-circle'},{'value':'1'}) ?>
+
+    <hr />
+
+    <?php widget('checklist',{'name':'demo_list_1[]'},{'options':options({
+        '1' : 'Option 1',
+        '2' : 'Option 2',
+        '3' : 'Option 3'
+    },-1), 'value':[2,3]}) ?>
+    <?php widget('radiolist',{'class':'w-large','name':'demo_list_2'},{'options':options({
+        '1' : 'Option 1',
+        '2' : 'Option 2',
+        '3' : 'Option 3'
+    },-1), 'value':1}) ?>
+    <span>A choice:</span> <?php widget('radiolist',{'class':'w-large','name':'demo_list_2_1','horizontal':true},{'options':options({
+        '1' : 'Option 1',
+        '2' : 'Option 2',
+        '3' : 'Option 3'
+    },-1), 'value':1}) ?>
+    <?php widget('radiolist',{'class':'w-xlarge','name':'demo_list_3','disabled':1},{'options':options({
+        '1' : 'Option 1 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option',
+        '2' : 'Option 2 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option',
+        '3' : 'Option 3 very loooong option very loooong option very loooong option very loooong option very loooong option very loooong option'
+    },-1), 'value':3}) ?>
+
+    <hr />
+    <?php widget('checkbox-array',{'name':'demo_array_1','randomised':true},{
+    'fields':{
+    'darth_vader':'Darth Vader',
+    'obi_wan':'Obi Wan',
+    'yoda':'Yoda'
+    },
+    'options':options({
+        '1' : 'Option 1',
+        '2' : 'Option 2',
+        '3' : 'Option 3'
+    },-1),
+    'value':{
+    'darth_vader':[2,3],
+    'yoda':[1,3]
+    }
+    }) ?>
+    <?php widget('radio-array',{'class':'w-large','name':'demo_array_2'},{
+    'fields':{
+    'darth_vader':'Darth Vader',
+    'obi_wan':'Obi Wan',
+    'yoda':'Yoda'
+    },
+    'options':options({
+        '1' : 'Option 1',
+        '2' : 'Option 2',
+        '3' : 'Option 3'
+    },-1),
+    'value':{
+    'darth_vader':2,
+    'obi_wan':3,
+    'yoda':1
+    }
+    }) ?>
+    <hr />
+
+    <?php widget('checkbox-image',{'image':'./luxury.jpg','name':'demo_image_1','style':'width:152px;height:152px'},{}) ?>
+    <?php widget('radio-image',{'image':'./luxury.jpg','name':'demo_image_2','style':'width:152px;height:152px'},{}) ?>
+    <?php widget('radio-image',{'image':'./comfort.jpg','name':'demo_image_2','style':'width:152px;height:152px','checked':1},{}) ?>
+
+    <hr />
+    <?php widget('radio-label',{'label':'label 1','name':'demo_label_1'}) ?>
+    <?php widget('radio-label',{'label':'label 2','name':'demo_label_1'}) ?>
+
+    <?php widget('checkbox-label',{'label':'Red','name':'demo_label_2','data':{'morph-a-morphable':'mode-red'}}) ?>
+    <?php widget('checkbox-label',{'label':'Green','name':'demo_label_2','checked':1,'data':{'morph-a-morphable':'mode-green'}}) ?>
+    <?php widget('checkbox-label',{'label':'Blue','name':'demo_label_2','checked':1,'data':{'morph-a-morphable':'mode-blue'}}) ?>
+
+    <hr />
+    <?php widget('morphable',{'id':'a-morphable','modes':['red','green','blue']}) ?>
+    <div id="a-morphable" class="fluid col-1-1 w-morphable w-animated-morphable w-morphable-level-1">
+
+    <!-- red and green and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#fff;"></div>
+    </div>
+
+    <!-- neither red nor green nor blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-not-red show-if-not-green show-if-not-blue">
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#000;"></div>
+    </div>
+
+    <!-- red or green -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    </div>
+
+    <!-- red or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+
+    <!-- green or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-blue show-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+
+    <!-- red or green or blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red show-if-green show-if-blue">
+    <div class="fluid col-1-3 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-3 boxaki" style="background:#00f;"></div>
+    </div>
+
+    <!-- red and green -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-green">
+    <div class="fluid col-1-1 boxaki" style="background:#ff0;"></div>
+    </div>
+
+    <!-- red and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-red hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#f0f;"></div>
+    </div>
+
+    <!-- green and blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-not-green hide-if-not-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#0ff;"></div>
+    </div>
+
+    <!-- neither red nor green -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-green">
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#00f;"></div>
+    </div>
+
+    <!-- neither red nor blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-red hide-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#0f0;"></div>
+    </div>
+
+    <!-- neither green nor blue -->
+    <div class="fluid col-1-6 w-morphable-item hide-if-green hide-if-blue">
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    <div class="fluid col-1-2 boxaki" style="background:#f00;"></div>
+    </div>
+
+    <!-- red -->
+    <div class="fluid col-1-6 w-morphable-item show-if-red">
+    <div class="fluid col-1-1 boxaki" style="background:#f00;"></div>
+    </div>
+
+    <!-- green -->
+    <div class="fluid col-1-6 w-morphable-item show-if-green">
+    <div class="fluid col-1-1 boxaki" style="background:#0f0;"></div>
+    </div>
+
+    <!-- blue -->
+    <div class="fluid col-1-6 w-morphable-item show-if-blue">
+    <div class="fluid col-1-1 boxaki" style="background:#00f;"></div>
+    </div>
+
+    </div>
+    </fieldset>
+
+    <fieldset><legend>Tooltips</legend>
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Right <span class="w-tooltip-arrow w-arrow-right"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Bottom <span class="w-tooltip-arrow w-arrow-bottom"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Left <span class="w-tooltip-arrow w-arrow-left"></span></div>
+    <hr /><br /><br />
+    <div class="w-tooltip"><i class="fa fa-info-circle"></i> Tooltip Top <span class="w-tooltip-arrow w-arrow-top"></span></div>
+    </fieldset>
+
+    <fieldset><legend>Spinners</legend>
+    <div class="box w-delayable w-delayed"><?php widget('delayable') ?></div>
+    <div class="box"><div class="w-spinner w-spinner-dots2 active"></div></div>
+    </fieldset>
+
+    <fieldset><legend>Ribbons</legend>
+    <div class="box">
+       <div class="w-ribbon-dtl w-red w-ribbon-fold w-large"><span>Ribbon</span></div>
+       <div class="w-ribbon-dtr w-blue w-ribbon-fold"><span>Ribbon</span></div>
+    </div>
+    </fieldset>
+
+    <fieldset><legend>(Speech) Bubbles</legend>
+    <div class="w-bubble w-bubble-up">Bubble Up</div>
+    <div class="w-bubble w-bubble-down">Bubble Down</div>
+    <div class="w-bubble w-bubble-left">Bubble Left</div>
+    <div class="w-bubble w-bubble-right">Bubble Right</div>
+    <div class="w-bubble w-bubble2-up">Bubble Up</div>
+    <div class="w-bubble w-bubble2-down">Bubble Down</div>
+    <div class="w-bubble w-bubble2-left">Bubble Left</div>
+    <div class="w-bubble w-bubble2-right">Bubble Right</div>
+    </fieldset>
+
+    <fieldset><legend>Animation Sprites</legend>
+    <div class="fluid col-1-1">
+    <?php widget('sprite',{'title':'Walking.. (sprite animation)','animation':'spriteanimation','rows':2,'columns':8,'sprite':'./spriteanimation.png','width':300,'height':521}) ?>
+    </div>
+    <div class="fluid col-3-4" style="margin-top:20px">
+    <?php widget('sprite',{'title':'Walking.. (sprite animation)','animation':'spriteanimation2','rows':2,'columns':8,'sprite':'./spriteanimation.png','width':300,'height':521, 'class':'responsive'}) ?>
+    </div>
+    </fieldset>
+
+    <fieldset><legend>Tags</legend>
+    <span class="w-tag w-orange">Tag 1</span>
+    <span class="w-tag w-purple">Tag 1</span>
+    <span class="w-tag w-aqua">Tag 2</span>
+    <span class="w-tag w-large w-green">Tag 2</span>
+    <span class="w-tag w-xlarge w-red w-tag2">Tag 3</span>
+    <span class="w-tag w-primary w-tag2">Tag 4</span>
+    <span class="w-tag w-blue w-tag3">Tag 5</span>
+    <span class="w-tag w-green w-large w-tag3">Tag 6</span>
+    <span class="w-tag w-yellow w-large w-tag2">Tag 7</span>
+    <span class="w-tag w-green w-tag3"><select>
+    <option value="0">Option 1</option>
+    <option value="1">Option 2</option>
+    <option value="2">Option 3</option>
+    </select></span>
+    </fieldset>
+
+    <fieldset><legend>Messages</legend>
+    <div class="w-msg w-msg-ok">
+        <i class="fa fa-check"></i> <strong>Success!</strong>
+        This msg indicates a successful or positive action.
+    </div>
+    <div class="w-msg w-msg-info">
+        <i class="fa fa-info"></i> <strong>Info!</strong>
+        This msg indicates a neutral informative change or action.
+    </div>
+    <div class="w-msg w-msg-warn">
+        <i class="fa fa-exclamation-circle"></i> <strong>Warning!</strong>
+        This msg indicates a warning that might need attention.
+    </div>
+    <div class="w-msg w-msg-err">
+        <i class="fa fa-exclamation-triangle"></i> <strong>Error!</strong>
+        This msg indicates a dangerous or potentially negative action.
+    </div>
+    </fieldset>
+
+    <button id="submit_form" type="submit">Submit Test</button>
+    </form>
+
+<?php enqueue('styles','normalize.css') ?>
+<?php enqueue('styles','responsive.css') ?>
+<?php enqueue('styles','htmlwidgets.css') ?>
+<?php styles() ?>
+<?php scripts() ?>
+</body>
+</html>
