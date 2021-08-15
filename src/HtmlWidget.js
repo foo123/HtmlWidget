@@ -6,25 +6,22 @@
 *  https://github.com/foo123/HtmlWidget
 *
 **/
-!function( root, name, factory ){
+!function(root, name, factory){
 "use strict";
-if ( ('undefined'!==typeof Components)&&('object'===typeof Components.classes)&&('object'===typeof Components.classesByID)&&Components.utils&&('function'===typeof Components.utils['import']) ) /* XPCOM */
+if (('undefined'!==typeof Components)&&('object'===typeof Components.classes)&&('object'===typeof Components.classesByID)&&Components.utils&&('function'===typeof Components.utils['import'])) /* XPCOM */
     (root.$deps = root.$deps||{}) && (root.EXPORTED_SYMBOLS = [name]) && (root[name] = root.$deps[name] = factory.call(root));
-else if ( ('object'===typeof module)&&module.exports ) /* CommonJS */
+else if (('object'===typeof module)&&module.exports) /* CommonJS */
     (module.$deps = module.$deps||{}) && (module.exports = module.$deps[name] = factory.call(root));
-else if ( ('undefined'!==typeof System)&&('function'===typeof System.register)&&('function'===typeof System['import']) ) /* ES6 module */
-    System.register(name,[],function($__export){$__export(name, factory.call(root));});
-else if ( ('function'===typeof define)&&define.amd&&('function'===typeof require)&&('function'===typeof require.specified)&&require.specified(name) /*&& !require.defined(name)*/ ) /* AMD */
+else if (('function'===typeof define)&&define.amd&&('function'===typeof require)&&('function'===typeof require.specified)&&require.specified(name) /*&& !require.defined(name)*/) /* AMD */
     define(name,['module'],function(module){factory.moduleUri = module.uri; return factory.call(root);});
-else if ( !(name in root) ) /* Browser/WebWorker/.. */
+else if (!(name in root)) /* Browser/WebWorker/.. */
     (root[name] = factory.call(root)||1)&&('function'===typeof(define))&&define.amd&&define(function(){return root[name];} );
 }(  /* current root */          'undefined' !== typeof self ? self : this,
     /* module name */           "HtmlWidget",
-    /* module factory */        function ModuleFactory__HtmlWidget( undef ){
+    /* module factory */        function ModuleFactory__HtmlWidget(undef){
 "use strict";
 
-var HAS = Object.prototype.hasOwnProperty, ATTR = 'setAttribute',
-    KEYS = Object.keys, json_encode = JSON.stringify, toString = Object.prototype.toString,
+var HAS = Object.prototype.hasOwnProperty, KEYS = Object.keys, json_encode = JSON.stringify, toString = Object.prototype.toString,
     isXPCOM = ("undefined" !== typeof Components) && ("object" === typeof Components.classes) && ("object" === typeof Components.classesByID) && Components.utils && ("function" === typeof Components.utils['import']),
     isNode = ("undefined" !== typeof global) && ('[object global]' === toString.call(global)),
     isWebWorker = !isXPCOM && !isNode && ('undefined' !== typeof WorkerGlobalScope) && ("function" === typeof importScripts) && (navigator instanceof WorkerNavigator),
@@ -352,9 +349,7 @@ var HtmlWidget = self = {
                 case 'tabs':        out = self.w_tabs(attr, data, widget); break;
                 case 'accordeon':   out = self.w_accordeon(attr, data, widget); break;
                 case 'panel':       out = self.w_panel(attr, data, widget); break;
-                case 'endpanel':
-                case 'end_panel':
-                case 'panel_end':   out = self.w_panel_end(attr, data, widget); break;
+                case '/panel':      out = self.w_panel_end(attr, data, widget); break;
                 case 'tooltip':     out = self.w_tooltip(attr, data, widget); break;
                 case 'link':        out = self.w_link(attr, data, widget); break;
                 case 'button':      out = self.w_button(attr, data, widget); break;
@@ -409,9 +404,7 @@ var HtmlWidget = self = {
                 case 'select':      out = self.w_select(attr, data, widget); break;
                 case 'file':        out = self.w_file(attr, data, widget); break;
                 case 'menu':        out = self.w_menu(attr, data, widget); break;
-                case 'endmenu':
-                case 'end_menu':
-                case 'menu_end':    out = self.w_menu_end(attr, data, widget); break;
+                case '/menu':       out = self.w_menu_end(attr, data, widget); break;
                 case 'pagination':  out = self.w_pagination(attr, data, widget); break;
                 case 'datatable':
                 case 'table':       out = self.w_table(attr, data, widget); break;
@@ -1103,7 +1096,7 @@ var HtmlWidget = self = {
     }
 
     ,w_date: function(attr, data, widgetName) {
-        var wid, wclass, wstyle, wextra, wplaceholder, wicon, wvalue, wname, wtime, wtitle, wformat, wrapper_class, titl, options;
+        var wid, wclass, wstyle, wextra, wplaceholder, wicon, wvalue, wname, wtitle, wrapper_class, titl, options;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
         wvalue = isset(data,"value") ? data["value"] : "";
@@ -1161,7 +1154,7 @@ var HtmlWidget = self = {
                 new Pikadaytime(options);\
             }\
         })();"], ['pikadaytime']);
-        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" data-datepicker-format="'+wformat+'" '+wtime+' '+wextra+' />'+wicon+'</span>';
+        return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wicon+'</span>';
     }
 
     ,w_time: function(attr, data, widgetName) {

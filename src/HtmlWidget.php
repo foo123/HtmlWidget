@@ -239,9 +239,7 @@ class HtmlWidget
                 case 'tabs':        $out = self::w_tabs($attr, $data, $widget); break;
                 case 'accordeon':   $out = self::w_accordeon($attr, $data, $widget); break;
                 case 'panel':       $out = self::w_panel($attr, $data, $widget); break;
-                case 'endpanel':
-                case 'end_panel':
-                case 'panel_end':   $out = self::w_panel_end($attr, $data, $widget); break;
+                case '/panel':      $out = self::w_panel_end($attr, $data, $widget); break;
                 case 'tooltip':     $out = self::w_tooltip($attr, $data, $widget); break;
                 case 'link':        $out = self::w_link($attr, $data, $widget); break;
                 case 'button':      $out = self::w_button($attr, $data, $widget); break;
@@ -296,9 +294,7 @@ class HtmlWidget
                 case 'select':      $out = self::w_select($attr, $data, $widget); break;
                 case 'file':        $out = self::w_file($attr, $data, $widget); break;
                 case 'menu':        $out = self::w_menu($attr, $data, $widget); break;
-                case 'endmenu':
-                case 'end_menu':
-                case 'menu_end':    $out = self::w_menu_end($attr, $data, $widget); break;
+                case '/menu':       $out = self::w_menu_end($attr, $data, $widget); break;
                 case 'pagination':  $out = self::w_pagination($attr, $data, $widget); break;
                 case 'datatable':
                 case 'table':       $out = self::w_table($attr, $data, $widget); break;
@@ -307,7 +303,7 @@ class HtmlWidget
                 case 'video':
                 case 'audio':
                 case 'media':       $out = self::w_media($attr, $data, $widget); break;
-                default: $out = ''; break;
+                default: $out = '';
             }
         }
         return $out;
