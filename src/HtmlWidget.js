@@ -900,16 +900,14 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['select2-'+wid])) CNT['select2-'+wid] = 0;
             self.enqueue('scripts', 'select2-'+wid+(isBrowser ? '-'+(++CNT['select2-'+wid]) : ''), ["(function(){\
-                if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) return;\
-                var options = "+(json_encode(options))+";\
-                if (options.delayedInit)\
+                var tries = 0, options = "+(json_encode(options))+";\
+                function render()\
                 {\
-                    setTimeout(function(){jQuery(document.getElementById('"+wid+"')).select2(options);}, +options.delayedInit);\
+                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                    var element = document.getElementById('"+wid+"');\
+                    if (element) {jQuery(element).select2(options);}\
                 }\
-                else\
-                {\
-                    jQuery(document.getElementById('"+wid+"')).select2(options);\
-                }\
+                window.requestAnimationFrame(render);\
             })();"], ['select2']);
         }
         return wdropdown
@@ -980,32 +978,28 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['codemirror-'+wid])) CNT['codemirror-'+wid] = 0;
             self.enqueue('scripts', 'codemirror-'+wid+(isBrowser ? '-'+(++CNT['codemirror-'+wid]) : ''), ["(function(){\
-                if ('function' !== typeof(CodeMirror)) return;\
-                var options = "+(json_encode(options))+";\
-                if (options.grammar && ('undefined' !== typeof(CodeMirrorGrammar)))\
+                var tries = 0, options = "+(json_encode(options))+";\
+                function render()\
                 {\
-                    var mode = CodeMirrorGrammar.getMode(options.grammar);\
-                    CodeMirror.defineMode(options.mode, mode);\
-                    mode.supportCodeFolding = true;\
-                    CodeMirror.registerHelper('fold', mode.foldType, mode.folder);\
-                    mode.supportGrammarAnnotations = true;\
-                    CodeMirror.registerHelper('lint', options.mode, mode.validator);\
-                    delete options.grammar;\
+                    if ('function' !== typeof(CodeMirror)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                    if (options.grammar && ('undefined' !== typeof(CodeMirrorGrammar)))\
+                    {\
+                        var mode = CodeMirrorGrammar.getMode(options.grammar);\
+                        CodeMirror.defineMode(options.mode, mode);\
+                        mode.supportCodeFolding = true;\
+                        CodeMirror.registerHelper('fold', mode.foldType, mode.folder);\
+                        mode.supportGrammarAnnotations = true;\
+                        CodeMirror.registerHelper('lint', options.mode, mode.validator);\
+                        delete options.grammar;\
+                    }\
+                    var element = document.getElementById('"+wid+"');\
+                    if (element)\
+                    {\
+                        if (element.codemirror) {element.codemirror.toTextArea();}\
+                        element.codemirror = CodeMirror.fromTextArea(element, options);\
+                    }\
                 }\
-                var element = document.getElementById('"+wid+"');\
-                if (element.codemirror)\
-                {\
-                    element.codemirror.toTextArea();\
-                    element.codemirror = null;\
-                }\
-                if (options.delayedInit)\
-                {\
-                    setTimeout(function(){element.codemirror = CodeMirror.fromTextArea(element, options);}, +options.delayedInit);\
-                }\
-                else\
-                {\
-                    element.codemirror = CodeMirror.fromTextArea(element, options);\
-                }\
+                window.requestAnimationFrame(render);\
             })();"], ['codemirror']);
         }
         else if (!!attr['wysiwyg-editor'])
@@ -1033,57 +1027,57 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['tinymce-'+wid])) CNT['tinymce-'+wid] = 0;
             self.enqueue('scripts', 'tinymce-'+wid+(isBrowser ? '-'+(++CNT['tinymce-'+wid]) : ''), ["(function(){\
-                if ('undefined' === typeof(tinymce)) return;\
-                function dispatch(event, element, data)\
+                var tries = 0, options = "+(json_encode(options))+";\
+                function render()\
                 {\
-                    if (!element) return;\
-                    var evt;\
-                    if (document.createEvent)\
+                    if ('undefined' === typeof(tinymce)) {if (tries<10) {tries++; setTimeout(render,100);} return;}\
+                    function dispatch(event, element, data)\
                     {\
-                        evt = document.createEvent('HTMLEvents');\
-                        evt.initEvent(event, true, true);\
-                        evt.eventName = event;\
-                        if (null != data) evt.data = data;\
-                        element.dispatchEvent(evt);\
-                    }\
-                    else\
-                    {\
-                        evt = document.createEventObject();\
-                        evt.eventType = event;\
-                        evt.eventName = event;\
-                        if (null != data) evt.data = data;\
-                        element.fireEvent('on' + evt.eventType, evt);\
-                    }\
-                    return element;\
-                };\
-                var options = "+(json_encode(options))+";\
-                var element = document.getElementById('"+wid+"');\
-                if (options.autosave)\
-                {\
-                    options.setup = function(editor) {\
-                        editor.on('change', function(){\
-                            editor.save();\
-                            dispatch('change', element);\
-                        });\
+                        if (!element) {return;}\
+                        var evt;\
+                        if (document.createEvent)\
+                        {\
+                            evt = document.createEvent('HTMLEvents');\
+                            evt.initEvent(event, true, true);\
+                            evt.eventName = event;\
+                            if (null != data) evt.data = data;\
+                            element.dispatchEvent(evt);\
+                        }\
+                        else\
+                        {\
+                            evt = document.createEventObject();\
+                            evt.eventType = event;\
+                            evt.eventName = event;\
+                            if (null != data) evt.data = data;\
+                            element.fireEvent('on' + evt.eventType, evt);\
+                        }\
+                        return element;\
                     };\
-                    delete options.autosave;\
+                    var element = document.getElementById('"+wid+"');\
+                    if (element)\
+                    {\
+                        if (options.autosave)\
+                        {\
+                            options.setup = function(editor) {\
+                                editor.on('change', function(){\
+                                    editor.save();\
+                                    dispatch('change', element);\
+                                });\
+                            };\
+                            delete options.autosave;\
+                        }\
+                        if (options.locale && options.i18n)\
+                        {\
+                            tinymce.util.I18n.add(options.locale, options.i18n);\
+                            delete options.locale;\
+                            delete options.i18n;\
+                        }\
+                        var prev_editor = tinymce.get(element.id);\
+                        if (prev_editor) {prev_editor.remove();}\
+                        tinymce.init(options);\
+                    }\
                 }\
-                if (options.locale && options.i18n)\
-                {\
-                    tinymce.util.I18n.add(options.locale, options.i18n);\
-                    delete options.locale;\
-                    delete options.i18n;\
-                }\
-                var prev_editor = tinymce.get(element.id);\
-                if (prev_editor) prev_editor.remove();\
-                if (options.delayedInit)\
-                {\
-                    setTimeout(function(){tinymce.init(options);}, +options.delayedInit);\
-                }\
-                else\
-                {\
-                    tinymce.init(options);\
-                }\
+                window.requestAnimationFrame(render);\
             })();"], ['tinymce']);
         }
         else
@@ -1130,29 +1124,31 @@ var HtmlWidget = self = {
         // if in browser and re-render, use dynamic id to re-enqueue
         if (isBrowser && (null == CNT['pikadaytime-'+wid])) CNT['pikadaytime-'+wid] = 0;
         self.enqueue('scripts', 'pikadaytime-'+wid+(isBrowser ? '-'+(++CNT['pikadaytime-'+wid]) : ''), ["(function(){\
-            if ('function' !== typeof(Pikadaytime)) return;\
-            var options = "+(json_encode(options))+";\
-            var locale = options.i18n, format = options.format;\
-            if ('function' === typeof(DateX))\
+            var tries = 0, options = "+(json_encode(options))+";\
+            function render()\
             {\
-                var datetime_parse = DateX.getParser(format, locale);\
-                options.encoder = function(datetime) {return DateX.format(datetime, format, locale);};\
-                options.decoder = function(datetime) {return !!datetime && datetime_parse(datetime);};\
+                if ('function' !== typeof(Pikadaytime)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                var locale = options.i18n, format = options.format;\
+                if ('function' === typeof(DateX))\
+                {\
+                    var datetime_parse = DateX.getParser(format, locale);\
+                    options.encoder = function(datetime) {return DateX.format(datetime, format, locale);};\
+                    options.decoder = function(datetime) {return !!datetime && datetime_parse(datetime);};\
+                }\
+                else\
+                {\
+                    options.encoder = function(datetime, pikaday) {return pikaday._o.showTime ? datetime.toString() : datetime.toDateString();};\
+                    options.decoder = function(datetime) {return new Date(Date.parse(datetime));};\
+                }\
+                var element = document.getElementById('"+wid+"');\
+                if (element)\
+                {\
+                    if (element.pikadaytime) {element.pikadaytime.dispose();}\
+                    options.field = element;\
+                    element.pikadaytime = new Pikadaytime(options);\
+                }\
             }\
-            else\
-            {\
-                options.encoder = function(datetime, pikaday) {return pikaday._o.showTime ? datetime.toString() : datetime.toDateString();};\
-                options.decoder = function(datetime) {return new Date(Date.parse(datetime));};\
-            }\
-            options.field = document.getElementById('"+wid+"');\
-            if (options.delayedInit)\
-            {\
-                setTimeout(function(){new Pikadaytime(options);}, +options.delayedInit);\
-            }\
-            else\
-            {\
-                new Pikadaytime(options);\
-            }\
+            window.requestAnimationFrame(render);\
         })();"], ['pikadaytime']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wicon+'</span>';
     }
@@ -1231,17 +1227,19 @@ var HtmlWidget = self = {
         // if in browser and re-render, use dynamic id to re-enqueue
         if (isBrowser && (null == CNT['colorpicker-'+wid])) CNT['colorpicker-'+wid] = 0;
         self.enqueue('scripts', 'colorpicker-'+wid+(isBrowser ? '-'+(++CNT['colorpicker-'+wid]) : ''), ["(function(){\
-            if ('function' !== typeof(ColorPicker)) return;\
-            var options = "+(json_encode(options))+";\
-            if (options.input) options.input = document.getElementById(options.input);\
-            if (options.delayedInit)\
+            var tries = 0; options = "+(json_encode(options))+";\
+            function render()\
             {\
-                setTimeout(function(){new ColorPicker(document.getElementById('"+wid+"'), options);}, +options.delayedInit);\
+                if ('function' !== typeof(ColorPicker)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                var element = document.getElementById('"+wid+"');\
+                if (element)\
+                {\
+                    if (options.input) options.input = document.getElementById(options.input);\
+                    if (element.colorpicker) {element.colorpicker.dispose();}\
+                    element.colorpicker = new ColorPicker(element, options);\
+                }\
             }\
-            else\
-            {\
-                new ColorPicker(document.getElementById('"+wid+"'), options);\
-            }\
+            window.requestAnimationFrame(render);\
         })();"], ['colorpicker']);
         return winput+'<div id="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
     }
@@ -1323,16 +1321,14 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['datatables-'+wid])) CNT['datatables-'+wid] = 0;
             self.enqueue('scripts', 'datatables-'+wid+(isBrowser ? '-'+(++CNT['datatables-'+wid]) : ''), ["(function(){\
-                if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.dataTable)) return;\
-                var options = "+(json_encode(options))+";\
-                if (options.delayedInit)\
+                var tries = 0, options = "+(json_encode(options))+";\
+                function render()\
                 {\
-                    setTimeout(function(){jQuery(document.getElementById('"+wid+"')).dataTable(options);}, +options.delayedInit);\
+                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.dataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                    var element = document.getElementById('"+wid+"');\
+                    if (element) {jQuery(element).dataTable(options);}\
                 }\
-                else\
-                {\
-                    jQuery(document.getElementById('"+wid+"')).dataTable(options);\
-                }\
+                window.requestAnimationFrame(render);\
             })();"], ['datatables']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';

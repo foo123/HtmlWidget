@@ -1,6 +1,6 @@
 # HtmlWidget
 
-Html Widgets used as (template) plugins and/or standalone, for Javascript, PHP and Python
+Html Widgets used as plugins and/or standalone, for Javascript, PHP and Python
 
 
 **Version: 2.0.0**
@@ -8,6 +8,8 @@ Html Widgets used as (template) plugins and/or standalone, for Javascript, PHP a
 
 ![HtmlWidget](/htmlwidget.jpg)
 
+
+[Online example (w/ ModelView)](https://foo123.github.io/examples.htmlwidget/)
 
 **screenshots** (see `/test` folder)
 
