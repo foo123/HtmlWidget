@@ -101,6 +101,6 @@
     "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/css/css.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/htmlmixed/htmlmixed.min.js"
-], "dependencies":["codemirror"]}
-,"codemirror-grammar":{"type":"scripts", "asset":"${ASSETS}/codemirror/addon/grammar/codemirror_grammar.js"}
+], "dependencies":["codemirror-fold"]}
+,"codemirror-grammar":{"type":"scripts", "asset":"${ASSETS}/codemirror/addon/grammar/codemirror_grammar.js", "dependencies":["codemirror"]}
 }

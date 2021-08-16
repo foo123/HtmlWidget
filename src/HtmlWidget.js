@@ -896,10 +896,9 @@ var HtmlWidget = self = {
         {
             options = is_object(attr["options"]) ? attr["options"] : {};
             wclass += ' w-select2';
-            self.enqueue('scripts', 'select2');
             // if in browser and re-render, use dynamic id to re-enqueue
-            if (isBrowser && (null == CNT['select2-'+wid])) CNT['select2-'+wid] = 0;
-            self.enqueue('scripts', 'select2-'+wid+(isBrowser ? '-'+(++CNT['select2-'+wid]) : ''), ["(function(){\
+            if (isBrowser && (null == CNT['select2-instance-'+wid])) CNT['select2-instance-'+wid] = 0;
+            self.enqueue('scripts', 'select2-instance-'+wid+(isBrowser ? '-'+(++CNT['select2-instance-'+wid]) : ''), ["(function(){\
                 var tries = 0, options = "+(json_encode(options))+";\
                 function render()\
                 {\
@@ -971,13 +970,9 @@ var HtmlWidget = self = {
             if (!isset(options,'gutters')) options['gutters'] = ['CodeMirror-lint-markers','CodeMirror-linenumbers','CodeMirror-foldgutter'];
             wclass = 'w-widget w-syntax-editor w-codemirror-editor';
             if (!empty(attr,"class")) wclass += ' '+attr["class"];
-            self.enqueue('scripts', 'codemirror');
-            self.enqueue('scripts', 'codemirror-fold');
-            self.enqueue('scripts', 'codemirror-htmlmixed');
-            if (!empty(options,'grammar')) self.enqueue('scripts', 'codemirror-grammar');
             // if in browser and re-render, use dynamic id to re-enqueue
-            if (isBrowser && (null == CNT['codemirror-'+wid])) CNT['codemirror-'+wid] = 0;
-            self.enqueue('scripts', 'codemirror-'+wid+(isBrowser ? '-'+(++CNT['codemirror-'+wid]) : ''), ["(function(){\
+            if (isBrowser && (null == CNT['codemirror-instance-'+wid])) CNT['codemirror-instance-'+wid] = 0;
+            self.enqueue('scripts', 'codemirror-instance-'+wid+(isBrowser ? '-'+(++CNT['codemirror-instance-'+wid]) : ''), ["(function(){\
                 var tries = 0, options = "+(json_encode(options))+";\
                 function render()\
                 {\
@@ -1000,7 +995,7 @@ var HtmlWidget = self = {
                     }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"], ['codemirror']);
+            })();"], !empty(options,'grammar') ? ['codemirror-htmlmixed', 'codemirror-grammar'] : ['codemirror-htmlmixed']);
         }
         else if (!!attr['wysiwyg-editor'])
         {
@@ -1023,10 +1018,9 @@ var HtmlWidget = self = {
             options['selector'] = '#'+wid;
             wclass = 'w-widget w-wysiwyg-editor';
             if (!empty(attr,"class")) wclass += ' '+attr["class"];
-            self.enqueue('scripts', 'tinymce');
             // if in browser and re-render, use dynamic id to re-enqueue
-            if (isBrowser && (null == CNT['tinymce-'+wid])) CNT['tinymce-'+wid] = 0;
-            self.enqueue('scripts', 'tinymce-'+wid+(isBrowser ? '-'+(++CNT['tinymce-'+wid]) : ''), ["(function(){\
+            if (isBrowser && (null == CNT['tinymce-instance-'+wid])) CNT['tinymce-instance-'+wid] = 0;
+            self.enqueue('scripts', 'tinymce-instance-'+wid+(isBrowser ? '-'+(++CNT['tinymce-instance-'+wid]) : ''), ["(function(){\
                 var tries = 0, options = "+(json_encode(options))+";\
                 function render()\
                 {\
@@ -1120,10 +1114,9 @@ var HtmlWidget = self = {
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         options = is_object(attr["options"]) ? attr["options"] : {};
         if (empty(options,'format')) options['format'] = 'Y-m-d';
-        self.enqueue('scripts', 'pikadaytime');
         // if in browser and re-render, use dynamic id to re-enqueue
-        if (isBrowser && (null == CNT['pikadaytime-'+wid])) CNT['pikadaytime-'+wid] = 0;
-        self.enqueue('scripts', 'pikadaytime-'+wid+(isBrowser ? '-'+(++CNT['pikadaytime-'+wid]) : ''), ["(function(){\
+        if (isBrowser && (null == CNT['pikadaytime-instance-'+wid])) CNT['pikadaytime-instance-'+wid] = 0;
+        self.enqueue('scripts', 'pikadaytime-instance-'+wid+(isBrowser ? '-'+(++CNT['pikadaytime-instance-'+wid]) : ''), ["(function(){\
             var tries = 0, options = "+(json_encode(options))+";\
             function render()\
             {\
@@ -1223,10 +1216,9 @@ var HtmlWidget = self = {
         if (!empty(attr,"class")) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
-        self.enqueue('scripts', 'colorpicker');
         // if in browser and re-render, use dynamic id to re-enqueue
-        if (isBrowser && (null == CNT['colorpicker-'+wid])) CNT['colorpicker-'+wid] = 0;
-        self.enqueue('scripts', 'colorpicker-'+wid+(isBrowser ? '-'+(++CNT['colorpicker-'+wid]) : ''), ["(function(){\
+        if (isBrowser && (null == CNT['colorpicker-instance-'+wid])) CNT['colorpicker-instance-'+wid] = 0;
+        self.enqueue('scripts', 'colorpicker-instance-'+wid+(isBrowser ? '-'+(++CNT['colorpicker-instance-'+wid]) : ''), ["(function(){\
             var tries = 0; options = "+(json_encode(options))+";\
             function render()\
             {\
@@ -1317,10 +1309,9 @@ var HtmlWidget = self = {
         {
             options = is_object(attr["options"]) ? attr["options"] : {};
             wclass += ' w-datatable';
-            self.enqueue('scripts', 'datatables');
             // if in browser and re-render, use dynamic id to re-enqueue
-            if (isBrowser && (null == CNT['datatables-'+wid])) CNT['datatables-'+wid] = 0;
-            self.enqueue('scripts', 'datatables-'+wid+(isBrowser ? '-'+(++CNT['datatables-'+wid]) : ''), ["(function(){\
+            if (isBrowser && (null == CNT['datatable-instance-'+wid])) CNT['datatable-instance-'+wid] = 0;
+            self.enqueue('scripts', 'datatable-instance-'+wid+(isBrowser ? '-'+(++CNT['datatable-instance-'+wid]) : ''), ["(function(){\
                 var tries = 0, options = "+(json_encode(options))+";\
                 function render()\
                 {\
@@ -1329,7 +1320,7 @@ var HtmlWidget = self = {
                     if (element) {jQuery(element).dataTable(options);}\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"], ['datatables']);
+            })();"], ['datatables-all']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }

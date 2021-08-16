@@ -769,8 +769,7 @@ class HtmlWidget
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
             $wclass .= ' w-select2';
-            self::enqueue('scripts', 'select2');
-            self::enqueue('scripts', 'select2-'.$wid, array("(function(){
+            self::enqueue('scripts', 'select2-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
                 function render()
                 {
@@ -841,11 +840,7 @@ class HtmlWidget
             if (!isset($options['foldGutter'])) $options['foldGutter'] = true;
             if (!isset($options['gutters'])) $options['gutters'] = array('CodeMirror-lint-markers','CodeMirror-linenumbers','CodeMirror-foldgutter');
             $wclass = 'w-widget w-syntax-editor w-codemirror-editor'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
-            self::enqueue('scripts', 'codemirror');
-            self::enqueue('scripts', 'codemirror-fold');
-            self::enqueue('scripts', 'codemirror-htmlmixed');
-            if (!empty($options['grammar'])) self::enqueue('scripts', 'codemirror-grammar');
-            self::enqueue('scripts', 'codemirror-'.$wid, array("(function(){
+            self::enqueue('scripts', 'codemirror-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
                 function render()
                 {
@@ -868,7 +863,7 @@ class HtmlWidget
                     }
                 }
                 window.requestAnimationFrame(render);
-            })();"), array('codemirror'));
+            })();"), !empty($options['grammar']) ? array('codemirror-htmlmixed', 'codemirror-grammar') : array('codemirror-htmlmixed'));
         }
         elseif (!empty($attr['wysiwyg-editor']))
         {
@@ -890,8 +885,7 @@ class HtmlWidget
             if (!isset($options['content_style'])) $options['content_style'] = null;*/
             $options['selector'] = '#'.$wid;
             $wclass = 'w-widget w-wysiwyg-editor'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
-            self::enqueue('scripts', 'tinymce');
-            self::enqueue('scripts', 'tinymce-'.$wid, array("(function(){
+            self::enqueue('scripts', 'tinymce-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
                 function render()
                 {
@@ -984,7 +978,7 @@ class HtmlWidget
         $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
         if (empty($options['format'])) $options['format'] = 'Y-m-d';
         self::enqueue('scripts', 'pikadaytime');
-        self::enqueue('scripts', 'pikadaytime-'.$wid, array("(function(){
+        self::enqueue('scripts', 'pikadaytime-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
             function render()
             {
@@ -1080,7 +1074,7 @@ class HtmlWidget
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('scripts', 'colorpicker');
-        self::enqueue('scripts', 'colorpicker-'.$wid, array("(function(){
+        self::enqueue('scripts', 'colorpicker-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
             function render()
             {
@@ -1166,8 +1160,8 @@ class HtmlWidget
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
             $wclass .= ' w-datatable';
-            self::enqueue('scripts', 'datatables');
-            self::enqueue('scripts', 'datatables-'.$wid, array("(function(){
+            self::enqueue('scripts', 'datatables-all');
+            self::enqueue('scripts', 'datatable-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
                 function render()
                 {
@@ -1176,7 +1170,7 @@ class HtmlWidget
                     if (element) {jQuery(element).dataTable(options);}
                 }
                 window.requestAnimationFrame(render);
-            })();"), array('datatables'));
+            })();"), array('datatables-all'));
         }
         return "<table id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
