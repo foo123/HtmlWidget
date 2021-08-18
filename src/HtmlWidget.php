@@ -244,6 +244,7 @@ class HtmlWidget
                 case 'link':        $out = self::w_link($attr, $data, $widget); break;
                 case 'button':      $out = self::w_button($attr, $data, $widget); break;
                 case 'label':       $out = self::w_label($attr, $data, $widget); break;
+                case 'file':        $out = self::w_file($attr, $data, $widget); break;
                 case 'textbox':
                 case 'textfield':
                 case 'text':        $out = self::w_text($attr, $data, $widget); break;
@@ -292,7 +293,6 @@ class HtmlWidget
                 case 'selectbox':
                 case 'select2':
                 case 'select':      $out = self::w_select($attr, $data, $widget); break;
-                case 'file':        $out = self::w_file($attr, $data, $widget); break;
                 case 'menu':        $out = self::w_menu($attr, $data, $widget); break;
                 case '/menu':       $out = self::w_menu_end($attr, $data, $widget); break;
                 case 'pagination':  $out = self::w_pagination($attr, $data, $widget); break;
@@ -858,7 +858,7 @@ class HtmlWidget
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
-                        if (element.codemirror) {element.codemirror.toTextArea();}
+                        if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}
                         element.codemirror = CodeMirror.fromTextArea(element, options);
                     }
                 }
@@ -911,7 +911,7 @@ class HtmlWidget
                             element.fireEvent('on' + evt.eventType, evt);
                         }
                         return element;
-                    };
+                    }
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
@@ -951,7 +951,6 @@ class HtmlWidget
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
-        $wvalue = isset($data['value']) ? $data['value'] : (isset($options['value']) ? $options['value'] : "");
         $titl = isset($attr["title"]) ? $attr["title"] : '';
         $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
         $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
@@ -976,6 +975,7 @@ class HtmlWidget
         }
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+        $wvalue = isset($options['value']) ? $options['value'] : (isset($data['value']) ? $data['value'] : "");
         if (empty($options['format'])) $options['format'] = 'Y-m-d';
         self::enqueue('scripts', 'pikadaytime');
         self::enqueue('scripts', 'pikadaytime-instance-'.$wid, array("(function(){
@@ -998,7 +998,7 @@ class HtmlWidget
                 var element = document.getElementById('".$wid."');
                 if (element)
                 {
-                    if (element.pikadaytime) {element.pikadaytime.dispose();}
+                    if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}
                     options.field = element;
                     element.pikadaytime = new Pikadaytime(options);
                 }
@@ -1083,7 +1083,7 @@ class HtmlWidget
                 if (element)
                 {
                     if (options.input) options.input = document.getElementById(options.input);
-                    if (element.colorpicker) {element.colorpicker.dispose();}
+                    if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}
                     element.colorpicker = new ColorPicker(element, options);
                 }
             }
@@ -1116,6 +1116,47 @@ class HtmlWidget
         }
         $wextra = self::attributes($attr,array('accept','multiple','readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
+        self::enqueue('scripts', 'file-instance-'.$wid, array("(function(){
+            function render()
+            {
+                var element = document.getElementById('".$wid."');
+                var input = document.getElementById('text_input_".$wid."');
+                function dispatch(event, element, data)
+                {
+                    if (!element) {return;}
+                    var evt;
+                    if (document.createEvent)
+                    {
+                        evt = document.createEvent('HTMLEvents');
+                        evt.initEvent(event, true, true);
+                        evt.eventName = event;
+                        if (null != data) evt.data = data;
+                        element.dispatchEvent(evt);
+                    }
+                    else
+                    {
+                        evt = document.createEventObject();
+                        evt.eventType = event;
+                        evt.eventName = event;
+                        if (null != data) evt.data = data;
+                        element.fireEvent('on' + evt.eventType, evt);
+                    }
+                    return element;
+                }
+                if (element && input)
+                {
+                    if (element.changehandler) {element.removeEventListener('change', element.changehandler, false); element.changehandler = null;}
+                    if (input.clickhandler) {input.removeEventListener('click', input.clickhandler, false); input.clickhandler = null;}
+                    element.addEventListener('change', element.changehandler = function(){
+                        input.value = element.value;
+                    }, false);
+                    input.addEventListener('click', input.clickhandler = function(){
+                        dispatch('click', element);
+                    }, false);
+                }
+            }
+            window.requestAnimationFrame(render);
+        })();"));
         return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
     }
 

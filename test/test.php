@@ -857,7 +857,7 @@ $paginationUri = $currentUri.'?page=(:page)';
         'class' => 'w-large',
         'options'=>array(
             'format' => 'rgba',
-            'color'=>'rgba(210,0,0,0.7)'
+            'color'=>'rgba(0,210,0,0.7)'
         )
     ),array()); ?>
     <?php widget('colorpicker',array(
@@ -865,7 +865,7 @@ $paginationUri = $currentUri.'?page=(:page)';
         'class' => 'w-xlarge',
         'options'=>array(
             'format' => 'rgba',
-            'color'=>'rgba(210,0,0,0.7)'
+            'color'=>'rgba(0,0,210,0.7)'
         )
     ),array()); ?>
     </fieldset>
@@ -877,7 +877,7 @@ $paginationUri = $currentUri.'?page=(:page)';
             'format' => 'Y-m-d H:i:s',
             'showTime' => 1,
             'showSeconds' => 1,
-            'value'=>'2016-01-24 12:00:00'
+            'value'=>'2016-01-23 12:00:00'
         )
     ),array()); ?>
     <?php widget('datetimepicker',array(
@@ -899,7 +899,7 @@ $paginationUri = $currentUri.'?page=(:page)';
             'format' => 'Y-m-d H:i:s',
             'showTime' => 1,
             'showSeconds' => 1,
-            'value'=>'2016-01-24 12:00:00'
+            'value'=>'2016-01-25 12:00:00'
         )
     ),array()); ?>
     </fieldset>
@@ -1032,7 +1032,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tbody></table></div>
 
     </div>
-    <?php widget("panel_end"); ?>
+    <?php widget("/panel"); ?>
 
     <?php widget("panel",array("id"=>"a_left_panel","class"=>"w-side-panel-left w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
     <div class="fluid col-1-1 text-right">
@@ -1115,7 +1115,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tbody></table></div>
 
     </div>
-    <?php widget("panel_end"); ?>
+    <?php widget("/panel"); ?>
 
     <br />
     <?php widget("panel",array("id"=>"a_right_panel","class"=>"w-side-panel-right w-panel-no-header","style"=>"width:100%;max-width:100%")); ?>
@@ -1199,7 +1199,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </tbody></table></div>
 
     </div>
-    <?php widget("panel_end"); ?>
+    <?php widget("/panel"); ?>
     </fieldset>
 
     <fieldset><legend>Wysiwyg Editor</legend>
@@ -1418,9 +1418,9 @@ $paginationUri = $currentUri.'?page=(:page)';
     </div>
     </fieldset>
 
-    <!---<fieldset><legend>Uploads</legend>
-    <?php //widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
-    </fieldset>-->
+    <fieldset><legend>Uploads</legend>
+    <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
+    </fieldset>
 
 
     <fieldset><legend>Tooltips</legend>

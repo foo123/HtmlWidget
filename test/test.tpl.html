@@ -628,7 +628,7 @@
         'class' : 'w-large',
         'options':{
             'format' : 'rgba',
-            'color':'rgba(210,0,0,0.7)'
+            'color':'rgba(0,210,0,0.7)'
         }
     },{}) ?>
     <?php widget('colorpicker',{
@@ -636,7 +636,7 @@
         'class' : 'w-xlarge',
         'options':{
             'format' : 'rgba',
-            'color':'rgba(210,0,0,0.7)'
+            'color':'rgba(0,0,210,0.7)'
         }
     },{}) ?>
     </fieldset>
@@ -648,7 +648,7 @@
             'format' : 'Y-m-d H:i:s',
             'showTime' : 1,
             'showSeconds' : 1,
-            'value':'2016-01-24 12:00:00'
+            'value':'2016-01-23 12:00:00'
         }
     },{}) ?>
     <?php widget('datetimepicker',{
@@ -670,7 +670,7 @@
             'format' : 'Y-m-d H:i:s',
             'showTime' : 1,
             'showSeconds' : 1,
-            'value':'2016-01-24 12:00:00'
+            'value':'2016-01-25 12:00:00'
         }
     },{}) ?>
     </fieldset>
@@ -907,6 +907,10 @@
     </div>
 
     </div>
+    </fieldset>
+
+    <fieldset><legend>Uploads</legend>
+    <?php widget('file',{'title':'Upload your file here','placeholder':'Upload your file here'}) ?>
     </fieldset>
 
     <fieldset><legend>Tooltips</legend>

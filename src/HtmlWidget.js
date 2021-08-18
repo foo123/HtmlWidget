@@ -354,6 +354,7 @@ var HtmlWidget = self = {
                 case 'link':        out = self.w_link(attr, data, widget); break;
                 case 'button':      out = self.w_button(attr, data, widget); break;
                 case 'label':       out = self.w_label(attr, data, widget); break;
+                case 'file':        out = self.w_file(attr, data, widget); break;
                 case 'textbox':
                 case 'textfield':
                 case 'text':        out = self.w_text(attr, data, widget); break;
@@ -402,7 +403,6 @@ var HtmlWidget = self = {
                 case 'selectbox':
                 case 'select2':
                 case 'select':      out = self.w_select(attr, data, widget); break;
-                case 'file':        out = self.w_file(attr, data, widget); break;
                 case 'menu':        out = self.w_menu(attr, data, widget); break;
                 case '/menu':       out = self.w_menu_end(attr, data, widget); break;
                 case 'pagination':  out = self.w_pagination(attr, data, widget); break;
@@ -990,7 +990,7 @@ var HtmlWidget = self = {
                     var element = document.getElementById('"+wid+"');\
                     if (element)\
                     {\
-                        if (element.codemirror) {element.codemirror.toTextArea();}\
+                        if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}\
                         element.codemirror = CodeMirror.fromTextArea(element, options);\
                     }\
                 }\
@@ -1087,7 +1087,6 @@ var HtmlWidget = self = {
         var wid, wclass, wstyle, wextra, wplaceholder, wicon, wvalue, wname, wtitle, wrapper_class, titl, options;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
-        wvalue = isset(data,"value") ? data["value"] : "";
         titl = isset(attr,"title") ? attr["title"] : '';
         wtitle = !!titl ? 'title="'+titl+'"' : '';
         wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
@@ -1113,6 +1112,7 @@ var HtmlWidget = self = {
         }
         wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         options = is_object(attr["options"]) ? attr["options"] : {};
+        wvalue = isset(options,"value") ? options["value"] : (isset(data,"value") ? data["value"] : "");
         if (empty(options,'format')) options['format'] = 'Y-m-d';
         // if in browser and re-render, use dynamic id to re-enqueue
         if (isBrowser && (null == CNT['pikadaytime-instance-'+wid])) CNT['pikadaytime-instance-'+wid] = 0;
@@ -1136,7 +1136,7 @@ var HtmlWidget = self = {
                 var element = document.getElementById('"+wid+"');\
                 if (element)\
                 {\
-                    if (element.pikadaytime) {element.pikadaytime.dispose();}\
+                    if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}\
                     options.field = element;\
                     element.pikadaytime = new Pikadaytime(options);\
                 }\
@@ -1205,7 +1205,7 @@ var HtmlWidget = self = {
         if (!isset(options,'opacity') && isset(data,'opacity')) options['opacity'] = data['opacity'];
         if (!empty(options,'input'))
         {
-            winput = '<input id="'+attr['input']+'" type="hidden" '+wname+' value="" style="display:none" />';
+            winput = '<input id="'+options['input']+'" type="hidden" '+wname+' value="" style="display:none" />';
         }
         else
         {
@@ -1219,7 +1219,7 @@ var HtmlWidget = self = {
         // if in browser and re-render, use dynamic id to re-enqueue
         if (isBrowser && (null == CNT['colorpicker-instance-'+wid])) CNT['colorpicker-instance-'+wid] = 0;
         self.enqueue('scripts', 'colorpicker-instance-'+wid+(isBrowser ? '-'+(++CNT['colorpicker-instance-'+wid]) : ''), ["(function(){\
-            var tries = 0; options = "+(json_encode(options))+";\
+            var tries = 0, options = "+(json_encode(options))+";\
             function render()\
             {\
                 if ('function' !== typeof(ColorPicker)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
@@ -1227,7 +1227,7 @@ var HtmlWidget = self = {
                 if (element)\
                 {\
                     if (options.input) options.input = document.getElementById(options.input);\
-                    if (element.colorpicker) {element.colorpicker.dispose();}\
+                    if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}\
                     element.colorpicker = new ColorPicker(element, options);\
                 }\
             }\
@@ -1261,6 +1261,48 @@ var HtmlWidget = self = {
         }
         wextra = self.attributes(attr,['accept','multiple','readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         self.enqueue('styles', 'htmlwidgets.css');
+        if (isBrowser && (null == CNT['file-instance-'+wid])) CNT['file-instance-'+wid] = 0;
+        self.enqueue('scripts', 'file-instance-'+wid+(isBrowser ? '-'+(++CNT['file-instance-'+wid]) : ''), ["(function(){\
+            function render()\
+            {\
+                var element = document.getElementById('"+wid+"');\
+                var input = document.getElementById('text_input_"+wid+"');\
+                function dispatch(event, element, data)\
+                {\
+                    if (!element) {return;}\
+                    var evt;\
+                    if (document.createEvent)\
+                    {\
+                        evt = document.createEvent('HTMLEvents');\
+                        evt.initEvent(event, true, true);\
+                        evt.eventName = event;\
+                        if (null != data) evt.data = data;\
+                        element.dispatchEvent(evt);\
+                    }\
+                    else\
+                    {\
+                        evt = document.createEventObject();\
+                        evt.eventType = event;\
+                        evt.eventName = event;\
+                        if (null != data) evt.data = data;\
+                        element.fireEvent('on' + evt.eventType, evt);\
+                    }\
+                    return element;\
+                }\
+                if (element && input)\
+                {\
+                    if (element.changehandler) {element.removeEventListener('change', element.changehandler, false); element.changehandler = null;}\
+                    if (input.clickhandler) {input.removeEventListener('click', input.clickhandler, false); input.clickhandler = null;}\
+                    element.addEventListener('change', element.changehandler = function(){\
+                        input.value = element.value;\
+                    }, false);\
+                    input.addEventListener('click', input.clickhandler = function(){\
+                        dispatch('click', element);\
+                    }, false);\
+                }\
+            }\
+            window.requestAnimationFrame(render);\
+        })();"]);
         return '<label for="'+wid+'" class="'+wrapper_class+'" '+wstyle+'><input type="file" id="'+wid+'" '+wname+' class="w-file-input" value="'+wvalue+'" '+wextra+' style="display:none !important"/><input type="text" id="text_input_'+wid+'" '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" form="__NONE__" />'+wicon+'</label>';
     }
 
