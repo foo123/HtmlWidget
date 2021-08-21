@@ -3,7 +3,7 @@
 Html Widgets used as plugins and/or standalone, for Javascript, PHP and Python
 
 
-**Version: 2.0.0**
+**Version: 2.1.0**
 
 
 ![HtmlWidget](/htmlwidget.jpg)

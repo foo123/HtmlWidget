@@ -18,6 +18,10 @@ function options($options, $key=null, $val=null)
 {
     return HtmlWidget::options($options, $key, $val);
 }
+function code($code)
+{
+    return HtmlWidget::code($code);
+}
 function enqueue($type, $asset)
 {
     global $importer;
@@ -42,49 +46,11 @@ $paginationUri = $currentUri.'?page=(:page)';
 <!doctype html>
 <html lang="en" class="no-ie">
 <head>
-    <meta charset="utf-8"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <style type="text/css">
-    #forkongithub  a {
-        background: #aa0000;
-        color: #fff;
-        text-decoration: none;
-        font-family: arial, sans-serif;
-        text-align: center;
-        font-weight: bold;
-        padding: 5px 40px;
-        font-size: 0.9rem;
-        line-height: 1.4rem;
-        position: relative;
-        transition: all 0.5s;
-    }
-    #forkongithub a {
-        width: 200px;
-        position: absolute;
-        top: 60px;
-        right: -60px;
-        transform: rotate(45deg);
-        box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
-    }
-    #forkongithub a:hover {
-        background: #aa0000;
-        color: #fff;
-    }
-    #forkongithub a::before, #forkongithub a::after {
-        content: "";
-        width: 100%;
-        display: block;
-        position: absolute;
-        z-index: 100;
-        top: 1px;
-        left: 0;
-        height: 1px;
-        background: #fff;
-    }
-    #forkongithub a::after
-    {
-        bottom: 1px;
-        top: auto;
-    }
+#forkongithub a{background:#aa0000;color:#fff;text-decoration:none;font-family:arial, sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:0.9rem;line-height:1.4rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#aa0000;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;z-index:100;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;z-index:100;top:0;right:0;width:200px;overflow:hidden;height:200px;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}
     .box {
         width: 600px; height: 200px;
         position: relative;
@@ -128,23 +94,13 @@ $paginationUri = $currentUri.'?page=(:page)';
         font-weight: bold;
         padding: 20px;
     }
-    @media (max-width: 60em), (max-device-width: 60em)
+    @media all and (max-width: 640px), all and (max-device-width: 640px)
     {
     .w-vertical-menu.w-mobile > .w-menu-controller-bt,
     .w-dropdown-menu.w-mobile > .w-menu-controller-bt {
         display: block;
         position: absolute;
         top: 0; left: 0;
-    }
-    #forkongithub {
-        position: absolute;
-        display: block;
-        z-index: 100;
-        top: 0;
-        right: 0;
-        width: 200px;
-        overflow: hidden;
-        height: 200px;
     }
     }
     </style>
@@ -849,7 +805,8 @@ $paginationUri = $currentUri.'?page=(:page)';
         'title'=>'Select color',
         'options'=>array(
             'format' => 'rgba',
-            'color'=>'rgba(210,0,0,0.7)'
+            'color'=>'rgba(210,0,0,0.7)',
+            'onSelect' => code("function(){alert('color1 select');}")
         )
     ),array()); ?>
     <?php widget('colorpicker',array(
@@ -877,7 +834,8 @@ $paginationUri = $currentUri.'?page=(:page)';
             'format' => 'Y-m-d H:i:s',
             'showTime' => 1,
             'showSeconds' => 1,
-            'value'=>'2016-01-23 12:00:00'
+            'value'=>'2016-01-23 12:00:00',
+            'onSelect' => code("function(){alert('date1 select');}")
         )
     ),array()); ?>
     <?php widget('datetimepicker',array(
@@ -922,6 +880,17 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('textarea',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
     </fieldset>
 
+    <fieldset><legend>Modals</legend>
+    <?php widget("button", array(
+        "class" => "w-orange",
+        "for"   => "modal_a_modal",
+        "title" => "Open Modal",
+        "icon"  => "check-circle-o"
+    ),array(
+        "text"  => "Open Modal"
+    )); ?>
+    </fieldset>
+    
     <fieldset style="overflow:hidden;"><legend>Panels</legend>
     <?php widget("button", array(
         "class" => "w-orange",
@@ -1251,7 +1220,7 @@ $paginationUri = $currentUri.'?page=(:page)';
 
     <hr />
 
-    <?php widget('switch',array('title'=>'Check','readonly'=>1),array('value'=>'1')); ?>
+    <?php widget('switch',array('title'=>'Check','readonly'=>1,'init'=>code("function(element){console.log('switch',element.id);}")),array('value'=>'1')); ?>
     <?php widget('switch',array('title'=>'Check','class'=>'w-large','iconon'=>'check','iconoff'=>'times-circle','disabled'=>1),array('value'=>'1')); ?>
     <?php widget('switch',array('title'=>'Check','class'=>'w-xlarge','iconon'=>'check','iconoff'=>'times-circle'),array('value'=>'1')); ?>
 
@@ -1509,7 +1478,11 @@ $paginationUri = $currentUri.'?page=(:page)';
 
     <button id="submit_form" type="submit">Submit Test</button>
     </form>
-
+<?php widget('modal', array('id'=>'a_modal','autoclose'=>true)); ?>
+<h2>A Modal</h2>
+<p>Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..</p>
+<p>Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..</p>
+<?php widget('/modal', array('id'=>'a_modal','autoclose'=>true)); ?>
 <?php
 enqueue('styles','normalize.css');
 enqueue('styles','responsive.css');

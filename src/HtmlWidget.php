@@ -3,15 +3,24 @@
 *  HtmlWidget
 *  html widgets used as (template) plugins and/or standalone, for Javascript, PHP, Python
 *
-*  @version: 2.0.0
+*  @version: 2.1.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
 if (!class_exists('HtmlWidget', false))
 {
+class HtmlWidget_Code
+{
+    public $code = '';
+
+    public function __construct($code)
+    {
+        $this->code = $code;
+    }
+}
 class HtmlWidget
 {
-    const VERSION = "2.0.0";
+    const VERSION = "2.1.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array();
@@ -69,6 +78,28 @@ class HtmlWidget
     {
         static $GID = 0;
         return implode("_", array($prefix, time(), ++$GID, rand(0,1000), $suffix));
+    }
+
+    public static function code($code)
+    {
+        return new HtmlWidget_Code($code);
+    }
+
+    public static function extract_code(&$options)
+    {
+        $code = array();
+        foreach ($options as $k => $v)
+        {
+            if ($v instanceof HtmlWidget_Code)
+            {
+                $code[] = array($k, $v);
+            }
+        }
+        foreach ($code as $c)
+        {
+            unset($options[$c[0]]);
+        }
+        return $code;
     }
 
     private static function data_attr($k, $v)
@@ -232,14 +263,6 @@ class HtmlWidget
                 case 'sep':
                 case 'separator':   $out = self::w_sep($attr, $data, $widget); break;
                 case 'icon':        $out = self::w_icon($attr, $data, $widget); break;
-                case 'delayable':   $out = self::w_delayable($attr, $data, $widget); break;
-                case 'disabable':   $out = self::w_disabable($attr, $data, $widget); break;
-                case 'morphable':   $out = self::w_morphable($attr, $data, $widget); break;
-                case 'pages':       $out = self::w_pages($attr, $data, $widget); break;
-                case 'tabs':        $out = self::w_tabs($attr, $data, $widget); break;
-                case 'accordeon':   $out = self::w_accordeon($attr, $data, $widget); break;
-                case 'panel':       $out = self::w_panel($attr, $data, $widget); break;
-                case '/panel':      $out = self::w_panel_end($attr, $data, $widget); break;
                 case 'tooltip':     $out = self::w_tooltip($attr, $data, $widget); break;
                 case 'link':        $out = self::w_link($attr, $data, $widget); break;
                 case 'button':      $out = self::w_button($attr, $data, $widget); break;
@@ -293,9 +316,6 @@ class HtmlWidget
                 case 'selectbox':
                 case 'select2':
                 case 'select':      $out = self::w_select($attr, $data, $widget); break;
-                case 'menu':        $out = self::w_menu($attr, $data, $widget); break;
-                case '/menu':       $out = self::w_menu_end($attr, $data, $widget); break;
-                case 'pagination':  $out = self::w_pagination($attr, $data, $widget); break;
                 case 'datatable':
                 case 'table':       $out = self::w_table($attr, $data, $widget); break;
                 case 'animation':   $out = self::w_animation($attr, $data, $widget); break;
@@ -303,6 +323,19 @@ class HtmlWidget
                 case 'video':
                 case 'audio':
                 case 'media':       $out = self::w_media($attr, $data, $widget); break;
+                case 'delayable':   $out = self::w_delayable($attr, $data, $widget); break;
+                case 'disabable':   $out = self::w_disabable($attr, $data, $widget); break;
+                case 'morphable':   $out = self::w_morphable($attr, $data, $widget); break;
+                case 'modal':       $out = self::w_modal($attr, $data, $widget); break;
+                case '/modal':      $out = self::w_modal_end($attr, $data, $widget); break;
+                case 'menu':        $out = self::w_menu($attr, $data, $widget); break;
+                case '/menu':       $out = self::w_menu_end($attr, $data, $widget); break;
+                case 'pagination':  $out = self::w_pagination($attr, $data, $widget); break;
+                case 'pages':       $out = self::w_pages($attr, $data, $widget); break;
+                case 'tabs':        $out = self::w_tabs($attr, $data, $widget); break;
+                case 'accordeon':   $out = self::w_accordeon($attr, $data, $widget); break;
+                case 'panel':       $out = self::w_panel($attr, $data, $widget); break;
+                case '/panel':      $out = self::w_panel_end($attr, $data, $widget); break;
                 default: $out = '';
             }
         }
@@ -339,6 +372,7 @@ class HtmlWidget
     public static function w_label($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wfor = isset($attr["for"]) ? 'for="'.$attr["for"].'"' : '';
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr["title"]) ? $attr['title'] : $wtext;
@@ -356,6 +390,15 @@ class HtmlWidget
         }
         $wextra = self::attributes($attr,array('disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit)
+            self::enqueue('scripts', 'label-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         // iOS needs an onlick attribute to handle label update if used as controller
         return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle onclick=\"\" $wextra>$wtext</label>";
     }
@@ -363,6 +406,7 @@ class HtmlWidget
     public static function w_link($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
         $wclass = 'w-link'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
@@ -382,19 +426,30 @@ class HtmlWidget
         if (isset($attr['for']))
         {
             $wfor = $attr['for'];
-            return "<label id=\"$wid\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" for=\"$wfor\" $wextra>$wtext</label>";
+            $ret = "<label id=\"$wid\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" for=\"$wfor\" $wextra>$wtext</label>";
         }
         else
         {
             $whref = isset($attr['href']) ? $attr['href'] : '#';
             $wextra .= ' '.self::attributes($attr,array('target','rel'));
-            return "<a id=\"$wid\" class=\"$wclass\" $wstyle title=\"$wtitle\" href=\"$whref\" $wextra>$wtext</a>";
+            $ret = "<a id=\"$wid\" class=\"$wclass\" $wstyle title=\"$wtitle\" href=\"$whref\" $wextra>$wtext</a>";
         }
+        if ($winit)
+            self::enqueue('scripts', 'link-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
+        return $ret;
     }
 
     public static function w_button($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wtext = isset($data['text']) ? $data['text'] : '';
         $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
         $wextra2 = '';
@@ -419,24 +474,35 @@ class HtmlWidget
         if (isset($attr['for']))
         {
             $wfor = $attr['for'];
-            return "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" $wextra $wextra2>$wtext</label>";
+            $ret = "<label id=\"$wid\" for=\"$wfor\" class=\"$wclass\" $wstyle onclick=\"\" title=\"$wtitle\" $wextra $wextra2>$wtext</label>";
         }
         elseif (isset($attr['href']))
         {
             $whref = $attr['href'];
             $wextra .= ' '.self::attributes($attr,array('role','target','rel'));
-            return "<a id=\"$wid\" href=\"$whref\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</a>";
+            $ret = "<a id=\"$wid\" href=\"$whref\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</a>";
         }
         else
         {
             $wtype = isset($attr['type']) ? $attr['type'] : 'button';
-            return "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</button>";
+            $ret = "<button id=\"$wid\" type=\"$wtype\" class=\"$wclass\" $wstyle title=\"$wtitle\" $wextra $wextra2>$wtext</button>";
         }
+        if ($winit)
+            self::enqueue('scripts', 'button-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
+        return $ret;
     }
 
     public static function w_control($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
@@ -464,12 +530,22 @@ class HtmlWidget
             $wtext = '&nbsp;';
         }
         $wclass = 'w-widget w-control'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
+        if ($winit)
+            self::enqueue('scripts', 'control-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
     }
 
     public static function w_control_list($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? $attr["name"] : null;
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -537,12 +613,22 @@ class HtmlWidget
             $widget .= '</ul>';
         }
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit)
+            self::enqueue('scripts', 'control-list-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return $widget;
     }
 
     public static function w_control_array($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? $attr["name"] : null;
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -624,12 +710,22 @@ class HtmlWidget
             $widget .= '</tbody></table>';
         }
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit)
+            self::enqueue('scripts', 'control-array-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return $widget;
     }
 
     public static function w_switch($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wtype = !empty($attr['type']) ? $attr['type'] : "checkbox";
         $wvalue = isset($data['value']) ? $data['value'] : "1";
@@ -696,6 +792,15 @@ class HtmlWidget
             }
         }
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit)
+            self::enqueue('scripts', 'switch-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return "<span class=\"$wclass\" $wtitle $wstyle>{$wstates}{$wswitches}<span class=\"w-switch-handle\"></span></span>";
     }
 
@@ -738,6 +843,7 @@ class HtmlWidget
     public static function w_select($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wdropdown = !empty($attr['dropdown']);
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -757,25 +863,36 @@ class HtmlWidget
         if (!empty($attr['placeholder']))
         {
             $woptions = "<option value=\"\" class=\"w-option-placeholder\" disabled".($has_selected?'':' selected').">{$attr['placeholder']}</option>" . $woptions;
-            //if ( !preg_match('/\brequired\b/', $wextra) ) $wextra .= ' required';
-            //if ( empty($wname) ) $wextra .= ' form="__NONE__"';
+            //if (!preg_match('/\brequired\b/', $wextra)) $wextra .= ' required';
+            //if (empty($wname)) $wextra .= ' form="__NONE__"';
             $wextra .= ' data-placeholder="'.$attr['placeholder'].'"';
         }
         $wclass = $wdropdown ? "w-widget w-dropdown" : "w-widget w-select";
         if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
 
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit && $wdropdown)
+            self::enqueue('scripts', 'dropdown-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         if (!empty($attr['select2']) && !$wdropdown)
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+            $code = self::extract_code($options);
             $wclass .= ' w-select2';
             self::enqueue('scripts', 'select2-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+                ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
                     if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {jQuery(element).select2(options);}
+                    if (element) {" . ($winit ? '('.$winit.')(element, options)' : "jQuery(element).select2(options)") . ";}
                 }
                 window.requestAnimationFrame(render);
             })();"), array('select2'));
@@ -788,6 +905,7 @@ class HtmlWidget
     public static function w_text($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $titl = isset($attr["title"]) ? $attr["title"] : '';
@@ -811,6 +929,15 @@ class HtmlWidget
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $wclass = 'w-widget w-text'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit)
+            self::enqueue('scripts', 'text-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return !empty($wicon)
         ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>"
         : "<input type=\"$wtype\" id=\"$wid\" $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />";
@@ -819,6 +946,7 @@ class HtmlWidget
     public static function w_textarea($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $titl = isset($attr["title"]) ? $attr["title"] : '';
@@ -829,6 +957,7 @@ class HtmlWidget
         if (!empty($attr['syntax-editor']))
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+            $code = self::extract_code($options);
             if (empty($options['mode'])) $options['mode'] = 'text/html';
             if (empty($options['theme'])) $options['theme'] = 'default';
             if (!isset($options['readOnly'])) $options['readOnly'] = isset($attr['readonly']) ? !!$attr['readonly'] : false;
@@ -842,9 +971,38 @@ class HtmlWidget
             $wclass = 'w-widget w-syntax-editor w-codemirror-editor'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
             self::enqueue('scripts', 'codemirror-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+                ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
                     if ('function' !== typeof(CodeMirror)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    function dispatch(event, element, data)
+                    {
+                        if (!element) {return;}
+                        var evt;
+                        if (document.createEvent)
+                        {
+                            evt = document.createEvent('HTMLEvents');
+                            evt.initEvent(event, true, true);
+                            evt.eventName = event;
+                            if (null != data) evt.data = data;
+                            element.dispatchEvent(evt);
+                        }
+                        else
+                        {
+                            evt = document.createEventObject();
+                            evt.eventType = event;
+                            evt.eventName = event;
+                            if (null != data) evt.data = data;
+                            element.fireEvent('on' + evt.eventType, evt);
+                        }
+                        return element;
+                    }
+                    var autosave = false;
+                    if (options.autosave)
+                    {
+                        autosave = true;
+                        delete options.autosave;
+                    }
                     if (options.grammar && ('undefined' !== typeof(CodeMirrorGrammar)))
                     {
                         var mode = CodeMirrorGrammar.getMode(options.grammar);
@@ -858,8 +1016,15 @@ class HtmlWidget
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
-                        if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}
+                        " . ($winit ? '('.$winit.')(element, options)' : "if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}
                         element.codemirror = CodeMirror.fromTextArea(element, options);
+                        if (autosave)
+                        {
+                            element.codemirror.on('changes', function(cm){
+                                cm.save();
+                                dispatch('change', element);
+                            });
+                        }") . ";
                     }
                 }
                 window.requestAnimationFrame(render);
@@ -868,6 +1033,7 @@ class HtmlWidget
         elseif (!empty($attr['wysiwyg-editor']))
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+            $code = self::extract_code($options);
             if (!isset($options['plugins'])) $options['plugins'] = 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount imagetools contextmenu colorpicker textpattern help' /*placeholderalt codemirror jbimages*/;
             if (!isset($options['toolbar'])) $options['toolbar'] = 'undo redo formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent  | removeformat';
             if (empty($options['theme'])) $options['theme'] = 'modern';
@@ -887,6 +1053,7 @@ class HtmlWidget
             $wclass = 'w-widget w-wysiwyg-editor'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
             self::enqueue('scripts', 'tinymce-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+                ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
                     if ('undefined' === typeof(tinymce)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
@@ -917,12 +1084,15 @@ class HtmlWidget
                     {
                         if (options.autosave)
                         {
+                            if (!options.setup)
+                            {
                             options.setup = function(editor) {
                                 editor.on('change', function(){
                                     editor.save();
                                     dispatch('change', element);
                                 });
                             };
+                            }
                             delete options.autosave;
                         }
                         if (options.locale && options.i18n)
@@ -931,9 +1101,9 @@ class HtmlWidget
                             delete options.locale;
                             delete options.i18n;
                         }
-                        var prev_editor = tinymce.get(element.id);
+                        " . ($winit ? '('.$winit.')(element, options)' : "var prev_editor = tinymce.get(element.id);
                         if (prev_editor) {prev_editor.remove();}
-                        tinymce.init(options);
+                        tinymce.init(options)") . ";
                     }
                 }
                 window.requestAnimationFrame(render);
@@ -943,6 +1113,15 @@ class HtmlWidget
         {
             $wclass = 'w-widget w-textarea'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
             self::enqueue('styles', 'htmlwidgets.css');
+            if ($winit)
+                self::enqueue('scripts', 'textarea-instance-'.$wid, array("(function(){
+                    function render()
+                    {
+                        var element = document.getElementById('".$wid."');
+                        if (element) {({$winit})(element, {});}
+                    }
+                    window.requestAnimationFrame(render);
+                })();"));
         }
         return "<textarea id=\"$wid\" $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" $wextra>$wvalue</textarea>";
     }
@@ -950,6 +1129,7 @@ class HtmlWidget
     public static function w_date($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $titl = isset($attr["title"]) ? $attr["title"] : '';
         $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
@@ -975,11 +1155,13 @@ class HtmlWidget
         }
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+        $code = self::extract_code($options);
         $wvalue = isset($options['value']) ? $options['value'] : (isset($data['value']) ? $data['value'] : "");
         if (empty($options['format'])) $options['format'] = 'Y-m-d';
         self::enqueue('scripts', 'pikadaytime');
         self::enqueue('scripts', 'pikadaytime-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+            ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
             function render()
             {
                 if ('function' !== typeof(Pikadaytime)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
@@ -998,9 +1180,9 @@ class HtmlWidget
                 var element = document.getElementById('".$wid."');
                 if (element)
                 {
-                    if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}
+                    " . ($winit ? '('.$winit.')(element, options)' : "if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}
                     options.field = element;
-                    element.pikadaytime = new Pikadaytime(options);
+                    element.pikadaytime = new Pikadaytime(options)") . ";
                 }
             }
             window.requestAnimationFrame(render);
@@ -1055,15 +1237,17 @@ class HtmlWidget
     public static function w_color($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+        $code = self::extract_code($options);
         if (empty($options['changeEvent'])) $options['changeEvent'] = 'change';
         if (empty($options['format'])) $options['format'] = 'rgba';
         if (!isset($options['color']) && isset($data['color'])) $options['color'] = $data['color'];
         if (!isset($options['opacity']) && isset($data['opacity'])) $options['opacity'] = $data['opacity'];
-        if (!empty($options['input']))
+        if (!empty($attr['input']))
         {
-            $winput = '<input id="'.$options['input'].'" type="hidden" '.$wname.' value="" style="display:none" />';
+            $winput = '<input id="'.$attr['input'].'" type="hidden" '.$wname.' value="" style="display:none" />';
         }
         else
         {
@@ -1076,6 +1260,7 @@ class HtmlWidget
         self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'colorpicker-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+            ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
             function render()
             {
                 if ('function' !== typeof(ColorPicker)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
@@ -1083,8 +1268,8 @@ class HtmlWidget
                 if (element)
                 {
                     if (options.input) options.input = document.getElementById(options.input);
-                    if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}
-                    element.colorpicker = new ColorPicker(element, options);
+                    " . ($winit ? '('.$winit.')(element, options)' : "if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}
+                    element.colorpicker = new ColorPicker(element, options)") . ";
                 }
             }
             window.requestAnimationFrame(render);
@@ -1095,6 +1280,7 @@ class HtmlWidget
     public static function w_file($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
         $wvalue = isset($data['value']) ? $data['value'] : "";
         $titl = isset($attr["title"]) ? $attr["title"] : '';
@@ -1145,6 +1331,7 @@ class HtmlWidget
                 }
                 if (element && input)
                 {
+                    " . ($winit ? '('.$winit.')(element, {input:input});' : "
                     if (element.changehandler) {element.removeEventListener('change', element.changehandler, false); element.changehandler = null;}
                     if (input.clickhandler) {input.removeEventListener('click', input.clickhandler, false); input.clickhandler = null;}
                     element.addEventListener('change', element.changehandler = function(){
@@ -1152,7 +1339,7 @@ class HtmlWidget
                     }, false);
                     input.addEventListener('click', input.clickhandler = function(){
                         dispatch('click', element);
-                    }, false);
+                    }, false);") . "
                 }
             }
             window.requestAnimationFrame(render);
@@ -1163,6 +1350,7 @@ class HtmlWidget
     public static function w_table($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wclass = 'w-widget w-table';
         /*
         if ( !empty($attr['stripped']) ) $wclass .= ' stripped';
@@ -1197,18 +1385,29 @@ class HtmlWidget
         }
         $wdata = self::data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit && empty($attr['datatable']))
+            self::enqueue('scripts', 'table-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         if (!empty($attr['datatable']))
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
+            $code = self::extract_code($options);
             $wclass .= ' w-datatable';
             self::enqueue('scripts', 'datatables-all');
             self::enqueue('scripts', 'datatable-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
+                ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
                     if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.dataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {jQuery(element).dataTable(options);}
+                    if (element) {" . ($winit ? '('.$winit.')(element, options)' : "jQuery(element).dataTable(options)") . ";}
                 }
                 window.requestAnimationFrame(render);
             })();"), array('datatables-all'));
@@ -1216,9 +1415,46 @@ class HtmlWidget
         return "<table id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
 
+    public static function w_tooltip($attr, $data, $widgetName = null)
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wtext = isset($data['text']) ? $data['text'] : '';
+        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
+        $wclass = 'w-tooltip'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        if (!empty($attr['icon']))
+        {
+            $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
+        }
+        elseif (!empty($attr['iconr']))
+        {
+            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
+        }
+        if (!empty($attr['tooltip']))
+        {
+            if ('top' === $attr['tooltip'])
+                $warrow = '<div class="w-tooltip-arrow w-arrow-bottom"></div>';
+            elseif ('bottom' === $attr['tooltip'])
+                $warrow = '<div class="w-tooltip-arrow w-arrow-top"></div>';
+            elseif ('right' === $attr['tooltip'])
+                $warrow = '<div class="w-tooltip-arrow w-arrow-left"></div>';
+            else
+                $warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
+        }
+        else
+        {
+            $warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
+        }
+        $wdata = self::data($attr);
+        self::enqueue('styles', 'htmlwidgets.css');
+        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra title=\"$wtitle\" $wdata>{$wtext}{$warrow}</div>";
+    }
+
     public static function w_media($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wtype = empty($attr['type']) ? "video" : $attr['type'];
         if ('audio' !== $wtype) $wtype = 'video';
         $wclass = 'w-media w-'.$wtype;
@@ -1232,10 +1468,40 @@ class HtmlWidget
         {
             // NOTE: use HtmlWidget::options() to format options accordingly to be used here
             $src = $source[0]; $src_type = $source[1];
-            $wsource .= "<source src=\"{$src}\" type=\"{$src_type}\"></source>";
+            $wsource .= "<source src=\"{$src}\" type=\"{$src_type}\" />";
         }
         self::enqueue('scripts','html5media');
+        if ($winit)
+            self::enqueue('scripts', 'media-instance-'.$wid, array("(function(){
+                function render()
+                {
+                    var element = document.getElementById('".$wid."');
+                    if (element) {({$winit})(element, {});}
+                }
+                window.requestAnimationFrame(render);
+            })();"));
         return "<{$wtype} id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra}>{$wsource}{$wtext}</{$wtype}>";
+    }
+
+    public static function w_modal($attr, $data, $widgetName = null)
+    {
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wclass = 'w-modal w-dialog'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
+        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
+        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
+        $wtitle = isset($data['title']) ? $data['title'] : '';
+        $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
+        $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="w-modal-overlay" onclick="">' : '<div class="w-modal-overlay">';
+        $wdata = self::data($attr);
+        self::enqueue('styles', 'htmlwidgets.css');
+        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
+    }
+
+    public static function w_modal_end($attr, $data, $widgetName = null)
+    {
+        $wbuttons = !empty($attr['buttons']) ? $attr['buttons'] : '';
+        $woverlay = !empty($attr['autoclose']) ? '</label>' : '</div>';
+        return "</div>".(!empty($wbuttons) ? "<div class=\"w-dialog-buttons\">$wbuttons</div>" : "")."</div>$woverlay";
     }
 
     public static function w_menu($attr, $data, $widgetName = null)
@@ -1865,42 +2131,6 @@ OUT;
 OUT;
         self::enqueue('styles', "w-pages-$wid", array($wstyle), array('htmlwidgets.css'));
         return $wcontrollers;
-    }
-
-    public static function w_tooltip($attr, $data, $widgetName = null)
-    {
-        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
-        $wtext = isset($data['text']) ? $data['text'] : '';
-        $wtitle = isset($attr['title']) ? $attr['title'] : $wtext;
-        $wclass = 'w-tooltip'; if ( !empty($attr["class"]) ) $wclass .= ' '.$attr["class"];
-        $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
-        $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
-        if (!empty($attr['icon']))
-        {
-            $wtext = "<i class=\"fa fa-{$attr['icon']} left-fa\"></i>" . $wtext;
-        }
-        elseif (!empty($attr['iconr']))
-        {
-            $wtext = $wtext . "<i class=\"fa fa-{$attr['iconr']} right-fa\"></i>";
-        }
-        if (!empty($attr['tooltip']))
-        {
-            if ('top' === $attr['tooltip'])
-                $warrow = '<div class="w-tooltip-arrow w-arrow-bottom"></div>';
-            elseif ('bottom' === $attr['tooltip'])
-                $warrow = '<div class="w-tooltip-arrow w-arrow-top"></div>';
-            elseif ('right' === $attr['tooltip'])
-                $warrow = '<div class="w-tooltip-arrow w-arrow-left"></div>';
-            else
-                $warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
-        }
-        else
-        {
-            $warrow = '<div class="w-tooltip-arrow w-arrow-right"></div>';
-        }
-        $wdata = self::data($attr);
-        self::enqueue('styles', 'htmlwidgets.css');
-        return "<div id=\"$wid\" class=\"$wclass\" $wstyle $wextra title=\"$wtitle\" $wdata>{$wtext}{$warrow}</div>";
     }
 
     public static function w_animation($attr, $data, $widgetName = null)

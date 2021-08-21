@@ -25,6 +25,10 @@ global.options = function(options, key, val)
 {
     return HtmlWidget.options(options, key, val);
 }
+global.code = function(code)
+{
+    return HtmlWidget.code(code);
+}
 global.enqueue = function(type, asset)
 {
     importer.enqueue(type, asset);
