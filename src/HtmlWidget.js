@@ -2,7 +2,7 @@
 *  HtmlWidget
 *  html widgets used as (template) plugins and/or standalone, for Javascript, PHP, Python
 *
-*  @version: 2.1.0
+*  @version: 2.1.1
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -27,7 +27,9 @@ var HAS = Object.prototype.hasOwnProperty, KEYS = Object.keys, json_encode = JSO
     isWebWorker = !isXPCOM && !isNode && ('undefined' !== typeof WorkerGlobalScope) && ("function" === typeof importScripts) && (navigator instanceof WorkerNavigator),
     isBrowser = !isXPCOM && !isNode && !isWebWorker,
     GID = 0, self, widgets = {}, enqueuer = null, ASSETS = {}, CNT = {},
-    html_esc_re = /[&<>'"]/g;
+    html_esc_re = /[&<>'"]/g, trim_re = /^\s+|\s+$/g,
+    trim = String.prototype.trim ? function(s) {return String(s).trim();} : function(s) {return String(s).replace(trim_re, '');}
+;
 
 // http://php.net/manual/en/function.empty.php
 function is_string(x)
@@ -112,7 +114,7 @@ HtmlWidget_Code.prototype = {
 };
 var HtmlWidget = self = {
 
-    VERSION: "2.1.0"
+    VERSION: "2.1.1"
 
     ,BASE: './'
 
@@ -328,6 +330,18 @@ var HtmlWidget = self = {
         }
         out += tab + '</ul>' + "\n";
         return out;
+    }
+
+    ,hasClass: function(classAttribute, className) {
+        return -1 !== (' ' + classAttribute + ' ').indexOf(' ' + className + ' ');
+    }
+
+    ,addClass: function(classAttribute, className) {
+        return /*self.hasClass(classAttribute, className) ? classAttribute :*/ trim(classAttribute + ' ' + className);
+    }
+
+    ,removeClass: function(classAttribute, className) {
+        return /*self.hasClass(classAttribute, className) ?*/ trim((' ' + classAttribute + ' ').replace(' ' + className + ' ', ' '))/* : classAttribute*/;
     }
 
     ,addWidget: function(widget, renderer) {
@@ -1412,7 +1426,7 @@ var HtmlWidget = self = {
     }
 
     ,w_color: function(attr, data, widgetName) {
-        var wid, wclass, wstyle, wextra, winput, wname, wtitle, options, code, winit;
+        var wid, wclass, wstyle, wextra, winput, wname, wtitle, options, code, winit, titl, wplaceholder, input_id, wrapper_class, icon_class, ret;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
         winit = isset(attr,"init") && (attr["init"] instanceof HtmlWidget_Code) ? attr["init"].code : null;
         wname = !empty(attr,"name") ? 'name="'+attr["name"]+'"' : '';
@@ -1422,19 +1436,46 @@ var HtmlWidget = self = {
         if (empty(options,'format')) options['format'] = 'rgba';
         if (!isset(options,'color') && isset(data,'color')) options['color'] = data['color'];
         if (!isset(options,'opacity') && isset(data,'opacity')) options['opacity'] = data['opacity'];
+        titl = isset(attr,"title") ? attr["title"] : '';
+        wtitle = !empty(titl) ? 'title="'+titl+'"' : '';
+        wplaceholder = isset(attr,'placeholder') ? attr['placeholder'] : titl;
+        wclass = 'colorpicker-selector w-colorselector'; if (!empty(attr,"class")) wclass += ' '+attr["class"];
+        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
+        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         if (!empty(attr,'input'))
         {
-            winput = '<input id="'+attr['input']+'" type="hidden" '+wname+' value="" style="display:none" />';
+            if (true === attr['input'])
+            {
+                input_id = wid;
+                wid = "colorselector_"+input_id;
+                options['input'] = input_id;
+                wclass = 'w-widget w-text'; if (!empty(attr,"class")) wclass += ' '+attr["class"];
+                wrapper_class = 'w-wrapper';
+                icon_class = 'fa-wrapper';
+                if (!empty(attr,'iconr'))
+                {
+                    wrapper_class += ' w-icon-right';
+                    icon_class += ' right-fa';
+                }
+                else
+                {
+                    wrapper_class += ' w-icon';
+                    icon_class += ' left-fa';
+                }
+                if (!empty(attr,'selector-class')) icon_class += ' '+attr['selector-class'];
+                ret = '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+input_id+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="" '+wextra+' /><span id="'+wid+'" class="'+icon_class+' colorpicker-selector w-colorselector"></span></span>';
+            }
+            else
+            {
+                if (!empty(attr,'selector-class')) wclass += ' '+attr['selector-class'];
+                ret = '<input id="'+attr['input']+'" type="hidden" '+wname+' value="" style="display:none" />'+'<div id="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
+            }
         }
         else
         {
-            winput = '';
+            if (!empty(attr,'selector-class')) wclass += ' '+attr['selector-class'];
+            ret = '<div id="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
         }
-        wtitle = !empty(attr,"title") ? 'title="'+attr["title"]+'"' : '';
-        wclass = 'colorpicker-selector w-colorselector';
-        if (!empty(attr,"class")) wclass += ' '+attr["class"];
-        wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
-        wextra = self.attributes(attr,['readonly','disabled','data'])+(!empty(attr,"extra") ? (' '+attr["extra"]) : '');
         // if in browser and re-render, use dynamic id to re-enqueue
         if (isBrowser && (null == CNT['colorpicker-instance-'+wid])) CNT['colorpicker-instance-'+wid] = 0;
         self.enqueue('scripts', 'colorpicker-instance-'+wid+(isBrowser ? '-'+(++CNT['colorpicker-instance-'+wid]) : ''), ["(function(){\
@@ -1453,7 +1494,7 @@ var HtmlWidget = self = {
             }\
             window.requestAnimationFrame(render);\
         })();"], ['colorpicker']);
-        return winput+'<div id="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wextra+'></div>';
+        return ret;
     }
 
     ,w_file: function(attr, data, widgetName) {
@@ -1642,18 +1683,19 @@ var HtmlWidget = self = {
     }
 
     ,w_modal: function(attr, data, widgetName) {
-        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay;
+        var wid, wclass, wstyle, wextra, wdata, wicon, wtitle, woverlay, wcontroller;
         wid = isset(attr,"id") ? attr["id"] : self.uuid();
+        wcontroller = isset(attr,'controller') ? !empty(attr,'controller') : true;
         wclass = 'w-modal w-dialog';
         if (!empty(attr,"class")) wclass += ' '+attr["class"];
         wstyle = !empty(attr,"style") ? 'style="'+attr["style"]+'"' : '';
         wextra = !empty(attr,"extra") ? attr["extra"] : '';
         wtitle = isset(data,'title') ? data['title'] : '';
         wicon = !empty(attr,'icon') ? "<i class=\"fa fa-" + attr['icon'] + "\"></i>" : '';
-        woverlay = !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick="">' : '<div class="w-modal-overlay">';
+        woverlay = wcontroller && !empty(attr,'autoclose') ? '<label for="modal_'+wid+'" class="w-modal-overlay" onclick="">' : '<div class="w-modal-overlay">';
         wdata = self.data(attr);
         self.enqueue('styles', 'htmlwidgets.css');
-        return '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />'+woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
+        return (wcontroller ? '<input id="modal_'+wid+'" type="checkbox" class="w-modal-controller" />' : '') + woverlay+'<div id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'><div class="w-dialog-title">'+wicon+wtitle+'<label for="modal_'+wid+'" class="w-label w-dialog-close" title="Close" onclick=""><i class="fa fa-times-circle"></i></label></div><div class="w-dialog-content">';
     }
 
     ,w_modal_end: function(attr, data, widgetName) {

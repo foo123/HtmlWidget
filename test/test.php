@@ -183,7 +183,7 @@ $paginationUri = $currentUri.'?page=(:page)';
 
     <hr />
 
-    <nav class="w-vertical-menu" style="z-index:200"><ul>
+    <nav class="w-vertical-menu w-dark" style="z-index:200"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
         <ul>
@@ -217,7 +217,7 @@ $paginationUri = $currentUri.'?page=(:page)';
 
     <hr />
 
-    <nav class="w-vertical-menu w-mobile" style="z-index:100">
+    <nav class="w-vertical-menu w-mobile w-dark" style="z-index:100">
     <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
     <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
     <ul>
@@ -354,7 +354,7 @@ $paginationUri = $currentUri.'?page=(:page)';
 
     <nav><?php widget('pagination',array(),array('totalItems'=>100,'itemsPerPage'=>10,'currentPage'=>1)); ?></nav>
 
-    <nav><?php widget('pagination',array(),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
+    <nav><?php widget('pagination',array('class'=>'w-dark'),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?></nav>
     <hr />
 
     <?php widget('pagination',array('urlPattern'=>$paginationUri,'selectBox'=>1),array('totalItems'=>1000,'itemsPerPage'=>10,'currentPage'=>3)); ?>
@@ -779,7 +779,7 @@ $paginationUri = $currentUri.'?page=(:page)';
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
-    <?php widget('dropdown',array('placeholder'=>'xlarge..','class'=>'w-xlarge','readonly'=>1),array('options'=>options(array(
+    <?php widget('dropdown',array('placeholder'=>'xlarge..','class'=>'w-xlarge w-dark','readonly'=>1),array('options'=>options(array(
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
@@ -794,7 +794,7 @@ $paginationUri = $currentUri.'?page=(:page)';
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
-    <?php widget('select2',array('placeholder'=>'xlarge..','class'=>'w-xlarge','multiple'=>1),array('options'=>options(array(
+    <?php widget('select2',array('placeholder'=>'xlarge..','class'=>'w-xlarge w-dark','multiple'=>1),array('options'=>options(array(
         1 => 'option 1',
         2 => 'option 2'
     ),-1))); ?>
@@ -811,7 +811,8 @@ $paginationUri = $currentUri.'?page=(:page)';
     ),array()); ?>
     <?php widget('colorpicker',array(
         'title'=>'Select color',
-        'class' => 'w-large',
+        'class' => 'w-large w-dark',
+        'selector-class' => 'colorpicker-dark',
         'options'=>array(
             'format' => 'rgba',
             'color'=>'rgba(0,210,0,0.7)'
@@ -823,6 +824,66 @@ $paginationUri = $currentUri.'?page=(:page)';
         'options'=>array(
             'format' => 'rgba',
             'color'=>'rgba(0,0,210,0.7)'
+        )
+    ),array()); ?>
+    <br />
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'input'=>true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
+        )
+    ),array()); ?>
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'input'=>true,
+        'iconr' => true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
+        )
+    ),array()); ?>
+    <br />
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'class' => 'w-large',
+        'input'=>true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
+        )
+    ),array()); ?>
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'class' => 'w-large w-dark',
+        'selector-class' => 'colorpicker-dark',
+        'input'=>true,
+        'iconr' => true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
+        )
+    ),array()); ?>
+    <br />
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'class' => 'w-xlarge',
+        'input'=>true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
+        )
+    ),array()); ?>
+    <?php widget('colorpicker',array(
+        'title'=>'Select color',
+        'class' => 'w-xlarge w-dark',
+        'selector-class' => 'colorpicker-dark',
+        'input'=>true,
+        'iconr' => true,
+        'options'=>array(
+            'format' => 'rgba',
+            'color'=>'rgba(210,0,210,0.7)'
         )
     ),array()); ?>
     </fieldset>
@@ -851,9 +912,10 @@ $paginationUri = $currentUri.'?page=(:page)';
     ),array()); ?>
     <?php widget('datetimepicker',array(
         'title'=>'Select date-time',
-        'class' => 'w-xlarge',
+        'class' => 'w-xlarge w-dark',
         'readonly' => 1,
         'options'=>array(
+            'className'=>'pika-dark',
             'format' => 'Y-m-d H:i:s',
             'showTime' => 1,
             'showSeconds' => 1,
@@ -871,13 +933,13 @@ $paginationUri = $currentUri.'?page=(:page)';
     <fieldset><legend>Textboxes</legend>
     <?php widget('textbox',array('title'=>'text..','icon'=>'pencil'),array('value'=>'')); ?>
     <?php widget('textbox',array('class'=>'w-large','title'=>'large..','icon'=>'pencil','disabled'=>1),array('value'=>'')); ?>
-    <?php widget('textbox',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
+    <?php widget('textbox',array('class'=>'w-xlarge w-dark','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
 
     <hr />
 
     <?php widget('textarea',array('title'=>'text..','icon'=>'pencil'),array('value'=>'')); ?>
     <?php widget('textarea',array('class'=>'w-large','title'=>'large..','icon'=>'pencil','disabled'=>1),array('value'=>'')); ?>
-    <?php widget('textarea',array('class'=>'w-xlarge','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
+    <?php widget('textarea',array('class'=>'w-xlarge w-dark','title'=>'xlarge..','icon'=>'pencil','readonly'=>1),array('value'=>'')); ?>
     </fieldset>
 
     <fieldset><legend>Modals</legend>
@@ -885,6 +947,14 @@ $paginationUri = $currentUri.'?page=(:page)';
         "class" => "w-orange",
         "for"   => "modal_a_modal",
         "title" => "Open Modal",
+        "icon"  => "check-circle-o"
+    ),array(
+        "text"  => "Open Modal"
+    )); ?>
+    <?php widget("button", array(
+        "class" => "w-orange",
+        "for"   => "modal_a_dark_modal",
+        "title" => "Open Dark Modal",
         "icon"  => "check-circle-o"
     ),array(
         "text"  => "Open Modal"
@@ -1210,19 +1280,19 @@ $paginationUri = $currentUri.'?page=(:page)';
     <fieldset><legend>Checkboxes</legend>
     <?php widget('checkbox',array('title'=>'Check'),array('value'=>'1')); ?>
     <?php widget('checkbox',array('title'=>'Check','class'=>'w-large','disabled'=>1),array('value'=>'1')); ?>
-    <?php widget('checkbox',array('title'=>'Check','class'=>'w-xlarge','readonly'=>1),array('value'=>'1')); ?>
+    <?php widget('checkbox',array('title'=>'Check','class'=>'w-xlarge w-dark','readonly'=>1),array('value'=>'1')); ?>
 
     <hr />
 
     <?php widget('radio',array('title'=>'Check','name'=>'radio'),array('value'=>'1')); ?>
     <?php widget('radio',array('title'=>'Check','name'=>'radio','class'=>'w-large','disabled'=>1),array('value'=>'1')); ?>
-    <?php widget('radio',array('title'=>'Check','name'=>'radio','class'=>'w-xlarge','readonly'=>1),array('value'=>'1')); ?>
+    <?php widget('radio',array('title'=>'Check','name'=>'radio','class'=>'w-xlarge w-dark','readonly'=>1),array('value'=>'1')); ?>
 
     <hr />
 
     <?php widget('switch',array('title'=>'Check','readonly'=>1,'init'=>code("function(element){console.log('switch',element.id);}")),array('value'=>'1')); ?>
     <?php widget('switch',array('title'=>'Check','class'=>'w-large','iconon'=>'check','iconoff'=>'times-circle','disabled'=>1),array('value'=>'1')); ?>
-    <?php widget('switch',array('title'=>'Check','class'=>'w-xlarge','iconon'=>'check','iconoff'=>'times-circle'),array('value'=>'1')); ?>
+    <?php widget('switch',array('title'=>'Check','class'=>'w-xlarge w-dark','iconon'=>'check','iconoff'=>'times-circle'),array('value'=>'1')); ?>
 
     <hr />
 
@@ -1483,6 +1553,11 @@ $paginationUri = $currentUri.'?page=(:page)';
 <p>Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..</p>
 <p>Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..</p>
 <?php widget('/modal', array('id'=>'a_modal','autoclose'=>true)); ?>
+<?php widget('modal', array('id'=>'a_dark_modal','class'=>'w-dark','autoclose'=>true)); ?>
+<h2>A Dark Modal</h2>
+<p>Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..Some text here..</p>
+<p>Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..Some more text here..</p>
+<?php widget('/modal', array('id'=>'a_dark_modal','autoclose'=>true)); ?>
 <?php
 enqueue('styles','normalize.css');
 enqueue('styles','responsive.css');

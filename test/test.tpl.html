@@ -138,7 +138,7 @@
 
     <hr />
 
-    <nav class="w-vertical-menu" style="z-index:200"><ul>
+    <nav class="w-vertical-menu w-dark" style="z-index:200"><ul>
     <li class="w-submenu-item">
         <a href="#">Item</a>
         <ul>
@@ -172,7 +172,7 @@
 
     <hr />
 
-    <nav class="w-vertical-menu w-mobile" style="z-index:100">
+    <nav class="w-vertical-menu w-mobile w-dark" style="z-index:100">
     <label for="mobile-menu2" class="w-menu-controller-bt"><i class="fa fa-bars fa-2x"></i>&nbsp;</label>
     <input id="mobile-menu2" type="checkbox" class="w-menu-controller" value="1" />
     <ul>
@@ -260,7 +260,7 @@
     <fieldset><legend>Pagination</legend>
     <nav><?php widget('pagination',{},{'totalItems':100,'itemsPerPage':10,'currentPage':1}) ?></nav>
 
-    <nav><?php widget('pagination',{},{'totalItems':1000,'itemsPerPage':10,'currentPage':3}) ?></nav>
+    <nav><?php widget('pagination',{'class':'w-dark'},{'totalItems':1000,'itemsPerPage':10,'currentPage':3}) ?></nav>
     </fieldset>
 
     <fieldset><legend>Buttons</legend>
@@ -546,7 +546,7 @@
         '1' : 'option 1',
         '2' : 'option 2'
     },-1)}) ?>
-    <?php widget('dropdown',{'placeholder':'xlarge..','class':'w-xlarge','readonly':1},{'options':options({
+    <?php widget('dropdown',{'placeholder':'xlarge..','class':'w-xlarge w-dark','readonly':1},{'options':options({
         '1' : 'option 1',
         '2' : 'option 2'
     },-1)}) ?>
@@ -561,7 +561,7 @@
         '1' : 'option 1',
         '2' : 'option 2'
     },-1)}) ?>
-    <?php widget('select2',{'placeholder':'xlarge..','class':'w-xlarge','multiple':1},{'options':options({
+    <?php widget('select2',{'placeholder':'xlarge..','class':'w-xlarge w-dark','multiple':1},{'options':options({
         '1' : 'option 1',
         '2' : 'option 2'
     },-1)}) ?>
@@ -578,7 +578,8 @@
     },{}) ?>
     <?php widget('colorpicker',{
         'title':'Select color',
-        'class' : 'w-large',
+        'class' : 'w-large w-dark',
+        'selector-class' : 'colorpicker-dark',
         'options':{
             'format' : 'rgba',
             'color':'rgba(0,210,0,0.7)'
@@ -590,6 +591,27 @@
         'options':{
             'format' : 'rgba',
             'color':'rgba(0,0,210,0.7)'
+        }
+    },{}) ?>
+    <br />
+    <?php widget('colorpicker',{
+        'title':'Select color',
+        'class' : 'w-large',
+        'input':true,
+        'options':{
+            'format' : 'rgba',
+            'color':'rgba(210,0,210,0.7)'
+        }
+    },{}) ?>
+    <?php widget('colorpicker',{
+        'title':'Select color',
+        'class' : 'w-large w-dark',
+        'selector-class' : 'colorpicker-dark',
+        'input':true,
+        'iconr' : true,
+        'options':{
+            'format' : 'rgba',
+            'color':'rgba(210,0,210,0.7)'
         }
     },{}) ?>
     </fieldset>
@@ -618,9 +640,10 @@
     },{}) ?>
     <?php widget('datetimepicker',{
         'title':'Select date-time',
-        'class' : 'w-xlarge',
+        'class' : 'w-xlarge w-dark',
         'readonly' : 1,
         'options':{
+            'className':'pika-dark',
             'format' : 'Y-m-d H:i:s',
             'showTime' : 1,
             'showSeconds' : 1,

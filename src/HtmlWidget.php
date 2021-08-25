@@ -3,7 +3,7 @@
 *  HtmlWidget
 *  html widgets used as (template) plugins and/or standalone, for Javascript, PHP, Python
 *
-*  @version: 2.1.0
+*  @version: 2.1.1
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -20,7 +20,7 @@ class HtmlWidget_Code
 }
 class HtmlWidget
 {
-    const VERSION = "2.1.0";
+    const VERSION = "2.1.1";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array();
@@ -221,6 +221,21 @@ class HtmlWidget
         }
         $out .= $tab . '</ul>' . "\n";
         return $out;
+    }
+
+    public static function hasClass($classAttribute, $className)
+    {
+        return false !== strpos(' ' . $classAttribute . ' ', ' ' . $className . ' ');
+    }
+
+    public static function addClass($classAttribute, $className)
+    {
+        return /*self::hasClass($classAttribute, $className) ? $classAttribute :*/ trim($classAttribute . ' ' . $className);
+    }
+
+    public static function removeClass($classAttribute, $className)
+    {
+        return /*self::hasClass($classAttribute, $className) ?*/ trim(str_replace(' ' . $className . ' ', ' ', ' ' . $classAttribute . ' ')) /*: $classAttribute*/;
     }
 
     public static function addWidget($widget, $renderer)
@@ -1245,18 +1260,46 @@ class HtmlWidget
         if (empty($options['format'])) $options['format'] = 'rgba';
         if (!isset($options['color']) && isset($data['color'])) $options['color'] = $data['color'];
         if (!isset($options['opacity']) && isset($data['opacity'])) $options['opacity'] = $data['opacity'];
-        if (!empty($attr['input']))
-        {
-            $winput = '<input id="'.$attr['input'].'" type="hidden" '.$wname.' value="" style="display:none" />';
-        }
-        else
-        {
-            $winput = '';
-        }
-        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
+        $titl = isset($attr["title"]) ? $attr["title"] : '';
+        $wtitle = !empty($titl) ? 'title="'.$titl.'"' : '';
+        $wplaceholder = isset($attr['placeholder']) ? $attr['placeholder'] : $titl;
         $wclass = 'colorpicker-selector w-colorselector'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        if (!empty($attr['input']))
+        {
+            if (true === $attr['input'])
+            {
+                $input_id = $wid;
+                $wid = "colorselector_{$input_id}";
+                $options['input'] = $input_id;
+                $wclass = 'w-widget w-text'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
+                $wrapper_class = 'w-wrapper';
+                $icon_class = 'fa-wrapper';
+                if (!empty($attr['iconr']))
+                {
+                    $wrapper_class .= ' w-icon-right';
+                    $icon_class .= ' right-fa';
+                }
+                else
+                {
+                    $wrapper_class .= ' w-icon';
+                    $icon_class .= ' left-fa';
+                }
+                if (!empty($attr['selector-class'])) $icon_class .= ' '.$attr['selector-class'];
+                $ret = "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$input_id\" $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"\" $wextra /><span id=\"$wid\" class=\"$icon_class colorpicker-selector w-colorselector\"></span></span>";
+            }
+            else
+            {
+                if (!empty($attr['selector-class'])) $wclass .= ' '.$attr['selector-class'];
+                $ret = '<input id="'.$attr['input'].'" type="hidden" '.$wname.' value="" style="display:none" />'."<div id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra></div>";
+            }
+        }
+        else
+        {
+            if (!empty($attr['selector-class'])) $wclass .= ' '.$attr['selector-class'];
+            $ret = "<div id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra></div>";
+        }
         self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'colorpicker-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
@@ -1274,7 +1317,7 @@ class HtmlWidget
             }
             window.requestAnimationFrame(render);
         })();"), array('colorpicker'));
-        return $winput."<div id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra></div>";
+        return $ret;
     }
 
     public static function w_file($attr, $data, $widgetName = null)
@@ -1486,15 +1529,16 @@ class HtmlWidget
     public static function w_modal($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $wcontroller = isset($attr['controller']) ? !empty($attr['controller']) : true;
         $wclass = 'w-modal w-dialog'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $wtitle = isset($data['title']) ? $data['title'] : '';
         $wicon = !empty($attr['icon']) ? "<i class=\"fa fa-{$attr['icon']}\"></i>" : '';
-        $woverlay = !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="w-modal-overlay" onclick="">' : '<div class="w-modal-overlay">';
+        $woverlay = $wcontroller && !empty($attr['autoclose']) ? '<label for="modal_'.$wid.'" class="w-modal-overlay" onclick="">' : '<div class="w-modal-overlay">';
         $wdata = self::data($attr);
         self::enqueue('styles', 'htmlwidgets.css');
-        return "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
+        return ($wcontroller ? "<input id=\"modal_{$wid}\" type=\"checkbox\" class=\"w-modal-controller\" />" : "") . "$woverlay<div id=\"{$wid}\" class=\"$wclass\" $wstyle $wextra $wdata><div class=\"w-dialog-title\">{$wicon}{$wtitle}<label for=\"modal_{$wid}\" class=\"w-label w-dialog-close\" title=\"Close\" onclick=\"\"><i class=\"fa fa-times-circle\"></i></label></div><div class=\"w-dialog-content\">";
     }
 
     public static function w_modal_end($attr, $data, $widgetName = null)

@@ -2,7 +2,7 @@
 *  HtmlWidget
 *
 *  @dependencies: FontAwesome
-*  @version: 2.1.0
+*  @version: 2.1.1
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -327,7 +327,7 @@ input.w-checkbox + label
     text-overflow: ellipsis;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
 }
-.w-tag  select
+.w-tag select
 {
     position: relative;
     display: inline-block;
@@ -357,20 +357,20 @@ input.w-checkbox + label
     cursor: pointer;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
 }
-.w-tag  select::-ms-expand
+.w-tag select::-ms-expand
 {
     display: none !important; /* IE10+ */
 }
-.w-tag  select,
-.w-tag  select:hover,
-.w-tag  select:focus,
-.w-tag  select:active
+.w-tag select,
+.w-tag select:hover,
+.w-tag select:focus,
+.w-tag select:active
 {
     outline: none;
     border: none;
     box-shadow: none;
 }
-.w-tag  select option
+.w-tag select option
 {
     position: relative;
     -webkit-box-sizing: border-box;
@@ -389,12 +389,12 @@ input.w-checkbox + label
 	background-image: -o-linear-gradient(top,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);
 	background-image: linear-gradient(to bottom,  rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.1) 100%);*/
 }
-.w-tag.w-tag3  select option
+.w-tag.w-tag3 select option
 {
     padding: 6px 2px;
 }
-.w-tag  select,
-.w-tag  select option
+.w-tag select,
+.w-tag select option
 {
     background-color: #777;
     color: #fff !important;
@@ -685,6 +685,7 @@ input.w-checkbox + label
 .w-wrapper.w-icon > .w-widget ~ .fa-wrapper,
 .w-wrapper.w-icon-right > .w-widget ~ .fa-wrapper
 {
+    display: inline-block;
     position: absolute;
     top: 50%;
     -webkit-touch-callout: none;
@@ -697,6 +698,11 @@ input.w-checkbox + label
     cursor: pointer;
     z-index: 2;
     opacity: 1;
+}
+.w-wrapper.w-icon > .w-widget:not(:disabled) ~ .fa-wrapper.w-colorselector,
+.w-wrapper.w-icon-right > .w-widget:not(:disabled) ~ .fa-wrapper.w-colorselector
+{
+    pointer-events: auto !important;
 }
 .w-wrapper.w-icon > .w-widget ~ .fa-wrapper > .fa,
 .w-wrapper.w-icon-right > .w-widget ~ .fa-wrapper > .fa
@@ -4410,6 +4416,26 @@ input.w-checkbox + label
 {
     font-size: 2em;
 }
+.w-wrapper.w-icon > .w-widget ~ .fa-wrapper.w-colorselector,
+.w-wrapper.w-icon-right > .w-widget ~ .fa-wrapper.w-colorselector
+{
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 19px;
+    height: 19px;
+}
+.w-wrapper.w-icon > .w-widget.w-large ~ .fa-wrapper.w-colorselector,
+.w-wrapper.w-icon-right > .w-widget.w-large ~ .fa-wrapper.w-colorselector
+{
+    width: 26px;
+    height: 26px;
+}
+.w-wrapper.w-icon > .w-widget.w-xlarge ~ .fa-wrapper.w-colorselector,
+.w-wrapper.w-icon-right > .w-widget.w-xlarge ~ .fa-wrapper.w-colorselector
+{
+    width: 34px;
+    height: 34px;
+}
 .w-wrapper.w-icon > .w-widget
 {
     padding-left: 2.5em;
@@ -4925,6 +4951,10 @@ input.w-checkbox + label.w-xlarge
 {
     border-color: #1190d1;
 }
+:focus > .colorpicker-selector:after,
+:focus + .colorpicker-selector:after,
+:focus > .w-colorselector:after,
+:focus + .w-colorselector:after,
 .colorpicker-selector:focus:after,
 .colorpicker-selector:active:after,
 .w-colorselector:focus:after,
@@ -4986,6 +5016,10 @@ input.w-text:-ms-input-placeholder
     font-size: inherit !important;
     font-style: italic !important;
 }
+.w-control-list input.w-radio + label,
+.w-control-list input.w-checkbox + label,
+.w-control-array input.w-radio + label,
+.w-control-array input.w-checkbox + label,
 input.w-radio + label,
 input.w-checkbox + label
 {
@@ -5006,6 +5040,10 @@ input.w-checkbox + label
 {
     border-color: #999;
 }
+.w-control-list input.w-radio + label:active,
+.w-control-list input.w-checkbox + label:active,
+.w-control-array input.w-radio + label:active,
+.w-control-array input.w-checkbox + label:active,
 input.w-radio + label:active,
 input.w-checkbox + label:active,
 input.w-radio + label:hover,
@@ -5102,6 +5140,10 @@ input.w-checkbox-label + label
     border-color: transparent;
     background-clip: padding-box !important;
 }
+.w-control-list input.w-radio:not(:checked) + label:active,
+.w-control-list input.w-checkbox:not(:checked) + label:active,
+.w-control-array input.w-radio:not(:checked) + label:active,
+.w-control-array input.w-checkbox:not(:checked) + label:active,
 input.w-radio-label:not(:checked) + label:active,
 input.w-checkbox-label:not(:checked) + label:active,
 input.w-radio-label:not(:checked) + label:hover,
@@ -5111,6 +5153,10 @@ input.w-checkbox-label:not(:checked) + label:hover
     border-color: #477b96 !important;
     color: #fff !important;
 }
+.w-control-list input.w-radio:checked + label:active,
+.w-control-list input.w-checkbox:checked + label:active,
+.w-control-array input.w-radio:checked + label:active,
+.w-control-array input.w-checkbox:checked + label:active,
 input.w-radio-label:checked + label:active,
 input.w-checkbox-label:checked + label:active,
 input.w-radio-label:checked + label:hover,
@@ -5478,7 +5524,7 @@ input.w-radio:checked + label.w-led-button:before
 }
 .w-dialog > .w-dialog-title
 {
-    background: rgba(100,100,100,0.9);
+    background: rgba(12,144,232,0.9);
     color: #fafafa;
 }
 .w-dialog > .w-dialog-buttons
@@ -5821,6 +5867,430 @@ table.w-table
     color: #efefef;
 }
 .w-rangeslider + .rangeslider > .rangeslider__fill
+{
+    background-color: #33aaff/*#fda762*/;
+}
+
+/*********************************************************************************
+*  HtmlWidget Colors dark theme
+***********************************************************************************/
+.w-widget.w-dark
+{
+    background: none;
+    color: #eee;
+}
+.w-time-component.w-dark,
+.w-dropdown.w-dark > select,
+.w-select.w-dark,
+.w-text.w-dark,
+.w-textarea.w-dark,
+.w-wysiwyg-editor.w-dark
+{
+    border-color: #ccc;
+    background-color: #121212;
+    color: #eee;
+}
+.w-syntax-editor.w-dark,
+.w-syntax-editor.w-dark + .CodeMirror,
+.w-syntax-editor.w-dark + .ace_editor
+{
+    border-color: #ccc;
+}
+
+.w-control-list.w-dark input.w-radio + label,
+.w-control-list.w-dark input.w-checkbox + label,
+.w-control-array.w-dark input.w-radio + label,
+.w-control-array.w-dark input.w-checkbox + label,
+input.w-radio.w-dark + label,
+input.w-checkbox.w-dark + label
+{
+    border-color: #ccc;
+    background-color: #222;
+    color: #eee;
+}
+.w-wrapper.w-icon > .w-widget.w-dark.w-text ~ .fa-wrapper,
+.w-wrapper.w-icon-right > .w-widget.w-dark.w-text ~ .fa-wrapper
+{
+    color: #eee;
+}
+.w-dropdown.w-dark:hover > select,
+.w-dropdown.w-dark > select:hover,
+.w-select.w-dark:hover,
+.w-text.w-dark:hover,
+.w-textarea.w-dark:hover
+{
+    border-color: #ccc;
+}
+.w-control-list.w-dark input.w-radio + label:active,
+.w-control-list.w-dark input.w-checkbox + label:active,
+.w-control-array.w-dark input.w-radio + label:active,
+.w-control-array.w-dark input.w-checkbox + label:active,
+input.w-radio.w-dark + label:active,
+input.w-checkbox.w-dark + label:active,
+input.w-radio.w-dark + label:hover,
+input.w-checkbox.w-dark + label:hover
+{
+    border-color: #eee;
+}
+.w-widget.w-dark.w-dnd-upload,
+.w-dnd-upload.w-dark
+{
+    border-color: #ccc;
+    color: #eee;
+    background-color: transparent;
+}
+.w-dnd-upload.w-dark > span.w-dnd-upload-preview
+{
+    background-color: #121212;
+}
+.w-dnd-upload.w-dark > img.w-dnd-upload-preview
+{
+    border: 4px solid #efefef;
+}
+.w-widget.w-dark.w-dnd-upload:hover,
+.w-dnd-upload.w-dark:hover
+{
+    border-color: #ccc;
+}
+.w-widget.w-dark.w-dnd-upload:not(.__empty__),
+.w-dnd-upload.w-dark:not(.__empty__)
+{
+    background-color: #1190d1;
+}
+.w-widget.w-dark.w-dnd-upload.__dragover__,
+.w-dnd-upload.w-dark.__dragover__
+{
+    border-color: #1190d1 !important;
+}
+.w-widget.w-dark.w-dnd-upload.__dragover__ > .w-button,
+.w-dnd-upload.w-dark.__dragover__ > .w-button
+{
+    color: #1190d1;
+}
+.w-wrapper.w-icon > .w-widget.w-dark.w-text:not(:disabled):hover ~ .fa-wrapper,
+.w-wrapper.w-icon-right > .w-widget.w-dark.w-text:not(:disabled):hover ~ .fa-wrapper
+{
+    color: #efefef;
+}
+.w-time-component.w-dark:focus,
+.w-dropdown.w-dark:active > select,
+.w-dropdown.w-dark:focus > select,
+.w-dropdown.w-dark > select:active,
+.w-dropdown.w-dark > select:focus,
+.w-select.w-dark:focus,
+.w-text.w-dark:focus,
+.w-textarea.w-dark:focus
+{
+    border-color: #1190d1;
+}
+.w-dropdown.w-dark:active:before
+.w-dropdown.w-dark:focus:before
+{
+    color: #1190d1;
+    opacity: 1;
+}
+
+.w-wrapper.w-icon > .w-widget.w-dark:not(:disabled):focus ~ .fa-wrapper,
+.w-wrapper.w-icon-right > .w-widget.w-dark:not(:disabled):focus ~ .fa-wrapper,
+.w-wrapper.w-icon > .w-widget.w-text.w-dark:not(:disabled):focus ~ .fa-wrapper,
+.w-wrapper.w-icon-right > .w-widget.w-text.w-dark:not(:disabled):focus ~ .fa-wrapper
+{
+    color: #1190d1;
+}
+select.w-select.w-dark option,
+.w-dropdown.w-dark > select option
+{
+    color: #eee;
+}
+select.w-select.w-dark option:disabled,
+.w-dropdown.w-dark > select:disabled,
+.w-dropdown.w-dark > select option:disabled,
+select.w-select.w-dark option.w-option-placeholder,
+.w-dropdown.w-dark > select option.w-option-placeholder
+{
+    opacity: 0.6;
+}
+.w-control-list.w-dark input.w-radio:not(:checked) + label:active,
+.w-control-list.w-dark input.w-checkbox:not(:checked) + label:active,
+.w-control-array.w-dark input.w-radio:not(:checked) + label:active,
+.w-control-array.w-dark input.w-checkbox:not(:checked) + label:active,
+input.w-radio-label.w-dark:not(:checked) + label:active,
+input.w-checkbox-label.w-dark:not(:checked) + label:active,
+input.w-radio-label.w-dark:not(:checked) + label:hover,
+input.w-checkbox-label.w-dark:not(:checked) + label:hover
+{
+    background-color: #477b96 !important;
+    border-color: #477b96 !important;
+    color: #fff !important;
+}
+.w-control-list.w-dark input.w-radio:checked + label:active,
+.w-control-list.w-dark input.w-checkbox:checked + label:active,
+.w-control-array.w-dark input.w-radio:checked + label:active,
+.w-control-array.w-dark input.w-checkbox:checked + label:active,
+input.w-radio-label.w-dark:checked + label:active,
+input.w-checkbox-label.w-dark:checked + label:active,
+input.w-radio-label.w-dark:checked + label:hover,
+input.w-checkbox-label.w-dark:checked + label:hover
+{
+    border-color: #1190d1 !important;
+}
+input.w-radio-label.w-dark:checked + label ,
+input.w-checkbox-label.w-dark:checked + label
+{
+    background-color: #1190d1 !important;
+    color: #fff !important;
+}
+input.w-radio-image.w-dark + label ,
+input.w-checkbox-image.w-dark + label
+{
+    box-shadow: 3px 3px 5px 2px rgba(255, 255, 255, 0.4);
+}
+input.w-radio-image.w-dark + label > span,
+input.w-checkbox-image.w-dark + label > span
+{
+    border-color: #ccc;
+}
+input.w-radio-image.w-dark + label:hover > span,
+input.w-checkbox-image.w-dark + label:hover > span,
+input.w-radio-image.w-dark:checked + label > span,
+input.w-checkbox-image.w-dark:checked + label > span
+{
+    border-color: #eee;
+}
+input.w-radio.w-dark.inset:not(.w-push-button) + label,
+input.w-checkbox.w-dark.inset:not(.w-push-button) + label,
+input.w-radio.w-dark + label.inset:not(.w-push-button),
+input.w-checkbox.w-dark + label.inset:not(.w-push-button)
+{
+    background-color: #121212;
+    border-color: rgba(255,255,255,.2);
+    box-shadow: 1px 1px rgba(255,255,255,.1) inset, 2px 2px rgba(255,255,255,.1) inset, 2px 2px rgba(255,255,255,.8) inset,
+                2px 2px 2px rgba(255,255,255,.3) inset;
+}
+input.w-radio.w-dark.inset:not(.w-push-button):checked + label,
+input.w-checkbox.w-dark.inset:not(.w-push-button):checked + label,
+input.w-radio.w-dark:checked + label.inset:not(.w-push-button),
+input.w-checkbox.w-dark:checked + label.inset:not(.w-push-button)
+{
+    box-shadow: 1px 1px rgba(255,255,255,.1) inset, 2px 2px rgba(255,255,255,.1) inset, 2px 2px rgba(255,255,255,.8) inset,
+                2px 2px 3px rgba(255,255,255,.5) inset;
+}
+input.w-checkbox.w-dark.w-push-button + label,
+input.w-radio.w-dark.w-push-button + label,
+input.w-checkbox.w-dark + label.w-push-button,
+input.w-radio.w-dark + label.w-push-button
+{
+    background-color: #121212;
+    border-color: rgba(255,255,255,.2);
+    color: #454545;
+    box-shadow: 0 1px hsla(0,0%,100%,.15) inset,
+                1px 1px hsl(30,20%,20%), 1px 1px hsl(30,20%,18%), 2px 2px hsl(30,20%,16%),
+                2px 2px 5px rgba(0,0,0,.5);
+}
+input.w-checkbox.w-dark.w-push-button + label:before,
+input.w-radio.w-dark.w-push-button + label:before,
+input.w-checkbox.w-dark + label.w-push-button:before,
+input.w-radio.w-dark + label.w-push-button:before
+{
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .9);
+}
+input.w-checkbox.w-dark.w-push-button:checked + label,
+input.w-radio.w-dark.w-push-button:checked + label,
+input.w-checkbox.w-dark:checked + label.w-push-button,
+input.w-radio.w-dark:checked + label.w-push-button
+{
+    box-shadow: 1px 1px hsl(30,20%,14%) inset, 2px 2px hsl(30,20%,16%) inset, 2px 2px hsl(30,20%,18%) inset,
+                2px 2px 5px rgba(0,0,0,.5) inset;
+}
+input.w-checkbox.w-dark.w-led-button + label:before,
+input.w-radio.w-dark.w-led-button + label:before,
+input.w-checkbox.w-dark + label.w-led-button:before,
+input.w-radio.w-dark + label.w-led-button:before
+{
+    color: rgba(255, 0, 0, .4);
+    text-shadow: 0px 0px 1px rgba(200, 0, 0, .8);
+}
+input.w-checkbox.w-dark.w-led-button:checked + label:before,
+input.w-radio.w-dark.w-led-button:checked + label:before,
+input.w-checkbox.w-dark:checked + label.w-led-button:before,
+input.w-radio.w-dark:checked + label.w-led-button:before
+{
+    color: rgba(255, 0, 0, 1);
+    text-shadow: 0px 0px 100px rgba(200, 0, 0, .8);
+}
+.w-switch.w-dark
+{
+    color: transparent;
+    background-color: #121212;
+}
+.w-switch.w-dark > label.w-switch-on
+{
+    background-color: #0f0;
+}
+.w-switch.w-dark > label.w-switch-off
+{
+    background-color: #f00;
+}
+.w-switch.w-dark > label.w-switch-on > .fa,
+.w-switch.w-dark > label.w-switch-off > .fa
+{
+    color: #fff;
+}
+.w-switch.w-dark > label > .fa.positive::after,
+.w-switch.w-dark > label > .fa.negative::after
+{
+    color: inherit;
+}
+.w-switch.w-dark > .w-switch-handle
+{
+    background-color: #232323;
+}
+.w-switch.w-dark > input.w-switch-state:disabled  ~ .w-switch-handle
+{
+    background-color: #565656;
+}
+.w-tooltip.w-dark
+{
+    background-color: rgba(255, 255, 255, .9);
+    border-color: rgba(255, 255, 255, .9);
+    color: #232323;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+    box-shadow: inset 0 1px 0 #fff;
+}
+.w-pagination.w-dark > li > a,
+.w-pagination.w-dark > li > span,
+.w-pagination.w-dark > span,
+.w-pagination.w-dark > span > a,
+.w-pagination.w-dark > .page-select
+{
+    color: #eee;
+    background-color: #444;
+    border-color: #eee;
+}
+.w-pagination.w-dark > .disabled > a,
+.w-pagination.w-dark > .disabled > a:focus,
+.w-pagination.w-dark > .disabled > a:hover,
+.w-pagination.w-dark > .disabled > span,
+.w-pagination.w-dark > .disabled > span:focus,
+.w-pagination.w-dark > .disabled > span:hover
+{
+    cursor: not-allowed;
+    color: #aaa;
+    background-color: #444;
+    border-color: #aaa;
+}
+.w-pagination.w-dark > .active > a,
+.w-pagination.w-dark > .active > a:focus,
+.w-pagination.w-dark > .active > a:hover,
+.w-pagination.w-dark > .active > span,
+.w-pagination.w-dark > .active > span:focus,
+.w-pagination.w-dark > .active > span:hover
+{
+    color: #fff;
+    cursor: default;
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+.w-vertical-menu.w-dark ul,
+.w-dropdown-menu.w-dark ul
+{
+    background-color: #343434;
+    box-shadow: 0px 0px 9px rgba(255,255,255,0.15);
+    color: #eee;
+}
+.w-vertical-menu.w-dark > ul,
+.w-dropdown-menu.w-dark > ul
+{
+    background-color: #343434;
+}
+.w-vertical-menu.w-dark li,
+.w-dropdown-menu.w-dark li
+{
+    color: #eee;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.2);
+}
+.w-vertical-menu.w-dark li.current,
+.w-vertical-menu.w-dark li.active,
+.w-vertical-menu.w-dark li:focus,
+.w-vertical-menu.w-dark li:active,
+.w-vertical-menu.w-dark li:hover,
+.w-dropdown-menu.w-dark li.current,
+.w-dropdown-menu.w-dark li.active,
+.w-dropdown-menu.w-dark li:focus,
+.w-dropdown-menu.w-dark li:active,
+.w-dropdown-menu.w-dark li:hover
+{
+    background-color: #1190d1;
+    color: #fff;
+}
+.w-vertical-menu.w-dark ul > li,
+.w-dropdown-menu.w-dark ul > li
+{
+    border-bottom-color: #555;
+}
+.w-dropdown-menu.w-dark > ul > li
+{
+    border-right-color: #555;
+}
+.w-dialog.w-dark
+{
+    background: #343434 !important;
+    color: #eee;
+}
+.w-dialog.w-dark > .w-dialog-title
+{
+    background: rgba(12,144,232,0.9);
+    color: #121212;
+}
+.w-dialog.w-dark > .w-dialog-buttons
+{
+    border-top-color: rgba(255,255,255,0.32);
+}
+.w-disabable-overlay.w-dark,
+.w-delayable-overlay.w-dark
+{
+    background-color: rgba(0,0,0,.4);
+}
+.w-delayed > .w-disabable-overlay.w-dark
+{
+    background-color: rgba(0,0,0,0);
+}
+table.w-table.w-dark.cellular.dataTable,
+table.w-table.w-dark.cellular,
+table.w-table.w-dark.dataTable,
+table.w-table.w-dark
+{
+    color: #eee;
+    background-color: #121212;
+}
+.separator.w-dark,
+.w-separator.w-dark,
+.w-sep.w-dark
+{
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.w-widget.w-dark.w-selected
+.w-selected.w-dark
+{
+    border-color: #f77c05 !important;
+    background-color: #f77c05 !important;
+}
+.w-select.w-dark + .select2-container > .select2-choices > .select2-search-choice:hover  > .select2-search-choice-close:before,
+.w-select.w-dark + .select2-container > .select2-choices > .select2-search-choice  > .select2-search-choice-close:hover:before
+{
+    color: #33aaff;
+}
+.w-select.w-dark + .select2-container.select2-container-active
+{
+    border-color: #1190d1;
+}
+.select2-drop.select2-drop-active  .select2-results  .select2-result.select2-result-selectable.select2-highlighted
+{
+    background-color: #33aaff;
+    color: #efefef;
+}
+.w-rangeslider.w-dark + .rangeslider > .rangeslider__fill
 {
     background-color: #33aaff/*#fda762*/;
 }
