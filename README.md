@@ -9,7 +9,7 @@ Html Widgets used as plugins and/or standalone, for Javascript, PHP and Python
 ![HtmlWidget](/htmlwidget.jpg)
 
 
-[Online example (w/ ModelView)](https://foo123.github.io/examples.htmlwidget/)
+[Online example (w/ ModelView)](https://foo123.github.io/examples/htmlwidget/)
 
 **screenshots** (see `/test` folder)
 
