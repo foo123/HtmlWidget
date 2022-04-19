@@ -1083,7 +1083,10 @@ var HtmlWidget = self = {
                             element.style.setProperty('--text-value', '\"'+String(range.value)+'\"');\
                             element.style.setProperty('--angle', String(angle)+'deg');\
                         }\
-                        updateThrottled = htmlwidgets.throttle(update, 60);\
+                        updateThrottled = function(evt) {\
+                            evt.preventDefault && evt.preventDefault();\
+                            update(evt);\
+                        };\
                         htmlwidgets.addEvent(output, 'keydown', function(evt) {\
                             switch(evt.key)\
                             {\
@@ -1102,23 +1105,25 @@ var HtmlWidget = self = {
                             }\
                         }, {capture:false,passive:false});\
                         htmlwidgets.addEvent(output, 'mousedown', function(evt) {\
+                            evt.preventDefault && evt.preventDefault();\
                             center = computeCenter();\
                             htmlwidgets.addEvent(document, 'mouseup', function clear(evt) {\
-                                htmlwidgets.removeEvent(document, 'mousemove', updateThrottled);\
+                                htmlwidgets.removeEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});\
                                 htmlwidgets.removeEvent(document, 'mouseup', clear);\
                                 htmlwidgets.fireEvent(range, 'change');\
                             });\
-                            htmlwidgets.addEvent(document, 'mousemove', updateThrottled);\
-                        });\
+                            htmlwidgets.addEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});\
+                        }, {capture:false,passive:false});\
                         htmlwidgets.addEvent(output, 'touchstart', function(evt) {\
+                            evt.preventDefault && evt.preventDefault();\
                             center = computeCenter();\
                             htmlwidgets.addEvent(document, 'touchend', function clear(evt) {\
-                                htmlwidgets.removeEvent(document, 'touchmove', updateThrottled);\
+                                htmlwidgets.removeEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});\
                                 htmlwidgets.removeEvent(document, 'touchend', clear);\
                                 htmlwidgets.fireEvent(range, 'change');\
                             });\
-                            htmlwidgets.addEvent(document, 'touchmove', updateThrottled);\
-                        });\
+                            htmlwidgets.addEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});\
+                        }, {capture:false,passive:false});\
                         htmlwidgets.addEvent(element, 'click', function(evt) {\
                             center = computeCenter();\
                             update(evt);\
