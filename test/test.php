@@ -960,7 +960,7 @@ $paginationUri = $currentUri.'?page=(:page)';
         "text"  => "Open Modal"
     )); ?>
     </fieldset>
-    
+
     <fieldset style="overflow:hidden;"><legend>Panels</legend>
     <?php widget("button", array(
         "class" => "w-orange",
@@ -1358,6 +1358,23 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('radio-image',array('image'=>'./comfort.jpg','name'=>'demo_image_2','style'=>'width:152px;height:152px','checked'=>1),array()); ?>
 
     <hr />
+    <fieldset><legend>Range Sliders</legend><br />
+    <?php widget('range',array(),array('value'=>25)); ?>
+    <?php widget('range',array(),array('value'=>25,'value2'=>75)); ?>
+    <br />
+    <?php widget('range',array('class'=>'w-large'),array('value'=>25)); ?>
+    <?php widget('range',array('class'=>'w-large w-dark'),array('value'=>25,'value2'=>75)); ?>
+    <br />
+    <?php widget('range',array('class'=>'w-small w-dark'),array('value'=>25)); ?>
+    <?php widget('range',array('class'=>'w-small'),array('value'=>25,'value2'=>75)); ?>
+    <br />
+    <?php widget('range',array('circular'=>true),array('value'=>25)); ?>
+    <?php widget('range',array('circular'=>true,'class'=>'w-dark'),array('value'=>50)); ?>
+    <br />
+    <?php widget('range',array('circular'=>true,'class'=>'w-small'),array('value'=>25)); ?>
+    <?php widget('range',array('circular'=>true,'class'=>'w-large w-dark'),array('value'=>50)); ?>
+    <hr />
+
     <?php widget('radio-label',array('label'=>'label 1','name'=>'demo_label_1')); ?>
     <?php widget('radio-label',array('label'=>'label 2','name'=>'demo_label_1')); ?>
 
@@ -1365,7 +1382,6 @@ $paginationUri = $currentUri.'?page=(:page)';
     <?php widget('checkbox-label',array('label'=>'Green','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-green'))); ?>
     <?php widget('checkbox-label',array('label'=>'Blue','name'=>'demo_label_2','checked'=>1,'data'=>array('morph-a-morphable'=>'mode-blue'))); ?>
 
-    <hr />
     <?php widget('morphable',array('id'=>'a-morphable','modes'=>array('red','green','blue'))); ?>
     <div id="a-morphable" class="fluid col-1-1 w-morphable w-animated-morphable w-morphable-level-1">
 
@@ -1458,7 +1474,7 @@ $paginationUri = $currentUri.'?page=(:page)';
     </fieldset>
 
     <fieldset><legend>Uploads</legend>
-    <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here')); ?>
+    <?php widget('file',array('title'=>'Upload your file here','placeholder'=>'Upload your file here','icon'=>'folder')); ?>
     </fieldset>
 
 

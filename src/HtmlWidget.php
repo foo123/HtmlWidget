@@ -1,9 +1,9 @@
 <?php
 /**
 *  HtmlWidget
-*  html widgets used as (template) plugins and/or standalone, for Javascript, PHP, Python
+*  Html Widgets for Javascript, PHP and Python (Browser and Server, Desktop and Mobile)
 *
-*  @version: 2.1.1
+*  @version: 2.2.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -20,7 +20,7 @@ class HtmlWidget_Code
 }
 class HtmlWidget
 {
-    const VERSION = "2.1.1";
+    const VERSION = "2.2.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array();
@@ -230,12 +230,45 @@ class HtmlWidget
 
     public static function addClass($classAttribute, $className)
     {
-        return /*self::hasClass($classAttribute, $className) ? $classAttribute :*/ trim($classAttribute . ' ' . $className);
+        return self::hasClass($classAttribute, $className) ? $classAttribute : trim($classAttribute . ' ' . $className);
     }
 
     public static function removeClass($classAttribute, $className)
     {
-        return /*self::hasClass($classAttribute, $className) ?*/ trim(str_replace(' ' . $className . ' ', ' ', ' ' . $classAttribute . ' ')) /*: $classAttribute*/;
+        return self::hasClass($classAttribute, $className) ? trim(str_replace(' ' . $className . ' ', ' ', ' ' . $classAttribute . ' ')) : $classAttribute;
+    }
+
+    public static function extractTag($content, $tag, $selector = null, &$offset = 0)
+    {
+        if (empty($tag)) return false;
+        $off = $offset;
+        if (is_string($selector))
+            $selector = strlen($selector) ? array('attr' => $selector) : null;
+        if (preg_match('#<' . $tag . '\\b' . ($selector ? ('[^<>]*?\\b' . $selector['attr'] . '\\s*=\\s*"' . (!isset($selector['value']) || (true === $selector['value']) ? '[^"]+' : (isset($selector['includes']) ? ('[^"]*?\\b' . preg_quote($selector['includes'], '#') . '\\b[^"]*') : preg_quote($selector['value'], '#'))) . '"') : '') . '[^<>]*>#sumi', $content, $m, PREG_OFFSET_CAPTURE, $off))
+        {
+            $start = $m[0][1];
+            $off = $start + strlen($m[0][0]);
+            if ('/>' === substr($m[0][0], -2))
+            {
+                $offset = $off;
+                return trim($m[0][0]);
+            }
+            else
+            {
+                $opened = 1;
+                while (preg_match('#</?' . $tag . '[^<>]*>#sumi', $content, $m, PREG_OFFSET_CAPTURE, $off))
+                {
+                    $off = $m[0][1] + strlen($m[0][0]);
+                    $opened += '</' === substr($m[0][0], 0, 2) ? -1 : 1;
+                    if (0 === $opened)
+                    {
+                        $offset = $off;
+                        return trim(substr($content, $start, $off-$start));
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static function addWidget($widget, $renderer)
@@ -327,6 +360,7 @@ class HtmlWidget
                 case 'radio':
                 case 'control':     $out = self::w_control($attr, $data, $widget); break;
                 case 'switch':      $out = self::w_switch($attr, $data, $widget); break;
+                case 'range':       $out = self::w_range($attr, $data, $widget); break;
                 case 'dropdown':
                 case 'selectbox':
                 case 'select2':
@@ -819,6 +853,122 @@ class HtmlWidget
         return "<span class=\"$wclass\" $wtitle $wstyle>{$wstates}{$wswitches}<span class=\"w-switch-handle\"></span></span>";
     }
 
+    public static function w_range($attr, $data, $widgetName = null)
+    {
+        // adapted from https://github.com/yairEO/ui-range
+        // and https://dev.to/madsstoumann/accessible-circular-sliders-11p
+        $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
+        $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
+        $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
+        $wname2 = !empty($attr["name2"]) ? 'name="'.$attr["name2"].'"' : '';
+        $wtitle = !empty($attr["title"]) ? 'title="'.$attr["title"].'"' : '';
+        $wstyle = !empty($attr["style"]) ? $attr["style"] : '';
+        $wextra = self::attributes($attr,array('readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
+        $wclass = "w-widget w-range"; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
+        $wvalue = isset($data['value']) ? $data['value'] : 0;
+        $wvalue2 = isset($data['value2']) ? $data['value2'] : false;
+        $wdual = false !== $wvalue2;
+        if ($wdual) $wclass = self::addClass($wclass, 'dual');
+        $wcircular = !empty($attr['circular']);
+        if ($wcircular && !$wdual) $wclass = self::addClass($wclass, 'circular');
+        $wmin = isset($attr['min']) ? intval($attr['min']) : 0;
+        $wmax = isset($attr['max']) ? intval($attr['max']) : 100;
+        $wstep = isset($attr['step']) ? $attr['step'] : 1;
+        $wprefix = isset($attr['prefix']) ? $attr['prefix'] : "";
+        $wsuffix = isset($attr['suffix']) ? $attr['suffix'] : "";
+        self::enqueue('styles', 'htmlwidgets.css');
+        if ($winit || ($wcircular && !$wdual))
+            self::enqueue('scripts', 'range-instance-'.$wid, array("(function(){
+                var tries = 0;
+                function render()
+                {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    var element = document.getElementById('".$wid."');
+                    if (element)
+                    {
+                        ".($winit ? "({$winit})(element, {});" : "")."
+                        ".($wcircular && !$wdual ? "
+                        var range = element.getElementsByTagName('input')[0],
+                            output = element.getElementsByTagName('output')[0],
+                            center, updateThrottled;
+                        function computeCenter()
+                        {
+                            var rect = element.getBoundingClientRect();
+                            return {
+                                X: rect.left + rect.width / 2,
+                                Y: rect.top + rect.height / 2
+                            };
+                        }
+                        function update(evt)
+                        {
+                            var value = range.valueAsNumber, angle,
+                                min = +range.min, max = +range.max,
+                                span = max - min, step = +range.step;
+                            if (evt)
+                            {
+                                angle = Math.atan2(((evt.changedTouches&&evt.changedTouches.length ? evt.changedTouches[0].clientY : evt.clientY) - center.Y), (evt.changedTouches&&evt.changedTouches.length ? evt.changedTouches[0].clientX : evt.clientX) - center.X) * 180 / Math.PI + 90;
+                                if (angle < 0) angle += 360;
+                                angle = Math.max(0, Math.min(360, angle));
+                                range.value = Math.max(min, Math.min(max, min + step * Math.ceil(angle / 360 * span / step)));
+                            }
+                            else
+                            {
+                                angle = 360 * (value - min) / span;
+                            }
+                            element.style.setProperty('--value', range.value);
+                            element.style.setProperty('--text-value', '\"'+String(range.value)+'\"');
+                            element.style.setProperty('--angle', String(angle)+'deg');
+                        }
+                        updateThrottled = htmlwidgets.throttle(update, 60);
+                        htmlwidgets.addEvent(output, 'keydown', function(evt) {
+                            switch(evt.key)
+                            {
+                                case 'ArrowLeft':
+                                case 'ArrowDown':
+                                    evt.preventDefault && evt.preventDefault();
+                                    range.stepDown();
+                                    update();
+                                    break;
+                                case 'ArrowRight':
+                                case 'ArrowUp':
+                                    evt.preventDefault && evt.preventDefault();
+                                    range.stepUp();
+                                    update();
+                                    break;
+                            }
+                        }, {capture:false,passive:false});
+                        htmlwidgets.addEvent(output, 'mousedown', function(evt) {
+                            center = computeCenter();
+                            htmlwidgets.addEvent(document, 'mouseup', function clear(evt) {
+                                htmlwidgets.removeEvent(document, 'mousemove', updateThrottled);
+                                htmlwidgets.removeEvent(document, 'mouseup', clear);
+                                htmlwidgets.fireEvent(range, 'change');
+                            });
+                            htmlwidgets.addEvent(document, 'mousemove', updateThrottled);
+                        });
+                        htmlwidgets.addEvent(output, 'touchstart', function(evt) {
+                            center = computeCenter();
+                            htmlwidgets.addEvent(document, 'touchend', function clear(evt) {
+                                htmlwidgets.removeEvent(document, 'touchmove', updateThrottled);
+                                htmlwidgets.removeEvent(document, 'touchend', clear);
+                                htmlwidgets.fireEvent(range, 'change');
+                            });
+                            htmlwidgets.addEvent(document, 'touchmove', updateThrottled);
+                        });
+                        htmlwidgets.addEvent(element, 'click', function(evt) {
+                            center = computeCenter();
+                            update(evt);
+                            htmlwidgets.fireEvent(range, 'change');
+                        });
+                        update();
+                        " : "")."
+                    }
+                }
+                window.requestAnimationFrame(render);
+            })();"), array('htmlwidgets.js'));
+        return $wdual ? "<div id=\"$wid\" class=\"$wclass\" $wtitle style='--min:$wmin;--max:$wmax;--step:$wstep;--value-a:$wvalue;--value-b:$wvalue2;--text-value-a:\"$wvalue\";--text-value-b:\"$wvalue2\";--prefix:\"$wprefix\";--suffix:\"$wsuffix\";$wstyle'><input id=\"{$wid}_rng1\" type=\"range\" $wname min=\"$wmin\" max=\"$wmax\" step=\"$wstep\" value=\"$wvalue\" $wextra oninput=\"this.parentNode.style.setProperty('--value-a',this.value);this.parentNode.style.setProperty('--text-value-a',JSON.stringify(this.value));\"/><output for=\"{$wid}_rng1\"></output><input id=\"{$wid}_rng2\" type=\"range\" $wname2 min=\"$wmin\" max=\"$wmax\" step=\"$wstep\" value=\"$wvalue2\" $wextra oninput=\"this.parentNode.style.setProperty('--value-b',this.value);this.parentNode.style.setProperty('--text-value-b',JSON.stringify(this.value));\"/><output for=\"{$wid}_rng2\"></output><div class=\"w-range-progress\"></div></div>" : ($wcircular ? "<div id=\"$wid\" class=\"$wclass\" $wtitle style='--min:$wmin;--max:$wmax;--step:$wstep;--value:$wvalue;--text-value:\"$wvalue\";--prefix:\"$wprefix\";--suffix:\"$wsuffix\";$wstyle'><output tabindex=\"0\" for=\"{$wid}_rng\"></output><input id=\"{$wid}_rng\" $wname $wtitle type=\"range\" min=\"$wmin\" max=\"$wmax\" step=\"$wstep\" value=\"$wvalue\" $wextra hidden/></div>" : "<div id=\"$wid\" class=\"$wclass\" $wtitle style='--min:$wmin;--max:$wmax;--step:$wstep;--value:$wvalue;--text-value:\"$wvalue\";--prefix:\"$wprefix\";--suffix:\"$wsuffix\";$wstyle'><input id=\"{$wid}_rng\" $wname type=\"range\" min=\"$wmin\" max=\"$wmax\" step=\"$wstep\" value=\"$wvalue\" $wextra oninput=\"this.parentNode.style.setProperty('--value',this.value); this.parentNode.style.setProperty('--text-value',JSON.stringify(this.value));\"/><output for=\"{$wid}_rng\"></output><div class=\"w-range-progress\"></div></div>");
+    }
+
     public static function w_rating($attr, $data, $widgetName = null)
     {
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
@@ -857,6 +1007,7 @@ class HtmlWidget
 
     public static function w_select($attr, $data, $widgetName = null)
     {
+        // may use https://select2.org/
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
@@ -960,6 +1111,7 @@ class HtmlWidget
 
     public static function w_textarea($attr, $data, $widgetName = null)
     {
+        // may use https://codemirror.net/, https://www.tiny.cloud/
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
@@ -990,28 +1142,6 @@ class HtmlWidget
                 function render()
                 {
                     if ('function' !== typeof(CodeMirror)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
-                    function dispatch(event, element, data)
-                    {
-                        if (!element) {return;}
-                        var evt;
-                        if (document.createEvent)
-                        {
-                            evt = document.createEvent('HTMLEvents');
-                            evt.initEvent(event, true, true);
-                            evt.eventName = event;
-                            if (null != data) evt.data = data;
-                            element.dispatchEvent(evt);
-                        }
-                        else
-                        {
-                            evt = document.createEventObject();
-                            evt.eventType = event;
-                            evt.eventName = event;
-                            if (null != data) evt.data = data;
-                            element.fireEvent('on' + evt.eventType, evt);
-                        }
-                        return element;
-                    }
                     var autosave = false;
                     if (options.autosave)
                     {
@@ -1037,13 +1167,13 @@ class HtmlWidget
                         {
                             element.codemirror.on('changes', function(cm){
                                 cm.save();
-                                dispatch('change', element);
+                                htmlwidgets.fireEvent(element, 'change');
                             });
                         }") . ";
                     }
                 }
                 window.requestAnimationFrame(render);
-            })();"), !empty($options['grammar']) ? array('codemirror-htmlmixed', 'codemirror-grammar') : array('codemirror-htmlmixed'));
+            })();"), !empty($options['grammar']) ? array('htmlwidgets.js','codemirror-htmlmixed', 'codemirror-grammar') : array('htmlwidgets.js','codemirror-htmlmixed'));
         }
         elseif (!empty($attr['wysiwyg-editor']))
         {
@@ -1072,28 +1202,6 @@ class HtmlWidget
                 function render()
                 {
                     if ('undefined' === typeof(tinymce)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
-                    function dispatch(event, element, data)
-                    {
-                        if (!element) {return;}
-                        var evt;
-                        if (document.createEvent)
-                        {
-                            evt = document.createEvent('HTMLEvents');
-                            evt.initEvent(event, true, true);
-                            evt.eventName = event;
-                            if (null != data) evt.data = data;
-                            element.dispatchEvent(evt);
-                        }
-                        else
-                        {
-                            evt = document.createEventObject();
-                            evt.eventType = event;
-                            evt.eventName = event;
-                            if (null != data) evt.data = data;
-                            element.fireEvent('on' + evt.eventType, evt);
-                        }
-                        return element;
-                    }
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
@@ -1104,7 +1212,7 @@ class HtmlWidget
                             options.setup = function(editor) {
                                 editor.on('change', function(){
                                     editor.save();
-                                    dispatch('change', element);
+                                    htmlwidgets.fireEvent(element, 'change');
                                 });
                             };
                             }
@@ -1122,7 +1230,7 @@ class HtmlWidget
                     }
                 }
                 window.requestAnimationFrame(render);
-            })();"), array('tinymce'));
+            })();"), array('htmlwidgets.js','tinymce'));
         }
         else
         {
@@ -1143,6 +1251,7 @@ class HtmlWidget
 
     public static function w_date($attr, $data, $widgetName = null)
     {
+        // uses https://github.com/foo123/Pikadaytime
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
@@ -1251,6 +1360,7 @@ class HtmlWidget
 
     public static function w_color($attr, $data, $widgetName = null)
     {
+        // uses https://github.com/foo123/ColorPicker
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wname = !empty($attr["name"]) ? 'name="'.$attr["name"].'"' : '';
@@ -1348,50 +1458,25 @@ class HtmlWidget
         self::enqueue('scripts', 'file-instance-'.$wid, array("(function(){
             function render()
             {
-                var element = document.getElementById('".$wid."');
-                var input = document.getElementById('text_input_".$wid."');
-                function dispatch(event, element, data)
-                {
-                    if (!element) {return;}
-                    var evt;
-                    if (document.createEvent)
-                    {
-                        evt = document.createEvent('HTMLEvents');
-                        evt.initEvent(event, true, true);
-                        evt.eventName = event;
-                        if (null != data) evt.data = data;
-                        element.dispatchEvent(evt);
-                    }
-                    else
-                    {
-                        evt = document.createEventObject();
-                        evt.eventType = event;
-                        evt.eventName = event;
-                        if (null != data) evt.data = data;
-                        element.fireEvent('on' + evt.eventType, evt);
-                    }
-                    return element;
-                }
+                var element = document.getElementById('".$wid."'),
+                    input = document.getElementById('text_input_".$wid."');
                 if (element && input)
                 {
                     " . ($winit ? '('.$winit.')(element, {input:input});' : "
-                    if (element.changehandler) {element.removeEventListener('change', element.changehandler, false); element.changehandler = null;}
-                    if (input.clickhandler) {input.removeEventListener('click', input.clickhandler, false); input.clickhandler = null;}
-                    element.addEventListener('change', element.changehandler = function(){
+                    if (element.changehandler) {htmlwidgets.removeEvent(element,'change', element.changehandler); element.changehandler = null;}
+                    htmlwidgets.addEvent(element, 'change', element.changehandler = function(){
                         input.value = element.value;
-                    }, false);
-                    input.addEventListener('click', input.clickhandler = function(){
-                        dispatch('click', element);
-                    }, false);") . "
+                    });") . "
                 }
             }
             window.requestAnimationFrame(render);
-        })();"));
-        return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"display:none !important\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" />$wicon</label>";
+        })();"), array('htmlwidgets.js'));
+        return "<label for=\"$wid\" class=\"$wrapper_class\" $wstyle><input type=\"file\" id=\"$wid\" $wname class=\"w-file-input\" value=\"$wvalue\" $wextra style=\"position:absolute;opacity:0;width:100%;z-index:-1;\"/><input type=\"text\" id=\"text_input_$wid\" $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" form=\"__NONE__\" style=\"pointer-events:none\"/>$wicon</label>";
     }
 
     public static function w_table($attr, $data, $widgetName = null)
     {
+        // may use https://datatables.net/
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $winit = isset($attr["init"]) && ($attr["init"] instanceof HtmlWidget_Code) ? $attr["init"]->code : null;
         $wclass = 'w-widget w-table';
@@ -1581,6 +1666,7 @@ class HtmlWidget
 
     public static function w_pagination($attr, $data, $widgetName = null)
     {
+        // adapted from https://github.com/foo123/Paginator
         $wid = isset($attr["id"]) ? $attr["id"] : self::uuid();
         $wclass = 'w-pagination pagination'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
         $wstyle = !empty($attr["style"]) ? 'style="'.$attr["style"].'"' : '';
@@ -1607,7 +1693,7 @@ class HtmlWidget
                     $pages[] = array(
                         'text' => $i,
                         'url' => str_replace($placeholder, (string)$i, $urlPattern),
-                        'isCurrent' => $i==$currentPage
+                        'isCurrent' => $i===$currentPage
                     );
                 }
             }
@@ -1633,7 +1719,7 @@ class HtmlWidget
                 $pages[] = array(
                     'text' => 1,
                     'url' => str_replace($placeholder, (string)1, $urlPattern),
-                    'isCurrent' => 1==$currentPage
+                    'isCurrent' => 1===$currentPage
                 );
                 if ($slidingStart > 2)
                 {
@@ -1648,7 +1734,7 @@ class HtmlWidget
                     $pages[] = array(
                         'text' => $i,
                         'url' => str_replace($placeholder, (string)$i, $urlPattern),
-                        'isCurrent' => $i==$currentPage
+                        'isCurrent' => $i===$currentPage
                     );
                 }
                 if ($slidingEnd < $numPages - 1)
@@ -1662,7 +1748,7 @@ class HtmlWidget
                 $pages[] = array(
                     'text' => $numPages,
                     'url' => str_replace($placeholder, (string)$numPages, $urlPattern),
-                    'isCurrent' => $numPages==$currentPage
+                    'isCurrent' => $numPages===$currentPage
                 );
             }
 
@@ -2288,7 +2374,7 @@ OUT;
 
         if ((1 < $wr) && (1 < $wc))
         {
-            // background-position-x, background-position-y NOT supported very good
+            // background-position-x, background-position-y NOT supported very well
             $two_dim_grid = true;
             $attX = "background-position-x"; $attY = "background-position-y";
             $iniX = "0%"; $iniY = "0%";

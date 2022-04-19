@@ -2,46 +2,37 @@
 "use strict";
 
 var http = require('http'), httpPort = 8080,
-    url = require('url'), 
+    url = require('url'),
     path = require('path'), fs = require('fs'),
     Exists = fs.exists, //path.exists,
     Read = fs.readFile,
     echo = console.log,
     Importer = require(path.join(__dirname, '../../Importer/src/js/Importer.js')),
+    importer,
     HtmlWidget = require(path.join(__dirname, '../src/HtmlWidget.js'))
 ;
 
-var importer = new Importer();
 HtmlWidget.assets(JSON.parse(fs.readFileSync(path.join(process.cwd(), '../src/htmlwidget.json'))));
-importer.register('assets', HtmlWidget.assets(true, '../assets'));
-HtmlWidget.enqueueAssets(importer.enqueue.bind(importer));
-
 global.HtmlWidget = HtmlWidget;
-global.widget = function(widget, attr, data)
-{
+global.widget = function(widget, attr, data) {
     return HtmlWidget.widget(widget, attr, data);
-}
-global.options = function(options, key, val)
-{
+};
+global.options = function(options, key, val) {
     return HtmlWidget.options(options, key, val);
-}
-global.code = function(code)
-{
+};
+global.code = function(code) {
     return HtmlWidget.code(code);
-}
-global.enqueue = function(type, asset)
-{
+};
+global.enqueue = function(type, asset) {
     importer.enqueue(type, asset);
     return '';
-}
-global.styles = function()
-{
+};
+global.styles = function() {
     return importer.assets('styles');
-}
-global.scripts = function()
-{
+};
+global.scripts = function() {
     return importer.assets('scripts');
-}
+};
 
 function parse(tpl)
 {
@@ -74,12 +65,17 @@ http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname, filename;
 
     // return the main page
-    if ('/'==uri || ''==uri) {
+    if ('/'==uri || ''==uri)
+    {
+        // create a new importer instance and attach to HtmlWidget
+        importer = new Importer();
+        importer.register('assets', HtmlWidget.assets(true, '../assets'));
+        HtmlWidget.enqueueAssets(importer.enqueue.bind(importer));
         response.writeHead(200, { 'Content-Type': 'text/html' });
         response.end(html());
         return;
     }
-    
+
     // handle css/js/other file requests
     filename = path.join(process.cwd(), ('/assets/' === uri.slice(0, 8) ? '..' : '')+uri);
     fs.stat(filename, function(err, stat) {
@@ -93,7 +89,7 @@ http.createServer(function(request, response) {
         if (stat.isDirectory()) filename = path.join(filename, 'index.html');
 
         Read(filename, "binary", function(err, file) {
-            if(err) {        
+            if(err) {
                 response.writeHead(500, {"Content-Type": "text/plain"});
                 response.write(err.toString() + "\n");
                 response.end();

@@ -1,9 +1,9 @@
 # HtmlWidget
 
-Html Widgets used as plugins and/or standalone, for Javascript, PHP and Python
+Html Widgets, made as simple as possible, for Javascript, PHP and Python (Browser and Server, Desktop and Mobile)
 
 
-**Version: 2.1.1**
+**Version: 2.2.0**
 
 
 ![HtmlWidget](/htmlwidget.jpg)
@@ -19,6 +19,7 @@ Html Widgets used as plugins and/or standalone, for Javascript, PHP and Python
 ![widgets-2](/screenshots/widgets-2.png)
 ![widgets-3](/screenshots/widgets-3.png)
 ![widgets-5](/screenshots/widgets-5.png)
+![widgets-8](/screenshots/widgets-8.png)
 ![widgets-6](/screenshots/widgets-6.png)
 ![widgets-7](/screenshots/widgets-7.png)
 ![widgets-7-1](/screenshots/widgets-7-1.png)

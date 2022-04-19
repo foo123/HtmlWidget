@@ -2,12 +2,10 @@
 *  HtmlWidget
 *
 *  @dependencies: FontAwesome
-*  @version: 2.1.1
+*  @version: 2.2.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
-/** HtmlWidget github.com/foo123/HtmlWidget **/
-/* some defaults */
 .w-widget, .w-sprite, .w-wrapper, .fa-wrapper,
 .w-panel, .w-dialog, .w-table,
 .w-tab, .w-page, .w-accordeon-item,
@@ -1219,6 +1217,448 @@ input.w-radio + label.w-led-button:before
     opacity: 0.6;
 }
 
+/* range slider */
+.w-range:not(.circular)
+{
+    --primary-color: #0366D6;
+    --primary-color-lighter: LightCyan;
+    --value-offset-y: var(--ticks-gap);
+    --value-active-color: white;
+    --value-background: transparent;
+    --value-background-hover: var(--primary-color);
+    --value-font-size: 12px/1;
+    --value-font: 700 var(--value-font-size) sans-serif;
+    --fill-color: linear-gradient(to right, var(--primary-color-lighter), var(--primary-color));
+    --progress-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2) inset;
+    --progress-fill-shadow: var(--progress-shadow);
+    --progress-background: #EEE;
+    --progress-radius: 20px;
+    --track-height: 6px;
+    --min-max-font: 12px sans-serif;
+    --min-max-opacity: .5;
+    --min-max-x-offset: 10%;
+    --thumb-size: 20px;
+    --thumb-color: white;
+    --thumb-shadow: 0 0 3px rgba(0,0,0,.4),
+                  0 0 1px rgba(0,0,0,.5) inset,
+                  0 0 0 99px var(--thumb-color) inset;
+    --thumb-shadow-active: 0 0 0 calc(var(--thumb-size)/4) inset var(--thumb-color),
+                         0 0 0 99px var(--primary-color) inset,
+                         0 0 3px rgba(0,0,0,.4);
+    --thumb-shadow-hover: var(--thumb-shadow);
+    --ticks-thickness: 1px;
+    --ticks-height: 5px;
+    --ticks-gap: var(--ticks-height, 0);
+    --ticks-color: silver;
+    --step: 1;
+    --ticks-count: calc((var(--max) - var(--min)) / var(--step));
+    --maxTicksAllowed: 30;
+    --too-many-ticks: Min(1, Max(var(--ticks-count) - var(--maxTicksAllowed), 0));
+    --x-step: Max(var(--step), var(--too-many-ticks) * (var(--max) - var(--min)));
+    --tickIntervalPerc_1: calc((var(--max) - var(--min)) / var(--x-step));
+    --tickIntervalPerc: calc((100% - var(--thumb-size)) / var(--tickIntervalPerc_1) * var(--tickEvery, 1));
+    --value-a: Clamp(var(--min), var(--value, 0), var(--max));
+    --value-b: var(--value, 0);
+    --text-value-a: var(--text-value, "");
+    --completed-a: calc((var(--value-a) - var(--min)) / (var(--max) - var(--min)) * 100);
+    --completed-b: calc((var(--value-b) - var(--min)) / (var(--max) - var(--min)) * 100);
+    --ca: Min(var(--completed-a), var(--completed-b));
+    --cb: Max(var(--completed-a), var(--completed-b));
+    --thumbs-too-close: Clamp(
+    -1,
+    1000 * (Min(1, Max(var(--cb) - var(--ca) - 5, -1)) + 0.001),
+    1
+  );
+    --thumb-close-to-min: Min(1, Max(var(--ca) - 5, 0));
+    --thumb-close-to-max: Min(1, Max(95 - var(--cb), 0));
+    box-sizing:content-box;
+    display:inline-block;
+    height:Max(var(--track-height), var(--thumb-size));
+    background:linear-gradient(to right, var(--ticks-color) var(--ticks-thickness), transparent 1px) repeat-x;
+    background-size:var(--tickIntervalPerc) var(--ticks-height);
+    background-position-x:calc(var(--thumb-size)/2 - var(--ticks-thickness)/2);
+    background-position-y:var(--flip-y, bottom);
+    padding-bottom:var(--flip-y, calc(2 * var(--ticks-gap)));
+    padding-top:calc(var(--flip-y) * var(--ticks-gap) * 2);
+    position:relative;
+    z-index:1;
+    --flip-y: 1;
+}
+/*.w-range[data-ticks-position="top"]
+{
+    --flip-y: 1;
+}*/
+.w-range:not(.circular)::before,.w-range:not(.circular)::after
+{
+    --offset: calc(var(--thumb-size) / 2);
+    content:counter(x);
+    display:var(--show-min-max, block);
+    font:var(--min-max-font);
+    position:absolute;
+    bottom:var(--flip-y, -2.5ch);
+    top:calc(-2.5ch * var(--flip-y));
+    opacity:Clamp(0, var(--at-edge), var(--min-max-opacity));
+    transform:translateX(calc( var(--min-max-x-offset) * var(--before, -1) * -1)) scale(var(--at-edge));
+    pointer-events:none;
+}
+.w-range:not(.circular)::before
+{
+    --before: 1;
+    --at-edge: var(--thumb-close-to-min);
+    counter-reset:x var(--min);
+    left:var(--offset);
+}
+.w-range:not(.circular)::after
+{
+    --at-edge: var(--thumb-close-to-max);
+    counter-reset:x var(--max);
+    right:var(--offset);
+}
+.w-range-values
+{
+    position:relative;
+    top:50%;
+    line-height:0;
+    text-align:justify;
+    width:100%;
+    pointer-events:none;
+    margin:0 auto;
+    z-index:5;
+}
+.w-range-values::after
+{
+    content:'';
+    width:100%;
+    display:inline-block;
+    height:0;
+    background:red;
+}
+.w-range-progress
+{
+    --start-end: calc(var(--thumb-size) / 2);
+    --clip-end: calc(100% - (var(--cb) ) * 1%);
+    --clip-start: calc(var(--ca) * 1%);
+    --clip: inset(-20px var(--clip-end) -20px var(--clip-start));
+    position:absolute;
+    left:var(--start-end);
+    right:var(--start-end);
+    top:calc(var(--ticks-gap) * var(--flip-y,0) + var(--thumb-size) / 2 - var(--track-height) / 2);
+    height:var(--track-height);
+    background:var(--progress-background, #EEE);
+    pointer-events:none;
+    z-index:-1;
+    border-radius:var(--progress-radius);
+}
+.w-range-progress::before
+{
+    content:'';
+    position:absolute;
+    left:0;
+    right:0;
+    clip-path:var(--clip);
+    top:0;
+    bottom:0;
+    background:var(--fill-color, black);
+    box-shadow:var(--progress-fill-shadow);
+    z-index:1;
+    border-radius:inherit;
+}
+.w-range-progress::after
+{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    box-shadow:var(--progress-shadow);
+    pointer-events:none;
+    border-radius:inherit;
+}
+.w-range:not(.circular) > input
+{
+    -webkit-appearance:none;
+    appearance:none;
+    width:100%;
+    height:var(--thumb-size);
+    margin:0;
+    position:absolute;
+    left:0;
+    top:calc(50% - Max(var(--track-height), var(--thumb-size)) / 2 + calc(var(--ticks-gap) / 2 * var(--flip-y, -1)));
+    cursor:-webkit-grab;
+    cursor:grab;
+    outline:none;
+    background:none;
+}
+.w-range:not(.circular) > input:not(:only-of-type)
+{
+    pointer-events:none;
+}
+.w-range:not(.circular) > input::-webkit-slider-thumb
+{
+    -webkit-appearance: none;
+    border:none;
+    margin:0;
+    height:var(--thumb-size);
+    width:var(--thumb-size);
+    border-radius:var(--thumb-radius, 50%);
+    transform:translate(0,-2px);
+    background:var(--thumb-color);
+    box-shadow:var(--thumb-shadow);
+    pointer-events:auto;
+    transition:.1s;
+}
+.w-range:not(.circular) > input::-moz-range-thumb
+{
+    border:none;
+    margin:0;
+    height:var(--thumb-size);
+    width:var(--thumb-size);
+    border-radius:var(--thumb-radius, 50%);
+    transform:translate(0,-2px);
+    background:var(--thumb-color);
+    box-shadow:var(--thumb-shadow);
+    pointer-events:auto;
+    transition:.1s;
+}
+.w-range:not(.circular) > input::-ms-thumb
+{
+    border:none;
+    margin:0;
+    height:var(--thumb-size);
+    width:var(--thumb-size);
+    border-radius:var(--thumb-radius, 50%);
+    transform:translate(0,-2px);
+    background:var(--thumb-color);
+    box-shadow:var(--thumb-shadow);
+    pointer-events:auto;
+    transition:.1s;
+}
+.w-range:not(.circular) > input:hover
+{
+    --thumb-shadow: var(--thumb-shadow-hover);
+}
+.w-range:not(.circular) > input:focus + output,
+.w-range:not(.circular) > input:hover + output
+{
+    --value-background: var(--value-background-hover);
+    --y-offset: -5px;
+    color:var(--value-active-color);
+    box-shadow:0 0 0 3px var(--value-background);
+}
+.w-range:not(.circular) > input:focus,
+.w-range:not(.circular) > input:active
+{
+    --thumb-shadow: var(--thumb-shadow-active);
+    cursor:grabbing;
+    z-index:2;
+}
+.w-range:not(.circular) > input:focus + output,
+.w-range:not(.circular) > input:active + output
+{
+    transition:0s;
+    outline: none;
+}
+.w-range:not(.circular) > input:nth-of-type(1)
+{
+    --is-left-most: Clamp(0, (var(--value-a) - var(--value-b)) * 99999 ,1);
+}
+.w-range:not(.circular) > input:nth-of-type(1) + output
+{
+    --value: var(--value-a);
+    --x-offset: calc(var(--completed-a) * -1%);
+}
+.w-range:not(.circular) > input:nth-of-type(1) + output:not(:only-of-type)
+{
+    --flip: calc(var(--thumbs-too-close) * -1);
+}
+.w-range:not(.circular) > input:nth-of-type(1) + output::after
+{
+    content:var(--prefix, "") var(--text-value-a) var(--suffix, "");
+}
+.w-range:not(.circular) > input:nth-of-type(2)
+{
+    --is-left-most: Clamp(0, (var(--value-b) - var(--value-a)) * 99999 ,1);
+}
+.w-range:not(.circular) > input:nth-of-type(2) + output
+{
+    --value: var(--value-b);
+}
+.w-range:not(.circular) > input:only-of-type ~ .w-range-progress
+{
+    --clip-start: 0;
+}
+.w-range:not(.circular) > input + output
+{
+    --flip: -1;
+    --x-offset: calc(var(--completed-b) * -1%);
+    --pos: calc(((var(--value) - var(--min)) / (var(--max) - var(--min))) * 100%);
+    pointer-events:none;
+    position:absolute;
+    z-index:5;
+    background:var(--value-background);
+    border-radius:2px;
+    padding:2px 4px;
+    left:var(--pos);
+    transform:translate(var(--x-offset), calc(150% * var(--flip) - (var(--y-offset, 0px) + var(--value-offset-y)) * var(--flip)));
+    transition:all .12s ease-out, left 0s;
+    min-width: 30px;
+    text-align:center;
+    outline: none;
+}
+.w-range:not(.circular) > input + output::after
+{
+    position:relative;
+    display:inline-block;
+    content:var(--prefix, "") var(--text-value-b) var(--suffix, "");
+    font:var(--value-font);
+    z-index:1;
+}
+.w-range:not(.circular) > input + output::before
+{
+    position:absolute;
+    display:block;
+    content:"";
+    top:100%;
+    left:50%;
+    max-width:100%;
+    transform:translate(-50%, -2px);
+    height:0;
+    z-index:-1;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+	border-top:10px solid var(--value-background);
+}
+.w-range.circular
+{
+    --angle: 0deg;
+    --angle0: 0deg;
+    --radius: 180px;
+    --bg: #FFF;
+    --thumb-radius: 24px;
+    --thumb-bg: #EEE;
+    --progress-width: 6px;
+    --progress-bg: LightCyan;
+    --progress-active-bg: #0366D6;
+    position: relative;
+    display: inline-block;
+    background: conic-gradient(var(--progress-bg) 0deg, var(--progress-bg) var(--angle0), var(--progress-active-bg) var(--angle0), var(--progress-active-bg) var(--angle), var(--progress-bg) var(--angle), var(--progress-bg));
+    border-radius: 50%;
+    height: var(--radius);
+    width: var(--radius);
+    font: 700 16px/1 sans-serif;
+    cursor: grab;
+}
+.w-range.circular::before
+{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg);
+    font: inherit;
+    content: var(--prefix,"") var(--text-value,"") var(--suffix,"");
+    width: calc(var(--radius) - (var(--progress-width) * 2));
+    height: calc(var(--radius) - (var(--progress-width) * 2));
+    top: var(--progress-width);
+    left: var(--progress-width);
+    z-index: 1;
+    cursor: auto;
+    color: inherit;
+}
+.w-range.circular::after
+{
+    position: absolute;
+    background: var(--progress-active-bg);
+    border-radius: 50%;
+    content: "";
+    width: calc(var(--progress-width) * 2);
+    height: calc(var(--progress-width) * 2);
+    top: calc(var(--progress-width) / -2);
+    left: calc(50% - var(--progress-width));
+    z-index: 2;
+}
+.w-range.circular > output
+{
+    position: absolute;
+    background: none;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: var(--thumb-radius);
+    transform: rotate(calc(var(--angle) - 90deg));
+    transform-origin: top left;
+    z-index: 2;
+}
+.w-range.circular > output::before
+{
+    position: absolute;
+    display: inline-block;
+    box-sizing: border-box;
+    background: var(--thumb-bg);
+    border: 4px solid var(--thumb-bg);
+    border-radius: 50%;
+    width: var(--thumb-radius);
+    height: var(--thumb-radius);
+    box-shadow: var(--thumb-shadow, 1px 1px 5px 0 rgba(0,0,0,0.4));
+    content: "";
+    top: calc((var(--progress-width) - var(--thumb-radius)) / 2);
+    right: calc((var(--progress-width) - var(--thumb-radius)) / 2);
+    cursor: grab;
+	z-index: 1;
+    transform-origin: center center;
+}
+.w-range.circular:focus > output::before,
+.w-range.circular:active > output::before,
+.w-range.circular > output:focus::before,
+.w-range.circular > output:active::before
+{
+    background: var(--progress-active-bg);
+    cursor: grabbing;
+}
+.w-range.circular > output:focus
+{
+    outline: none;
+}
+.w-range.circular > input
+{
+	appearance: none;
+}
+.w-range.circular > input::-ms-thumb,
+.w-range.circular > input::-moz-range-thumb,
+.w-range.circular > input::-webkit-slider-thumb
+{
+    -webkit-appearance: none;
+	appearance: none;
+	background: var(--thumb-bg);
+    border-radius: 50%;
+    width: var(--thumb-radius);
+    height: var(--thumb-radius);
+	color: transparent;
+	cursor: grab;
+	z-index: 2;
+}
+.w-range.circular > input:active::-ms-thumb,
+.w-range.circular > input:active::-moz-range-thumb,
+.w-range.circular > input:active::-webkit-slider-thumb
+{
+	cursor: grabbing;
+}
+.w-range.circular > input::-ms-track,
+.w-range.circular > input::-moz-range-track,
+.w-range.circular > input::-webkit-slider-runnable-track
+{
+    -webkit-appearance: none;
+	appearance: none;
+	position: relative;
+	box-sizing: border-box;
+    background: transparent;
+	background-size: 100%;
+	border-radius: 10px;
+	height: 100%;
+}
+
 ul.w-check-options,
 ol.w-check-options,
 .w-check-options
@@ -2100,6 +2540,7 @@ select.w-select option.w-option-placeholder,
     transition: opacity .2s ease 0s;
 }*/
 
+/* adapted from https://cssloaders.github.io/ */
 .w-spinner
 {
     -webkit-box-sizing:border-box;
@@ -3008,7 +3449,6 @@ transform-style: preserve-3d;*/
 }
 
 /* http://www.cssportal.com/css-ribbon-generator/ */
-
 .w-ribbon-dtr,
 .w-ribbon-dtl
 {
@@ -4160,6 +4600,43 @@ by Nicolas Gallagher
 {
     margin: 3px 5px;
 }
+.w-range:not(.circular)
+{
+    width: 200px;
+    margin: 5px 5px;
+}
+.w-range:not(.circular).w-xlarge,
+.w-range:not(.circular).w-large
+{
+    width: 260px;
+    --thumb-size: 26px;
+    --track-height: 10px;
+}
+.w-range:not(.circular).w-xsmall,
+.w-range:not(.circular).w-small
+{
+    width: 180px;
+    --thumb-size: 16px;
+}
+.w-range.circular
+{
+    margin: 5px 5px;
+}
+.w-range.circular.w-xlarge,
+.w-range.circular.w-large
+{
+    --radius: 240px;
+    --thumb-radius: 24px;
+    --progress-width: 12px;
+}
+.w-range.circular.w-xsmall,
+.w-range.circular.w-small
+{
+    --radius: 140px;
+    --thumb-radius: 18px;
+    --progress-width: 4px;
+}
+
 .colorpicker-selector,
 .w-colorselector
 {
@@ -4921,6 +5398,7 @@ input.w-checkbox + label.w-xlarge
     background: none;
     color: #121212;
 }
+
 .colorpicker-selector,
 .w-colorselector
 {
@@ -5874,11 +6352,35 @@ table.w-table
 /*********************************************************************************
 *  HtmlWidget Colors dark theme
 ***********************************************************************************/
-.w-widget.w-dark
+.w-widget.w-dark:not(.w-range)
 {
     background: none;
     color: #eee;
 }
+.w-range:not(.circular).w-dark
+{
+    color: inherit;
+    --primary-color: #0366D6;
+    --primary-color-lighter: LightCyan;
+    --value-active-color: white;
+    --progress-background: #333;
+    --progress-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2) inset;
+    --thumb-color: #eee;
+    --thumb-shadow: 0 0 3px rgba(255,255,255,.4),
+                  0 0 1px rgba(255,255,255,.5) inset,
+                  0 0 0 99px var(--thumb-color) inset;
+    --thumb-shadow-active: 0 0 0 calc(var(--thumb-size)/4) inset var(--thumb-color),
+                         0 0 0 99px var(--primary-color) inset,
+                         0 0 3px rgba(255,255,255,.4);
+    --ticks-color: silver;
+}
+.w-range.circular.w-dark
+{
+    color: #eee;
+    --bg: #333;
+    --thumb-bg: #eee;
+}
+
 .w-time-component.w-dark,
 .w-dropdown.w-dark > select,
 .w-select.w-dark,

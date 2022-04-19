@@ -1,7 +1,7 @@
 /**
-*  HtmlWidget
+*  HtmlWidget, client-side utilities
 *
-*  @version: 2.1.0
+*  @version: 2.2.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -24,46 +24,91 @@ var htmlwidgets = {},
         ? function(s) {return s.trim();}
         : function(s) {return s.replace(trim_re, '');}
     ,
-    hasEventListeners = !!window.addEventListener, document = window.document
+    HASDOC = ('undefined' !== typeof window) && !!window.document,
+    hasEventListeners = HASDOC && !!window.addEventListener,
+    document = HASDOC ? window.document : null,
+    eventOptionsSupported = null,
+    lastTime = 0, vendors = ['ms', 'moz', 'webkit', 'o']
 ;
 
-htmlwidgets.addEvent = function(el, e, callback, capture) {
-    if (el)
+/*if (HASDOC)
+{
+    for(var x = 0; !window.requestAnimationFrame && x < vendors.length; ++x)
     {
-        if (hasEventListeners) el.addEventListener(e, callback, !!capture);
-        else el.attachEvent('on' + e, callback);
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
-    return el;
-};
+    if (!window.requestAnimationFrame)
+    {
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime(),
+                timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                id = window.setTimeout(function() {
+                    callback(currTime + timeToCall);
+                }, timeToCall)
+            ;
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+    }
+}*/
 
-htmlwidgets.removeEvent = function(el, e, callback, capture) {
-    if (el)
-    {
-        if (hasEventListeners) el.removeEventListener(e, callback, !!capture);
-        else el.detachEvent('on' + e, callback);
-    }
-    return el;
-};
+function hasEventOptions()
+{
 
-htmlwidgets.fireEvent = function(el, eventName, data) {
-    var evt;
-    if (el)
+    var passiveSupported = false, options = {};
+    if (hasEventListeners)
     {
-        if (document.createEvent)
-        {
-            evt = document.createEvent('HTMLEvents');
-            evt.initEvent(eventName, true, false);
-            if (null != data) evt.data = data;
-            el.dispatchEvent(evt);
-        }
-        else if (document.createEventObject)
-        {
-            evt = document.createEventObject();
-            if (null != data) evt.data = data;
-            el.fireEvent('on' + eventName, evt);
+        try {
+            Object.defineProperty(options, 'passive', {
+                get: function(){
+                    passiveSupported = true;
+                    return false;
+                }
+            });
+            window.addEventListener('test', null, options);
+            window.removeEventListener('test', null, options);
+        } catch(e) {
+            passiveSupported = false;
         }
     }
-    return el;
+    return passiveSupported;
+}
+htmlwidgets.addEvent = function(target, event, handler, options) {
+    if (null == eventOptionsSupported) eventOptionsSupported = hasEventOptions();
+    if (!hasEventListeners) target.attachEvent('on' + event, handler);
+    else target.addEventListener(event, handler, eventOptionsSupported ? options : ('object' === typeof(options) ? !!options.capture : !!options));
+    return target;
+};
+htmlwidgets.removeEvent = function(target, event, handler, options) {
+    if (null == eventOptionsSupported) eventOptionsSupported = hasEventOptions();
+    if (!hasEventListeners) target.detachEvent('on' + event, handler);
+    else target.removeEventListener(event, handler, eventOptionsSupported ? options : ('object' === typeof(options) ? !!options.capture : !!options));
+    return target;
+};
+htmlwidgets.fireEvent = function(target, event, data) {
+    var evt, doc;
+    if (target)
+    {
+        doc = target.ownerDocument || document;
+        if (doc.createEvent)
+        {
+            evt = doc.createEvent('HTMLEvents');
+            evt.initEvent(event, true, false);
+            if (null != data) evt.data = data;
+            target.dispatchEvent(evt);
+        }
+        else if (doc.createEventObject)
+        {
+            evt = doc.createEventObject();
+            if (null != data) evt.data = data;
+            target.fireEvent('on' + event, evt);
+        }
+    }
+    return target;
 };
 
 htmlwidgets.hasClass = function(el, className) {
@@ -72,7 +117,6 @@ htmlwidgets.hasClass = function(el, className) {
         : -1 !== (' ' + el.className + ' ').indexOf(' ' + className + ' ')) : false
     ;
 };
-
 htmlwidgets.addClass = function(el, className) {
     if (el && !hasClass(el, className))
     {
@@ -81,7 +125,6 @@ htmlwidgets.addClass = function(el, className) {
     }
     return el;
 };
-
 htmlwidgets.removeClass = function(el, className) {
     if (el)
     {
@@ -89,6 +132,29 @@ htmlwidgets.removeClass = function(el, className) {
         else el.className = trim((' ' + el.className + ' ').replace(' ' + className + ' ', ' '));
     }
     return el;
+};
+
+htmlwidgets.throttle = function(f, limit) {
+    var inThrottle = false;
+    return function() {
+        var context = this, args = arguments;
+        if (!inThrottle)
+        {
+            f.apply(context, args);
+            inThrottle = true;
+            setTimeout(function(){inThrottle = false;}, limit);
+        }
+    };
+};
+htmlwidgets.debounce = function(f, delay) {
+    var timer = null;
+    return function() {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            f.apply(context, args);
+        }, delay);
+    };
 };
 
 return htmlwidgets;
