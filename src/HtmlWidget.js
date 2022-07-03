@@ -2,7 +2,7 @@
 *  HtmlWidget
 *  Html Widgets for Javascript, PHP and Python (Browser and Server, Desktop and Mobile)
 *
-*  @version: 2.2.0
+*  @version: 2.3.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -118,7 +118,7 @@ HtmlWidget_Code.prototype = {
 };
 var HtmlWidget = self = {
 
-    VERSION: "2.2.0"
+    VERSION: "2.3.0"
 
     ,BASE: './'
 
@@ -562,15 +562,21 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['label-instance-'+wid])) CNT['label-instance-'+wid] = 0;
             self.enqueue('scripts', 'label-instance-'+wid+(isBrowser ? '-'+(++CNT['label-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
-        // iOS needs an onlick attribute to handle lable update if used as controller
+        // iOS needs an onlick attribute to handle label update if used as controller
         return '<label id="'+wid+'" '+wfor+' class="'+wclass+'" title="'+wtitle+'" '+wstyle+' onclick="" '+wextra+'>'+wtext+'</label>';
     }
 
@@ -611,13 +617,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['link-instance-'+wid])) CNT['link-instance-'+wid] = 0;
             self.enqueue('scripts', 'link-instance-'+wid+(isBrowser ? '-'+(++CNT['link-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return ret;
     }
@@ -666,13 +678,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['button-instance-'+wid])) CNT['button-instance-'+wid] = 0;
             self.enqueue('scripts', 'button-instance-'+wid+(isBrowser ? '-'+(++CNT['button-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return ret;
     }
@@ -714,13 +732,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['control-instance-'+wid])) CNT['control-instance-'+wid] = 0;
             self.enqueue('scripts', 'control-instance-'+wid+(isBrowser ? '-'+(++CNT['control-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return '<input type="'+wtype+'" id="'+wid+'" '+wname+' class="'+wctrl+'" value="'+wvalue+'" '+wextra+' '+wchecked+' /><label for="'+wid+'" '+wtitle+' class="'+wclass+'" '+wstyle+' '+wstate+' onclick="">'+wtext+'</label>';
     }
@@ -805,13 +829,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['control-list-instance-'+wid])) CNT['control-list-instance-'+wid] = 0;
             self.enqueue('scripts', 'control-list-instance-'+wid+(isBrowser ? '-'+(++CNT['control-list-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return widget;
     }
@@ -914,13 +944,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['control-array-instance-'+wid])) CNT['control-array-instance-'+wid] = 0;
             self.enqueue('scripts', 'control-array-instance-'+wid+(isBrowser ? '-'+(++CNT['control-array-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return widget;
     }
@@ -1001,13 +1037,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['switch-instance-'+wid])) CNT['switch-instance-'+wid] = 0;
             self.enqueue('scripts', 'switch-instance-'+wid+(isBrowser ? '-'+(++CNT['switch-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return '<span class="'+wclass+'" '+wtitle+' '+wstyle+'>'+wstates+wswitches+'<span class="w-switch-handle"></span></span>';
     }
@@ -1050,12 +1092,14 @@ var HtmlWidget = self = {
                     var element = document.getElementById('"+wid+"');\
                     if (element)\
                     {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
                         "+(winit ? "("+winit+")(element, {});" : "")+"\
                         "+(wcircular && !wdual ? "\
                         var range = element.getElementsByTagName('input')[0],\
                             output = element.getElementsByTagName('output')[0],\
-                            center, updateThrottled;\
-                        function computeCenter()\
+                            center,\
+                            restore = htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop);\
+                        function computeCenter(element)\
                         {\
                             var rect = element.getBoundingClientRect();\
                             return {\
@@ -1083,11 +1127,13 @@ var HtmlWidget = self = {
                             element.style.setProperty('--text-value', '\"'+String(range.value)+'\"');\
                             element.style.setProperty('--angle', String(angle)+'deg');\
                         }\
-                        updateThrottled = function(evt) {\
+                        function updateThrottled(evt)\
+                        {\
                             evt.preventDefault && evt.preventDefault();\
                             update(evt);\
-                        };\
-                        htmlwidgets.addEvent(output, 'keydown', function(evt) {\
+                        }\
+                        function onKeyDown(evt)\
+                        {\
                             switch(evt.key)\
                             {\
                                 case 'ArrowLeft':\
@@ -1103,31 +1149,48 @@ var HtmlWidget = self = {
                                     update();\
                                     break;\
                             }\
-                        }, {capture:false,passive:false});\
-                        htmlwidgets.addEvent(output, 'mousedown', function(evt) {\
+                        }\
+                        function onMouseDown(evt)\
+                        {\
                             evt.preventDefault && evt.preventDefault();\
-                            center = computeCenter();\
+                            center = computeCenter(element);\
                             htmlwidgets.addEvent(document, 'mouseup', function clear(evt) {\
                                 htmlwidgets.removeEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});\
                                 htmlwidgets.removeEvent(document, 'mouseup', clear);\
                                 htmlwidgets.fireEvent(range, 'change');\
                             });\
                             htmlwidgets.addEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});\
-                        }, {capture:false,passive:false});\
-                        htmlwidgets.addEvent(output, 'touchstart', function(evt) {\
+                        }\
+                        function onTouchStart(evt)\
+                        {\
                             evt.preventDefault && evt.preventDefault();\
-                            center = computeCenter();\
+                            center = computeCenter(element);\
                             htmlwidgets.addEvent(document, 'touchend', function clear(evt) {\
                                 htmlwidgets.removeEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});\
                                 htmlwidgets.removeEvent(document, 'touchend', clear);\
                                 htmlwidgets.fireEvent(range, 'change');\
                             });\
                             htmlwidgets.addEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});\
-                        }, {capture:false,passive:false});\
-                        htmlwidgets.addEvent(element, 'click', function(evt) {\
-                            center = computeCenter();\
+                        }\
+                        function onClick(evt)\
+                        {\
+                            center = computeCenter(element);\
                             update(evt);\
                             htmlwidgets.fireEvent(range, 'change');\
+                        }\
+                        htmlwidgets.addEvent(output, 'keydown', onKeyDown, {capture:false,passive:false});\
+                        htmlwidgets.addEvent(output, 'mousedown', onMouseDown, {capture:false,passive:false});\
+                        htmlwidgets.addEvent(output, 'touchstart', onTouchStart, {capture:false,passive:false});\
+                        htmlwidgets.addEvent(element, 'click', onClick);\
+                        htmlwidgets.addHandler(element, 'restore', function(element) {\
+                            restore(element);\
+                            restore = null;\
+                            var output = element.getElementsByTagName('output')[0];\
+                            htmlwidgets.removeEvent(output, 'keydown', onKeyDown, {capture:false,passive:false});\
+                            htmlwidgets.removeEvent(output, 'mousedown', onMouseDown, {capture:false,passive:false});\
+                            htmlwidgets.removeEvent(output, 'touchstart', onTouchStart, {capture:false,passive:false});\
+                            htmlwidgets.removeEvent(element, 'click', onClick);\
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
                         });\
                         update();\
                         " : "")+"\
@@ -1216,13 +1279,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['dropdown-instance-'+wid])) CNT['dropdown-instance-'+wid] = 0;
             self.enqueue('scripts', 'dropdown-instance-'+wid+(isBrowser ? '-'+(++CNT['dropdown-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         if (!!attr['select2'] && !wdropdown)
         {
@@ -1238,10 +1307,17 @@ var HtmlWidget = self = {
                 {\
                     if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {" + (winit ? '('+winit+')(element, options)' : "jQuery(element).select2(options)") + ";}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        " + (winit ? '('+winit+')(element, options);' : "jQuery(element).select2(options); htmlwidgets.addHandler(element, 'restore', function(element) {\
+                        jQuery(element).select2('destroy');\
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                    });") + "\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"], ['select2']);
+            })();"], ['htmlwidgets.js', 'select2']);
         }
         return wdropdown
         ? '<span class="'+wclass+'" '+wstyle+'><select id="'+wid+'" '+wname+' class="w-dropdown-select" '+wtitle+' '+wextra+'>'+woptions+'</select></span>'
@@ -1280,13 +1356,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['text-instance-'+wid])) CNT['text-instance-'+wid] = 0;
             self.enqueue('scripts', 'text-instance-'+wid+(isBrowser ? '-'+(++CNT['text-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return wicon.length
         ? '<span class="'+wrapper_class+'" '+wstyle+'><input type="'+wtype+'" id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wicon+'</span>'
@@ -1348,15 +1430,19 @@ var HtmlWidget = self = {
                     var element = document.getElementById('"+wid+"');\
                     if (element)\
                     {\
-                        " + (winit ? '('+winit+')(element, options)' : "if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}\
-                        element.codemirror = CodeMirror.fromTextArea(element, options);\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        " + (winit ? '('+winit+')(element, options);' : "element.codemirror = CodeMirror.fromTextArea(element, options);\
+                        htmlwidgets.addHandler(element, 'restore', function(element) {\
+                            if (element.codemirror) {try{element.codemirror.toTextArea();}catch(e){} element.codemirror = null;}\
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                        });\
                         if (autosave)\
                         {\
                             element.codemirror.on('changes', function(cm){\
                                 cm.save();\
                                 htmlwidgets.fireEvent(element, 'change');\
                             });\
-                        }") + ";\
+                        }") + "\
                     }\
                 }\
                 window.requestAnimationFrame(render);\
@@ -1414,9 +1500,14 @@ var HtmlWidget = self = {
                             delete options.locale;\
                             delete options.i18n;\
                         }\
-                        " + (winit ? '('+winit+')(element, options)' : "var prev_editor = tinymce.get(element.id);\
-                        if (prev_editor) {prev_editor.remove();}\
-                        tinymce.init(options);") + ";\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        " + (winit ? '('+winit+')(element, options);' : "tinymce.init(options);\
+                        htmlwidgets.addHandler(element, 'restore', function(element) {\
+                            var prev_editor = tinymce.get(element.id);\
+                            if (prev_editor) prev_editor.remove();\
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                        });\
+                        ") + "\
                     }\
                 }\
                 window.requestAnimationFrame(render);\
@@ -1432,13 +1523,19 @@ var HtmlWidget = self = {
                 // if in browser and re-render, use dynamic id to re-enqueue
                 if (isBrowser && (null == CNT['textarea-instance-'+wid])) CNT['textarea-instance-'+wid] = 0;
                 self.enqueue('scripts', 'textarea-instance-'+wid+(isBrowser ? '-'+(++CNT['textarea-instance-'+wid]) : ''), ["(function(){\
+                    var tries = 0;\
                     function render()\
                     {\
+                        if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                         var element = document.getElementById('"+wid+"');\
-                        if (element) {("+winit+")(element, {});}\
+                        if (element)\
+                        {\
+                            htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                            ("+winit+")(element, {});\
+                        }\
                     }\
                     window.requestAnimationFrame(render);\
-                })();"]);
+                })();"], ['htmlwidgets.js']);
             }
         }
         return '<textarea id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" '+wstyle+' placeholder="'+wplaceholder+'" '+wextra+'>'+wvalue+'</textarea>';
@@ -1501,13 +1598,17 @@ var HtmlWidget = self = {
                 var element = document.getElementById('"+wid+"');\
                 if (element)\
                 {\
-                    " + (winit ? '('+winit+')(element, options)' : "if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}\
-                    options.field = element;\
-                    element.pikadaytime = new Pikadaytime(options);") + ";\
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                    " + (winit ? '('+winit+')(element, options);' : "options.field = element;\
+                    element.pikadaytime = new Pikadaytime(options);\
+                    htmlwidgets.addHandler(element, 'restore', function(element) {\
+                        if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}\
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                    });") + "\
                 }\
             }\
             window.requestAnimationFrame(render);\
-        })();"], ['pikadaytime']);
+        })();"], ['htmlwidgets.js', 'pikadaytime']);
         return '<span class="'+wrapper_class+'" '+wstyle+'><input type="text" id="'+wid+'" '+wname+' '+wtitle+' class="'+wclass+'" placeholder="'+wplaceholder+'" value="'+wvalue+'" '+wextra+' />'+wicon+'</span>';
     }
 
@@ -1623,12 +1724,16 @@ var HtmlWidget = self = {
                 if (element)\
                 {\
                     if (options.input) options.input = document.getElementById(options.input);\
-                    " + (winit ? '('+winit+')(element, options)' : "if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}\
-                    element.colorpicker = new ColorPicker(element, options);") + ";\
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                    " + (winit ? '('+winit+')(element, options)' : "element.colorpicker = new ColorPicker(element, options);\
+                    htmlwidgets.addHandler(element, 'restore', function(element) {\
+                        if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}\
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                    });") + ";\
                 }\
             }\
             window.requestAnimationFrame(render);\
-        })();"], ['colorpicker']);
+        })();"], ['htmlwidgets.js', 'colorpicker']);
         return ret;
     }
 
@@ -1660,16 +1765,21 @@ var HtmlWidget = self = {
         self.enqueue('styles', 'htmlwidgets.css');
         if (isBrowser && (null == CNT['file-instance-'+wid])) CNT['file-instance-'+wid] = 0;
         self.enqueue('scripts', 'file-instance-'+wid+(isBrowser ? '-'+(++CNT['file-instance-'+wid]) : ''), ["(function(){\
+            var tries = 0;\
             function render()\
             {\
+                if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                 var element = document.getElementById('"+wid+"');\
                 var input = document.getElementById('text_input_"+wid+"');\
                 if (element && input)\
                 {\
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
                     " + (winit ? '('+winit+')(element, {input:input});' : "\
                     if (element.changehandler) {htmlwidgets.removeEvent(element, 'change', element.changehandler); element.changehandler = null;}\
-                    htmlwidgets.addEvent(element, 'change', element.changehandler = function(){\
-                        input.value = element.value;\
+                    htmlwidgets.addEvent(element, 'change', element.changehandler = function() {input.value = element.value;});\
+                    htmlwidgets.addHandler(element, 'restore', function(element) {\
+                        if (element.changehandler) {htmlwidgets.removeEvent(element, 'change', element.changehandler); element.changehandler = null;}\
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
                     });") + "\
                 }\
             }\
@@ -1726,13 +1836,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['table-instance-'+wid])) CNT['table-instance-'+wid] = 0;
             self.enqueue('scripts', 'table-instance-'+wid+(isBrowser ? '-'+(++CNT['table-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         if (!!attr['datatable'])
         {
@@ -1746,12 +1862,20 @@ var HtmlWidget = self = {
                 "+code.map(function(c) {return "options['"+c[0]+"'] = " + c[1].code + ";";}).join("\n")+"\
                 function render()\
                 {\
-                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.dataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
+                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.DataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {" + (winit ? '('+winit+')(element, options)' : "jQuery(element).dataTable(options)") + ";}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        " + (winit ? '('+winit+')(element, options);' : "element.datatable = jQuery(element).DataTable(options);\
+                        htmlwidgets.addHandler(element, 'restore', function(element) {\
+                            if (element.datatable) {element.datatable.destroy(); element.datatable = null;}\
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);\
+                        });") + "\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"], ['datatables-all']);
+            })();"], ['htmlwidgets.js', 'datatables-all']);
         }
         return '<table id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+' '+wdata+'>'+wheader+'<tbody>'+wrows+'</tbody>'+wfooter+'</table>';
     }
@@ -1818,13 +1942,19 @@ var HtmlWidget = self = {
             // if in browser and re-render, use dynamic id to re-enqueue
             if (isBrowser && (null == CNT['media-instance-'+wid])) CNT['media-instance-'+wid] = 0;
             self.enqueue('scripts', 'media-instance-'+wid+(isBrowser ? '-'+(++CNT['media-instance-'+wid]) : ''), ["(function(){\
+                var tries = 0;\
                 function render()\
                 {\
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}\
                     var element = document.getElementById('"+wid+"');\
-                    if (element) {("+winit+")(element, {});}\
+                    if (element)\
+                    {\
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);\
+                        ("+winit+")(element, {});\
+                    }\
                 }\
                 window.requestAnimationFrame(render);\
-            })();"]);
+            })();"], ['htmlwidgets.js']);
         }
         return '<'+wtype+' id="'+wid+'" class="'+wclass+'" '+wstyle+' '+wextra+'>'+wsource+wtext+'</'+wtype+'>';
     }
@@ -1910,7 +2040,7 @@ var HtmlWidget = self = {
             pages = [];
             if (numPages <= maxPagesToShow)
             {
-                for (i=1; i<=numPages; i++)
+                for (i=1; i<=numPages; ++i)
                 {
                     pages.push({
                         text : i,
@@ -1951,7 +2081,7 @@ var HtmlWidget = self = {
                         isCurrent : false
                     });
                 }
-                for (i=slidingStart; i<=slidingEnd; i++)
+                for (i=slidingStart; i<=slidingEnd; ++i)
                 {
                     pages.push({
                         text : i,
@@ -1983,7 +2113,7 @@ var HtmlWidget = self = {
                 }
 
                 out += '<select class="page-select">';
-                for (i=0,l=pages.length; i<l; i++)
+                for (i=0,l=pages.length; i<l; ++i)
                 {
                     page = pages[i];
                     if (page.url)
@@ -2011,7 +2141,7 @@ var HtmlWidget = self = {
                     out += '<li class="page-previous"><a href="' + htmlspecialchars(urlPattern.replace(placeholder, String(currentPage-1))) + '">'+ previousText +'</a></li>';
                 }
 
-                for (i=0,l=pages.length; i<l; i++)
+                for (i=0,l=pages.length; i<l; ++i)
                 {
                     page = pages[i];
                     if (page.url)
@@ -2038,6 +2168,15 @@ var HtmlWidget = self = {
             return '';
         }
     }
+
+    /*,w_sortable: function(attr, data, widgetName) {
+    }
+
+    ,w_selectable: function(attr, data, widgetName) {
+    }
+
+    ,w_removable: function(attr, data, widgetName) {
+    }*/
 
     ,w_delayable: function(attr, data, widgetName) {
         var wid, wclass, wstyle, wextra, wspinner;

@@ -3,7 +3,7 @@
 Html Widgets, made as simple as possible, for Javascript, PHP and Python (Browser and Server, Desktop and Mobile)
 
 
-**Version: 2.2.0**
+**Version: 2.3.0**
 
 
 ![HtmlWidget](/htmlwidget.jpg)

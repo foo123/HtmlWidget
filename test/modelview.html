@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" class="no-ie">
+<head>
+<title>HtmlWidget w/ ModelView Demo</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<style type="text/css">
+#forkongithub a{background:#aa0000;color:#fff;text-decoration:none;font-family:arial, sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:0.9rem;line-height:1.4rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#aa0000;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;z-index:100;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;z-index:100;top:0;right:0;width:200px;overflow:hidden;height:200px;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}
+body {
+    background-color:#121212;
+    color: #eee;
+    margin: 0;
+    padding: 0;
+    font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale
+    text-align: center;
+}
+#app {
+    position: relative;
+    box-sizing:border-box;
+    margin: 20px auto;
+    width: 800px;
+    max-width: 100%;
+    text-align: left;
+}
+#app .row {
+    position: relative;
+    box-sizing:border-box;
+    width: 100%;
+    padding: 20px 10px;
+    border-bottom: 1px solid rgba(100,100,100,0.5);
+}
+#app .row > .field {
+    position: relative;
+    vertical-align: top;
+    width: 60%;
+    display: inline-block;
+}
+#app .row > .label {
+    position: relative;
+    vertical-align: top;
+    width: 30%;
+    font-weight: bold;
+    display: inline-block;
+}
+#app .w-widget.w-label {
+    color: #eee;
+}
+#app .w-syntax-editor + .CodeMirror {
+    min-height: 160px;
+    max-height: 180px;
+}
+#app .tinymce-mobile-editor-socket {
+    background: #fff !important;
+}
+@media all and (max-width: 640px) {
+#app .row > .field {
+    width: 100%;
+    display: block;
+}
+#app .row > .label {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+}
+}
+</style>
+</head>
+<body>
+<span id="forkongithub"><a href="https://github.com/foo123/HtmlWidget">Fork me on GitHub</a></span>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<h2>Some HtmlWidgets w/ ModelView</h2>
+<div id="app"></div>
+
+<script type="text/x-template" id="app-content">
+<div class="row">
+{view.widget('label',{'for':'username','class':'label'},{'text':'Your Username:'})}
+<div class="field">
+{view.widget('textbox',{'id':'username','class':'w-dark','name':'username','placeholder':'Your username','iconr':'user'})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'email','class':'label'},{'text':'Your Email:'})}
+<div class="field">
+{view.widget('textbox',{'type':'email','id':'email','class':'w-dark','name':'email','placeholder':'Your email','iconr':'envelope'})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'birthday','class':'label'},{'text':'Your Birthday:'})}
+<div class="field">
+{view.widget('datetimepicker',{'id':'birthday','class':'w-dark','name':'birthday','placeholder':'Your birthday','options':{'className':'pika-dark','showTime':false,'format':'D, d M Y'}})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'color','class':'label'},{'text':'Your favorite Color:'})}
+<div class="field">
+{view.widget('colorpicker',{'id':'color','title':'Your favorite color','input':true,'iconr':true,'class':'w-dark','selector-class':'colorpicker-dark','options':{'format':'rgba','color':'rgba(255,0,0,1)'}})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'class':'label'},{'text':'Rate us:'})}
+<div class="field">
+{view.widget('rating',{'title':'Please rate:','icon':'star'})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'class':'label'},{'text':'Usage percentage:'})}
+<div class="field">
+{view.widget('range',{'circular':true,'title':'Please rate:','class':'w-dark','suffix':'%'},{'value':75})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'subscription','class':'label'},{'text':'Subscribe:'})}
+<div class="field">
+{view.widget('switch',{'id':'subscription','name':'subscription','class':'w-large w-dark','iconon':'check','iconoff':'thumbs-down','checked':true},{'value':'subscribe'})}
+{view.widget('button',{'for':'modal_a_modal','class':'w-large w-black'},{'text':'Modal'})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'bio','class':'label'},{'text':'About:'})}
+<div class="field">
+{view.widget('wysiwyg-editor',{'id':'bio','name':'bio','options':{
+        'theme': 'modern',
+        'height': 100,
+        'mobile': {'theme':'mobile'},
+    }},{'value':'<i>Tell us something about you</i>'})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'class':'label'},{'text':'Gender:'})}
+<div class="field">
+{view.widget('radiolist',{'name':'gender'},{'options':options({
+        'gb' : 'Gender Bender',
+        'cf' : 'Cis Female',
+        'cm' : 'Cis Male',
+        'tf' : 'Trans Female',
+        'tm' : 'Trans Male',
+        'nb' : 'Non-Binary / None of the above'
+    },-1)})}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'class':'label'},{'text':'Programming:'})}
+<div class="field">
+{view.widget('checkbox-array',{'class':'w-dark','name':'programming[]'},{
+    'fields':{
+    'html':'HTML',
+    'css':'CSS',
+    'js':'JavaScript'
+    },
+    'options':options({
+        'client' : 'Client-Side',
+        'server' : 'Server-Side'
+    },-1)
+    })}
+</div>
+</div>
+<div class="row">
+{view.widget('label',{'for':'program','class':'label'},{'text':'Program:'})}
+<div class="field">
+{view.widget('syntax-editor',{'id':'program','class':'w-dark','name':'program','options':{'mode':'text/html','theme':'lesser-dark'}},{'value':'<span>write some html</span>'})}
+</div>
+</div>
+<div style="text-align:center">
+{view.widget('button',{'class':'w-large w-black','iconr':'check','extra':'mv-evt mv-on-click="submit"'},{'text':'Submit'})}
+{view.widget('button',{'class':'w-large w-black','iconr':'check','extra':'mv-evt mv-on-click="render"'},{'text':'Re-Render'})}
+</div>
+</script>
+<script src="../../Importer/src/js/Importer.min.js"></script>
+<script src="../src/HtmlWidget.js"></script>
+<script src="../../modelview.js/build/modelview.jsx.min.js"></script>
+<script>
+var assets = {
+"normalize.css":{"type":"styles", "asset":"${ASSETS}/responsive/normalize.css"}
+,"responsive.css":{"type":"styles", "asset":"${ASSETS}/responsive/responsive.css", "dependencies":["normalize.css"]}
+,"fontawesome.css":{"type":"styles", "asset":"https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"}
+,"htmlwidgets.css":{"type":"styles", "asset":"${ASSETS}/htmlwidgets.min.css", "dependencies":["fontawesome.css"]}
+,"htmlwidgets.js":{"type":"scripts", "asset":"${ASSETS}/htmlwidgets.min.js"}
+,"jquery":{"type":"scripts", "asset":"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"}
+,"jquery-ui":{"type":"scripts", "asset":"https://code.jquery.com/ui/1.11.4/jquery-ui.min.js", "dependencies":["jquery"]}
+,"bootstrap.css":{"type":"styles", "asset":"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", "attributes":{"integrity":"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u","crossorigin":"anonymous"}}
+,"bootstrap":{"type":"scripts", "asset":"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js", "dependencies":["bootstrap.css", "jquery"], "attributes":{"integrity":"sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa","crossorigin":"anonymous"}}
+,"datex":{"type":"scripts", "asset":"${ASSETS}/pikadaytime/datex.js"}
+,"pikadaytime.css":{"type":"styles", "asset":"${ASSETS}/pikadaytime/pikadaytime.css"}
+,"pikadaytime":{"type":"scripts", "asset":"${ASSETS}/pikadaytime/pikadaytime.js", "dependencies":["pikadaytime.css","datex"]}
+,"colorpicker.css":{"type":"styles", "asset":"${ASSETS}/colorpicker/colorpicker.css"}
+,"colorpicker":{"type":"scripts", "asset":"${ASSETS}/colorpicker/colorpicker.js", "dependencies":["colorpicker.css"]}
+,"select2.css":{"type":"styles", "asset":"https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css"}
+,"select2":{"type":"scripts", "asset":"https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.full.min.js", "dependencies":["select2.css","jquery"]}
+,"html5media":{"type":"scripts", "asset":"https://cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js"}
+,"tooltipster.css":{"type":"styles", "asset":"https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css"}
+,"tooltipster":{"type":"scripts", "asset":"https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js", "dependencies":["tooltipster.css","jquery"]}
+,"popr2.css":{"type":"styles", "asset":"${ASSETS}/popr2/popr2.css"}
+,"popr2":{"type":"scripts", "asset":"${ASSETS}/popr2/popr2.js", "dependencies":["popr2.css","jquery"]}
+,"datatables.css":{"type":"styles", "asset":"https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css"}
+,"datatables":{"type":"scripts", "asset":"https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js", "dependencies":["datatables.css","jquery"]}
+,"datatables-reorder.css":{"type":"styles-composite", "asset":[
+    "https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css",
+    "https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css"
+]}
+,"datatables-reorder":{"type":"scripts-composite", "asset":[
+    "https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js",
+    "https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js"
+], "dependencies":["datatables-reorder.css","datatables"]}
+,"datatables-buttons.css":{"type":"styles", "asset":"https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css", "dependencies":["datatables.css"]}
+,"datatables-buttons":{"type":"scripts", "asset":"https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js", "dependencies":["datatables-buttons.css","datatables"]}
+,"datatables-colvis":{"type":"scripts", "asset":"https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js", "dependencies":["datatables-buttons"]}
+,"datatables-extra.css":{"type":"styles-composite", "asset":[
+    "https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css",
+    "https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css",
+    "https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css",
+    "https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css",
+    "https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css"
+], "dependencies":["datatables.css"]}
+,"datatables-extra":{"type":"scripts-composite", "asset":[
+    "https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js",
+    "https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js",
+    "https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js",
+    "https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js"
+], "dependencies":["datatables-extra.css","datatables"]}
+,"datatables-all.css":{"type":"styles-composite", "asset":[
+    "https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css",
+    "https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css",
+    "https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css",
+    "https://cdn.datatables.net/colreorder/1.3.1/css/colReorder.dataTables.min.css",
+    "https://cdn.datatables.net/rowreorder/1.1.1/css/rowReorder.dataTables.min.css",
+    "https://cdn.datatables.net/autofill/2.1.1/css/autoFill.dataTables.min.css",
+    "https://cdn.datatables.net/fixedcolumns/3.2.1/css/fixedColumns.dataTables.min.css",
+    "https://cdn.datatables.net/fixedheader/3.1.1/css/fixedHeader.dataTables.min.css",
+    "https://cdn.datatables.net/scroller/1.4.1/css/scroller.dataTables.min.css",
+    "https://cdn.datatables.net/keytable/2.1.1/css/keyTable.dataTables.min.css"
+]}
+,"datatables-all":{"type":"scripts-composite", "asset":[
+    "https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.colVis.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js",
+    "https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js",
+    "https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js",
+    "https://cdn.datatables.net/colreorder/1.3.1/js/dataTables.colReorder.min.js",
+    "https://cdn.datatables.net/rowreorder/1.1.1/js/dataTables.rowReorder.min.js",
+    "https://cdn.datatables.net/autofill/2.1.1/js/dataTables.autoFill.min.js",
+    "https://cdn.datatables.net/fixedcolumns/3.2.1/js/dataTables.fixedColumns.min.js",
+    "https://cdn.datatables.net/fixedheader/3.1.1/js/dataTables.fixedHeader.min.js",
+    "https://cdn.datatables.net/scroller/1.4.1/js/dataTables.scroller.min.js",
+    "https://cdn.datatables.net/keytable/2.1.1/js/dataTables.keyTable.min.js"
+], "dependencies":["datatables-all.css","datatables"]}
+,"mathjax":{"type":"scripts", "asset":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"}
+,"tinymce":{"type":"scripts", "asset":"https://cloud.tinymce.com/4/tinymce.js"}
+,"codemirror.css":{"type":"styles", "asset":"https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.css"}
+,"codemirror":{"type":"scripts-composite", "asset":[
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/mode/multiplex.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.min.js"
+], "dependencies":["codemirror.css"]}
+,"codemirror-fold.css":{"type":"styles", "asset":"https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.css", "dependencies":["codemirror.css"]}
+,"codemirror-fold":{"type":"scripts-composite", "asset":[
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldgutter.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/foldcode.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/comment-fold.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/brace-fold.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/indent-fold.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/markdown-fold.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/fold/xml-fold.min.js"
+], "dependencies":["codemirror-fold.css","codemirror"]}
+,"codemirror-htmlmixed":{"type":"scripts-composite", "asset":[
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/xml/xml.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/css/css.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/htmlmixed/htmlmixed.min.js"
+], "dependencies":["codemirror-fold"]}
+,"codemirror-grammar":{"type":"scripts", "asset":"${ASSETS}/codemirror/addon/grammar/codemirror_grammar.js", "dependencies":["codemirror"]}
+};
+// requireJS breaks the loading since my modules if present dont register to global object
+(function(ModelView, Importer, HtmlWidget) {
+    document.body.insertAdjacentHTML('beforeend',
+HtmlWidget.widget('modal', {'id':'a_modal','class':'w-dark','autoclose':true})+
+'<h2>A Modal</h2>\
+<p>Some text here.. Some text here.. Some text here.. Some text here.. Some text here.. Some text here..</p>\
+<p>Some more text here.. Some more text here.. Some more text here.. Some more text here..</p>'+
+HtmlWidget.widget('/modal', {'id':'a_modal','class':'w-dark','autoclose':true})
+);
+
+    // do the necessary plumbing
+    var importer = new Importer();
+    HtmlWidget.assets(assets);
+    importer.register('assets', HtmlWidget.assets(true, '../assets'));
+    HtmlWidget.enqueueAssets(importer.enqueue.bind(importer));
+    ModelView.View.HtmlWidget = HtmlWidget;
+    new ModelView.View('view')
+        .model(new ModelView.Model('model'))
+        .template(document.getElementById('app-content').innerHTML)
+        .context({
+            options: HtmlWidget.options,
+            code: HtmlWidget.code
+        })
+        .actions({
+            submit: function(evt, el) {
+                alert('Submitted!');
+            },
+            render: function(evt, el) {
+                this.render();
+            }
+        })
+        .livebind(true)
+        .autobind(false)
+        .bind(['click'], document.getElementById('app'))
+        .on('render', () => {
+            importer.assets('styles');
+            importer.assets('scripts');
+        })
+        .render()
+    ;
+})(ModelView, Importer, HtmlWidget);
+</script>
+</body>
+</html>

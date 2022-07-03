@@ -3,7 +3,7 @@
 *  HtmlWidget
 *  Html Widgets for Javascript, PHP and Python (Browser and Server, Desktop and Mobile)
 *
-*  @version: 2.2.0
+*  @version: 2.3.0
 *  https://github.com/foo123/HtmlWidget
 *
 **/
@@ -20,7 +20,7 @@ class HtmlWidget_Code
 }
 class HtmlWidget
 {
-    const VERSION = "2.2.0";
+    const VERSION = "2.3.0";
     public static $BASE = './';
     public static $enqueuer = null;
     public static $widgets = array();
@@ -157,7 +157,7 @@ class HtmlWidget
         {
             $vv = (array)$v;
             $o_key = null;
-            if (-1 === $key)
+            if (-1 == $key)
             {
                 $o_key = $k;
             }
@@ -440,14 +440,22 @@ class HtmlWidget
         $wextra = self::attributes($attr,array('disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit)
+        {
             self::enqueue('scripts', 'label-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
+        }
         // iOS needs an onlick attribute to handle label update if used as controller
         return "<label id=\"$wid\" $wfor class=\"$wclass\" title=\"$wtitle\" $wstyle onclick=\"\" $wextra>$wtext</label>";
     }
@@ -484,14 +492,22 @@ class HtmlWidget
             $ret = "<a id=\"$wid\" class=\"$wclass\" $wstyle title=\"$wtitle\" href=\"$whref\" $wextra>$wtext</a>";
         }
         if ($winit)
+        {
             self::enqueue('scripts', 'link-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
+        }
         return $ret;
     }
 
@@ -538,13 +554,19 @@ class HtmlWidget
         }
         if ($winit)
             self::enqueue('scripts', 'button-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return $ret;
     }
 
@@ -581,13 +603,19 @@ class HtmlWidget
         $wclass = 'w-widget w-control'; if (!empty($attr["class"])) $wclass .= ' '.$attr["class"];
         if ($winit)
             self::enqueue('scripts', 'control-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return "<input type=\"$wtype\" id=\"$wid\" $wname class=\"$wctrl\" value=\"$wvalue\" $wextra $wchecked /><label for=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wstate onclick=\"\">$wtext</label>";
     }
 
@@ -664,13 +692,19 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit)
             self::enqueue('scripts', 'control-list-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return $widget;
     }
 
@@ -761,13 +795,19 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit)
             self::enqueue('scripts', 'control-array-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return $widget;
     }
 
@@ -843,13 +883,19 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit)
             self::enqueue('scripts', 'switch-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return "<span class=\"$wclass\" $wtitle $wstyle>{$wstates}{$wswitches}<span class=\"w-switch-handle\"></span></span>";
     }
 
@@ -886,12 +932,14 @@ class HtmlWidget
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
                         ".($winit ? "({$winit})(element, {});" : "")."
                         ".($wcircular && !$wdual ? "
                         var range = element.getElementsByTagName('input')[0],
                             output = element.getElementsByTagName('output')[0],
-                            center, updateThrottled;
-                        function computeCenter()
+                            center,
+                            restore = htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop);
+                        function computeCenter(element)
                         {
                             var rect = element.getBoundingClientRect();
                             return {
@@ -919,11 +967,13 @@ class HtmlWidget
                             element.style.setProperty('--text-value', '\"'+String(range.value)+'\"');
                             element.style.setProperty('--angle', String(angle)+'deg');
                         }
-                        updateThrottled = function(evt) {
+                        function updateThrottled(evt)
+                        {
                             evt.preventDefault && evt.preventDefault();
                             update(evt);
-                        };
-                        htmlwidgets.addEvent(output, 'keydown', function(evt) {
+                        }
+                        function onKeyDown(evt)
+                        {
                             switch(evt.key)
                             {
                                 case 'ArrowLeft':
@@ -939,31 +989,48 @@ class HtmlWidget
                                     update();
                                     break;
                             }
-                        }, {capture:false,passive:false});
-                        htmlwidgets.addEvent(output, 'mousedown', function(evt) {
+                        }
+                        function onMouseDown(evt)
+                        {
                             evt.preventDefault && evt.preventDefault();
-                            center = computeCenter();
+                            center = computeCenter(element);
                             htmlwidgets.addEvent(document, 'mouseup', function clear(evt) {
                                 htmlwidgets.removeEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});
                                 htmlwidgets.removeEvent(document, 'mouseup', clear);
                                 htmlwidgets.fireEvent(range, 'change');
                             });
                             htmlwidgets.addEvent(document, 'mousemove', updateThrottled, {capture:false,passive:false});
-                        }, {capture:false,passive:false});
-                        htmlwidgets.addEvent(output, 'touchstart', function(evt) {
+                        }
+                        function onTouchStart(evt)
+                        {
                             evt.preventDefault && evt.preventDefault();
-                            center = computeCenter();
+                            center = computeCenter(element);
                             htmlwidgets.addEvent(document, 'touchend', function clear(evt) {
                                 htmlwidgets.removeEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});
                                 htmlwidgets.removeEvent(document, 'touchend', clear);
                                 htmlwidgets.fireEvent(range, 'change');
                             });
                             htmlwidgets.addEvent(document, 'touchmove', updateThrottled, {capture:false,passive:false});
-                        }, {capture:false,passive:false});
-                        htmlwidgets.addEvent(element, 'click', function(evt) {
-                            center = computeCenter();
+                        }
+                        function onClick(evt)
+                        {
+                            center = computeCenter(element);
                             update(evt);
                             htmlwidgets.fireEvent(range, 'change');
+                        }
+                        htmlwidgets.addEvent(output, 'keydown', onKeyDown, {capture:false,passive:false});
+                        htmlwidgets.addEvent(output, 'mousedown', onMouseDown, {capture:false,passive:false});
+                        htmlwidgets.addEvent(output, 'touchstart', onTouchStart, {capture:false,passive:false});
+                        htmlwidgets.addEvent(element, 'click', onClick);
+                        htmlwidgets.addHandler(element, 'restore', function(element) {
+                            restore(element);
+                            restore = null;
+                            var output = element.getElementsByTagName('output')[0];
+                            htmlwidgets.removeEvent(output, 'keydown', onKeyDown, {capture:false,passive:false});
+                            htmlwidgets.removeEvent(output, 'mousedown', onMouseDown, {capture:false,passive:false});
+                            htmlwidgets.removeEvent(output, 'touchstart', onTouchStart, {capture:false,passive:false});
+                            htmlwidgets.removeEvent(element, 'click', onClick);
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
                         });
                         update();
                         " : "")."
@@ -1044,13 +1111,19 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit && $wdropdown)
             self::enqueue('scripts', 'dropdown-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         if (!empty($attr['select2']) && !$wdropdown)
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
@@ -1063,10 +1136,17 @@ class HtmlWidget
                 {
                     if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {" . ($winit ? '('.$winit.')(element, options)' : "jQuery(element).select2(options)") . ";}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                    " . ($winit ? '('.$winit.')(element, options);' : "jQuery(element).select2(options); htmlwidgets.addHandler(element, 'restore', function(element) {
+                        jQuery(element).select2('destroy');
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                    });") . "
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"), array('select2'));
+            })();"), array('htmlwidgets.js', 'select2'));
         }
         return $wdropdown
         ? "<span class=\"$wclass\" $wstyle><select id=\"$wid\" $wname class=\"w-dropdown-select\" $wtitle $wextra>$woptions</select></span>"
@@ -1102,13 +1182,19 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit)
             self::enqueue('scripts', 'text-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return !empty($wicon)
         ? "<span class=\"$wrapper_class\" $wstyle><input type=\"$wtype\" id=\"$wid\" $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>"
         : "<input type=\"$wtype\" id=\"$wid\" $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />";
@@ -1166,15 +1252,19 @@ class HtmlWidget
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
-                        " . ($winit ? '('.$winit.')(element, options)' : "if (element.codemirror) {element.codemirror.toTextArea(); element.codemirror = null;}
-                        element.codemirror = CodeMirror.fromTextArea(element, options);
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        " . ($winit ? '('.$winit.')(element, options);' : "element.codemirror = CodeMirror.fromTextArea(element, options);
+                        htmlwidgets.addHandler(element, 'restore', function(element) {
+                            if (element.codemirror) {try{element.codemirror.toTextArea();}catch(e){} element.codemirror = null;}
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                        });
                         if (autosave)
                         {
-                            element.codemirror.on('changes', function(cm){
+                            element.codemirror.on('changes', function(cm) {
                                 cm.save();
                                 htmlwidgets.fireEvent(element, 'change');
                             });
-                        }") . ";
+                        }") . "
                     }
                 }
                 window.requestAnimationFrame(render);
@@ -1229,9 +1319,13 @@ class HtmlWidget
                             delete options.locale;
                             delete options.i18n;
                         }
-                        " . ($winit ? '('.$winit.')(element, options)' : "var prev_editor = tinymce.get(element.id);
-                        if (prev_editor) {prev_editor.remove();}
-                        tinymce.init(options)") . ";
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        " . ($winit ? '('.$winit.')(element, options);' : "tinymce.init(options);
+                        htmlwidgets.addHandler(element, 'restore', function(element) {
+                            var prev_editor = tinymce.get(element.id);
+                            if (prev_editor) prev_editor.remove();
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                        });") . "
                     }
                 }
                 window.requestAnimationFrame(render);
@@ -1243,13 +1337,19 @@ class HtmlWidget
             self::enqueue('styles', 'htmlwidgets.css');
             if ($winit)
                 self::enqueue('scripts', 'textarea-instance-'.$wid, array("(function(){
+                    var tries = 0;
                     function render()
                     {
+                        if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                         var element = document.getElementById('".$wid."');
-                        if (element) {({$winit})(element, {});}
+                        if (element)
+                        {
+                            htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                            ({$winit})(element, {});
+                        }
                     }
                     window.requestAnimationFrame(render);
-                })();"));
+                })();"), array('htmlwidgets.js'));
         }
         return "<textarea id=\"$wid\" $wname $wtitle class=\"$wclass\" $wstyle placeholder=\"$wplaceholder\" $wextra>$wvalue</textarea>";
     }
@@ -1309,13 +1409,17 @@ class HtmlWidget
                 var element = document.getElementById('".$wid."');
                 if (element)
                 {
-                    " . ($winit ? '('.$winit.')(element, options)' : "if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}
-                    options.field = element;
-                    element.pikadaytime = new Pikadaytime(options)") . ";
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                    " . ($winit ? '('.$winit.')(element, options);' : "options.field = element;
+                    element.pikadaytime = new Pikadaytime(options);
+                    htmlwidgets.addHandler(element, 'restore', function(element) {
+                        if (element.pikadaytime) {element.pikadaytime.dispose(); element.pikadaytime = null;}
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                    });") . "
                 }
             }
             window.requestAnimationFrame(render);
-        })();"), array('pikadaytime'));
+        })();"), array('htmlwidgets.js', 'pikadaytime'));
         return "<span class=\"$wrapper_class\" $wstyle><input type=\"text\" id=\"$wid\" $wname $wtitle class=\"$wclass\" placeholder=\"$wplaceholder\" value=\"$wvalue\" $wextra />$wicon</span>";
     }
 
@@ -1415,7 +1519,6 @@ class HtmlWidget
             if (!empty($attr['selector-class'])) $wclass .= ' '.$attr['selector-class'];
             $ret = "<div id=\"$wid\" $wtitle class=\"$wclass\" $wstyle $wextra></div>";
         }
-        self::enqueue('scripts', 'colorpicker');
         self::enqueue('scripts', 'colorpicker-instance-'.$wid, array("(function(){
             var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
             ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
@@ -1426,12 +1529,16 @@ class HtmlWidget
                 if (element)
                 {
                     if (options.input) options.input = document.getElementById(options.input);
-                    " . ($winit ? '('.$winit.')(element, options)' : "if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}
-                    element.colorpicker = new ColorPicker(element, options)") . ";
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                    " . ($winit ? '('.$winit.')(element, options);' : "element.colorpicker = new ColorPicker(element, options);
+                    htmlwidgets.addHandler(element, 'restore', function(element) {
+                        if (element.colorpicker) {element.colorpicker.dispose(); element.colorpicker = null;}
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                    });") . "
                 }
             }
             window.requestAnimationFrame(render);
-        })();"), array('colorpicker'));
+        })();"), array('htmlwidgets.js', 'colorpicker'));
         return $ret;
     }
 
@@ -1461,16 +1568,19 @@ class HtmlWidget
         $wextra = self::attributes($attr,array('accept','multiple','readonly','disabled','data')).(!empty($attr["extra"]) ? (' '.$attr["extra"]) : '');
         self::enqueue('styles', 'htmlwidgets.css');
         self::enqueue('scripts', 'file-instance-'.$wid, array("(function(){
+            var tries = 0;
             function render()
             {
+                if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                 var element = document.getElementById('".$wid."'),
                     input = document.getElementById('text_input_".$wid."');
                 if (element && input)
                 {
-                    " . ($winit ? '('.$winit.')(element, {input:input});' : "
-                    if (element.changehandler) {htmlwidgets.removeEvent(element,'change', element.changehandler); element.changehandler = null;}
-                    htmlwidgets.addEvent(element, 'change', element.changehandler = function(){
-                        input.value = element.value;
+                    htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                    " . ($winit ? '('.$winit.')(element, {input:input});' : "htmlwidgets.addEvent(element, 'change', element.changehandler = function() {input.value = element.value;});
+                    htmlwidgets.addHandler(element, 'restore', function(element) {
+                        if (element.changehandler) {htmlwidgets.removeEvent(element, 'change', element.changehandler); element.changehandler = null;}
+                        htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
                     });") . "
                 }
             }
@@ -1520,30 +1630,43 @@ class HtmlWidget
         self::enqueue('styles', 'htmlwidgets.css');
         if ($winit && empty($attr['datatable']))
             self::enqueue('scripts', 'table-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         if (!empty($attr['datatable']))
         {
             $options = isset($attr["options"]) && is_array($attr["options"]) ? $attr["options"] : array();
             $code = self::extract_code($options);
             $wclass .= ' w-datatable';
-            self::enqueue('scripts', 'datatables-all');
             self::enqueue('scripts', 'datatable-instance-'.$wid, array("(function(){
                 var tries = 0, options = ".(!empty($options) ? json_encode($options) : '{}').";
                 ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
-                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.dataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.DataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {" . ($winit ? '('.$winit.')(element, options)' : "jQuery(element).dataTable(options)") . ";}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        " . ($winit ? '('.$winit.')(element, options);' : "element.datatable = jQuery(element).DataTable(options);
+                        htmlwidgets.addHandler(element, 'restore', function(element) {
+                            if (element.datatable) {element.datatable.destroy(); element.datatable = null;}
+                            htmlwidgets.addHandler(element, 'restore', htmlwidgets.noop);
+                        });") . "
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"), array('datatables-all'));
+            })();"), array('htmlwidgets.js', 'datatables-all'));
         }
         return "<table id=\"$wid\" class=\"$wclass\" $wstyle $wextra $wdata>$wheader<tbody>$wrows</tbody>$wfooter</table>";
     }
@@ -1606,13 +1729,19 @@ class HtmlWidget
         self::enqueue('scripts','html5media');
         if ($winit)
             self::enqueue('scripts', 'media-instance-'.$wid, array("(function(){
+                var tries = 0;
                 function render()
                 {
+                    if ('undefined' === typeof(htmlwidgets)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
-                    if (element) {({$winit})(element, {});}
+                    if (element)
+                    {
+                        htmlwidgets.getHandler(element, 'restore', htmlwidgets.noop)(element);
+                        ({$winit})(element, {});
+                    }
                 }
                 window.requestAnimationFrame(render);
-            })();"));
+            })();"), array('htmlwidgets.js'));
         return "<{$wtype} id=\"{$wid}\" class=\"{$wclass}\" {$wstyle} {$wextra}>{$wsource}{$wtext}</{$wtype}>";
     }
 
@@ -1678,8 +1807,8 @@ class HtmlWidget
         $wextra = !empty($attr["extra"]) ? $attr["extra"] : '';
         $totalItems = (int)$data['totalItems'];
         $itemsPerPage = (int)$data['itemsPerPage'];
-        $currentPage = isset($data['currentPage']) ? (int)$data['currentPage'] : 1;
-        $maxPagesToShow = isset($attr['maxPages']) ? (int)$attr['maxPages'] : 10;
+        $currentPage = (int)(isset($data['currentPage']) ? $data['currentPage'] : 1);
+        $maxPagesToShow = (int)(isset($attr['maxPages']) ? $attr['maxPages'] : 10);
         $placeholder = isset($attr['placeholder']) ? (string)$attr['placeholder'] : '(:page)';
         $urlPattern = isset($attr['urlPattern']) ? (string)$attr['urlPattern'] : '?page='.$placeholder;
         $previousText = isset($attr['previousText']) ? (string)$attr['previousText'] : '&laquo; Previous';
@@ -1687,18 +1816,18 @@ class HtmlWidget
         $ellipsis = isset($attr['ellipsis']) ? (string)$attr['ellipsis'] : '...';
         $selectBox = !empty($attr['selectBox']);
 
-        $numPages = 0 >= $itemsPerPage || 0 >= $totalItems ? 0 : (int)ceil($totalItems/$itemsPerPage);
+        $numPages = (int)(0 >= $itemsPerPage || 0 >= $totalItems ? 0 : ceil($totalItems/$itemsPerPage));
         if ($numPages > 1)
         {
             $pages = array();
             if ($numPages <= $maxPagesToShow)
             {
-                for ($i=1; $i<=$numPages; $i++)
+                for ($i=1; $i<=$numPages; ++$i)
                 {
                     $pages[] = array(
                         'text' => $i,
                         'url' => str_replace($placeholder, (string)$i, $urlPattern),
-                        'isCurrent' => $i===$currentPage
+                        'isCurrent' => $i==$currentPage
                     );
                 }
             }
@@ -1724,7 +1853,7 @@ class HtmlWidget
                 $pages[] = array(
                     'text' => 1,
                     'url' => str_replace($placeholder, (string)1, $urlPattern),
-                    'isCurrent' => 1===$currentPage
+                    'isCurrent' => 1==$currentPage
                 );
                 if ($slidingStart > 2)
                 {
@@ -1734,12 +1863,12 @@ class HtmlWidget
                         'isCurrent' => false
                     );
                 }
-                for ($i=$slidingStart; $i<=$slidingEnd; $i++)
+                for ($i=$slidingStart; $i<=$slidingEnd; ++$i)
                 {
                     $pages[] = array(
                         'text' => $i,
                         'url' => str_replace($placeholder, (string)$i, $urlPattern),
-                        'isCurrent' => $i===$currentPage
+                        'isCurrent' => $i==$currentPage
                     );
                 }
                 if ($slidingEnd < $numPages - 1)
@@ -1753,7 +1882,7 @@ class HtmlWidget
                 $pages[] = array(
                     'text' => $numPages,
                     'url' => str_replace($placeholder, (string)$numPages, $urlPattern),
-                    'isCurrent' => $numPages===$currentPage
+                    'isCurrent' => $numPages==$currentPage
                 );
             }
 
@@ -1819,6 +1948,18 @@ class HtmlWidget
             return '';
         }
     }
+
+    /*public static function w_sortable($attr, $data, $widgetName = null)
+    {
+    }
+
+    public static function w_selectable($attr, $data, $widgetName = null)
+    {
+    }
+
+    public static function w_removable($attr, $data, $widgetName = null)
+    {
+    }*/
 
     public static function w_delayable($attr, $data, $widgetName = null)
     {
