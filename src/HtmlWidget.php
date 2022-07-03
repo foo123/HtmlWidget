@@ -1134,7 +1134,7 @@ class HtmlWidget
                 ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
-                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    if ('undefined' === typeof(htmlwidgets) || 'undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.select2)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
@@ -1232,7 +1232,7 @@ class HtmlWidget
                 ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
-                    if ('function' !== typeof(CodeMirror)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    if ('undefined' === typeof(htmlwidgets) || 'function' !== typeof(CodeMirror)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var autosave = false;
                     if (options.autosave)
                     {
@@ -1296,7 +1296,7 @@ class HtmlWidget
                 ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
-                    if ('undefined' === typeof(tinymce)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    if ('undefined' === typeof(htmlwidgets) || 'undefined' === typeof(tinymce)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
@@ -1393,7 +1393,7 @@ class HtmlWidget
             ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
             function render()
             {
-                if ('function' !== typeof(Pikadaytime)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                if ('undefined' === typeof(htmlwidgets) || 'function' !== typeof(Pikadaytime)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                 var locale = options.i18n, format = options.format;
                 if ('function' === typeof(DateX))
                 {
@@ -1524,7 +1524,7 @@ class HtmlWidget
             ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
             function render()
             {
-                if ('function' !== typeof(ColorPicker)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                if ('undefined' === typeof(htmlwidgets) || 'function' !== typeof(ColorPicker)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                 var element = document.getElementById('".$wid."');
                 if (element)
                 {
@@ -1653,7 +1653,7 @@ class HtmlWidget
                 ".implode("\n", array_map(function($c) {return "options['".$c[0]."'] = " . $c[1]->code . ";";}, $code))."
                 function render()
                 {
-                    if ('undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.DataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
+                    if ('undefined' === typeof(htmlwidgets) || 'undefined' === typeof(jQuery) || 'function' !== typeof(jQuery.fn.DataTable)) {if (tries<10) {tries++; setTimeout(render, 100);} return;}
                     var element = document.getElementById('".$wid."');
                     if (element)
                     {
